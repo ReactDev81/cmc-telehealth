@@ -1,35 +1,109 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { router, Tabs } from 'expo-router';
+import {  View, Platform, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from "expo-status-bar";
+import { House, Stethoscope, UserRound, CalendarDays, ChevronLeft, Pill } from 'lucide-react-native';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+    const insets = useSafeAreaInsets();
+
+    return (
+        <>
+            <StatusBar style="auto" />
+            <Tabs
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: '#FFFFFF',
+                    },
+                    headerTitleAlign: 'left',
+                    headerTitleStyle: {
+                        fontSize: 18,
+                        fontWeight: '500',
+                        color: '#1F1E1E',
+                    },
+                    headerLeft: () => (
+                        <TouchableOpacity 
+                            onPress={() => router.back()}
+                            className="ml-3 pr-2"
+                        >
+                            <ChevronLeft size={24} color="#1F1E1E" />
+                        </TouchableOpacity>
+                    ),
+                    headerShadowVisible: true,
+                    tabBarStyle: {
+                        backgroundColor: '#FFFFFF',
+                        borderTopWidth: 1,
+                        borderTopColor: '#E5E7EB',
+                        height: Platform.OS === 'ios' ? 88 : 80 + insets.bottom,
+                        paddingBottom: Platform.OS === 'ios' ? 20 + insets.bottom : 10 + insets.bottom,
+                        paddingTop: 5,
+                        elevation: 0,
+                        shadowOpacity: 0,
+                    },
+                    tabBarActiveTintColor: '#013220',
+                    tabBarInactiveTintColor: '#4D4D4D',
+                    tabBarLabelStyle: {
+                        fontSize: 12,
+                        fontWeight: '400',
+                        marginTop: 5,
+                    },
+                    tabBarIconStyle: {
+                        marginTop: 0,
+                    },
+                }}
+            >
+                <Tabs.Screen 
+                    name="index"
+                    options={{
+                        title: 'Home',
+                        headerShown: false,
+                        tabBarIcon: ({ color }) => (
+                            <House size={24} color={color} />
+                        ),
+                    }}
+                />
+                <Tabs.Screen 
+                    name="doctors"
+                    options={{
+                        headerTitle: 'All Doctors',
+                        tabBarLabel: 'Doctors',
+                        tabBarIcon: ({ color }) => (
+                            <Stethoscope size={24} color={color} />
+                        ),
+                    }}
+                />
+                <Tabs.Screen 
+                    name="appointments"
+                    options={{
+                        headerTitle: 'My Appointments',
+                        tabBarLabel: '',
+                        tabBarIcon: () => (
+                            <View className="bg-primary w-16 h-16 rounded-full items-center justify-center -mt-14">
+                                <CalendarDays size={24} color="#FFFFFF" />
+                            </View>
+                        ),
+                    }}
+                />
+                <Tabs.Screen 
+                    name="medicines"
+                    options={{
+                        title: 'Medicines',
+                        tabBarIcon: ({ color }) => (
+                            <Pill size={24} color={color} />
+                        ),
+                    }}
+                />
+                <Tabs.Screen 
+                    name="profile"
+                    options={{
+                        title: 'Profile',
+                        tabBarIcon: ({ color }) => (
+                            <UserRound size={24} color={color} />
+                        ),
+                    }}
+                />
+            </Tabs>
+        </>
+    );
 }

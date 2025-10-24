@@ -1,24 +1,195 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import 'react-native-reanimated';
+import "../global.css";
+import { ThemeProvider, DefaultTheme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native';
+import { ChevronLeft } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    const router = useRouter();
+
+    return (
+        <ThemeProvider value={DefaultTheme}>
+            <StatusBar style="auto" />
+            <Stack
+                initialRouteName="splash"
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: '#FFFFFF',
+                    },
+                    headerTitleAlign: 'left',
+                    headerTitleStyle: {
+                        fontSize: 18,
+                        fontWeight: '500',
+                        color: '#1F1E1E',
+                    },
+                    headerLeft: () => (
+                        <TouchableOpacity 
+                            onPress={() => router.back()}
+                            className='-ml-2 pr-3'
+                        >
+                            <ChevronLeft size={24} color="#1F1E1E" />
+                        </TouchableOpacity>
+                    ),
+                    headerShadowVisible: true,
+                }}
+            >
+                {/* Auth & Splash - No Headers */}
+                <Stack.Screen name="splash" options={{ headerShown: false }} />
+                <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+                <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
+                <Stack.Screen name="auth/reset-password" options={{ headerShown: false }} />
+                <Stack.Screen name="auth/verify-otp" options={{ headerShown: false }} />
+                <Stack.Screen name="auth/change-password" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+                <Stack.Screen 
+                    name="testimonial" 
+                    options={{ headerTitle: 'Testimonial' }}  
+                />
+
+                <Stack.Screen 
+                    name="notifications/index" 
+                    options={{ headerTitle: 'Notifications' }}  
+                />
+
+                <Stack.Screen 
+                    name="notifications/notification-details" 
+                    options={{ headerTitle: 'Notifications' }}  
+                />
+
+                <Stack.Screen 
+                    name="find-doctor" 
+                    options={{ headerTitle: 'Find Doctor' }}  
+                />
+
+                <Stack.Screen 
+                    name="doctor/[id]" 
+                    options={{
+                        headerShown: true,
+                        title: "Doctor Profile",
+                    }}
+                />
+
+                <Stack.Screen 
+                    name="my-medicines/[id]" 
+                    options={{
+                        headerShown: true,
+                        title: "Medicines Detail",
+                    }}
+                />
+
+                <Stack.Screen 
+                    name="appointment-summary" 
+                    options={{
+                        headerShown: true,
+                        title: "Appointment Summary",
+                    }}
+                />
+
+                {/* Profile Pages - WITH Headers */}
+                <Stack.Screen 
+                    name="profile/edit-personal-information" 
+                    options={{ 
+                        headerTitle: 'Edit Personal Information',
+                    }} 
+                />
+    
+                <Stack.Screen 
+                    name="profile/medical-reports" 
+                    options={{ 
+                        headerTitle: 'Medical Reports',
+                    }} 
+                />
+    
+                <Stack.Screen 
+                    name="profile/reports" 
+                    options={{ 
+                        headerTitle: 'Reports',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/manage-address" 
+                    options={{ 
+                        headerTitle: 'Manage Address',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/payment-method" 
+                    options={{ 
+                        headerTitle: 'Payment Method',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/transactions/index" 
+                    options={{ 
+                        headerTitle: 'Transactions',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/transactions/[id]" 
+                    options={{ 
+                        headerTitle: 'Transaction Detail',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/faq" 
+                    options={{ 
+                        headerTitle: 'Frequently Asked Questions',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/need-help" 
+                    options={{ 
+                        headerTitle: 'Contact Us',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/rate-us" 
+                    options={{ 
+                        headerTitle: 'Rate Us',
+                    }} 
+                />      
+
+                <Stack.Screen 
+                    name="profile/about-us" 
+                    options={{ 
+                        headerTitle: 'About Us',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/term-condition" 
+                    options={{ 
+                        headerTitle: 'Term and Condition',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/privacy-policy" 
+                    options={{ 
+                        headerTitle: 'Privacy Policy',
+                    }} 
+                />
+
+            </Stack>
+            <StatusBar style="auto" />
+
+        </ThemeProvider>
+    );
 }

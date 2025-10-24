@@ -1,98 +1,177 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Header from '../../components/common/header';
+import ConsultationTypeCard from '../../components/home/consulation-type-card';
+import TitleWithLink from '../../components/home/title-with-link';
+import SpecialityCard from '../../components/home/speciality-card';
+import AvailableDoctors from '../../components/home/available-doctors';
+import Title from '../../components/ui/Title';
+import Article from '../../components/home/article';
+import Testimonial from '../../components/home/testimonial';
+import Button from '../../components/ui/Button';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// json data
+import { SpecialityData } from '@/json-data/home';
+import { AvailableDoctorsData } from '@/json-data/home';
+import { ArticleData } from '@/json-data/home';
+import { TestimonialData } from '@/json-data/home';
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+const Home = () => {
+
+    const insets = useSafeAreaInsets();
+
+    return (
+        <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+
+            <Header />
+
+            <ScrollView 
+                showsVerticalScrollIndicator={false}
+                className='flex-1'
+            >
+
+                <View className='px-4 py-5'>
+
+                    {/* Consultation Type */}
+                    <View className='flex flex-row gap-x-2.5'>
+                        <View className='flex-1'>
+                            <ConsultationTypeCard
+                                link="" 
+                                image={require('../../assets/images/video-consultation.png')}
+                                text="Instant Video Consultation"
+                            />
+                        </View>
+                        <View className='flex-1'>
+                            <ConsultationTypeCard
+                                link="" 
+                                image={require('../../assets/images/clinic-appointment.png')}
+                                text="Book In-Clinic Appointment"
+                            />
+                        </View>
+                    </View>
+
+                    {/* Speciality */}
+                    <View className='mt-7'>
+                        <TitleWithLink 
+                            title_text="Find Doctor by Speciality / Symptoms"
+                            link="/find-doctor"
+                            link_text="See All"
+                        />
+                        <ScrollView 
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            className='mt-4'
+                            contentContainerStyle={{ gap: 20, paddingRight: 0 }}
+                        >
+                            {SpecialityData.map((speciality, id) => {
+                                return(
+                                    <SpecialityCard
+                                        key={id} 
+                                        speciality={speciality.speciality}
+                                        link={speciality.link}
+                                        image={speciality.image}
+                                    />
+                                )
+                            })}
+                        </ScrollView>
+                    </View>
+
+                    {/* Available Doctors */}
+                    <View className='mt-7'>
+                        <TitleWithLink 
+                            title_text="Available Doctors"
+                            link="/doctors"
+                            link_text="See All"
+                        />
+                        <ScrollView 
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            className='mt-4'
+                            contentContainerStyle={{ gap: 15, paddingRight: 0 }}
+                        >
+                            {AvailableDoctorsData.map((availableDoctors) => {
+                                return(
+                                    <TouchableOpacity
+                                        key={availableDoctors.id}
+                                        className="flex-1 px-1"
+                                        onPress={() => router.push(`/doctor/${availableDoctors.id}`)}
+                                    >
+                                        <AvailableDoctors
+                                            image={availableDoctors.image}
+                                            name={availableDoctors.name}
+                                            speciality={availableDoctors.speciality}
+                                            rating={availableDoctors.rating}
+                                            reviews_count={availableDoctors.reviews_count}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            })}
+                        </ScrollView>
+                    </View>
+
+                </View>
+
+                {/* Article */}
+                <View className='px-4 py-5 bg-primary'>
+                    <Title text="Safe & Advanced Surgical Care" className="text-white" />
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        className='mt-3'
+                        contentContainerStyle={{ gap: 15, paddingRight: 0 }}
+                    >
+
+                        {ArticleData.map((article, id) => {
+                            return(
+                                <Article
+                                    key={id} 
+                                    name={article.name}
+                                    first_point={article.first_point}
+                                    second_point={article.second_point}
+                                />
+                            )
+                        })}
+                    </ScrollView>
+                </View>
+
+
+                <View className='px-4 pb-10'>
+
+                    {/* Testimonial */}
+                    <View className='mt-7'>
+                        <Title text="Here's what our satisfied customers are saying..." />
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            className='mt-3'
+                            contentContainerStyle={{ gap: 15, paddingRight: 0 }}
+                        >
+                            {TestimonialData.map((testimonial, id) => {
+                                return(
+                                    <Testimonial
+                                        key={id} 
+                                        image={testimonial.image}
+                                        name={testimonial.name}
+                                        age={testimonial.name}
+                                        city={testimonial.city}
+                                        title={testimonial.title}
+                                        description={testimonial.description}
+                                        review_count={testimonial.review_count}
+                                    />
+                                )
+                            })}
+                        </ScrollView>
+                        <Button className='mt-5' onPress={() => router.push('/testimonial')}>View All Testimonial</Button>
+                    </View>
+
+                </View>
+
+            </ScrollView>
+
+        </View>
+    );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+export default Home
