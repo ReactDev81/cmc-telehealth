@@ -11,7 +11,8 @@ import {
     Headphones, 
     ShieldCheck,
     Handshake,
-    UserStar
+    UserStar,
+    Stethoscope
 } from 'lucide-react-native'
 
 export const menuSections: MenuSection[] = [
@@ -30,6 +31,13 @@ export const menuSections: MenuSection[] = [
                 title: 'Medical Reports',
                 description: 'Reports more',
                 route: '/profile/medical-reports'
+            },
+            {
+                id: 'write-a-review',
+                icon: <Stethoscope size={20} color="#374151" />,
+                title: 'Write A Review',
+                description: 'Review to the Doctor',
+                route: '/write-a-review'
             },
         ]
     },

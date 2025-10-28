@@ -126,9 +126,9 @@ export default function RootLayout() {
                 />
     
                 <Stack.Screen 
-                    name="profile/reports" 
+                    name="write-a-review" 
                     options={{ 
-                        headerTitle: 'Reports',
+                        headerTitle: 'Write A Review',
                     }} 
                 />
 
