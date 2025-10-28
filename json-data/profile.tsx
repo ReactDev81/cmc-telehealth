@@ -53,7 +53,7 @@ export const menuSections: MenuSection[] = [
             {
                 id: 'transaction',
                 icon: <Receipt size={20} color="#374151" />,
-                title: 'Transaction',
+                title: 'Transactions',
                 description: 'Check transaction detail',
                 route: '/profile/transactions'
             },

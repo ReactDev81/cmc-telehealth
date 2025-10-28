@@ -95,6 +95,14 @@ export default function RootLayout() {
                     }}
                 />
 
+                <Stack.Screen 
+                    name="appointment-details" 
+                    options={{
+                        headerShown: true,
+                        title: "Appointment Details",
+                    }}
+                />
+
                 {/* Profile Pages - WITH Headers */}
                 <Stack.Screen 
                     name="profile/edit-personal-information" 
@@ -104,9 +112,16 @@ export default function RootLayout() {
                 />
     
                 <Stack.Screen 
-                    name="profile/medical-reports" 
+                    name="profile/medical-reports/index" 
                     options={{ 
                         headerTitle: 'Medical Reports',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/medical-reports/upload-your-report" 
+                    options={{ 
+                        headerTitle: 'Upload Your Report',
                     }} 
                 />
     
@@ -118,9 +133,23 @@ export default function RootLayout() {
                 />
 
                 <Stack.Screen 
-                    name="profile/manage-address" 
+                    name="profile/manage-address/index" 
                     options={{ 
                         headerTitle: 'Manage Address',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/manage-address/add-current-location" 
+                    options={{ 
+                        headerTitle: 'Add Current Location',
+                    }} 
+                />
+
+                <Stack.Screen 
+                    name="profile/manage-address/choose-different-location" 
+                    options={{ 
+                        headerTitle: 'Choose Different Location',
                     }} 
                 />
 

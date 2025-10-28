@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 import Input from '@/components/form/Input'
-import TextArea from '@/components/ui/TextArea'
+import TextArea from '@/components/form/TextArea'
 import Button from '@/components/ui/Button'
 
 const NeedHelp = () => {

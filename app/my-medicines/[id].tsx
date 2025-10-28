@@ -27,7 +27,7 @@ const MedicinesDetail = () => {
                 <Text className="text-base text-black-400">2025-02-10 Tusday</Text>   
             </View>
 
-            <View className="mt-2.5 pb-14">
+            <View className="mt-3 pb-14">
                 <Text className="text-base font-medium text-black mb-3">Uploaded Report's:</Text>
                 <View className="flex-row items-center gap-x-2">
                     <Text className="text-base text-black-400 font-medium">Blood Test:</Text>
