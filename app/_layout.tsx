@@ -103,6 +103,14 @@ export default function RootLayout() {
                     }}
                 />
 
+                <Stack.Screen 
+                    name="whereby" 
+                    options={{
+                        headerShown: true,
+                        title: "WhereBy",
+                    }}
+                />              
+
                 {/* Profile Pages - WITH Headers */}
                 <Stack.Screen 
                     name="profile/edit-personal-information" 

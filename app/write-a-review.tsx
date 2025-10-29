@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { View, Text, Image, TouchableOpacity } from "react-native"
+import { View, Text, Image, TouchableOpacity, Modal } from "react-native"
 import { Star } from "lucide-react-native";
 import TextArea from "@/components/form/TextArea"
 import RadioButton from "@/components/form/radio-button"
@@ -14,9 +14,18 @@ const WriteAReview = () => {
 
     const [recommend, setRecommend] = useState('yes');
     const [rating, setRating] = useState<number>(0);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
     const handleRating = (value: number) => {
         setRating(value);
+    };
+
+    const handleSubmit = () => {
+        setShowSuccessModal(true);
+    };
+
+    const closeModal = () => {
+        setShowSuccessModal(false);
     };
 
     return(
@@ -65,9 +74,34 @@ const WriteAReview = () => {
 
                 <View className="flex-row items-center gap-x-4 mt-3">
                     <Button variant="outline" className="[&]:px-8">Cancel</Button>
-                    <Button className="[&]:px-8">Submit</Button>
+                    <Button className="[&]:px-8" onPress={handleSubmit}>Submit</Button>
                 </View>
             </View>
+
+            {/* Success Modal */}
+            <Modal
+                visible={showSuccessModal}
+                transparent
+                animationType="fade"
+                onRequestClose={closeModal}
+            >
+                <View className="flex-1 bg-black/60 justify-center items-center px-5">
+                    <View className="bg-white rounded-xl p-8 w-full max-w-sm items-center">
+                        <View className="w-14 h-14 items-center justify-center rounded-full bg-primary-100">
+                            <Star size={24} color="#013220" fill="#013220" />
+                        </View>
+                        <Text className="text-lg font-semibold text-black mt-5">
+                            Review Successful!
+                        </Text>
+                        <Text className="text-base text-black-400 text-center mt-2">
+                            Your review has been successfully submitted. Thank you very much!
+                        </Text>
+                        <Button className="mt-6 px-6" onPress={closeModal}>
+                            Done
+                        </Button>
+                    </View>
+                </View>
+            </Modal>
 
         </View>
     )

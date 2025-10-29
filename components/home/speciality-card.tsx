@@ -8,7 +8,7 @@ interface Speciality extends SpecialityProps {
 
 const SpecialityCard = ({ speciality, link, image, className = ''} : Speciality) => {
     return(
-        <Link href={link} className="mx-auto">
+        <Link href="/doctors" className="mx-auto">
             <View className="flex justify-center items-center gap-y-2">
                 <View className={`w-16 h-16 p-4 flex items-center justify-center rounded-full border border-[#EDEDED] bg-primary-100 ${className}`}>
                     <Image source={image} />

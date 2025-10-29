@@ -1,8 +1,8 @@
 import { useState } from "react"
-import { View, Text, Image, FlatList } from "react-native"
+import { View, Text, Image, FlatList, TouchableOpacity } from "react-native"
 import Button from "../../components/ui/Button"
-import { Link } from "expo-router"
-import { Calendar, Clock, X } from 'lucide-react-native'
+import { Link, router } from "expo-router"
+import { Calendar, Clock, Video } from 'lucide-react-native'
 import { appointmentProps } from "../../types/appointment"
 import { UpcomingAppointmentData } from "../../json-data/appointment"
 import CancelAppointmentModal from "./cancel-appointment-modal"
@@ -38,18 +38,30 @@ const UpcomingAppointments = () => {
                         <Image source={image} className="w-full h-24 rounded-xl" />
                     </View>
                     <View className="flex-1">
-                        <Text className="text-sm font-medium text-black">{name}</Text>
-                        <Text className="text-xs text-black mt-1">{speciality}</Text>
-                        <View className="flex-row items-center gap-x-3 mt-3">
-                            <View className="flex-row items-center gap-x-2">
-                                <Calendar size={12} className="text-black-400" />
-                                <Text className="text-sm text-black-400">{date}</Text>
+                        <View className="flex-row justify-between">
+                            <View>
+                                <Text className="text-sm font-medium text-black">{name}</Text>
+                                <Text className="text-xs text-black mt-1">{speciality}</Text>
+                                <View className="flex-row items-center gap-x-3 mt-3">
+                                    <View className="flex-row items-center gap-x-2">
+                                        <Calendar size={12} className="text-black-400" />
+                                        <Text className="text-sm text-black-400">{date}</Text>
+                                    </View>
+                                    <View className="flex-row items-center gap-x-2">
+                                        <Clock size={12} className="text-black-400" />
+                                        <Text className="text-sm text-black-400">{time}</Text>
+                                    </View>
+                                </View>
                             </View>
-                            <View className="flex-row items-center gap-x-2">
-                                <Clock size={12} className="text-black-400" />
-                                <Text className="text-sm text-black-400">{time}</Text>
-                            </View>
+                            <TouchableOpacity 
+                                className="w-12 h-12 rounded-full items-center justify-center bg-primary-200"
+                                activeOpacity={1}
+                                onPress={() => router.push('/whereby')}
+                            >
+                                <Video size={20} color="#013220" />
+                            </TouchableOpacity>
                         </View>
+                       
                         <View className="flex-row items-center justify-between gap-x-3 mt-4">
                             <Button 
                                 variant="outline" 

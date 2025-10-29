@@ -28,23 +28,15 @@ const WhereBy = () => {
 
     if (Platform.OS === "android" && !hasPermissionForAndroid) {
         return <View />;
-  }
+    }
   
     return(
         <View style={{ flex: 1 }}>
-            <Button
-                onPress={() => {
-                    wherebyRoomRef.current?.toggleMicrophone();
-                }}
-                title="Toggle Microphone"
-            />
             <View style={{ flex: 1, height: "100%" }}>
                 <WherebyEmbed
                     ref={wherebyRoomRef}
                     style={{ flex: 1 }}
                     room={ROOM_URL}
-                    // Removes some UI elements. Useful for small screens.
-                    minimal
                     // Skips the media permission prompt.
                     skipMediaPermissionPrompt
                     // Catch-all for any Whereby event
