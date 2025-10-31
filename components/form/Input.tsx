@@ -1,49 +1,57 @@
-import { forwardRef } from 'react';
-import { TextInput, View, Text, Pressable, TextInputProps } from 'react-native';
+import { TextInput, View, Text } from "react-native";
+import { useController } from "react-hook-form";
 
-type InputProps = TextInputProps & {
+interface InputProps {
+    name: string;
+    control: any;
     label?: string;
-    errorMessage?: string;
-    left?: React.ReactNode;
-    right?: React.ReactNode;
-    onPressRight?: () => void;
+    placeholder?: string;
+    keyboardType?: any;
+    autoCapitalize?: "none" | "sentences" | "words" | "characters";
     containerClassName?: string;
-    inputClassName?: string;
-};
+    secureTextEntry?: boolean;
+    multiline?: boolean;
+}
 
-const Input = forwardRef<TextInput, InputProps>((
-    {
-        label,
-        errorMessage,
-        left,
-        right,
-        onPressRight,
-        containerClassName = '',
-        inputClassName = '',
-        ...props
-    },  
-    ref
-) => {
-        return (
-            <View className={containerClassName}>
-                {label ? (
-                    <Text className="text-sm text-black mb-2.5">{label}</Text>
-                ) : null}
-                <View className={`border border-gray rounded-lg flex-row items-center ${errorMessage ? 'border-red-500' : ''}`}>
-                    {left ? <View className="px-3 py-3">{left}</View> : null}
-                    <TextInput ref={ref} className={`flex-1 px-4 py-3 ${inputClassName}`} {...props} />
-                    {right ? (
-                        <Pressable onPress={onPressRight} className="px-3 py-3">
-                            {right}
-                        </Pressable>
-                    ) : null}
-                </View>
-                {errorMessage ? (
-                    <Text className="text-xs text-red-600 mt-1">{errorMessage}</Text>
-                ) : null}
-            </View>
-        );
-    }
-);
+const Input = ({
+    name,
+    control,
+    label,
+    placeholder,
+    keyboardType = "default",
+    autoCapitalize = "none",
+    containerClassName = "",
+    secureTextEntry = false,
+    multiline = false,
+}: InputProps) => {
+
+    const { field: { onChange, onBlur, value },fieldState: { error }} = useController({
+        name,
+        control,
+    });
+
+    return (
+        <View className={containerClassName}>
+
+            {label && <Text className="text-sm font-medium mb-1">{label}</Text>}
+
+            <TextInput
+                className={`border rounded-lg px-5 py-4 text-sm leading-4  ${
+                    error ? "border-red-500" : "border-gray"
+                }`}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder={placeholder || label}
+                keyboardType={keyboardType}
+                autoCapitalize={autoCapitalize}
+                secureTextEntry={secureTextEntry}
+                multiline={multiline}
+            />
+
+            {error && <Text className="text-xs text-red-600 mt-1">{error.message}</Text>}
+        </View>
+    );
+};
 
 export default Input;

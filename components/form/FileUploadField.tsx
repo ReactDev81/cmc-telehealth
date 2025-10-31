@@ -1,60 +1,56 @@
-import React, { useState } from "react";
+import { Controller } from "react-hook-form";
 import { View, Text, TouchableOpacity } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 
-interface FileUploadFieldProps {
+type FileUploadFieldProps = {
+    name: string;
+    control: any;
     label?: string;
-    onFileSelect?: (file: DocumentPicker.DocumentPickerAsset | null) => void;
-    className?: string
-}
+    error?: string;
+    className?: string;
+};
 
-const FileUploadField: React.FC<FileUploadFieldProps> = ({ label, onFileSelect, className = "" }) => {
+const FileUploadField = ({
+    name,
+    control,
+    label,
+    error,
+    className,
+}: FileUploadFieldProps) => {
 
-    const [selectedFile, setSelectedFile] = useState<string>("No file chosen");
-
-    const handleFilePick = async () => {
+    // Function to handle picking a file
+    const handlePickFile = async (onChange: (file: any) => void) => {
         try {
-            const result = await DocumentPicker.getDocumentAsync({
-                type: "*/*",
-                copyToCacheDirectory: true,
-            });
+            const result = await DocumentPicker.getDocumentAsync({ type: "*/*" });
 
-            if (result.assets && result.assets.length > 0) {
-                const file = result.assets[0];
-                setSelectedFile(file.name);
-                onFileSelect?.(file);
-            } else {
-                onFileSelect?.(null);
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                onChange(result.assets[0]); 
             }
-        } catch (error) {
-            console.error("File pick error:", error);
+        } catch (err) {
+            console.error("File picking error:", err);
         }
     };
 
     return (
-        <View className={`mb-4 ${className}`}>
-            {label && <Text className="text-gray-700 mb-2">{label}</Text>}
+        <Controller
+            control={control}
+            name={name}
+            render={({ field: { value, onChange } }) => (
+                <View className={className}>
 
-            <TouchableOpacity
-                onPress={handleFilePick}
-                activeOpacity={1}
-                className="flex-row items-center border border-gray rounded-md overflow-hidden"
-            >
+                    {label && <Text className="mb-1 text-gray-700">{label}</Text>}
 
-                <View className="bg-gray-100 px-4 py-3">
-                    <Text className="text-black-400 text-sm">Choose File</Text>
-                </View>
-
-                < View className="flex-1 px-3 py-3">
-                    <Text
-                        className="text-black-400 text-sm"
-                        numberOfLines={1}
+                    <TouchableOpacity
+                        onPress={() => handlePickFile(onChange)}
+                        className="border border-gray-300 rounded-lg py-3 px-4"
                     >
-                        {selectedFile}
-                    </Text>
+                        <Text>{value?.name || "Choose File"}</Text>
+                    </TouchableOpacity>
+
+                    {error && <Text className="text-red-500 text-sm mt-1">{error}</Text>}
                 </View>
-            </TouchableOpacity>
-        </View>
+            )}
+        />
     );
 };
 

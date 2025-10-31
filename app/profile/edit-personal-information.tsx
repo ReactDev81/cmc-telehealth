@@ -1,20 +1,53 @@
-import { View, Image, TouchableOpacity, Alert } from "react-native"
+import { View, Image, TouchableOpacity, Alert, ScrollView } from "react-native"
 import { Camera } from 'lucide-react-native';
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import Input from "../../components/form/Input";
 import Button from "../../components/ui/Button";
 import RadioButton from "../../components/form/radio-button";
 import DateField from "../../components/form/date";
+
+// Validation schema
+const personalInfoSchema = z.object({
+    firstName: z.string().min(1, 'First name is required').min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(1, 'Last name is required').min(2, 'Last name must be at least 2 characters'),
+    phone: z.string().min(1, 'Phone number is required').regex(/^[+]?[\d\s-()]+$/, 'Invalid phone number format'),
+    dateOfBirth: z.date({ required_error: 'Date of birth is required' }).refine(
+        (date) => {
+            const age = new Date().getFullYear() - date.getFullYear();
+            return age >= 13;
+        },
+        { message: 'You must be at least 13 years old' }
+    ),
+    gender: z.enum(['male', 'female', 'other'], {
+        required_error: 'Please select a gender',
+    }),
+});
+
+type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
 const EditPersonalInformation = () => {
 
     const [profileImage, setProfileImage] = useState(require('../../assets/images/edit-profile.png'));
     const [isImageUri, setIsImageUri] = useState(false);
 
-    const pickImage = async () => {
+    const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<PersonalInfoFormData>({
+        resolver: zodResolver(personalInfoSchema),
+        defaultValues: {
+            firstName: '',
+            lastName: '',
+            phone: '',
+            gender: 'male',
+        }
+    });
 
-        // Request permission
+    const dateOfBirth = watch('dateOfBirth');
+    const gender = watch('gender');
+
+    const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         
         if (status !== 'granted') {
@@ -22,7 +55,6 @@ const EditPersonalInformation = () => {
             return;
         }
 
-        // Launch image picker
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -37,8 +69,6 @@ const EditPersonalInformation = () => {
     };
 
     const takePhoto = async () => {
-
-        // Request permission
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         
         if (status !== 'granted') {
@@ -46,7 +76,6 @@ const EditPersonalInformation = () => {
             return;
         }
 
-        // Launch camera
         const result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
             aspect: [1, 1],
@@ -71,18 +100,19 @@ const EditPersonalInformation = () => {
         );
     };
 
-    const [gender, setGender] = useState('male');
-
     const genderOptions = [
         { value: 'male', label: 'Male' },
         { value: 'female', label: 'Female' },
         { value: 'other', label: 'Other' }
     ];
 
-    const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
+    const onSubmit = (data: PersonalInfoFormData) => {
+        console.log('Form Data:', data);
+        Alert.alert('Success', 'Personal information saved successfully!');
+    };
 
     return(
-        <View className="flex-1 bg-white p-5">
+        <ScrollView className="flex-1 bg-white p-5">
 
             {/* upload image */}
             <View className="max-w-32 w-full mx-auto items-center justify-center relative">
@@ -105,26 +135,34 @@ const EditPersonalInformation = () => {
 
                 <View className="mb-5">
                     <Input 
+                        name="firstName"
+                        control={control}
                         label="First Name"
                         placeholder="Enter First Name"
                     />
                     <Input 
+                        name="lastName"
+                        control={control}
                         label="Last Name"
                         placeholder="Enter Last Name"
                         containerClassName="mt-5"
                     />
                     <Input
+                        name="phone"
+                        control={control}
                         label="Phone"
                         autoCapitalize="none"
                         placeholder="+123-456-789"
+                        keyboardType="phone-pad"
                         containerClassName="mt-5"
                     />
                     <DateField
                         label="Date of Birth"
                         value={dateOfBirth}
-                        onChange={setDateOfBirth}
+                        onChange={(date) => setValue('dateOfBirth', date as Date, { shouldValidate: true })}
                         placeholder="DD/MM/YYYY"
                         maximumDate={new Date()}
+                        error={errors.dateOfBirth?.message}
                         className="mt-5"
                     />
                     <RadioButton
@@ -132,16 +170,16 @@ const EditPersonalInformation = () => {
                         label="Gender"
                         options={genderOptions}
                         value={gender}
-                        onChange={setGender}
+                        onChange={(value) => setValue('gender', value as 'male' | 'female' | 'other', { shouldValidate: true })}
                         direction="horizontal"
                         className="mt-5"
                     />
                 </View>
 
-                <Button>Save</Button>
+                <Button onPress={handleSubmit(onSubmit)}>Save</Button>
 
             </View>
-        </View>
+        </ScrollView>
     )
 }
 
