@@ -5,28 +5,49 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/form/Input";
 import PasswordInput from "@/components/form/password";
 import Checkbox from "@/components/form/checkbox";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/context/UserContext";
 
 const loginSchema = z.object({
     email: z.string().email("Enter a valid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     remember: z.boolean().optional(),
+    role: z.string().min(1, "Please select role"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
 
-    const { control, handleSubmit, formState: { isSubmitting } } = useForm<LoginFormValues>({
+    const { login } = useAuth();
+
+    const { control, handleSubmit, formState: { isSubmitting, errors } } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
-        defaultValues: { email: "", password: "", remember: false },
+        defaultValues: { email: "", password: "", role: "", remember: false,  },
     });
 
     const handleSignIn = (data: LoginFormValues) => {
         console.log("Form submitted:", data);
-        router.replace("/(tabs)");
+
+        // Example user data — replace this with API response later
+        const userData = {
+            id: "1",
+            name: "John Doe",
+            email: data.email,
+            role: data.role.toLowerCase() as "patient" | "doctor",
+        };
+
+        // Save to context
+        login(userData);
+
+        // Redirect based on role
+        if (userData.role === "patient") {
+            router.replace("/(patient)");
+        } else {
+            router.replace("/(doctor)");
+        }
     };
 
     return (
@@ -64,6 +85,36 @@ export default function LoginScreen() {
 
             {/* Password */}
             <PasswordInput name="password" control={control} containerClassName="mt-5" />
+
+            {/* role */}
+            <Text className="text-sm text-black mb-2 mt-5">Role</Text>
+                <Controller
+                    control={control}
+                    name="role"
+                    render={({ field: { onChange, value } }) => (
+                        <View className="flex-row gap-2">
+                            {["Patient", "Doctor"].map((g) => (
+                                <Pressable
+                                    key={g}
+                                    onPress={() => onChange(g)}
+                                    className={`flex-1 py-4 px-4 rounded-xl border ${
+                                        value === g ? "bg-primary border-primary" : "border-primary"
+                                    }`}
+                                >
+                                    <Text className={`text-center ${value === g ? "text-white" : "text-primary"}`}>
+                                        {g}
+                                    </Text>
+                                </Pressable>
+                            ))}
+                        </View>
+                    )}
+                />
+
+            {errors.role && (
+                <Text className="text-red-500 text-xs mt-1">
+                    {errors.role.message}
+                </Text>
+            )}
 
             {/* Remember & Forgot */}
             <View className="mt-5 flex-row items-center justify-between">

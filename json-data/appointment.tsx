@@ -1,4 +1,4 @@
-import { appointmentProps } from "types/appointment"
+import { appointmentProps } from "@/types/appointment"
 
 export const UpcomingAppointmentData: appointmentProps[] = [
     {

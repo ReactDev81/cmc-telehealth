@@ -11,7 +11,7 @@ const AppointmentSummary = () => {
 
     const handleDone = () => {
         setModalVisible(false);
-        router.push('/(tabs)');
+        router.push('/(patient)');
     };
 
     return(

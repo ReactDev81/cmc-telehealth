@@ -68,7 +68,7 @@ export default function RegisterScreen() {
 
     const onSubmitStep2 = (data: z.infer<typeof step2Schema>) => {
         console.log("Final Registration Data:", data);
-        router.replace("/(tabs)");
+        router.replace("/(patient)");
     };
 
     // --- Password Strength ---

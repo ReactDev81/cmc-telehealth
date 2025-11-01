@@ -28,7 +28,7 @@ export default function Button({
     const outline = 'border-black';
     const disabledClasses = disabled ? ' opacity-50' : '';
     const containerClasses = `${baseClasses} ${variant === 'filled' ? filled : outline} ${className}${disabledClasses}`;
-    const textClasses = `${variant === 'filled' ? 'text-white' : 'text-black'} font-semibold`;
+    const textClasses = `${variant === 'filled' ? 'text-white' : 'text-black'} font-semibold text-sm`;
 
     return (
         <Pressable onPress={onPress} disabled={disabled} className={containerClasses} style={style}>

@@ -9,7 +9,7 @@ const Header = () => {
     const [location, setLocation] = useState('Ludhiana 141001');
 
     return (
-        <View className="bg-primary px-4 pt-4 pb-4">
+        <View className="bg-primary px-4 py-4">
 
             {/* Top Section */}
             <View className="flex-row items-center justify-between mb-4">

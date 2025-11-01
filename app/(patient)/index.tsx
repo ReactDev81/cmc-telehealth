@@ -1,7 +1,7 @@
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Header from '../../components/common/header';
+import Header from '@/components/home/header';
 import ConsultationTypeCard from '../../components/home/consulation-type-card';
 import TitleWithLink from '../../components/home/title-with-link';
 import SpecialityCard from '../../components/home/speciality-card';
