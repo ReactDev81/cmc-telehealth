@@ -1,12 +1,11 @@
-import { Controller } from "react-hook-form";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useController } from "react-hook-form";
 import * as DocumentPicker from "expo-document-picker";
 
 type FileUploadFieldProps = {
     name: string;
     control: any;
     label?: string;
-    error?: string;
     className?: string;
 };
 
@@ -14,12 +13,18 @@ const FileUploadField = ({
     name,
     control,
     label,
-    error,
     className,
 }: FileUploadFieldProps) => {
 
-    // Function to handle picking a file
-    const handlePickFile = async (onChange: (file: any) => void) => {
+    const {
+        field: { value, onChange },
+        fieldState: { error },
+    } = useController({
+        name,
+        control,
+    });
+
+    const handlePickFile = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({ type: "*/*" });
 
@@ -32,25 +37,26 @@ const FileUploadField = ({
     };
 
     return (
-        <Controller
-            control={control}
-            name={name}
-            render={({ field: { value, onChange } }) => (
-                <View className={className}>
-
-                    {label && <Text className="mb-1 text-gray-700">{label}</Text>}
-
-                    <TouchableOpacity
-                        onPress={() => handlePickFile(onChange)}
-                        className="border border-gray-300 rounded-lg py-3 px-4"
-                    >
-                        <Text>{value?.name || "Choose File"}</Text>
-                    </TouchableOpacity>
-
-                    {error && <Text className="text-red-500 text-sm mt-1">{error}</Text>}
-                </View>
+        <View className={className}>
+            {label && (
+                <Text className="text-sm text-black mb-1.5">{label}</Text>
             )}
-        />
+
+            <TouchableOpacity
+                onPress={handlePickFile}
+                className={`border rounded-lg py-3 px-4 ${
+                    error ? "border-red-500" : "border-gray-300"
+                }`}
+            >
+                <Text>{value?.name || "Choose File"}</Text>
+            </TouchableOpacity>
+
+            {error && (
+                <Text className="text-xs text-red-600 mt-1">
+                    {error.message}
+                </Text>
+            )}
+        </View>
     );
 };
 

@@ -4,9 +4,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DoctorHomeHeader from "@/components/doctor/home/header";
 import { AppointementStatusBoxData } from "@/json-data/doctor/home";
 import AppointementStatusBox from "@/components/doctor/home/appointement-status-box";
-import TodayAppointment from "@/components/doctor/appointment/today-appointment";
+import TodayAppointmentCard from "@/components/doctor/appointment/today-appointment-card";
 import { TodayAppointmentData } from "@/json-data/doctor/appointment";
-import UpcomingAppointment from "@/components/doctor/appointment/upcoming-appointment";
+import UpcomingAppointmentCard from "@/components/doctor/appointment/upcoming-appointment-card";
 import { UpcomingAppointmentData } from "@/json-data/doctor/appointment";
 import Title from "@/components/ui/Title";
 import Button from "@/components/ui/Button";
@@ -51,13 +51,14 @@ const Home = () => {
                     />
                     {TodayAppointmentData.slice(0, 2).map((appointement) => {   
                         return(
-                            <TodayAppointment
-                                key={appointement.id}
-                                image={appointement.image}
-                                name={appointement.name}
-                                time={appointement.time}
-                                mode={appointement.mode} 
-                            />
+                            <View className="mt-5" key={appointement.id}>
+                                <TodayAppointmentCard
+                                    image={appointement.image}
+                                    name={appointement.name}
+                                    time={appointement.time}
+                                    mode={appointement.mode} 
+                                />
+                            </View>
                         )
                     })}
                 </View>
@@ -71,14 +72,15 @@ const Home = () => {
                     />
                     {UpcomingAppointmentData.slice(0, 2).map((appointement) => {   
                         return(
-                            <UpcomingAppointment
-                                key={appointement.id}
-                                image={appointement.image}
-                                name={appointement.name}
-                                time={appointement.time}
-                                date={appointement.date}
-                                mode={appointement.mode} 
-                            />
+                            <View className="mt-5" key={appointement.id}>
+                                <UpcomingAppointmentCard
+                                    image={appointement.image}
+                                    name={appointement.name}
+                                    time={appointement.time}
+                                    date={appointement.date}
+                                    mode={appointement.mode} 
+                                />
+                            </View>
                         )
                     })}
                 </View>

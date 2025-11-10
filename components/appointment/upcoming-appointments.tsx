@@ -56,7 +56,7 @@ const UpcomingAppointments = () => {
                             <TouchableOpacity 
                                 className="w-12 h-12 rounded-full items-center justify-center bg-primary-200"
                                 activeOpacity={1}
-                                onPress={() => router.push('/whereby')}
+                                onPress={() => router.push('/patient/whereby')}
                             >
                                 <Video size={20} color="#013220" />
                             </TouchableOpacity>

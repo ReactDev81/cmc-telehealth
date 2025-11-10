@@ -37,7 +37,7 @@ export default function PasswordInput({
                     onBlur={onBlur}
                     placeholder={placeholder}
                     secureTextEntry={!show}
-                    className="flex-1 px-4 py-4 text-sm leading-4"
+                    className="flex-1 px-4 py-4 text-sm text-black leading-4"
                 />
                 <Pressable onPress={() => setShow(!show)} className="px-3 py-3">
                     <Feather

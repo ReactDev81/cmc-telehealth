@@ -10,7 +10,7 @@ interface MenuItemProps {
     iconBgColor?: string
 }
 
-const MenuItem = ({ icon, title, description, onPress, showBorder = true, iconBgColor = 'bg-primary-100' }: MenuItemProps) => {
+const MenuItem = ({ icon, title, description, onPress, showBorder = true, iconBgColor = 'bg-primary-200' }: MenuItemProps) => {
     return (
         <TouchableOpacity
             onPress={onPress}

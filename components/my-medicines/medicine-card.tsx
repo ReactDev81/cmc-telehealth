@@ -20,7 +20,7 @@ const MedicineCard = ({ patient_symptoms, doctor_name, consulated_date } : Medic
                     </View>
                 </View>
                 <View>
-                    <Button onPress={() => router.push('/my-medicines/1')} className="[&]:py-3">View Detail</Button>
+                    <Button onPress={() => router.push('/patient/my-medicines/1')} className="[&]:py-3">View Detail</Button>
                 </View>
             </View>
         </View>

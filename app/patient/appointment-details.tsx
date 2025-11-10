@@ -17,7 +17,7 @@ const AppointementDetails = () => {
 
             <View className="items-center mb-6">
                 <Image
-                    source={require('../assets/images/doctors/jubbin-j-jacob.png')}
+                    source={require('../../assets/images/doctors/jubbin-j-jacob.png')}
                     className="w-full h-60"
                     resizeMode="cover"
                 />

@@ -150,7 +150,7 @@ const DoctorSchedule = () => {
             </View>
 
             {/* Book Appointment */}
-            <Button className='mt-8' onPress={() => router.push('/appointment-summary')}>Book Appointment (₹60.00)</Button>
+            <Button className='mt-8' onPress={() => router.push('/patient/appointment-summary')}>Book Appointment (₹60.00)</Button>
 
         </View>
     );

@@ -58,7 +58,7 @@ const DateField = ({
     return (
         <View className={`${className}`}>
 
-            {label && <Text className="text-sm text-black mb-2.5">{label}</Text>}
+            {label && <Text className="text-sm text-black mb-1.5">{label}</Text>}
 
             <TouchableOpacity
                 className={`flex-row items-center justify-between bg-white border rounded-lg px-4 py-3 ${

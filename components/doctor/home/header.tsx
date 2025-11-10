@@ -32,7 +32,10 @@ const DoctorHomeHeader = () => {
                 </View>
 
                 <View className="flex-row items-center gap-3">
-                    <TouchableOpacity onPress={() => router.push('/notifications')} className="relative p-2 rounded-full">
+                    <TouchableOpacity
+                        onPress={() => router.push("/notifications")} 
+                        className="relative p-2 rounded-full"
+                     >
                         <Bell size={24} color="#fff" />
                         <View className="absolute top-1.5 right-1.5 w-4 h-4 bg-white rounded-full items-center justify-center">
                             <Text className="text-primary text-xs font-bold">2</Text>

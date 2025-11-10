@@ -38,14 +38,14 @@ const Home = () => {
                     <View className='flex flex-row gap-x-2.5'>
                         <View className='flex-1'>
                             <ConsultationTypeCard
-                                link="/find-doctor" 
+                                link="/patient/find-doctor" 
                                 image={require('../../assets/images/video-consultation.png')}
                                 text="Instant Video Consultation"
                             />
                         </View>
                         <View className='flex-1'>
                             <ConsultationTypeCard
-                                link="/find-doctor" 
+                                link="/patient/find-doctor" 
                                 image={require('../../assets/images/clinic-appointment.png')}
                                 text="Book In-Clinic Appointment"
                             />
@@ -56,7 +56,7 @@ const Home = () => {
                     <View className='mt-7'>
                         <TitleWithLink 
                             title_text="Find Doctor by Speciality / Symptoms"
-                            link="/find-doctor"
+                            link="/patient/find-doctor"
                             link_text="See All"
                         />
                         <ScrollView 
@@ -96,7 +96,7 @@ const Home = () => {
                                     <TouchableOpacity
                                         key={availableDoctors.id}
                                         className="flex-1 px-1"
-                                        onPress={() => router.push(`/doctor/${availableDoctors.id}`)}
+                                        onPress={() => router.push(`/patient/doctor/${availableDoctors.id}`)}
                                     >
                                         <AvailableDoctors
                                             image={availableDoctors.image}
@@ -163,7 +163,7 @@ const Home = () => {
                                 )
                             })}
                         </ScrollView>
-                        <Button className='mt-5' onPress={() => router.push('/testimonial')}>View All Testimonial</Button>
+                        <Button className='mt-5' onPress={() => router.push('/patient/testimonial')}>View All Testimonial</Button>
                     </View>
 
                 </View>

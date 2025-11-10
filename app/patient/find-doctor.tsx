@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { View, FlatList } from "react-native"
-import FindDoctorSearchBar from "../components/find-doctor/find-doctor-search-bar"
-import { SpecialityByDoctorProps, SymptomsByDoctorProps } from "../types/find-doctor"
-import SpecialityCard from "../components/home/speciality-card"
-import { SpecialityByDcotorsData, SymptomsByDcotorsData } from "../json-data/find-doctor"
+import FindDoctorSearchBar from "../../components/find-doctor/find-doctor-search-bar"
+import { SpecialityByDoctorProps, SymptomsByDoctorProps } from "../../types/find-doctor"
+import SpecialityCard from "../../components/home/speciality-card"
+import { SpecialityByDcotorsData, SymptomsByDcotorsData } from "../../json-data/find-doctor"
 
 const FindDoctor = () => {
 
@@ -65,6 +65,7 @@ const FindDoctor = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingTop: 20 }}
             />
+            
         </View>
     )
 }

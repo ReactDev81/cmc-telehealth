@@ -2,8 +2,8 @@ import { useState } from "react";
 import { router } from "expo-router";
 import { View, Text, Image, ScrollView, Modal } from "react-native"
 import { Stethoscope } from 'lucide-react-native';
-import Button from "../components/ui/Button";
-import AppointmentConfirmation from "../components/appointment-summary/appointment-confirmation";
+import Button from "../../components/ui/Button";
+import AppointmentConfirmation from "../../components/appointment-summary/appointment-confirmation";
 
 const AppointmentSummary = () => {
 
@@ -19,7 +19,7 @@ const AppointmentSummary = () => {
             
             <View className="items-center mb-6">
                 <Image
-                    source={require('../assets/images/doctors/jubbin-j-jacob.png')}
+                    source={require('../../assets/images/doctors/jubbin-j-jacob.png')}
                     className="w-full h-60"
                     resizeMode="cover"
                 />
@@ -30,7 +30,7 @@ const AppointmentSummary = () => {
                 {/* name & speciality */}
                 <View className="pb-5 mb-5 border-b border-[#EDEDED]">
                     <View className="flex-row gap-x-1">
-                        <Stethoscope size={15} color="#2D4095" />
+                        <Stethoscope size={15} color="#013220" />
                         <Text className="text-primary text-sm">Endocrinology</Text>
                     </View>
                     <Text className="text-lg font-medium text-black mt-1">Dr. Jubbin J Jacob</Text> 
@@ -116,7 +116,7 @@ const AppointmentSummary = () => {
                 {/* book appointement with razorpay */}
                 <Button onPress={() => setModalVisible(true)}>Book Appointment (₹60.00)</Button>
                 <Button 
-                  onPress={() => router.push('/razorpay')}
+                  onPress={() => router.push('/patient/razorpay')}
                   variant="outline"
                   className="mt-4"
                 >

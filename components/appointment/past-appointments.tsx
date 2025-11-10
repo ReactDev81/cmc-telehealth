@@ -9,10 +9,10 @@ const PastAppointment = () => {
 
     const renderDoctorItem = ({ item }: { item: appointmentProps }) => {
 
-        const { status, link, image, name, speciality, date, time } = item;
+        const { status, image, name, speciality, date, time } = item;
 
         return (
-            <Link href="/appointment-details">
+            <Link href="/patient/appointment-details">
                 <View className="border border-black-300 rounded-xl p-4 flex-row gap-x-4">
                     <View className="w-24">
                         <Image source={image} className="w-full h-24 rounded-xl" />

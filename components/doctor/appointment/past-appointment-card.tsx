@@ -2,15 +2,19 @@ import { View, Text, Image} from "react-native"
 import { appointmentProps } from "@/types/doctor/appointment"
 import { Calendar, Clock, Hospital, Video } from "lucide-react-native"
 
-const UpcomingAppointment = ({ image, name, time, date, mode } : appointmentProps ) => {
+const PastAppointmentCard = ({ image, name, time, date, mode, status } : appointmentProps ) => {
     return(
-        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4 mt-5">
+        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
             <View className="w-24">
                 <Image source={image} className="w-full h-24 rounded-xl" />
             </View>
             <View className="flex-1">
-                <Text className={`text-xs text-info bg-info-400 capitalize font-medium w-fit p-2 rounded-md absolute right-0`}>
-                    Scheduled
+                <Text 
+                    className={`text-xs capitalize font-medium w-fit p-2 rounded-md absolute right-0
+                        ${status === 'completed' ? 'text-success bg-success-400' : 'text-danger bg-danger-400'}
+                        `}
+                >
+                    {status}
                 </Text>
                 <Text className="text-sm font-medium text-black mt-3">{name}</Text>
                 <View className="flex-row items-center gap-x-3 mt-1">
@@ -32,7 +36,7 @@ const UpcomingAppointment = ({ image, name, time, date, mode } : appointmentProp
                                 <Hospital size={14} className="text-black-400" />
                         }
                     </View>
-                    <Text>
+                    <Text className="text-sm text-black-400">
                         {mode === 'video' ? 'Video consultation' : 'Clinic Visit'}
                     </Text>
                 </View>
@@ -41,4 +45,4 @@ const UpcomingAppointment = ({ image, name, time, date, mode } : appointmentProp
     )
 }
 
-export default UpcomingAppointment
+export default PastAppointmentCard

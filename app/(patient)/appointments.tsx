@@ -24,7 +24,6 @@ const Appointments = () => {
             <Tab 
                 tabs={appointmentTabs}
                 defaultTab='upcoming'
-                onTabChange={(tab) => console.log('Active tab:', tab)}
             />
         </View>
     );

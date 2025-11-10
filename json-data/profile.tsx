@@ -37,7 +37,7 @@ export const menuSections: MenuSection[] = [
                 icon: <Stethoscope size={20} color="#374151" />,
                 title: 'Write A Review',
                 description: 'Review to the Doctor',
-                route: '/write-a-review'
+                route: '/patient/write-a-review'
             },
         ]
     },

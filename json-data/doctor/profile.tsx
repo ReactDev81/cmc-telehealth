@@ -1,0 +1,95 @@
+import { MenuSection } from '@/types/profile'
+import { 
+    BriefcaseBusiness,
+    GraduationCap,
+    FileText,
+    ChartColumn,
+    Info, 
+    HelpCircle, 
+    Headphones, 
+    ShieldCheck,
+    Handshake,
+    UserStar,
+} from 'lucide-react-native'
+
+export const DoctorMenuSections: MenuSection[] = [
+    {
+        items: [
+            {
+                id: 'working-experience',
+                icon: <BriefcaseBusiness size={20} color="#374151" />,
+                title: 'Working Experience',
+                description: 'Add details about your past and current job roles, responsibilities, and achievements.',
+                route: '/doctor/profile/working-experience'
+            },
+            {
+                id: 'education-history',
+                icon: <GraduationCap size={20} color="#374151" />,
+                title: 'Education History',
+                description: 'List your academic background, including degrees, institutions, and years of study.',
+                route: '/doctor/profile/education-history'
+            },
+            {
+                id: 'certifications',
+                icon: <FileText size={20} color="#374151" />,
+                title: 'Certificates',
+                description: 'Upload relevant certifications',
+                route: '/doctor/profile/certificates'
+            },
+            {
+                id: 'usage-analytics',
+                icon: <ChartColumn size={20} color="#374151" />,
+                title: 'Usage Analytics',
+                description: 'View analytics which based on your appointment',
+                route: '/doctor/profile/usage-analytics'
+            },
+        ]
+    },
+    {
+        title: 'Others',
+        items: [
+            {
+                id: 'about',
+                icon: <Info size={20} color="#374151" />,
+                title: 'About CMC',
+                description: 'Learn more about the company',
+                route: '/profile/about-us'
+            },
+            {
+                id: 'faq',
+                icon: <HelpCircle size={20} color="#374151" />,
+                title: 'Frequently Asked Questions',
+                description: "Check Faq's",
+                route: '/profile/faq'
+            },
+            {
+                id: 'need_help',
+                icon: <Headphones size={20} color="#374151" />,
+                title: 'Need Help',
+                description: 'Access Support',
+                route: '/profile/need-help'
+            },
+            {
+                id: 'rate_us',
+                icon: <UserStar size={20} color="#374151" />,
+                title: 'Rate Us',
+                description: 'Share your feedback to help us',
+                route: '/profile/rate-us'
+            },
+            {
+                id: 'term_condition',
+                icon: <Handshake size={20} color="#374151" />,
+                title: 'Terms & Conditions',
+                description: 'Understand the rules and guidelines',
+                route: '/profile/term-condition'
+            },
+            {
+                id: 'privacy',
+                icon: <ShieldCheck size={20} color="#374151" />,
+                title: 'Privacy Policy',
+                description: 'Review how your data is collected',
+                route: '/profile/privacy-policy'
+            },
+        ]
+    }
+]

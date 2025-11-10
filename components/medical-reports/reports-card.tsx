@@ -9,7 +9,7 @@ type Props = ReportCardProps & {
 
 const ReportsCard = ({ report_name, report_date, doctor_name, report_type, handleReport}: Props) => {
     return(
-        <View className="border border-[#EDEDED] rounded-xl p-4">
+        <View className="border border-black-300 rounded-xl p-4">
 
             <View className="flex-row item-center justify-between">
                 <Text className="text-base font-medium text-black">{report_name}</Text>
@@ -19,13 +19,13 @@ const ReportsCard = ({ report_name, report_date, doctor_name, report_type, handl
                 </View>
             </View>
 
-            <View className="flex-row items-center justify-between mt-3">
+            <View className="flex-row items-center justify-between mt-1">
                 <View>
                     <Text className="text-sm text-black">{doctor_name}</Text>
                     <Text className="text-sm text-black mt-1">Type: {report_type}</Text>
                 </View>
                 <View>
-                    <Button className="[&]:py-3" onPress={handleReport}>View Report</Button>
+                    <Button className="[&]:py-3 mt-1" onPress={handleReport}>View Report</Button>
                 </View>
             </View>
 

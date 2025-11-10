@@ -1,4 +1,4 @@
-import { AvailableDoctorsProps } from "types/home"
+import { AvailableDoctorsProps } from "@/types/home"
 
 const AllDoctorsData: AvailableDoctorsProps[] = [
     {

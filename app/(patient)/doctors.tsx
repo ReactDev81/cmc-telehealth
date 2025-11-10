@@ -11,7 +11,7 @@ const Doctors = () => {
         return (
             <TouchableOpacity
                 className="flex-1 px-1"
-                onPress={() => router.push(`/doctor/${item.id}`)}
+                onPress={() => router.push(`/patient/doctor/${item.id}`)}
             >
             {/* <View className='flex-1 px-1'> */}
                 <AvailableDoctors

@@ -36,7 +36,7 @@ const WriteAReview = () => {
         mode: 'onSubmit',
     });
 
-    const { handleSubmit, setValue, watch, formState: { errors }, reset } = methods;
+    const { handleSubmit, control, setValue, watch, formState: { errors }, reset } = methods;
 
     const rating = watch('rating');
     const recommend = watch('recommend');
@@ -70,7 +70,7 @@ const WriteAReview = () => {
             <View className="flex-1 bg-white p-5">
                 <View className="max-w-52 w-full mx-auto">
                     <Image 
-                        source={require('../assets/images/doctor.png')}
+                        source={require('../../assets/images/doctor.png')}
                         className="w-24 h-24 mx-auto"
                     />
                     <Text className="text-base font-medium text-center mt-3">
@@ -115,6 +115,7 @@ const WriteAReview = () => {
                         name="review"
                         label="Write Your Review"
                         placeholder="Share your experience with the doctor..."
+                        control={control}
                     />
 
                     <RadioButton

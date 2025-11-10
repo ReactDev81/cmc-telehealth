@@ -25,7 +25,7 @@ const Input = ({
     multiline = false,
 }: InputProps) => {
 
-    const { field: { onChange, onBlur, value },fieldState: { error }} = useController({
+    const { field: { onChange, onBlur, value }, fieldState: { error }} = useController({
         name,
         control,
     });
@@ -33,7 +33,7 @@ const Input = ({
     return (
         <View className={containerClassName}>
 
-            {label && <Text className="text-sm font-medium mb-1">{label}</Text>}
+            {label && <Text className="text-sm text-black mb-1.5">{label}</Text>}
 
             <TextInput
                 className={`border rounded-lg px-5 py-4 text-sm leading-4  ${

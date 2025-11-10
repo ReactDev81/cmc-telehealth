@@ -55,7 +55,7 @@ export default function RootLayout() {
                     <Stack.Screen name="(doctor)" options={{ headerShown: false }} />
 
                     <Stack.Screen 
-                        name="testimonial" 
+                        name="patient/testimonial" 
                         options={{ headerTitle: 'Testimonial' }}  
                     />
 
@@ -70,12 +70,12 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="find-doctor" 
+                        name="patient/find-doctor" 
                         options={{ headerTitle: 'Find Doctor' }}  
                     />
 
                     <Stack.Screen 
-                        name="doctor/[id]" 
+                        name="patient/doctor/[id]" 
                         options={{
                             headerShown: true,
                             title: "Doctor Profile",
@@ -83,7 +83,7 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="my-medicines/[id]" 
+                        name="patient/my-medicines/[id]" 
                         options={{
                             headerShown: true,
                             title: "Medicines Detail",
@@ -91,7 +91,7 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="appointment-summary" 
+                        name="patient/appointment-summary" 
                         options={{
                             headerShown: true,
                             title: "Appointment Summary",
@@ -99,7 +99,7 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="appointment-details" 
+                        name="patient/appointment-details" 
                         options={{
                             headerShown: true,
                             title: "Appointment Details",
@@ -107,12 +107,20 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="whereby" 
+                        name="patient/whereby" 
                         options={{
                             headerShown: true,
                             title: "WhereBy",
                         }}
-                    />              
+                    />
+                    
+                    {/* doctor screens */}
+                    <Stack.Screen 
+                        name="doctor/patient-details" 
+                        options={{ 
+                            headerTitle: 'Patient Details',
+                        }} 
+                    />
 
                     {/* Profile Pages - WITH Headers */}
                     <Stack.Screen 
@@ -137,7 +145,7 @@ export default function RootLayout() {
                     />
         
                     <Stack.Screen 
-                        name="write-a-review" 
+                        name="patient/write-a-review" 
                         options={{ 
                             headerTitle: 'Write A Review',
                         }} 
@@ -224,6 +232,42 @@ export default function RootLayout() {
                         name="profile/privacy-policy" 
                         options={{ 
                             headerTitle: 'Privacy Policy',
+                        }} 
+                    />
+
+                    {/* Doctor - Profile Pages */}
+                    <Stack.Screen 
+                        name="doctor/profile/edit-personal-information" 
+                        options={{ 
+                            headerTitle: 'Edit Personal Information',
+                        }} 
+                    />
+
+                    <Stack.Screen 
+                        name="doctor/profile/working-experience" 
+                        options={{ 
+                            headerTitle: 'Working Experience',
+                        }} 
+                    />
+
+                    <Stack.Screen 
+                        name="doctor/profile/education-history" 
+                        options={{ 
+                            headerTitle: 'Education History',
+                        }} 
+                    />
+
+                    <Stack.Screen 
+                        name="doctor/profile/certificates" 
+                        options={{ 
+                            headerTitle: 'Certificates',
+                        }} 
+                    />
+
+                    <Stack.Screen 
+                        name="doctor/profile/usage-analytics" 
+                        options={{ 
+                            headerTitle: 'Usage Analytics',
                         }} 
                     />
 

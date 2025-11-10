@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import AllDoctorsData from "../../json-data/doctors";
+import AllDoctorsData from "../../../json-data/doctors";
 import { Stethoscope, BriefcaseBusiness, Star, Hospital, Video } from 'lucide-react-native';
-import DoctorSchedule from "../../components/doctor-profile/doctor-schedule";
+import DoctorSchedule from "../../../components/doctor-profile/doctor-schedule";
 
 const DoctorDetail = () => {
 
@@ -37,7 +37,7 @@ const DoctorDetail = () => {
                 {/* name & speciality */}
                 <View>
                     <View className="flex-row gap-x-1">
-                        <Stethoscope size={15} color="#2D4095" />
+                        <Stethoscope size={15} color="#013220" />
                         <Text className="text-primary text-sm">{doctor.speciality}</Text>
                     </View>
                     <Text className="text-lg font-medium text-black mt-1">{doctor.name}</Text> 
@@ -46,8 +46,8 @@ const DoctorDetail = () => {
                 {/* work experience & review */}
                 <View className="flex-row items-center justify-between gap-x-4 mt-5">
                     <View className="flex-1 flex-row items-center gap-x-2.5 border border-gray rounded-lg p-3">
-                        <View className="w-10 h-10 items-center justify-center rounded-full bg-primary-100">
-                            <BriefcaseBusiness size={18} color="#2D4095" />
+                        <View className="w-10 h-10 items-center justify-center rounded-full bg-primary-200">
+                            <BriefcaseBusiness size={18} color="#013220" />
                         </View>
                         <View className="flex-1">
                             <Text className="text-base font-medium text-black">2 years</Text>
@@ -55,8 +55,8 @@ const DoctorDetail = () => {
                         </View>
                     </View>
                     <View className="flex-1 flex-row items-center gap-x-2.5 border border-gray rounded-lg p-3">
-                        <View className="w-10 h-10 items-center justify-center rounded-full bg-primary-100">
-                            <Star size={18} color="#2D4095" />
+                        <View className="w-10 h-10 items-center justify-center rounded-full bg-primary-200">
+                            <Star size={18} color="#013220" />
                         </View>
                         <View className="flex-1 ">
                             <Text className="text-base font-medium text-black">4.8</Text>
@@ -115,7 +115,7 @@ const DoctorDetail = () => {
                             activeOpacity={1}
                             className={`flex-1 items-center justify-center border rounded-xl p-4 ${appointementType === 'online' ? 'border-primary' : 'border-gray'}`}
                         >
-                            <Video color={appointementType === 'online' ? '#2D4095' : '#4D4D4D' } />
+                            <Video color={appointementType === 'online' ? '#013220' : '#4D4D4D' } />
                             <Text className={`text-sm font-medium text-center mt-2 ${appointementType === 'online' ? 'text-primary' : 'text-black-400'}`}>Online Video Appointment</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -123,7 +123,7 @@ const DoctorDetail = () => {
                             activeOpacity={1}
                             className={`flex-1 items-center justify-center border rounded-xl p-4 ${appointementType === 'clinic' ? 'border-primary' : 'border-gray'}`}
                         >
-                            <Hospital color={appointementType === 'clinic' ? '#2D4095' : '#4D4D4D' } />
+                            <Hospital color={appointementType === 'clinic' ? '#013220' : '#4D4D4D' } />
                             <Text className={`text-sm font-medium text-center mt-2 ${appointementType === 'clinic' ? 'text-primary' : 'text-black-400'}`}>Book In-Clinic Appointment</Text>
                         </TouchableOpacity>
                     </View>
