@@ -13,11 +13,12 @@ export interface SpecialityProps {
 export interface AvailableDoctorsProps {
     id?: number;
     image: ImageSourcePropType;
-    // link: Href;
+    consultation_type: string,
+    consultation_fee: string,
     name: string;
     speciality: string;
     rating: number;
-    reviews_count: string;
+    expercience: string;
 }
 
 // Articles

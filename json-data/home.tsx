@@ -1,7 +1,7 @@
-import { SpecialityProps } from 'types/home';
-import { AvailableDoctorsProps } from 'types/home';
-import { ArticleProps } from 'types/home';
-import { TestimonialProps } from 'types/home';
+import { SpecialityProps } from '@/types/home';
+import { AvailableDoctorsProps } from '@/types/home';
+import { ArticleProps } from '@/types/home';
+import { TestimonialProps } from '@/types/home';
 
 export const SpecialityData: SpecialityProps[] = [
     {
@@ -43,7 +43,9 @@ export const AvailableDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr. Jubbin J Jacob',
         speciality: 'Endocrinology',
         rating: 4.6,
-        reviews_count: '160 Patient' 
+        consultation_type: 'video',
+        consultation_fee: '2500',
+        expercience: '(5 Years Exp)'
     },
     {
         id: 2,
@@ -51,7 +53,9 @@ export const AvailableDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr. M Joseph John',
         speciality: 'Clinical-haematology',
         rating: 4.5,
-        reviews_count: '180 Patient' 
+        consultation_type: 'video',
+        consultation_fee: '500', 
+        expercience: '(2 Years Exp)'
     },
     {
         id: 3,
@@ -59,7 +63,9 @@ export const AvailableDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr Rajeshwar ',
         speciality: 'Neurology',
         rating: 4.8,
-        reviews_count: '240 Patient' 
+        consultation_type: 'clinic',
+        consultation_fee: '800',
+        expercience: '(3 Years Exp)'
     }
 ]
 

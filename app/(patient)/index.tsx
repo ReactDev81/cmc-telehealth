@@ -1,4 +1,4 @@
-import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '@/components/home/header';
@@ -88,24 +88,21 @@ const Home = () => {
                         <ScrollView 
                             horizontal
                             showsHorizontalScrollIndicator={false}
-                            className='mt-4'
                             contentContainerStyle={{ gap: 15, paddingRight: 0 }}
                         >
                             {AvailableDoctorsData.map((availableDoctors) => {
                                 return(
-                                    <TouchableOpacity
+                                    <AvailableDoctors
                                         key={availableDoctors.id}
-                                        className="flex-1 px-1"
-                                        onPress={() => router.push(`/patient/doctor/${availableDoctors.id}`)}
-                                    >
-                                        <AvailableDoctors
-                                            image={availableDoctors.image}
-                                            name={availableDoctors.name}
-                                            speciality={availableDoctors.speciality}
-                                            rating={availableDoctors.rating}
-                                            reviews_count={availableDoctors.reviews_count}
-                                        />
-                                    </TouchableOpacity>
+                                        id={availableDoctors.id}
+                                        image={availableDoctors.image}
+                                        name={availableDoctors.name}
+                                        speciality={availableDoctors.speciality}
+                                        rating={availableDoctors.rating}
+                                        consultation_type={availableDoctors.consultation_type}
+                                        consultation_fee={availableDoctors.consultation_fee}
+                                        expercience={availableDoctors.expercience}
+                                    />
                                 )
                             })}
                         </ScrollView>

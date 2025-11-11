@@ -23,7 +23,7 @@ export default function Button({
     icon
 }: ButtonProps) {
 
-    const baseClasses = 'py-3.5 px-4 rounded-lg flex-row gap-x-2.5 items-center justify-center border';
+    const baseClasses = 'py-3.5 px-4 rounded-lg flex-row gap-x-2 items-center justify-center border';
     const filled = 'bg-primary border-primary';
     const outline = 'border-black';
     const disabledClasses = disabled ? ' opacity-50' : '';

@@ -7,7 +7,9 @@ const AllDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr. Jubbin J Jacob',
         speciality: 'Endocrinology',
         rating: 4.6,
-        reviews_count: '160 Patient' 
+        consultation_type: 'video',
+        consultation_fee: '1500',
+        expercience: '(5 Years Exp)'
     },
     {
         id: 2,
@@ -15,7 +17,9 @@ const AllDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr. M Joseph John',
         speciality: 'Clinical-haematology',
         rating: 4.5,
-        reviews_count: '180 Patient' 
+        consultation_type: 'video',
+        consultation_fee: '500', 
+        expercience: '(2 Years Exp)'
     },
     {
         id: 3,
@@ -23,7 +27,9 @@ const AllDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr Rajeshwar',
         speciality: 'Neurology',
         rating: 4.8,
-        reviews_count: '240 Patient' 
+        consultation_type: 'clinic',
+        consultation_fee: '800',
+        expercience: '(3 Years Exp)'
     },
     {
         id: 4,
@@ -31,7 +37,9 @@ const AllDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr. Nitin Batra',
         speciality: 'Ophthalmology',
         rating: 4.8,
-        reviews_count: '240 Patient' 
+        consultation_type: 'video',
+        consultation_fee: '1200',
+        expercience: '(5 Years Exp)'
     },
     {
         id: 5,
@@ -39,7 +47,9 @@ const AllDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr. Rupali Chopra',
         speciality: 'Ophthalmology',
         rating: 4.8,
-        reviews_count: '240 Patient' 
+        consultation_type: 'clinic',
+        consultation_fee: '900',
+        expercience: '(4 Years Exp)'
     },
     {
         id: 6,
@@ -47,7 +57,9 @@ const AllDoctorsData: AvailableDoctorsProps[] = [
         name: 'Dr Vineeth Jaison',
         speciality: 'Neurology',
         rating: 4.8,
-        reviews_count: '240 Patient' 
+        consultation_type: 'video',
+        consultation_fee: '2500',
+        expercience: '(8 Years Exp)'
     }
 ]
 
