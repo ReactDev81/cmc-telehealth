@@ -122,7 +122,14 @@ export default function RootLayout() {
                         }} 
                     />
 
-                    {/* Profile Pages - WITH Headers */}
+                    <Stack.Screen 
+                        name="doctor/appointment-detail" 
+                        options={{ 
+                            headerTitle: 'Appointment Detail',
+                        }} 
+                    />
+
+                    {/* Patient Pages - Profile Pages */}
                     <Stack.Screen 
                         name="profile/edit-personal-information" 
                         options={{ 

@@ -1,4 +1,5 @@
-import { ScrollView, View } from "react-native"
+import { ScrollView } from "react-native"
+import { Link } from "expo-router"
 import PastAppointmentCard from "./past-appointment-card"
 import { PastAppointmentData } from "@/json-data/doctor/appointment"
 
@@ -7,7 +8,7 @@ const AllPastAppointment = () => {
         <ScrollView>
             {PastAppointmentData.map((appointement) => {   
                 return(
-                    <View className="mb-5" key={appointement.id}>
+                    <Link href='/doctor/appointment-detail' className="mb-5" key={appointement.id}>
                         <PastAppointmentCard
                             image={appointement.image}
                             name={appointement.name}
@@ -16,7 +17,7 @@ const AllPastAppointment = () => {
                             mode={appointement.mode}
                             status={appointement.status} 
                         />
-                    </View>
+                    </Link>
                 )
             })}
         </ScrollView>

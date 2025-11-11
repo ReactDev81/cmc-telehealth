@@ -2,9 +2,10 @@ import { View, Text, Image} from "react-native"
 import { appointmentProps } from "@/types/doctor/appointment"
 import { Calendar, Clock, Hospital, Video } from "lucide-react-native"
 
+
 const PastAppointmentCard = ({ image, name, time, date, mode, status } : appointmentProps ) => {
     return(
-        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
+        <View  className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
             <View className="w-24">
                 <Image source={image} className="w-full h-24 rounded-xl" />
             </View>
