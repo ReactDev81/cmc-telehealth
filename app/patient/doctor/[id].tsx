@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import AllDoctorsData from "../../../json-data/doctors";
+import AllDoctorsData from "../../../json-data/patient/doctors";
 import { Stethoscope, BriefcaseBusiness, Star, Hospital, Video } from 'lucide-react-native';
-import DoctorSchedule from "../../../components/doctor-profile/doctor-schedule";
+import DoctorSchedule from "../../../components/patient/doctor-profile/doctor-schedule";
 
 const DoctorDetail = () => {
 
@@ -32,7 +32,7 @@ const DoctorDetail = () => {
                 />
             </View>
 
-            <View className="px-5 pt-7 pb-12">
+            <View className="px-5 pt-7 pb-20">
 
                 {/* name & speciality */}
                 <View>

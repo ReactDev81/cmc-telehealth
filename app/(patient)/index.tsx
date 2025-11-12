@@ -1,21 +1,21 @@
 import { View, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Header from '@/components/home/header';
-import ConsultationTypeCard from '../../components/home/consulation-type-card';
-import TitleWithLink from '../../components/home/title-with-link';
-import SpecialityCard from '../../components/home/speciality-card';
-import AvailableDoctors from '../../components/home/available-doctors';
+import Header from '@/components/patient/home/header';
+import ConsultationTypeCard from '@/components/patient/home/consulation-type-card';
+import TitleWithLink from '../../components/ui/title-with-link';
+import SpecialityCard from '@/components/patient/home/speciality-card';
+import AvailableDoctors from '@/components/patient/home/available-doctors';
 import Title from '../../components/ui/Title';
-import Article from '../../components/home/article';
-import Testimonial from '../../components/home/testimonial';
+import Article from '@/components/patient/home/article';
+import Testimonial from '@/components/patient/home/testimonial';
 import Button from '../../components/ui/Button';
 
 // json data
-import { SpecialityData } from '@/json-data/home';
-import { AvailableDoctorsData } from '@/json-data/home';
-import { ArticleData } from '@/json-data/home';
-import { TestimonialData } from '@/json-data/home';
+import { SpecialityData } from '@/json-data/patient/home';
+import { AvailableDoctorsData } from '@/json-data/patient/home';
+import { ArticleData } from '@/json-data/patient/home';
+import { TestimonialData } from '@/json-data/patient/home';
 
 
 const Home = () => {

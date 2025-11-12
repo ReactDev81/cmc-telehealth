@@ -60,16 +60,6 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="notifications/index" 
-                        options={{ headerTitle: 'Notifications' }}  
-                    />
-
-                    <Stack.Screen 
-                        name="notifications/notification-details" 
-                        options={{ headerTitle: 'Notifications' }}  
-                    />
-
-                    <Stack.Screen 
                         name="patient/find-doctor" 
                         options={{ headerTitle: 'Find Doctor' }}  
                     />
@@ -113,6 +103,17 @@ export default function RootLayout() {
                             title: "WhereBy",
                         }}
                     />
+
+                    {/* common screens for patient and doctor */}
+                    <Stack.Screen 
+                        name="common-screens/notifications/index" 
+                        options={{ headerTitle: 'Notifications' }}  
+                    />
+
+                    <Stack.Screen 
+                        name="common-screens/notifications/notification-details" 
+                        options={{ headerTitle: 'Notifications' }}  
+                    />
                     
                     {/* doctor screens */}
                     <Stack.Screen 
@@ -131,112 +132,114 @@ export default function RootLayout() {
 
                     {/* Patient Pages - Profile Pages */}
                     <Stack.Screen 
-                        name="profile/edit-personal-information" 
+                        name="patient/profile/edit-personal-information" 
                         options={{ 
                             headerTitle: 'Edit Personal Information',
                         }} 
                     />
         
                     <Stack.Screen 
-                        name="profile/medical-reports/index" 
+                        name="patient/profile/medical-reports/index" 
                         options={{ 
                             headerTitle: 'Medical Reports',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/medical-reports/upload-your-report" 
+                        name="patient/profile/medical-reports/upload-your-report" 
                         options={{ 
                             headerTitle: 'Upload Your Report',
                         }} 
                     />
         
                     <Stack.Screen 
-                        name="patient/write-a-review" 
+                        name="patient/profile/write-a-review" 
                         options={{ 
                             headerTitle: 'Write A Review',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/manage-address/index" 
+                        name="patient/profile/manage-address/index" 
                         options={{ 
                             headerTitle: 'Manage Address',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/manage-address/add-current-location" 
+                        name="patient/profile/manage-address/add-current-location" 
                         options={{ 
                             headerTitle: 'Add Current Location',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/manage-address/choose-different-location" 
+                        name="patient/profile/manage-address/choose-different-location" 
                         options={{ 
                             headerTitle: 'Choose Different Location',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/payment-method" 
+                        name="patient/profile/payment-method" 
                         options={{ 
                             headerTitle: 'Payment Method',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/transactions/index" 
+                        name="patient/profile/transactions/index" 
                         options={{ 
                             headerTitle: 'Transactions',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/transactions/[id]" 
+                        name="patient/profile/transactions/[id]" 
                         options={{ 
                             headerTitle: 'Transaction Detail',
                         }} 
                     />
 
-                    <Stack.Screen 
-                        name="profile/faq" 
-                        options={{ 
-                            headerTitle: 'Frequently Asked Questions',
-                        }} 
-                    />
+                    {/* common profile screens for patient and doctor */}
 
                     <Stack.Screen 
-                        name="profile/need-help" 
-                        options={{ 
-                            headerTitle: 'Contact Us',
-                        }} 
-                    />
-
-                    <Stack.Screen 
-                        name="profile/rate-us" 
-                        options={{ 
-                            headerTitle: 'Rate Us',
-                        }} 
-                    />      
-
-                    <Stack.Screen 
-                        name="profile/about-us" 
+                        name="common-screens/profile/about-us" 
                         options={{ 
                             headerTitle: 'About Us',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/term-condition" 
+                        name="common-screens/profile/faq" 
+                        options={{ 
+                            headerTitle: 'Frequently Asked Questions',
+                        }} 
+                    />
+
+                    <Stack.Screen 
+                        name="common-screens/profile/need-help" 
+                        options={{ 
+                            headerTitle: 'Contact Us',
+                        }} 
+                    />
+
+                    <Stack.Screen 
+                        name="common-screens/profile/rate-us" 
+                        options={{ 
+                            headerTitle: 'Rate Us',
+                        }} 
+                    />      
+
+                    <Stack.Screen 
+                        name="common-screens/profile/term-condition" 
                         options={{ 
                             headerTitle: 'Term and Condition',
                         }} 
                     />
 
                     <Stack.Screen 
-                        name="profile/privacy-policy" 
+                        name="common-screens/profile/privacy-policy" 
                         options={{ 
                             headerTitle: 'Privacy Policy',
                         }} 

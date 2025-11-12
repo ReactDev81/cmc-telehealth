@@ -1,5 +1,5 @@
 import { View, ScrollView } from "react-native";
-import TitleWithLink from "@/components/home/title-with-link";
+import TitleWithLink from "@/components/ui/title-with-link";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DoctorHomeHeader from "@/components/doctor/home/header";
 import { AppointementStatusBoxData } from "@/json-data/doctor/home";
@@ -11,8 +11,8 @@ import { UpcomingAppointmentData } from "@/json-data/doctor/appointment";
 import Title from "@/components/ui/Title";
 import Button from "@/components/ui/Button";
 import { router } from "expo-router";
-import { TestimonialData } from "@/json-data/home";
-import Testimonial from "@/components/home/testimonial";
+import { TestimonialData } from "@/json-data/patient/home";
+import Testimonial from "@/components/patient/home/testimonial";
 
 const Home = () => {
 

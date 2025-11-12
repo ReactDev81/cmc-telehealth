@@ -1,7 +1,7 @@
 import { View } from "react-native"
 import Tab, { TabItem } from "@/components/ui/Tab"
-import CurrentMedicines from "@/components/my-medicines/current-medicines"
-import PastMedicines from "@/components/my-medicines/past-mediciines"
+import CurrentMedicines from "@/components/patient/my-medicines/current-medicines"
+import PastMedicines from "@/components/patient/my-medicines/past-mediciines"
 
 const MyMedicines = () => {
 

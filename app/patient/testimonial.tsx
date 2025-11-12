@@ -1,7 +1,7 @@
 import { View, FlatList } from "react-native"
-import { TestimonialProps } from "@/types/home";
-import Testimonial from "@/components/home/testimonial";
-import { TestimonialData } from "@/json-data/home";
+import { TestimonialProps } from "@/types/patient/home";
+import Testimonial from "@/components/patient/home/testimonial";
+import { TestimonialData } from "@/json-data/patient/home";
 
 
 const Testimonials = () => {

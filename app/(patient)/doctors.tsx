@@ -1,8 +1,8 @@
 import { View, FlatList } from 'react-native';
 import SearchBar from '../../components/form/search';
-import { AvailableDoctorsProps } from '../../types/home';
-import AllDoctorsData from '../../json-data/doctors';
-import AvailableDoctors from '../../components/home/available-doctors';
+import { AvailableDoctorsProps } from '../../types/patient/home';
+import AllDoctorsData from '../../json-data/patient/doctors';
+import AvailableDoctors from '@/components/patient/home/available-doctors';
 
 const Doctors = () => {
 

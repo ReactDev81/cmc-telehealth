@@ -1,4 +1,4 @@
-import { MenuSection } from '@/types/profile'
+import { MenuSection } from '@/types/common/profile'
 import { 
     BriefcaseBusiness,
     GraduationCap,
@@ -53,42 +53,42 @@ export const DoctorMenuSections: MenuSection[] = [
                 icon: <Info size={20} color="#374151" />,
                 title: 'About CMC',
                 description: 'Learn more about the company',
-                route: '/profile/about-us'
+                route: '/common-screens/profile/about-us'
             },
             {
                 id: 'faq',
                 icon: <HelpCircle size={20} color="#374151" />,
                 title: 'Frequently Asked Questions',
                 description: "Check Faq's",
-                route: '/profile/faq'
+                route: '/common-screens/profile/faq'
             },
             {
                 id: 'need_help',
                 icon: <Headphones size={20} color="#374151" />,
                 title: 'Need Help',
                 description: 'Access Support',
-                route: '/profile/need-help'
+                route: '/common-screens/profile/need-help'
             },
             {
                 id: 'rate_us',
                 icon: <UserStar size={20} color="#374151" />,
                 title: 'Rate Us',
                 description: 'Share your feedback to help us',
-                route: '/profile/rate-us'
+                route: '/common-screens/profile/rate-us'
             },
             {
                 id: 'term_condition',
                 icon: <Handshake size={20} color="#374151" />,
                 title: 'Terms & Conditions',
                 description: 'Understand the rules and guidelines',
-                route: '/profile/term-condition'
+                route: '/common-screens/profile/term-condition'
             },
             {
                 id: 'privacy',
                 icon: <ShieldCheck size={20} color="#374151" />,
                 title: 'Privacy Policy',
                 description: 'Review how your data is collected',
-                route: '/profile/privacy-policy'
+                route: '/common-screens/profile/privacy-policy'
             },
         ]
     }

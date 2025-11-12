@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import Tab, { TabItem } from '../../components/ui/Tab';
-import AllUpcomingAppointment from '@/components/appointment/all-upcoming-appointment';
-import AllPastAppointment from '@/components/appointment/all-past-appointment';
+import AllUpcomingAppointment from '@/components/patient/appointment/all-upcoming-appointment';
+import AllPastAppointment from '@/components/patient/appointment/all-past-appointment';
 
 
 const Appointments = () => {

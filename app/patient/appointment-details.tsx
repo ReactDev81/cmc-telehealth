@@ -1,7 +1,7 @@
 import { View, Text, Image, ScrollView, Linking } from "react-native"
-import MedicineCard from "@/components/my-medicines/medicine-card";
+import MedicineCard from "@/components/patient/my-medicines/medicine-card";
 import { Stethoscope, BriefcaseBusiness, Star } from 'lucide-react-native';
-import ReportsCard from "@/components/medical-reports/reports-card";
+import ReportsCard from "@/components/common/medical-reports/reports-card";
 
 const AppointementDetails = () => {
 

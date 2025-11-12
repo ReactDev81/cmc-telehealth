@@ -1,14 +1,14 @@
 import { View, Text, ScrollView } from "react-native"
 import { Link } from "expo-router"
-import { MedicinesData } from "@/json-data/my-medicines"
-import MedicineAccordion from "@/components/my-medicines/medicine-accordian"
+import { MedicinesData } from "@/json-data/patient/my-medicines"
+import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian"
 
 const MedicinesDetail = () => {
     return(
         <ScrollView className="flex-1 bg-white p-5 pb-14">
 
             {MedicinesData.map((med) => (
-                <MedicineAccordion
+                <MedicineAccordian
                     key={med.id}
                     medicine={med}
                     defaultExpanded={true}

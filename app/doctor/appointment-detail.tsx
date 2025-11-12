@@ -4,10 +4,10 @@ import ScheduleAppointment from "@/components/doctor/appointment-detail/schedule
 import PatientInformation from "@/components/doctor/appointment-detail/patient-information"
 import PaymentDetail from "@/components/doctor/appointment-detail/payment-detail"
 import Title from "@/components/ui/Title"
-import { ReportCardData } from "@/json-data/medical-reports"
-import ReportsCard from "@/components/medical-reports/reports-card"
-import { MedicinesData } from "@/json-data/my-medicines"
-import MedicineAccordian from "@/components/my-medicines/medicine-accordian"
+import { ReportCardData } from "@/json-data/common/medical-reports"
+import ReportsCard from "@/components/common/medical-reports/reports-card"
+import { MedicinesData } from "@/json-data/patient/my-medicines"
+import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian"
 
 const AppointmentDetail = () => {
     return(

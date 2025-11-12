@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { View, Text, Image, ScrollView, Modal } from "react-native"
 import { Stethoscope } from 'lucide-react-native';
 import Button from "../../components/ui/Button";
-import AppointmentConfirmation from "../../components/appointment-summary/appointment-confirmation";
+import AppointmentConfirmation from "@/components/patient/appointment-summary/appointment-confirmation";
 
 const AppointmentSummary = () => {
 

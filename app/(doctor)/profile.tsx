@@ -2,7 +2,7 @@ import { View, Text, ScrollView } from "react-native";
 import DoctorProfileEdit from "@/components/doctor/profile/doctor-profile-edit";
 import Button from "@/components/ui/Button";
 import { DoctorMenuSections } from "@/json-data/doctor/profile";
-import MenuItem from "@/components/profile/menu-item";
+import MenuItem from "@/components/common/profile/menu-item";
 import { router } from "expo-router";
 
 const Profile = () => {

@@ -1,8 +1,8 @@
 import { View, Text, ScrollView } from 'react-native';
 import { router } from 'expo-router';
-import ProfileEdit from '../../components/profile/profile-edit';
-import { menuSections } from '../../json-data/profile';
-import MenuItem from '../../components/profile/menu-item';
+import ProfileEdit from '../../components/common/profile/profile-edit';
+import { menuSections } from '../../json-data/patient/profile';
+import MenuItem from '../../components/common/profile/menu-item';
 import Button from '../../components/ui/Button';
 
 const Profile = () => {

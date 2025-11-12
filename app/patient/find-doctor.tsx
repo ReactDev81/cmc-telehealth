@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { View, FlatList } from "react-native"
-import FindDoctorSearchBar from "../../components/find-doctor/find-doctor-search-bar"
-import { SpecialityByDoctorProps, SymptomsByDoctorProps } from "../../types/find-doctor"
-import SpecialityCard from "../../components/home/speciality-card"
-import { SpecialityByDcotorsData, SymptomsByDcotorsData } from "../../json-data/find-doctor"
+import FindDoctorSearchBar from "@/components/patient/find-doctor/find-doctor-search-bar"
+import { SpecialityByDoctorProps, SymptomsByDoctorProps } from "@/types/patient/find-doctor"
+import SpecialityCard from "@/components/patient/home/speciality-card"
+import { SpecialityByDcotorsData, SymptomsByDcotorsData } from "@/json-data/common/find-doctor"
 
 const FindDoctor = () => {
 

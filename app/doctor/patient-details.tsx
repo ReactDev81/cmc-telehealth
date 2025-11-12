@@ -1,14 +1,14 @@
 import { Linking, ScrollView, View } from "react-native"
 import { ChevronRight } from 'lucide-react-native';
 import Button from "@/components/ui/Button";
-import TitleWithLink from "@/components/home/title-with-link";
+import TitleWithLink from "@/components/ui/title-with-link";
 import PatientInfoHeader from "@/components/doctor/patient-detail/patient-info-header"
 import ContactInformation from "@/components/doctor/patient-detail/contact-information"
 import UpcomingAppointment from "@/components/doctor/patient-detail/upcoming-appointments"
-import { ReportCardData } from "@/json-data/medical-reports";
-import ReportsCard from "@/components/medical-reports/reports-card";
-import { MedicinesData } from "@/json-data/my-medicines";
-import MedicineAccordian from "@/components/my-medicines/medicine-accordian";
+import { ReportCardData } from "@/json-data/common/medical-reports";
+import ReportsCard from "@/components/common/medical-reports/reports-card";
+import { MedicinesData } from "@/json-data/patient/my-medicines";
+import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
 import { PreviousAppointmentData } from "@/json-data/doctor/previous-appointment";
 import PreviousAppointment from "@/components/doctor/patient-detail/previous-appointment";
 
