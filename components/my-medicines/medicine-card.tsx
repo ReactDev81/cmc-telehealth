@@ -6,7 +6,7 @@ import Button from "../ui/Button"
 
 const MedicineCard = ({ patient_symptoms, doctor_name, consulated_date } : MedicineCardProps) => {
     return(
-        <View className="border border-[#EDEDED] rounded-xl p-4">
+        <View className="border border-black-300 rounded-xl p-4">
             <View className="flex-row items-center">
                 <Text className="text-base font-medium">Symptoms: </Text>
                 <Text className="text-black text-sm">{patient_symptoms}</Text>

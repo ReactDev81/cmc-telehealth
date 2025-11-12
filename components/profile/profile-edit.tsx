@@ -4,7 +4,7 @@ import Feather from '@expo/vector-icons/Feather';
 
 const ProfileEdit = () => {
     return(
-        <View className="bg-primary-200 p-4 flex-row items-start rounded-xl">
+        <View className="bg-primary-100 p-4 flex-row items-start rounded-xl">
             <View className="flex-1 flex-row items-center gap-x-3">
                 <View className="w-14">
                     <Image source={require('../../assets/images/profile.png')} className="w-full h-14 object-cover rounded-full" />

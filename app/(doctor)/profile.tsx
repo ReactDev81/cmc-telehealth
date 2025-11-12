@@ -30,7 +30,7 @@ const Profile = () => {
                                     icon={item.icon}
                                     title={item.title}
                                     description={item.description}
-                                    onPress={() => router.push(item.route)}
+                                    onPress={() => router.push(item.route as any)}
                                     showBorder={itemIndex !== section.items.length - 1}
                                 />
                             ))}

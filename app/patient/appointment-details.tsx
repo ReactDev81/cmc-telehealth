@@ -26,7 +26,7 @@ const AppointementDetails = () => {
             <View className="p-5 pb-12">
 
                 {/* name & speciality */}
-                <View className="border-b border-[#EDEDED]">
+                <View>
                     <View className="flex-row gap-x-1">
                         <Stethoscope size={15} color="#2D4095" />
                         <Text className="text-primary text-sm">Endocrinology</Text>
@@ -35,7 +35,7 @@ const AppointementDetails = () => {
                 </View>
 
                 {/* work experience & review */}
-                <View className="flex-row items-center justify-between gap-x-4 my-5">
+                <View className="flex-row items-center justify-between gap-x-4 mt-5 mb-7">
                     <View className="flex-1 flex-row items-center gap-x-2.5 border border-gray rounded-lg p-3">
                         <View className="w-10 h-10 items-center justify-center rounded-full bg-primary-200">
                             <BriefcaseBusiness size={18} color="#013220" />
@@ -57,7 +57,7 @@ const AppointementDetails = () => {
                 </View>
 
                 {/* Schedule Appointment */}
-                <View className="pb-5 mb-5 border-b border-[#EDEDED]">
+                <View className="mb-7">
                     <Text className="text-lg text-black font-medium">Schedule Appointment</Text>
                     <View className="mt-4">
                         <View className="flex-row items-center justify-between">
@@ -80,7 +80,7 @@ const AppointementDetails = () => {
                 </View>
 
                 {/* Patient Details */}
-                <View className="pb-5 mb-5 border-b border-[#EDEDED]">
+                <View className="mb-7">
                     <Text className="text-lg text-black font-medium">Patient Age</Text>
                     <View className="mt-4">
                         <View className="flex-row items-center justify-between">
@@ -111,7 +111,7 @@ const AppointementDetails = () => {
                 </View>
 
                 {/* Payment Detail */}
-                <View className="pb-5 mb-5 border-b border-[#EDEDED]">
+                <View className="mb-7">
                     <Text className="text-lg text-black font-medium">Payment Detail</Text>
                     <View className="mt-4">
                         <View className="flex-row items-center justify-between">
@@ -134,8 +134,8 @@ const AppointementDetails = () => {
                 </View>
 
                 {/* Medical Reports */}
-                <View className="pb-5 mb-5 border-b border-[#EDEDED]">
-                    <Text className="text-lg text-black font-medium mb-5">Medical Reports</Text>
+                <View className="mb-7">
+                    <Text className="text-lg text-black font-medium mb-3">Medical Reports</Text>
                     <ReportsCard 
                         report_name="Blood Test Results"
                         report_date="Sat, Jun 18"
@@ -146,8 +146,8 @@ const AppointementDetails = () => {
                 </View>
 
                 {/* Prescription */}
-                <View className="pb-5 mb-5">
-                    <Text className="text-lg text-black font-medium mb-5">Prescription</Text>
+                <View className="mb-7">
+                    <Text className="text-lg text-black font-medium mb-3">Prescription</Text>
                     <MedicineCard 
                         patient_symptoms="Depression and Anxiety"
                         doctor_name="Dr Rajeshwar"

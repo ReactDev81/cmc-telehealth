@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import Tab, { TabItem } from '../../components/ui/Tab';
-import UpcomingAppointments from '../../components/appointment/upcoming-appointments';
-import PastAppointment from '../../components/appointment/past-appointments';
+import AllUpcomingAppointment from '@/components/appointment/all-upcoming-appointment';
+import AllPastAppointment from '@/components/appointment/all-past-appointment';
 
 
 const Appointments = () => {
@@ -10,12 +10,12 @@ const Appointments = () => {
         {
             key: 'upcoming',
             label: 'Upcoming',
-            content: <UpcomingAppointments />
+            content: <AllUpcomingAppointment />
         },
         {
             key: 'past',
             label: 'Past',
-            content:  <PastAppointment />
+            content:  <AllPastAppointment />
         }
     ]
 

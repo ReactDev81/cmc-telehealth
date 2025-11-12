@@ -1,13 +1,15 @@
 import { ImageSourcePropType } from "react-native";
-import { Href } from "expo-router";
 
 export interface appointmentProps {
-    id?: number;
-    status?: string,
-    link: Href,
+    id?: number
+    status?: string
     image: ImageSourcePropType
-    name: string,
-    speciality : string,
-    date: string,
+    consultation_type: string
+    consultation_fee: string
+    name: string
+    speciality: string
+    rating: number
+    expercience: string
+    date: string
     time: string
 }

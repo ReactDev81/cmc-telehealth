@@ -13,7 +13,7 @@ const SearchBar = ({ variant = 'primary', placeholder, ...props }: SearchBarProp
             className={`flex-row items-center px-4 py-3 rounded-xl ${
                 isPrimary 
                     ? 'bg-transparent border border-white' 
-                    : 'bg-white border border-[#929292]'
+                    : 'bg-white border border-black-300'
             }`}
         >
             <Search 
@@ -24,7 +24,7 @@ const SearchBar = ({ variant = 'primary', placeholder, ...props }: SearchBarProp
                 placeholder={placeholder || "Search..."}
                 placeholderTextColor={isPrimary ? '#fff' : '#929292'}
                 className={`flex-1 ml-3 text-base leading-5 py-1 ${
-                    isPrimary ? 'text-white' : 'text-[##929292]'
+                    isPrimary ? 'text-white' : 'text-black-400'
                 }`}
                 {...props}
             />

@@ -10,11 +10,11 @@ interface MenuItemProps {
     iconBgColor?: string
 }
 
-const MenuItem = ({ icon, title, description, onPress, showBorder = true, iconBgColor = 'bg-primary-200' }: MenuItemProps) => {
+const MenuItem = ({ icon, title, description, onPress, showBorder = true, iconBgColor = 'bg-primary-100' }: MenuItemProps) => {
     return (
         <TouchableOpacity
             onPress={onPress}
-            className={`flex-row items-center bg-white px-4 py-4 ${showBorder ? 'border-b border-[#EDEDED]' : ''}`}
+            className={`flex-row items-center bg-white px-4 py-4 ${showBorder ? 'border-b border-black-200' : ''}`}
             activeOpacity={0.7}
         >
             {/* Icon Container */}

@@ -7,7 +7,7 @@ interface testimonial extends TestimonialProps {
 
 const Testimonial = ({ image, name, age, city, title, description, review_count, className = '' } : testimonial ) => {
     return (
-        <View className={`bg-white rounded-xl border border-[#EDEDED] max-w-80 w-full justify-between ${className}`}>
+        <View className={`bg-white rounded-xl border border-black-300 max-w-80 w-full justify-between ${className}`}>
 
             <View className="p-4">
 
