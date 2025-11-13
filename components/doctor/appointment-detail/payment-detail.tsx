@@ -9,7 +9,7 @@ interface props {
 
 const PaymentDetail = ({ consultation, admin_fee, aditional_discount, total } : props ) => {
     return(
-        <View className="pt-5 mt-7 border-t border-black-300">
+        <View className="mt-7">
             <Text className="text-lg text-black font-medium">Payment Detail</Text>
             <View className="mt-4">
                 <View className="flex-row items-center justify-between">

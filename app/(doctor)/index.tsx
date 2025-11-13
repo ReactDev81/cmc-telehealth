@@ -1,6 +1,8 @@
 import { View, ScrollView } from "react-native";
 import TitleWithLink from "@/components/ui/title-with-link";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import { useIsFocused } from "@react-navigation/native";
 import DoctorHomeHeader from "@/components/doctor/home/header";
 import { AppointementStatusBoxData } from "@/json-data/doctor/home";
 import AppointementStatusBox from "@/components/doctor/home/appointement-status-box";
@@ -17,11 +19,12 @@ import Testimonial from "@/components/patient/home/testimonial";
 const Home = () => {
 
     const insets = useSafeAreaInsets();
+    const isFocused = useIsFocused();
 
     return (
-        <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
-            
-            <DoctorHomeHeader />
+        <View className="flex-1 bg-white">
+            {isFocused && <StatusBar style="light" />}
+            <DoctorHomeHeader insets={insets} />
 
             <ScrollView 
                 showsVerticalScrollIndicator={false}
@@ -85,7 +88,7 @@ const Home = () => {
                     })}
                 </View>
 
-                <View className='px-4 pb-10'>
+                <View className='px-2 pb-20'>
 
                     {/* Testimonial */}
                     <View className='mt-7'>

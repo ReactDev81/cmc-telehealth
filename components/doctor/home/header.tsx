@@ -3,15 +3,25 @@ import { Bell, ChevronDown, MapPin } from "lucide-react-native";
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 
-const DoctorHomeHeader = () => {
+interface HeaderProps {
+    insets?: { top?: number };
+}
+
+const DoctorHomeHeader = ({ insets }: HeaderProps) => {
 
     const [location, setLocation] = useState('Sec 39, Ldh, Punjab');
+    const statusPadding = insets?.top ?? 0;
 
     return (
-        <View className="bg-primary px-4 py-5">
+        <View 
+            className="bg-primary px-4 pb-5"
+            style={{
+                paddingTop: statusPadding,
+            }}
+        >
 
             {/* Top Section */}
-            <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center justify-between pt-3">
                 <View className="flex-row items-center gap-2">
                     <View>
                         <Image 

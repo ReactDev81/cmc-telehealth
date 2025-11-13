@@ -9,7 +9,7 @@ interface props {
 
 const PatientInformation = ({ patient_age, gender, allergies, problem } : props ) => {
     return(
-        <View className="pt-5 mt-7 border-t border-black-300">
+        <View className="mt-7">
             <Text className="text-lg text-black font-medium">Patient Information</Text>
             <View className="mt-4">
                 <View className="flex-row items-center justify-between">

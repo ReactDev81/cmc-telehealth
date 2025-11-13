@@ -1,6 +1,8 @@
 import { View, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import { useIsFocused } from '@react-navigation/native';
 import Header from '@/components/patient/home/header';
 import ConsultationTypeCard from '@/components/patient/home/consulation-type-card';
 import TitleWithLink from '../../components/ui/title-with-link';
@@ -21,11 +23,13 @@ import { TestimonialData } from '@/json-data/patient/home';
 const Home = () => {
 
     const insets = useSafeAreaInsets();
+    const isFocused = useIsFocused();
 
     return (
-        <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
-
-            <Header />
+        <View className="flex-1 bg-white">
+            
+            {isFocused && <StatusBar style="light" />}
+            <Header insets={insets} />
 
             <ScrollView 
                 showsVerticalScrollIndicator={false}
@@ -55,14 +59,14 @@ const Home = () => {
                     {/* Speciality */}
                     <View className='mt-7'>
                         <TitleWithLink 
-                            title_text="Find Doctor by Speciality / Symptoms"
+                            title_text="Find Doctor by Speciality"
                             link="/patient/find-doctor"
                             link_text="See All"
                         />
                         <ScrollView 
                             horizontal
                             showsHorizontalScrollIndicator={false}
-                            className='mt-4'
+                            className='mt-5'
                             contentContainerStyle={{ gap: 20, paddingRight: 0 }}
                         >
                             {SpecialityData.map((speciality, id) => {

@@ -9,7 +9,7 @@ interface props {
 
 const ScheduleAppointment = ({ date, time, booking_type, booking_for } : props ) => {
     return(
-        <View className="pt-5 mt-7 border-t border-black-300">
+        <View className="mt-7">
             <Text className="text-lg text-black font-medium">Schedule Appointment</Text>
             <View className="mt-4">
                 <View className="flex-row items-center justify-between">

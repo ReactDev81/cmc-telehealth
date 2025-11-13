@@ -10,11 +10,12 @@ export default function TabLayout() {
 
     return (
         <>
-            <StatusBar style="auto" />
+            <StatusBar style="dark" />
             <Tabs
                 screenOptions={{
                     headerStyle: {
                         backgroundColor: '#FFFFFF',
+                        height: Platform.OS === 'android' ? undefined : 110,
                     },
                     headerTitleAlign: 'left',
                     headerTitleStyle: {

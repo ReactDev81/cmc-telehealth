@@ -20,7 +20,7 @@ export default function RootLayout() {
     return (
         <ThemeProvider value={DefaultTheme}>
             <UserProvider>
-                <StatusBar style="auto" />
+                <StatusBar style="dark" />
                 <Stack
                     initialRouteName="splash"
                     screenOptions={{

@@ -10,7 +10,7 @@ export default function TabLayout() {
 
     return (
         <>
-            <StatusBar style="auto" />
+            <StatusBar style="dark" />
             <Tabs
                 screenOptions={{
                     headerStyle: {

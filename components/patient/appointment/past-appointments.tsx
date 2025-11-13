@@ -45,7 +45,7 @@ const PastAppointment = ({
                         <Star size={12} fill="#013220" />
                         <Text className='text-primary text-sm font-medium'>{rating}</Text>
                     </View>
-                    <View className={`p-1.5 rounded absolute bottom-0 right-0
+                    <View className={`py-1 p-1.5 rounded absolute bottom-0 right-0
                         ${status == 'completed' ? 'bg-success-400' : 'bg-danger-400'}`}
                     >
                         <Text className={`text-[10px] font-medium

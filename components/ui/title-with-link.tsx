@@ -19,10 +19,10 @@ const TitleWithLink = ({title_text, link, link_text} : TitleWithLinkProps) => {
                 href={link}
             >
                 <View className="flex-row items-center gap-x-1">
-                    <Text className="text-sm font-medium text-black-400">{link_text}</Text>
+                    <Text className="text-base font-medium text-primary">{link_text}</Text>
                     <ChevronRight  
-                        size={18} 
-                        className="text-black-400"
+                        size={18}
+                        color="#013220"
                     />
                 </View>
             </Link>  

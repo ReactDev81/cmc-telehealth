@@ -48,7 +48,7 @@ const AppointmentDetail = () => {
                 />
 
                 {/* mdeical reports */}
-                <View className="pt-5 mt-7 border-t border-black-300">
+                <View className="mt-7">
                     <Title 
                         text="Medical Reports"
                     />
@@ -76,7 +76,7 @@ const AppointmentDetail = () => {
                 </View>
 
                 {/* perscribed medicine */}
-                <View className="pt-5 mt-7 border-t border-black-300">
+                <View className="mt-7">
                     <Title 
                         text="Prescription"
                     />

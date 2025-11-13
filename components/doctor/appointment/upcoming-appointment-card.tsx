@@ -19,7 +19,7 @@ const UpcomingAppointmentCard = ({ image, name, time, date, mode } : appointment
                         <Text className="text-sm text-black-400">{date}</Text>
                     </View> 
                     <View className="flex-row items-center gap-x-2">
-                        <Clock size={14} className="text-black-400" />
+                        <Clock size={12} className="text-black-400" />
                         <Text className="text-sm text-black-400">{time}</Text>
                     </View>
                 </View>

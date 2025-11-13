@@ -4,15 +4,25 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Bell, ChevronDown } from 'lucide-react-native';
 import SearchBar from '@/components/form/search';
 
-const Header = () => {
+interface HeaderProps {
+    insets?: { top?: number };
+}
+
+const Header = ({ insets }: HeaderProps) => {
 
     const [location, setLocation] = useState('Ludhiana 141001');
+    const statusPadding = insets?.top ?? 0;
 
     return (
-        <View className="bg-primary px-4 py-4">
+        <View 
+            className="bg-primary px-4 pb-5"
+            style={{
+                paddingTop: statusPadding,
+            }}
+        >
 
             {/* Top Section */}
-            <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-row items-center justify-between mb-4 pt-2">
                 <View className=" items-center gap-2">
                     <Text className="text-white text-base font-medium">
                         Find Doctors near
@@ -27,7 +37,7 @@ const Header = () => {
                     <TouchableOpacity onPress={() => router.push('/common-screens/notifications')} className="relative p-2 rounded-full">
                         <Bell size={24} color="white" />
                         <View className="absolute top-1.5 right-1.5 w-4 h-4 bg-white rounded-full items-center justify-center">
-                            <Text className="text-blue-600 text-xs font-bold">2</Text>
+                            <Text className="text-primary text-xs font-bold">2</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
