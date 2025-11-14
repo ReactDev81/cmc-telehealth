@@ -3,15 +3,9 @@ import { View, Alert, Platform } from "react-native";
 import { Camera } from "expo-camera";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 
+const ROOM_URL = process.env.EXPO_PUBLIC_PATIENT_CALL_LINK;
+
 const WhereBy = () => {
-    const roomUrl = process.env.EXPO_PUBLIC_PATIENT_CALL_LINK;
-  
-    React.useEffect(() => {
-        if (!roomUrl) {
-            console.error("Missing EXPO_PUBLIC_PATIENT_CALL_LINK environment variable.");
-            Alert.alert("Configuration Error", "Unable to join the call because the room link is missing.");
-        }
-    }, [roomUrl]);
   
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const [hasPermissionForAndroid, setHasPermissionForAndroid] = React.useState<boolean>(false);
@@ -32,10 +26,6 @@ const WhereBy = () => {
         })();
     }, []);
 
-    if (!roomUrl) {
-        return <View />;
-    }
-
     if (Platform.OS === "android" && !hasPermissionForAndroid) {
         return <View />;
     }
@@ -46,7 +36,7 @@ const WhereBy = () => {
                 <WherebyEmbed
                     ref={wherebyRoomRef}
                     style={{ flex: 1 }}
-                    room={roomUrl}
+                    room={ROOM_URL ?? ""}
                     // Skips the media permission prompt.
                     skipMediaPermissionPrompt
                     // Catch-all for any Whereby event
