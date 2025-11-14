@@ -98,10 +98,7 @@ export default function RootLayout() {
 
                     <Stack.Screen 
                         name="patient/whereby" 
-                        options={{
-                            headerShown: true,
-                            title: "WhereBy",
-                        }}
+                        options={{ headerShown: false }}
                     />
 
                     {/* common screens for patient and doctor */}

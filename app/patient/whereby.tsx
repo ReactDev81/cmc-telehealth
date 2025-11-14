@@ -1,14 +1,37 @@
 import * as React from "react";
-import { View, Alert, Platform } from "react-native";
+import { View, Alert, Platform, Text, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Camera } from "expo-camera";
+import * as DocumentPicker from "expo-document-picker";
+import { Ionicons } from "@expo/vector-icons";
+import { Phone } from 'lucide-react-native';
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 
-const ROOM_URL = process.env.EXPO_PUBLIC_PATIENT_CALL_LINK;
+const ROOM_URL = "https://deploy-meta.whereby.com/d254ed02-99c1-4e63-b0de-5f3d4a883d4b";
+
+type ControlKey = "chat" | "camera" | "microphone" | "caption" | "share";
+type IconName = React.ComponentProps<typeof Ionicons>["name"];
+
+const CONTROLS: { key: ControlKey; label: string; icon: IconName }[] = [
+    { key: "chat", label: "Chat", icon: "chatbubble-ellipses" },
+    { key: "camera", label: "Off", icon: "videocam-off" },
+    { key: "microphone", label: "Mute", icon: "mic-off" },
+    { key: "caption", label: "Caption", icon: "logo-closed-captioning" },
+    { key: "share", label: "Shared File", icon: "attach" },
+];
 
 const WhereBy = () => {
   
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const [hasPermissionForAndroid, setHasPermissionForAndroid] = React.useState<boolean>(false);
+    const [isCameraOn, setIsCameraOn] = React.useState(true);
+    const [isMicrophoneOn, setIsMicrophoneOn] = React.useState(true);
+    const [isChatOpen, setIsChatOpen] = React.useState(false);
+    const [isCaptionOn, setIsCaptionOn] = React.useState(false);
+    const [sharedFileName, setSharedFileName] = React.useState<string | null>(null);
+    const [isLeaving, setIsLeaving] = React.useState(false);
+
+    const insets = useSafeAreaInsets();
 
     React.useEffect(() => {
         (async () => {
@@ -26,28 +49,184 @@ const WhereBy = () => {
         })();
     }, []);
 
+    const handleHangup = React.useCallback(() => {
+        if (isLeaving) {
+            return;
+        }
+        setIsLeaving(true);
+        wherebyRoomRef.current?.leaveRoom();
+        Alert.alert("Call ended", "You have left the consultation.");
+        setTimeout(() => setIsLeaving(false), 1200);
+    }, [isLeaving]);
+
+    const handleToggleCamera = React.useCallback(() => {
+        const next = !isCameraOn;
+        wherebyRoomRef.current?.toggleCamera(next);
+        setIsCameraOn(next);
+    }, [isCameraOn]);
+
+    const handleToggleMicrophone = React.useCallback(() => {
+        const next = !isMicrophoneOn;
+        wherebyRoomRef.current?.toggleMicrophone(next);
+        setIsMicrophoneOn(next);
+    }, [isMicrophoneOn]);
+
+    const handleToggleChat = React.useCallback(() => {
+        const next = !isChatOpen;
+        wherebyRoomRef.current?.toggleChat(next);
+        setIsChatOpen(next);
+    }, [isChatOpen]);
+
+    const handleToggleCaption = React.useCallback(async () => {
+        try {
+            const next = !isCaptionOn;
+            if (next) {
+                wherebyRoomRef.current?.startLiveTranscription();
+            } else {
+                wherebyRoomRef.current?.stopLiveTranscription();
+            }
+            setIsCaptionOn(next);
+        } catch (error) {
+            console.warn("Unable to toggle captions", error);
+            Alert.alert("Captions unavailable", "We could not update live captions for this room.");
+        }
+    }, [isCaptionOn]);
+
+    const handleShareFile = React.useCallback(async () => {
+        try {
+            const file = await DocumentPicker.getDocumentAsync({
+                type: "*/*",
+                copyToCacheDirectory: true,
+            });
+
+            if (file.canceled) {
+                return;
+            }
+
+            const picked = file.assets?.[0];
+            if (picked) {
+                setSharedFileName(picked.name ?? picked.uri.split("/").pop() ?? "Selected file");
+                Alert.alert("File ready to share", picked.name ?? "Attachment selected");
+            }
+        } catch (error) {
+            console.warn("Document picker error", error);
+            Alert.alert("File share failed", "We couldn't access your files. Please try again.");
+        }
+    }, []);
+
+    const controlHandlers: Record<ControlKey, () => void> = React.useMemo(
+        () => ({
+            chat: handleToggleChat,
+            camera: handleToggleCamera,
+            microphone: handleToggleMicrophone,
+            caption: handleToggleCaption,
+            share: handleShareFile,
+        }),
+        [handleShareFile, handleToggleCaption, handleToggleCamera, handleToggleChat, handleToggleMicrophone],
+    );
+
+    const activeMap: Record<ControlKey, boolean> = {
+        chat: isChatOpen,
+        camera: !isCameraOn,
+        microphone: !isMicrophoneOn,
+        caption: isCaptionOn,
+        share: Boolean(sharedFileName),
+    };
+
     if (Platform.OS === "android" && !hasPermissionForAndroid) {
         return <View />;
     }
   
     return(
-        <View style={{ flex: 1 }}>
-            <View style={{ flex: 1, height: "100%" }}>
+        <View className="flex-1 bg-black">
+
+            {/* header section */}
+            <View 
+                className="bg-white px-6 py-4 flex-row items-center gap-x-4" 
+                style={{
+                    paddingTop: insets?.top ?? 0,
+                }}
+            >
+                <View className="flex-1 flex-row items-start gap-x-3">
+                    <View className="flex-row items-center gap-x-0.5 mt-1.5">
+                        <View className="w-1 h-2 rounded-full bg-primary"></View>
+                        <View className="w-1 h-4 rounded-full bg-primary"></View>
+                        <View className="w-1 h-6 rounded-full bg-primary"></View>
+                        <View className="w-1 h-3 rounded-full bg-primary"></View>
+                        <View className="w-1 h-4 rounded-full bg-primary"></View>
+                    </View>
+                    <View>
+                        <Text className="text-sm text-black font-medium">Dr. Andrew Miller</Text>
+                        <Text className="text-xs text-black-400 mt-1">25:12 remaining (30 mins visit)</Text>
+                    </View>
+                </View>
+                <TouchableOpacity
+                    className={`w-11 h-10 rounded-xl bg-danger items-center justify-center ${isLeaving ? "opacity-60" : ""}`}
+                    activeOpacity={0.8}
+                    onPress={handleHangup}
+                >
+                    <View className="rotate-[135deg]">
+                        <Phone size={16} color="#fff" fill="#fff" />
+                    </View>
+                </TouchableOpacity>
+            </View>
+
+            {/* Video Container - Middle Section */}
+            <View className="flex-1 relative overflow-hidden" 
+                style={{
+                    paddingBottom: Platform.OS === 'ios' ? 6 + insets.bottom : 6 + insets.bottom,
+                }}
+            >
                 <WherebyEmbed
                     ref={wherebyRoomRef}
-                    style={{ flex: 1 }}
+                    style={{ position: "absolute", top: -28, left: 0, right: 0, bottom: 0 }}
                     room={ROOM_URL ?? ""}
-                    // Skips the media permission prompt.
                     skipMediaPermissionPrompt
-                    // Catch-all for any Whereby event
                     onWherebyMessage={(event) => {
                         console.log(event);
                     }}
-                    // Specific callbacks for each Whereby event
                     onReady={() => {
                         console.log("ready");
                     }}
+                    onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
+                    onCameraToggle={({ enabled }) => setIsCameraOn(enabled)}
+                    onChatToggle={({ open }) => setIsChatOpen(open)}
+                    onTranscriptionStatusChange={({ status }) => setIsCaptionOn(status === "started")}
                 />
+
+            </View>
+
+            {/* Bottom Bar */}
+            <View 
+                className="flex-row justify-between bg-primary px-5 py-3 absolute bottom-0"
+                style={{
+                    paddingBottom: Platform.OS === 'ios' ? 10 + insets.bottom : 10 + insets.bottom,
+                }}
+            >
+                {CONTROLS.map((item) => {
+                    const isActive = activeMap[item.key];
+                    return (
+                        <TouchableOpacity
+                            key={item.key}
+                            className="items-center flex-1"
+                            activeOpacity={0.7}
+                            onPress={controlHandlers[item.key]}
+                        >
+                            <View className={`w-12 h-12 rounded-xl items-center justify-center mb-2 ${
+                                isActive ? "bg-[#F2F2F2]" : "bg-white/8"
+                            }`}>
+                                <Ionicons
+                                    name={item.icon}
+                                    size={22}
+                                    color={isActive ? "#111" : "#fff"}
+                                />
+                            </View>
+                            <Text className={`text-xs ${isActive ? "text-[#F2F2F2] font-semibold" : "text-white"}`}>
+                                {item.label}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                })}
             </View>
         </View>
     )
