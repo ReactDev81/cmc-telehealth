@@ -1,14 +1,15 @@
 import { View, Text, Image } from "react-native"
 import Button from "@/components/ui/Button"
 import { router } from "expo-router"
-import { Star, Video, Hospital, Clock, Calendar} from "lucide-react-native"
+import { Star, Video, Hospital, Clock, Calendar, Phone } from "lucide-react-native"
 import { appointmentProps } from "@/types/patient/appointment"
 
 interface props extends appointmentProps{
     CancelSchedule : () => void
 }
 
-const UpcomingAppointments = ({ 
+const UpcomingAppointments = ({
+    id, 
     image, 
     name, 
     speciality, 
@@ -19,6 +20,7 @@ const UpcomingAppointments = ({
     date,
     time,
     CancelSchedule,
+    call_now
 } : props ) => {
 
     return(
@@ -74,21 +76,35 @@ const UpcomingAppointments = ({
                     </View>
                 </View>
                 <View className="mt-3 flex-1 flex-row items-center gap-x-2.5">
-                    <View className="flex-1">
-                        <Button 
-                            onPress={CancelSchedule}
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                    </View>
-                    <View className="flex-1">
-                        <Button 
-                            onPress={() => router.push('/patient/whereby')}
-                        >
-                            Reschedule
-                        </Button>
-                    </View>
+                    {
+                        call_now ?
+                            <Button
+                                className="flex-1"
+                                icon={<Phone color="#fff" size={16} />} 
+                                onPress={() => router.push('/patient/start-consulation')}
+                            >
+                                Call Now
+                            </Button>
+                        :
+                            <>
+                                <View className="flex-1">
+                                    <Button 
+                                        onPress={CancelSchedule}
+                                        variant="outline"
+                                    >
+                                        Cancel
+                                    </Button>
+                                </View>
+                                <View className="flex-1">
+                                    <Button 
+                                        onPress={() => router.push(`/patient/doctor/${id}`)}
+                                    >
+                                        Reschedule
+                                    </Button>
+                                </View>
+                            </>
+                    }
+                    
                 </View>
                 
             </View>

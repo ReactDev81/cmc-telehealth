@@ -39,6 +39,7 @@ const AllUpcomingAppointment = () => {
                 date={item.date}
                 time={item.time}
                 CancelSchedule={() => handleCancelPress(item)}
+                call_now={item.call_now}
             />
         );
     };

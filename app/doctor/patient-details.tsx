@@ -1,5 +1,6 @@
 import { Linking, ScrollView, View } from "react-native"
 import { ChevronRight } from 'lucide-react-native';
+import { router } from "expo-router";
 import Button from "@/components/ui/Button";
 import TitleWithLink from "@/components/ui/title-with-link";
 import PatientInfoHeader from "@/components/doctor/patient-detail/patient-info-header"
@@ -43,6 +44,7 @@ const PatientDetails = () => {
                 <Button 
                     icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
                     className="flex-row-reverse mt-5"
+                    onPress={() => router.push('/doctor/start-consulation')}
                 >
                     Start Consultation
                 </Button>

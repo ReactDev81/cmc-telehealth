@@ -11,7 +11,8 @@ export const UpcomingAppointmentData: appointmentProps[] = [
         rating: 4.5,
         expercience: "(5 Years Exp)",
         date: 'Sat, Jun 18',
-        time: '2:30 PM' 
+        time: '2:30 PM',
+        call_now: true,
     },
     {
         id: 2,
@@ -23,7 +24,8 @@ export const UpcomingAppointmentData: appointmentProps[] = [
         rating: 4.5,
         expercience: "(2 Years Exp)",
         date: 'Sat, Jun 18',
-        time: '180 Patient' 
+        time: '180 Patient',
+        call_now: false, 
     },
     {
         id: 3,
@@ -35,7 +37,8 @@ export const UpcomingAppointmentData: appointmentProps[] = [
         rating: 4.5,
         expercience: "(1 Years Exp)",
         date: 'Sat, Jun 18',
-        time: '240 Patient' 
+        time: '240 Patient',
+        call_now: false, 
     },
     {
         id: 4,
@@ -47,7 +50,8 @@ export const UpcomingAppointmentData: appointmentProps[] = [
         rating: 4.5,
         expercience: "(3 Years Exp)",
         date: 'Sat, Jun 18',
-        time: '240 Patient' 
+        time: '240 Patient',
+        call_now: false,
     },
 ]
 

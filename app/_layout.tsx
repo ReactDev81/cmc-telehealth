@@ -97,7 +97,7 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="patient/whereby" 
+                        name="patient/start-consulation/index" 
                         options={{ headerShown: false }}
                     />
 
@@ -125,6 +125,11 @@ export default function RootLayout() {
                         options={{ 
                             headerTitle: 'Appointment Detail',
                         }} 
+                    />
+
+                    <Stack.Screen 
+                        name="doctor/start-consulation/index" 
+                        options={{ headerShown: false }}
                     />
 
                     {/* Patient Pages - Profile Pages */}

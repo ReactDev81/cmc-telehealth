@@ -20,7 +20,7 @@ const CONTROLS: { key: ControlKey; label: string; icon: IconName }[] = [
     { key: "share", label: "Shared File", icon: "attach" },
 ];
 
-const WhereBy = () => {
+const StartConsulationWithDoctor = () => {
   
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const [hasPermissionForAndroid, setHasPermissionForAndroid] = React.useState<boolean>(false);
@@ -241,4 +241,4 @@ const WhereBy = () => {
     )
 }
 
-export default WhereBy
+export default StartConsulationWithDoctor

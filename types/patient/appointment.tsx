@@ -11,5 +11,6 @@ export interface appointmentProps {
     rating: number
     expercience: string
     date: string
-    time: string
+    time: string,
+    call_now?: boolean
 }
