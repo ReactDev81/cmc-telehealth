@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Phone } from 'lucide-react-native';
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 
-const ROOM_URL = "https://deploy-meta.whereby.com/d254ed02-99c1-4e63-b0de-5f3d4a883d4b";
+const ROOM_URL = process.env.EXPO_PUBLIC_PATIENT_CALL_LINK + "?bottomToolbar=off"
 
 type ControlKey = "chat" | "camera" | "microphone" | "caption" | "share";
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -138,15 +138,14 @@ const WhereBy = () => {
     }
   
     return(
-        <View className="flex-1 bg-black">
+        <View className="flex-1 bg-white" 
+            style={{
+                paddingTop: insets?.top ?? 0,
+            }}
+        >
 
             {/* header section */}
-            <View 
-                className="bg-white px-6 py-4 flex-row items-center gap-x-4" 
-                style={{
-                    paddingTop: insets?.top ?? 0,
-                }}
-            >
+            <View className="bg-white px-6 py-4 flex-row items-center gap-x-4">
                 <View className="flex-1 flex-row items-start gap-x-3">
                     <View className="flex-row items-center gap-x-0.5 mt-1.5">
                         <View className="w-1 h-2 rounded-full bg-primary"></View>
@@ -172,14 +171,10 @@ const WhereBy = () => {
             </View>
 
             {/* Video Container - Middle Section */}
-            <View className="flex-1 relative overflow-hidden" 
-                style={{
-                    paddingBottom: Platform.OS === 'ios' ? 6 + insets.bottom : 6 + insets.bottom,
-                }}
-            >
+            <View className="flex-1 bg-primary">
                 <WherebyEmbed
                     ref={wherebyRoomRef}
-                    style={{ position: "absolute", top: -28, left: 0, right: 0, bottom: 0 }}
+                    style={{ marginTop: -31, flex: 1 }}
                     room={ROOM_URL ?? ""}
                     skipMediaPermissionPrompt
                     onWherebyMessage={(event) => {
@@ -198,7 +193,7 @@ const WhereBy = () => {
 
             {/* Bottom Bar */}
             <View 
-                className="flex-row justify-between bg-primary px-5 py-3 absolute bottom-0"
+                className="flex-row justify-between bg-primary px-5 pb-3 pt-5"
                 style={{
                     paddingBottom: Platform.OS === 'ios' ? 10 + insets.bottom : 10 + insets.bottom,
                 }}
@@ -213,21 +208,22 @@ const WhereBy = () => {
                             onPress={controlHandlers[item.key]}
                         >
                             <View className={`w-12 h-12 rounded-xl items-center justify-center mb-2 ${
-                                isActive ? "bg-[#F2F2F2]" : "bg-white/8"
+                                isActive ? "bg-white" : "bg-white/60"
                             }`}>
                                 <Ionicons
                                     name={item.icon}
                                     size={22}
-                                    color={isActive ? "#111" : "#fff"}
+                                    color={isActive ? "#013220" : "#fff"}
                                 />
                             </View>
-                            <Text className={`text-xs ${isActive ? "text-[#F2F2F2] font-semibold" : "text-white"}`}>
+                            <Text className={`text-xs ${isActive ? "text-white font-semibold" : "text-white/80"}`}>
                                 {item.label}
                             </Text>
                         </TouchableOpacity>
                     );
                 })}
             </View>
+
         </View>
     )
 }
