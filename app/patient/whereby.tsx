@@ -30,6 +30,7 @@ const WhereBy = () => {
     const [isCaptionOn, setIsCaptionOn] = React.useState(false);
     const [sharedFileName, setSharedFileName] = React.useState<string | null>(null);
     const [isLeaving, setIsLeaving] = React.useState(false);
+    const [isJoined, setIsJoined] = React.useState(false);
 
     const insets = useSafeAreaInsets();
 
@@ -144,37 +145,39 @@ const WhereBy = () => {
             }}
         >
 
-            {/* header section */}
-            <View className="bg-white px-6 py-4 flex-row items-center gap-x-4">
-                <View className="flex-1 flex-row items-start gap-x-3">
-                    <View className="flex-row items-center gap-x-0.5 mt-1.5">
-                        <View className="w-1 h-2 rounded-full bg-primary"></View>
-                        <View className="w-1 h-4 rounded-full bg-primary"></View>
-                        <View className="w-1 h-6 rounded-full bg-primary"></View>
-                        <View className="w-1 h-3 rounded-full bg-primary"></View>
-                        <View className="w-1 h-4 rounded-full bg-primary"></View>
+            {/* Header section - Only show when joined */}
+            {isJoined && (
+                <View className="bg-white px-6 py-4 flex-row items-center gap-x-4">
+                    <View className="flex-1 flex-row items-start gap-x-3">
+                        <View className="flex-row items-center gap-x-0.5 mt-1.5">
+                            <View className="w-1 h-2 rounded-full bg-primary"></View>
+                            <View className="w-1 h-4 rounded-full bg-primary"></View>
+                            <View className="w-1 h-6 rounded-full bg-primary"></View>
+                            <View className="w-1 h-3 rounded-full bg-primary"></View>
+                            <View className="w-1 h-4 rounded-full bg-primary"></View>
+                        </View>
+                        <View>
+                            <Text className="text-sm text-black font-medium">Dr. Andrew Miller</Text>
+                            <Text className="text-xs text-black-400 mt-1">25:12 remaining (30 mins visit)</Text>
+                        </View>
                     </View>
-                    <View>
-                        <Text className="text-sm text-black font-medium">Dr. Andrew Miller</Text>
-                        <Text className="text-xs text-black-400 mt-1">25:12 remaining (30 mins visit)</Text>
-                    </View>
+                    <TouchableOpacity
+                        className={`w-11 h-10 rounded-xl bg-danger items-center justify-center ${isLeaving ? "opacity-60" : ""}`}
+                        activeOpacity={0.8}
+                        onPress={handleHangup}
+                    >
+                        <View className="rotate-[135deg]">
+                            <Phone size={16} color="#fff" fill="#fff" />
+                        </View>
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                    className={`w-11 h-10 rounded-xl bg-danger items-center justify-center ${isLeaving ? "opacity-60" : ""}`}
-                    activeOpacity={0.8}
-                    onPress={handleHangup}
-                >
-                    <View className="rotate-[135deg]">
-                        <Phone size={16} color="#fff" fill="#fff" />
-                    </View>
-                </TouchableOpacity>
-            </View>
+            )}
 
             {/* Video Container - Middle Section */}
             <View className="flex-1 bg-primary">
                 <WherebyEmbed
                     ref={wherebyRoomRef}
-                    style={{ marginTop: -31, flex: 1 }}
+                    style={{ marginTop: isJoined ? -31 : 0, flex: 1 }}
                     room={ROOM_URL ?? ""}
                     skipMediaPermissionPrompt
                     onWherebyMessage={(event) => {
@@ -183,46 +186,56 @@ const WhereBy = () => {
                     onReady={() => {
                         console.log("ready");
                     }}
+                    onJoin={() => {
+                        // User has been let in by the host
+                        console.log("User joined the room");
+                        setIsJoined(true);
+                    }}
+                    onLeave={({ removed }) => {
+                        console.log("User left the room", { removed });
+                        setIsJoined(false);
+                    }}
                     onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
                     onCameraToggle={({ enabled }) => setIsCameraOn(enabled)}
                     onChatToggle={({ open }) => setIsChatOpen(open)}
                     onTranscriptionStatusChange={({ status }) => setIsCaptionOn(status === "started")}
                 />
-
             </View>
 
-            {/* Bottom Bar */}
-            <View 
-                className="flex-row justify-between bg-primary px-5 pb-3 pt-5"
-                style={{
-                    paddingBottom: Platform.OS === 'ios' ? 10 + insets.bottom : 10 + insets.bottom,
-                }}
-            >
-                {CONTROLS.map((item) => {
-                    const isActive = activeMap[item.key];
-                    return (
-                        <TouchableOpacity
-                            key={item.key}
-                            className="items-center flex-1"
-                            activeOpacity={0.7}
-                            onPress={controlHandlers[item.key]}
-                        >
-                            <View className={`w-12 h-12 rounded-xl items-center justify-center mb-2 ${
-                                isActive ? "bg-white" : "bg-white/60"
-                            }`}>
-                                <Ionicons
-                                    name={item.icon}
-                                    size={22}
-                                    color={isActive ? "#013220" : "#fff"}
-                                />
-                            </View>
-                            <Text className={`text-xs ${isActive ? "text-white font-semibold" : "text-white/80"}`}>
-                                {item.label}
-                            </Text>
-                        </TouchableOpacity>
-                    );
-                })}
-            </View>
+            {/* Bottom Bar - Only show when joined */}
+            {isJoined && (
+                <View 
+                    className="flex-row justify-between bg-primary px-5 pb-3 pt-5"
+                    style={{
+                        paddingBottom: Platform.OS === 'ios' ? 10 + insets.bottom : 10 + insets.bottom,
+                    }}
+                >
+                    {CONTROLS.map((item) => {
+                        const isActive = activeMap[item.key];
+                        return (
+                            <TouchableOpacity
+                                key={item.key}
+                                className="items-center flex-1"
+                                activeOpacity={0.7}
+                                onPress={controlHandlers[item.key]}
+                            >
+                                <View className={`w-12 h-12 rounded-xl items-center justify-center mb-2 ${
+                                    isActive ? "bg-white" : "bg-white/60"
+                                }`}>
+                                    <Ionicons
+                                        name={item.icon}
+                                        size={22}
+                                        color={isActive ? "#013220" : "#fff"}
+                                    />
+                                </View>
+                                <Text className={`text-xs ${isActive ? "text-white font-semibold" : "text-white/80"}`}>
+                                    {item.label}
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
+            )}
 
         </View>
     )
