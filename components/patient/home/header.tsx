@@ -11,13 +11,12 @@ interface HeaderProps {
 const Header = ({ insets }: HeaderProps) => {
 
     const [location, setLocation] = useState('Ludhiana 141001');
-    const statusPadding = insets?.top ?? 0;
 
     return (
         <View 
             className="bg-primary px-4 pb-5"
             style={{
-                paddingTop: statusPadding,
+                paddingTop: insets?.top ?? 0,
             }}
         >
 
