@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
-import { X } from 'lucide-react-native';
+import { View, Text, Modal } from "react-native";
+import { X, Plus } from 'lucide-react-native';
+import Button from "@/components/ui/Button";
 import { prescriptionData } from "@/json-data/doctor/start-consulation";
 import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
 import AddNewPrescription from "./add-new-prescription";
 
-const AddPrescription = ({ onClose }: { onClose: () => void }) => {
+const AddPrescription = () => {
 
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -26,20 +27,25 @@ const AddPrescription = ({ onClose }: { onClose: () => void }) => {
                 </View>
             </Modal>
 
-            {/* Header */}
-            <View 
-                className='flex-row items-center justify-between p-5 pt-0'
-                style={{
-                    boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
-                }}
-            >
-                <Text className='text-lg font-medium text-black'>Prescription</Text>
-                <TouchableOpacity onPress={onClose}>
-                    <X color="#1F1E1E" size={18} strokeWidth={2.5} />
-                </TouchableOpacity>
-            </View>
+            <View className='pt-5 pb-14 px-5'>
 
-            <View className='pb-14 px-5'>
+                {/* patient info */}
+                <View className="mb-7">
+                    <Text className="text-lg font-medium text-black">Rohan Singh</Text>
+                    <View className='flex-row items-center gap-x-2 mt-0.5'>
+                        <Text className="text-sm text-black-400">42 Years</Text>
+                        <View className="w-1 h-1 rounded-full bg-gray mt-0.5"></View>
+                        <Text className="text-sm text-black-400">Male</Text>
+                    </View>
+                </View>
+
+                {/* add prescription button */}
+                <Button 
+                    icon={<Plus color="#fff" size={16} strokeWidth={3} />}
+                    onPress={() => setModalVisible(true)}
+                >
+                    Add New Prescriptions
+                </Button>
 
                 <View className="mt-5">
                     {prescriptionData.map((prescription) => (

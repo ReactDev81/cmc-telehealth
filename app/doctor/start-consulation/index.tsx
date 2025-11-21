@@ -1,38 +1,83 @@
 import * as React from "react";
-import { View, Alert, Platform, Text, TouchableOpacity } from "react-native";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Alert, Platform, Text, TouchableOpacity, Dimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Camera } from "expo-camera";
-import * as DocumentPicker from "expo-document-picker";
-import { Ionicons } from "@expo/vector-icons";
-import { Phone } from 'lucide-react-native';
+import { Phone, FileUser, Pill, MessagesSquare, Video, VideoOff, Mic, MicOff, ClosedCaption, X} from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
+import BottomSheet, { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ControlsButton from "./controls-button";
+import AddPrescription from "./add-prescription";
+import PatientDetails from "./patient-details";
 
-const ROOM_URL = process.env.EXPO_PUBLIC_DOCTOR_CALL_LINK + "&bottomToolbar=off"
+type ControlKey = "chat" | "camera" | "microphone" | "caption" | "prescription" | "patient_details";
 
-type ControlKey = "chat" | "camera" | "microphone" | "caption" | "share";
-type IconName = React.ComponentProps<typeof Ionicons>["name"];
+type ControlConfig = {
+    key: ControlKey;
+    label: string;
+    icon: LucideIcon;
+    inactiveIcon?: LucideIcon;
+};
 
-const CONTROLS: { key: ControlKey; label: string; icon: IconName }[] = [
-    { key: "chat", label: "Chat", icon: "chatbubble-ellipses" },
-    { key: "camera", label: "Off", icon: "videocam-off" },
-    { key: "microphone", label: "Mute", icon: "mic-off" },
-    { key: "caption", label: "Caption", icon: "logo-closed-captioning" },
-    { key: "share", label: "Shared File", icon: "attach" },
+const CONTROLS: ControlConfig[] = [
+    { key: "camera", label: "Camera", icon: Video, inactiveIcon: VideoOff },
+    { key: "microphone", label: "Mic", icon: Mic, inactiveIcon: MicOff },
+    { key: "prescription", label: "Prescription", icon: Pill },
+    { key: "patient_details", label: "Patient Details", icon: FileUser },
+    { key: "chat", label: "Chat", icon: MessagesSquare },
+    { key: "caption", label: "Caption", icon: ClosedCaption },
 ];
 
-const StartConsulationWithPatient = () => {
-  
+const MAX_BOTTOM_SHEET_HEIGHT = Dimensions.get("window").height * 0.8;
+
+const StartConsulationWithDoctor = () => {
+
+    const ROOM_URL = React.useMemo(() => {
+        const baseUrl = process.env.EXPO_PUBLIC_DOCTOR_CALL_LINK?.trim();
+        if (!baseUrl) {
+            return "";
+        }
+        try {
+            const url = new URL(baseUrl);
+            url.searchParams.set("bottomToolbar", "off");
+            const finalUrl = url.toString();
+            return finalUrl;
+        } catch (error) {
+            const separator = baseUrl.includes("?") ? "&" : "?";
+            const finalUrl = `${baseUrl}${separator}bottomToolbar=off`;
+            return finalUrl;
+        }
+    }, []);
+
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
+    const bottomSheetRef = React.useRef<BottomSheet>(null);
+
+    // Add Prescription Bottom Sheet
+    const addPrescriptionBottomSheetRef = React.useRef<BottomSheet>(null);
+    
+    // Patient Details Bottom Sheet
+    const patientDetailsBottomSheetRef = React.useRef<BottomSheet>(null);
+
     const [hasPermissionForAndroid, setHasPermissionForAndroid] = React.useState<boolean>(false);
+
     const [isCameraOn, setIsCameraOn] = React.useState(true);
     const [isMicrophoneOn, setIsMicrophoneOn] = React.useState(true);
+    const [isAddPrescriptionOpen, setIsAddPrescriptionOpen] = React.useState(false);
+    const [isPatientDetailsOpen, setIsPatientDetailsOpen] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
     const [isCaptionOn, setIsCaptionOn] = React.useState(false);
-    const [sharedFileName, setSharedFileName] = React.useState<string | null>(null);
+
     const [isLeaving, setIsLeaving] = React.useState(false);
     const [isJoined, setIsJoined] = React.useState(false);
 
+    const [isBottomSheetExpanded, setIsBottomSheetExpanded] = React.useState<boolean>(false);
+
     const insets = useSafeAreaInsets();
+
+    const handleSheetChanges = React.useCallback((index: number) => {
+        setIsBottomSheetExpanded(index === 1);
+    }, []);
 
     React.useEffect(() => {
         (async () => {
@@ -46,6 +91,8 @@ const StartConsulationWithPatient = () => {
                     Alert.alert("Permissions Required", "Camera and microphone permissions are required.");
                     setHasPermissionForAndroid(false);
                 }
+            } else {
+                setHasPermissionForAndroid(true);
             }
         })();
     }, []);
@@ -56,7 +103,6 @@ const StartConsulationWithPatient = () => {
         }
         setIsLeaving(true);
         wherebyRoomRef.current?.leaveRoom();
-        Alert.alert("Call ended", "You have left the consultation.");
         setTimeout(() => setIsLeaving(false), 1200);
     }, [isLeaving]);
 
@@ -88,157 +134,250 @@ const StartConsulationWithPatient = () => {
             }
             setIsCaptionOn(next);
         } catch (error) {
-            console.warn("Unable to toggle captions", error);
             Alert.alert("Captions unavailable", "We could not update live captions for this room.");
         }
     }, [isCaptionOn]);
 
-    const handleShareFile = React.useCallback(async () => {
-        try {
-            const file = await DocumentPicker.getDocumentAsync({
-                type: "*/*",
-                copyToCacheDirectory: true,
-            });
+    const handleTogglePrescription = React.useCallback(() => {
+        setIsAddPrescriptionOpen((prev) => !prev);
+    }, []);
 
-            if (file.canceled) {
-                return;
-            }
+    const handlePrescriptionSheetChange = React.useCallback((index: number) => {
+        if (index === -1) {
+            setIsAddPrescriptionOpen(false);
+        } else {
+            setIsAddPrescriptionOpen(true);
+        }
+    }, []);
 
-            const picked = file.assets?.[0];
-            if (picked) {
-                setSharedFileName(picked.name ?? picked.uri.split("/").pop() ?? "Selected file");
-                Alert.alert("File ready to share", picked.name ?? "Attachment selected");
-            }
-        } catch (error) {
-            console.warn("Document picker error", error);
-            Alert.alert("File share failed", "We couldn't access your files. Please try again.");
+    const handleTogglePatientDetails = React.useCallback(() => {
+        setIsPatientDetailsOpen((prev) => !prev);
+    }, []);
+
+    const handlePatientDetailsSheetChange = React.useCallback((index: number) => {
+        if (index === -1) {
+            setIsPatientDetailsOpen(false);
+        } else {
+            setIsPatientDetailsOpen(true);
         }
     }, []);
 
     const controlHandlers: Record<ControlKey, () => void> = React.useMemo(
         () => ({
-            chat: handleToggleChat,
             camera: handleToggleCamera,
             microphone: handleToggleMicrophone,
+            prescription: handleTogglePrescription,
+            patient_details: handleTogglePatientDetails,
+            chat: handleToggleChat,
             caption: handleToggleCaption,
-            share: handleShareFile,
         }),
-        [handleShareFile, handleToggleCaption, handleToggleCamera, handleToggleChat, handleToggleMicrophone],
+        [
+            handleToggleCamera,
+            handleToggleMicrophone,
+            handleTogglePrescription,
+            handleTogglePatientDetails,
+            handleToggleChat,
+            handleToggleCaption,
+        ],
     );
 
     const activeMap: Record<ControlKey, boolean> = {
+        camera: isCameraOn,
+        microphone: isMicrophoneOn,
+        prescription: isAddPrescriptionOpen,
+        patient_details: isPatientDetailsOpen,
         chat: isChatOpen,
-        camera: !isCameraOn,
-        microphone: !isMicrophoneOn,
         caption: isCaptionOn,
-        share: Boolean(sharedFileName),
     };
+
+    const visibleControls = React.useMemo(() => {
+        const DEFAULT_COUNT = 4;
+        if (isChatOpen) {
+          return CONTROLS.slice(0, DEFAULT_COUNT);
+        }
+        return CONTROLS.slice(0, isBottomSheetExpanded ? CONTROLS.length : DEFAULT_COUNT);
+    }, [isChatOpen, isBottomSheetExpanded]);
 
     if (Platform.OS === "android" && !hasPermissionForAndroid) {
         return <View />;
     }
-  
+
     return(
-        <View className="flex-1 bg-white" 
-            style={{
-                paddingTop: insets?.top ?? 0,
-            }}
-        >
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <View
+                className="flex-1 bg-white"
+                style={{
+                    paddingTop: insets?.top ?? 0,
+                }}
+            >
 
-            {/* Header section - Only show when joined */}
-            {isJoined && (
-                <View className="bg-white px-6 py-4 flex-row items-center gap-x-4">
-                    <View className="flex-1 flex-row items-start gap-x-3">
-                        <View className="flex-row items-center gap-x-0.5 mt-1.5">
-                            <View className="w-1 h-2 rounded-full bg-primary"></View>
-                            <View className="w-1 h-4 rounded-full bg-primary"></View>
-                            <View className="w-1 h-6 rounded-full bg-primary"></View>
-                            <View className="w-1 h-3 rounded-full bg-primary"></View>
-                            <View className="w-1 h-4 rounded-full bg-primary"></View>
+                {/* Header section - Only show when joined */}
+                {isJoined && (
+                    <View className="bg-white px-6 py-4 flex-row items-center gap-x-4">
+                        <View className="flex-1 flex-row items-start gap-x-3">
+                            <View className="flex-row items-center gap-x-0.5 mt-1.5">
+                                <View className="w-1 h-2 rounded-full bg-primary"></View>
+                                <View className="w-1 h-4 rounded-full bg-primary"></View>
+                                <View className="w-1 h-6 rounded-full bg-primary"></View>
+                                <View className="w-1 h-3 rounded-full bg-primary"></View>
+                                <View className="w-1 h-4 rounded-full bg-primary"></View>
+                            </View>
+                            <View>
+                                <Text className="text-sm text-black font-medium">Dr. Andrew Miller</Text>
+                                <Text className="text-xs text-black-400 mt-1">25:12 remaining (30 mins visit)</Text>
+                            </View>
                         </View>
-                        <View>
-                            <Text className="text-sm text-black font-medium">Dr. Andrew Miller</Text>
-                            <Text className="text-xs text-black-400 mt-1">25:12 remaining (30 mins visit)</Text>
-                        </View>
+                        <TouchableOpacity
+                            className={`w-11 h-10 rounded-xl bg-danger items-center justify-center ${isLeaving ? "opacity-60" : ""}`}
+                            activeOpacity={0.8}
+                            onPress={handleHangup}
+                        >
+                            <View className="rotate-[135deg]">
+                                <Phone size={16} color="#fff" fill="#fff" />
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                        className={`w-11 h-10 rounded-xl bg-danger items-center justify-center ${isLeaving ? "opacity-60" : ""}`}
-                        activeOpacity={0.8}
-                        onPress={handleHangup}
+                )}
+
+                {/* Video Container - Middle Section */}
+                <View className="bg-primary flex-1">
+                    <View className="h-[80%]">
+                        {ROOM_URL ? (
+                            <WherebyEmbed
+                                ref={wherebyRoomRef}
+                                style={{ marginTop: isJoined ? -31 : 0 }}
+                                room={ROOM_URL}
+                                skipMediaPermissionPrompt
+                                onWherebyMessage={(event) => {
+                                    console.log("Whereby message:", event);
+                                }}
+                                onReady={() => {
+                                    console.log("Whereby ready with room URL:", ROOM_URL);
+                                }}
+                                onJoin={() => {
+                                    setIsJoined(true);
+                                }}
+                                onLeave={({ removed }) => {
+                                    setIsJoined(false);
+                                }}
+                                onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
+                                onCameraToggle={({ enabled }) => setIsCameraOn(enabled)}
+                                onChatToggle={({ open }) => setIsChatOpen(open)}
+                                onTranscriptionStatusChange={({ status }) => setIsCaptionOn(status === "started")}
+                            />
+                        ) : (
+                            <View className="flex-1 items-center justify-center">
+                                <Text className="text-white">Loading room URL...</Text>
+                            </View>
+                        )}
+                    </View>
+                </View>
+
+                {/* Bottom Bar - Only show when joined */}
+                {isJoined && (
+                    <BottomSheet
+                        ref={bottomSheetRef}
+                        index={0}
+                        snapPoints={["18%"]}
+                        onChange={handleSheetChanges}
+                        backgroundStyle={{ backgroundColor: "#013220" }}
+                        handleIndicatorStyle={{ backgroundColor: "#ccc", width: 40 }}
                     >
-                        <View className="rotate-[135deg]">
-                            <Phone size={16} color="#fff" fill="#fff" />
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {/* Video Container - Middle Section */}
-            <View className="flex-1 bg-primary">
-                <WherebyEmbed
-                    ref={wherebyRoomRef}
-                    style={{ marginTop: isJoined ? -31 : 0, flex: 1 }}
-                    room={ROOM_URL ?? ""}
-                    skipMediaPermissionPrompt
-                    onWherebyMessage={(event) => {
-                        console.log(event);
-                    }}
-                    onReady={() => {
-                        console.log("ready");
-                    }}
-                    onJoin={() => {
-                        // User has been let in by the host
-                        console.log("User joined the room");
-                        setIsJoined(true);
-                    }}
-                    onLeave={({ removed }) => {
-                        console.log("User left the room", { removed });
-                        setIsJoined(false);
-                    }}
-                    onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
-                    onCameraToggle={({ enabled }) => setIsCameraOn(enabled)}
-                    onChatToggle={({ open }) => setIsChatOpen(open)}
-                    onTranscriptionStatusChange={({ status }) => setIsCaptionOn(status === "started")}
-                />
-            </View>
-
-            {/* Bottom Bar - Only show when joined */}
-            {isJoined && (
-                <View 
-                    className="flex-row justify-between bg-primary px-5 pb-3 pt-5"
-                    style={{
-                        paddingBottom: Platform.OS === 'ios' ? 10 + insets.bottom : 10 + insets.bottom,
-                    }}
-                >
-                    {CONTROLS.map((item) => {
-                        const isActive = activeMap[item.key];
-                        return (
-                            <TouchableOpacity
-                                key={item.key}
-                                className="items-center flex-1"
-                                activeOpacity={0.7}
-                                onPress={controlHandlers[item.key]}
+                        <BottomSheetView style={{ flex: 1 }}>
+                            <View
+                                className="flex-row flex-wrap justify-center gap-y-5 bg-primary px-5 pb-3 pt-5"
+                                style={{
+                                    paddingBottom: Platform.OS === "ios" ? 10 + insets.bottom : 10 + insets.bottom,
+                                }}
                             >
-                                <View className={`w-12 h-12 rounded-xl items-center justify-center mb-2 ${
-                                    isActive ? "bg-white" : "bg-white/60"
-                                }`}>
-                                    <Ionicons
-                                        name={item.icon}
-                                        size={22}
-                                        color={isActive ? "#013220" : "#fff"}
-                                    />
-                                </View>
-                                <Text className={`text-xs ${isActive ? "text-white font-semibold" : "text-white/80"}`}>
-                                    {item.label}
-                                </Text>
-                            </TouchableOpacity>
-                        );
-                    })}
-                </View>
-            )}
+                                {visibleControls.map((item) => {
+                                    const isActive = activeMap[item.key];
+                                    const iconComponent = isActive ? item.icon : item.inactiveIcon ?? item.icon;
+                                    return (
+                                        <ControlsButton
+                                            key={item.key}
+                                            action={controlHandlers[item.key]}
+                                            isActive={isActive}
+                                            label={item.label}
+                                            icon={iconComponent}
+                                        />
+                                    );
+                                })}
+                            </View>
+                        </BottomSheetView>
+                    </BottomSheet>
+                )}
 
-        </View>
+                {/* Add Prescription Bottom Sheet */}
+                {
+                    isAddPrescriptionOpen &&
+                    <BottomSheet
+                        ref={addPrescriptionBottomSheetRef}
+                        index={0}
+                        snapPoints={["80%"]}
+                        enablePanDownToClose={true}
+                        onChange={handlePrescriptionSheetChange}
+                        backgroundStyle={{ backgroundColor: "#fff" }}
+                        handleIndicatorStyle={{ width: 0 }}
+                    >
+                        <BottomSheetScrollView 
+                            stickyHeaderIndices={[0]}
+                            keyboardShouldPersistTaps="handled"
+                        >
+                            {/* Header */}
+                            <View 
+                                className='flex-row items-center justify-between p-5 pt-0 bg-white'
+                                style={{
+                                    boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
+                                }}
+                            >
+                                <Text className='text-lg font-medium text-black'>Prescription</Text>
+                                <TouchableOpacity onPress={() => setIsAddPrescriptionOpen(false)}>
+                                    <X color="#1F1E1E" size={18} strokeWidth={2.5} />
+                                </TouchableOpacity>
+                            </View>
+                            <AddPrescription />
+                        </BottomSheetScrollView>
+                    </BottomSheet>
+                }
+
+                {/* Patient Details Bottom Sheet */}
+                {
+                    isPatientDetailsOpen &&
+                    <BottomSheet
+                        ref={patientDetailsBottomSheetRef}
+                        index={0}
+                        snapPoints={['80%']}
+                        enablePanDownToClose={true}
+                        maxDynamicContentSize={MAX_BOTTOM_SHEET_HEIGHT}
+                        onChange={handlePatientDetailsSheetChange}
+                        backgroundStyle={{ backgroundColor: "#fff" }}
+                        handleIndicatorStyle={{ width: 0, height: 0 }}
+                    >
+                        <BottomSheetScrollView 
+                            stickyHeaderIndices={[0]}
+                            keyboardShouldPersistTaps="handled"
+                        >
+                            {/* Header */}
+                            <View 
+                                className='flex-row items-center justify-between p-5 pt-0 bg-white'
+                                style={{
+                                    boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
+                                }}
+                            >
+                                <Text className='text-lg font-medium text-black'>Patient Detail</Text>
+                                <TouchableOpacity onPress={() => setIsPatientDetailsOpen(false)}>
+                                    <X color="#1F1E1E" size={18} strokeWidth={2.5} />
+                                </TouchableOpacity>
+                            </View>
+                            <PatientDetails />
+                        </BottomSheetScrollView>
+                    </BottomSheet>
+                }
+
+            </View>
+        </GestureHandlerRootView>
     )
 }
 
-export default StartConsulationWithPatient
+export default StartConsulationWithDoctor

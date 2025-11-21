@@ -1,0 +1,90 @@
+import { View, Linking } from "react-native";
+import Title from "@/components/ui/Title";
+import PatientInfoHeader from "@/components/doctor/patient-detail/patient-info-header";
+import ContactInformation from "@/components/doctor/patient-detail/contact-information"; 
+import { ReportCardData } from "@/json-data/common/medical-reports";
+import ReportsCard from "@/components/common/medical-reports/reports-card";
+import { MedicinesData } from "@/json-data/patient/my-medicines";
+import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
+import { PreviousAppointmentData } from "@/json-data/doctor/previous-appointment";
+import PreviousAppointment from "@/components/doctor/patient-detail/previous-appointment";
+
+const PatientDetails = () => {
+    return (
+        <View className='pt-5 px-5 pb-16'>
+
+            {/* patient info headet */}
+            <PatientInfoHeader
+                image={require("../../../../assets/images/patient/mark-stonis.png")}
+                name="Rohan Singh"
+                age={42}
+                gender="Male"
+                problem = "I've been neglecting my teeth care lately, and l'm not sure"
+            />
+
+            {/* contact information of this patient */}
+            <ContactInformation
+                number="(555) 123-4567"
+                email="rohansignh@gmail.com"
+            />
+
+            {/* mdeical reports */}
+            <View className="mt-8">
+                <Title text="Medical Reports" />
+                {ReportCardData.slice(0, 2).map((report) => {
+                    
+                    const handleViewReport = () => {
+                        const pdfUrl = report.report_view;
+                        if (pdfUrl) {
+                            Linking.openURL(pdfUrl);
+                        }
+                    };
+                    
+                    return(
+                        <View className="mt-5" key={report.id}>
+                            <ReportsCard
+                                report_name={report.report_name}
+                                report_date={report.report_date}
+                                doctor_name={report.doctor_name}
+                                report_type={report.report_type}
+                                handleReport={handleViewReport}
+                            />
+                        </View>
+                    )
+                })}
+            </View>
+
+            {/* currently running medicine */}
+            <View className="mt-8">
+                <Title text="Current Medication" />
+                <View className="mt-5">
+                    {MedicinesData.slice(0, 2).map((med) => (
+                        <MedicineAccordian
+                            key={med.id}
+                            medicine={med}
+                            defaultExpanded={true}
+                        />
+                    ))}
+                </View>
+            </View>
+
+            {/* previous appointement with this client */}
+            <View className="mt-2">
+                <Title text="Previous appointment with this patients" />
+                {PreviousAppointmentData.slice(0, 2).map((appointment) => (
+                    <PreviousAppointment
+                        key={appointment.id}
+                        subject={appointment.subject}
+                        status={appointment.status}
+                        time={appointment.time}
+                        date={appointment.date}
+                        mode={appointment.mode}
+                    />
+                ))}
+            </View>
+
+        </View>
+    )
+}
+
+export default PatientDetails;

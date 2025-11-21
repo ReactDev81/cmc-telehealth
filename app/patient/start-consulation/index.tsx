@@ -2,17 +2,17 @@ import * as React from "react";
 import { View, Alert, Platform, Text, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Camera } from "expo-camera";
-import { Phone, FileUser, Pill, MessagesSquare, Video, VideoOff, Mic, MicOff, ClosedCaption} from "lucide-react-native";
+import { Phone, Pill, MessagesSquare, Video, VideoOff, Mic, MicOff, ClosedCaption} from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ControlsButton from "./controls-button";
 import AddPrescription from "./add-prescription";
-import PatientDetails from "./patient-details";
+
 const ROOM_URL = process.env.EXPO_PUBLIC_PATIENT_CALL_LINK + "?bottomToolbar=off";
 
-type ControlKey = "chat" | "camera" | "microphone" | "caption" | "prescription" | "patient_details";
+type ControlKey = "chat" | "camera" | "microphone" | "caption" | "prescription";
 
 type ControlConfig = {
     key: ControlKey;
@@ -22,12 +22,11 @@ type ControlConfig = {
 };
 
 const CONTROLS: ControlConfig[] = [
-    { key: "chat", label: "Chat", icon: MessagesSquare },
     { key: "camera", label: "Camera", icon: Video, inactiveIcon: VideoOff },
     { key: "microphone", label: "Mic", icon: Mic, inactiveIcon: MicOff },
-    { key: "caption", label: "Caption", icon: ClosedCaption },
     { key: "prescription", label: "Prescription", icon: Pill },
-    { key: "patient_details", label: "Patient Details", icon: FileUser },
+    { key: "chat", label: "Chat", icon: MessagesSquare },
+    { key: "caption", label: "Caption", icon: ClosedCaption },
 ];
 
 const StartConsulationWithDoctor = () => {
@@ -37,18 +36,14 @@ const StartConsulationWithDoctor = () => {
 
     // Add Prescription Bottom Sheet
     const addPrescriptionBottomSheetRef = React.useRef<BottomSheet>(null);
-    
-    // Patient Details Bottom Sheet
-    const patientDetailsBottomSheetRef = React.useRef<BottomSheet>(null);
 
     const [hasPermissionForAndroid, setHasPermissionForAndroid] = React.useState<boolean>(false);
 
     const [isCameraOn, setIsCameraOn] = React.useState(true);
     const [isMicrophoneOn, setIsMicrophoneOn] = React.useState(true);
+    const [isAddPrescriptionOpen, setIsAddPrescriptionOpen] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
     const [isCaptionOn, setIsCaptionOn] = React.useState(false);
-    const [isAddPrescriptionOpen, setIsAddPrescriptionOpen] = React.useState(false);
-    const [isPatientDetailsOpen, setIsPatientDetailsOpen] = React.useState(false);
 
     const [isLeaving, setIsLeaving] = React.useState(false);
     const [isJoined, setIsJoined] = React.useState(false);
@@ -58,7 +53,6 @@ const StartConsulationWithDoctor = () => {
     const insets = useSafeAreaInsets();
 
     const handleSheetChanges = React.useCallback((index: number) => {
-        console.log("handleSheetChanges", index);
         setIsBottomSheetExpanded(index === 1);
     }, []);
 
@@ -117,7 +111,6 @@ const StartConsulationWithDoctor = () => {
             }
             setIsCaptionOn(next);
         } catch (error) {
-            console.warn("Unable to toggle captions", error);
             Alert.alert("Captions unavailable", "We could not update live captions for this room.");
         }
     }, [isCaptionOn]);
@@ -134,45 +127,38 @@ const StartConsulationWithDoctor = () => {
         }
     }, []);
 
-    const handleTogglePatientDetails = React.useCallback(() => {
-        setIsPatientDetailsOpen((prev) => !prev);
-    }, []);
-
-    const handlePatientDetailsSheetChange = React.useCallback((index: number) => {
-        if (index === -1) {
-            setIsPatientDetailsOpen(false);
-        } else {
-            setIsPatientDetailsOpen(true);
-        }
-    }, []);
-
     const controlHandlers: Record<ControlKey, () => void> = React.useMemo(
         () => ({
-            chat: handleToggleChat,
             camera: handleToggleCamera,
             microphone: handleToggleMicrophone,
             caption: handleToggleCaption,
+            chat: handleToggleChat,
             prescription: handleTogglePrescription,
-            patient_details: handleTogglePatientDetails,
         }),
         [
             handleToggleCaption,
             handleToggleCamera,
-            handleToggleChat,
             handleToggleMicrophone,
+            handleToggleChat,
             handleTogglePrescription,
-            handleTogglePatientDetails,
         ],
     );
 
     const activeMap: Record<ControlKey, boolean> = {
-        chat: isChatOpen,
         camera: isCameraOn,
         microphone: isMicrophoneOn,
         caption: isCaptionOn,
+        chat: isChatOpen,
         prescription: isAddPrescriptionOpen,
-        patient_details: isPatientDetailsOpen,
     };
+
+    const visibleControls = React.useMemo(() => {
+        const DEFAULT_COUNT = 4;
+        if (isChatOpen) {
+          return CONTROLS.slice(0, DEFAULT_COUNT);
+        }
+        return CONTROLS.slice(0, isBottomSheetExpanded ? CONTROLS.length : DEFAULT_COUNT);
+    }, [isChatOpen, isBottomSheetExpanded]);
 
     if (Platform.OS === "android" && !hasPermissionForAndroid) {
         return <View />;
@@ -229,11 +215,9 @@ const StartConsulationWithDoctor = () => {
                                 console.log("ready");
                             }}
                             onJoin={() => {
-                                console.log("User joined the room");
                                 setIsJoined(true);
                             }}
                             onLeave={({ removed }) => {
-                                console.log("User left the room", { removed });
                                 setIsJoined(false);
                             }}
                             onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
@@ -261,7 +245,7 @@ const StartConsulationWithDoctor = () => {
                                     paddingBottom: Platform.OS === "ios" ? 10 + insets.bottom : 10 + insets.bottom,
                                 }}
                             >
-                                {CONTROLS.slice(0, isBottomSheetExpanded ? CONTROLS.length : 4).map((item) => {
+                                {visibleControls.map((item) => {
                                     const isActive = activeMap[item.key];
                                     const iconComponent = isActive ? item.icon : item.inactiveIcon ?? item.icon;
                                     return (
@@ -293,24 +277,6 @@ const StartConsulationWithDoctor = () => {
                     >
                         <BottomSheetView style={{ flex: 1 }}>
                             <AddPrescription onClose={() => setIsAddPrescriptionOpen(false)} />
-                        </BottomSheetView>
-                    </BottomSheet>
-                }
-
-                {/* Add Prescription Bottom Sheet */}
-                {
-                    isPatientDetailsOpen &&
-                    <BottomSheet
-                        ref={patientDetailsBottomSheetRef}
-                        index={1}
-                        snapPoints={["80%"]}
-                        enablePanDownToClose={true}
-                        onChange={handlePatientDetailsSheetChange}
-                        backgroundStyle={{ backgroundColor: "#fff" }}
-                        handleIndicatorStyle={{ width: 0 }}
-                    >
-                        <BottomSheetView style={{ flex: 1 }}>
-                            <PatientDetails onClose={() => setIsPatientDetailsOpen(false)} />
                         </BottomSheetView>
                     </BottomSheet>
                 }
