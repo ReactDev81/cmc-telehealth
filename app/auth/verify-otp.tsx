@@ -4,7 +4,7 @@ import { View, Text, Pressable, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
 
-export default function VerifyOTPScreen() {
+const VerifyOtpScreen = () => {
 
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
@@ -13,10 +13,10 @@ export default function VerifyOTPScreen() {
 
     // Countdown timer
     useEffect(() => {
-    if (resendTimer > 0) {
-        const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-        return () => clearTimeout(timer);
-    }
+        if (resendTimer > 0) {
+            const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+            return () => clearTimeout(timer);
+        }
     }, [resendTimer]);
 
     const handleOtpChange = (value: string, index: number) => {
@@ -143,3 +143,5 @@ export default function VerifyOTPScreen() {
         </SafeAreaView>
     );
 }
+
+export default VerifyOtpScreen

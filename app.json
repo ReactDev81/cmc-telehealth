@@ -59,7 +59,8 @@
       ],
       "expo-audio",
       "expo-video",
-      "expo-camera"
+      "expo-camera",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,

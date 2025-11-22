@@ -1,4 +1,4 @@
-import { NotificationLists } from "types/notification"
+import { NotificationLists } from "@/types/common/notification"
 
 export const NotificationList: NotificationLists[] = [
     {

@@ -1,11 +1,50 @@
 import { useMemo, useState, useCallback } from "react";
-import { View, Text, Pressable, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Pressable, ScrollView, TouchableOpacity, TextStyle } from "react-native";
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import Segmented from "@/components/doctor/my-schedule/segmented";
 import SlotCard from "@/components/doctor/my-schedule/slot-card";
-import { Calendar, DateObject } from "react-native-calendars";
+import { Calendar } from "react-native-calendars";
+import type { DateData } from "react-native-calendars";
 import { addDays, eachDayOfInterval, endOfWeek, format, isSameDay, startOfDay, startOfWeek, addWeeks } from "date-fns";
 import { Slot } from "@/types/doctor/schedule";
+
+type CalendarHeaderStyles = {
+    monthText?: TextStyle;
+    dayTextAtIndex0?: TextStyle;
+    dayTextAtIndex1?: TextStyle;
+    dayTextAtIndex2?: TextStyle;
+    dayTextAtIndex3?: TextStyle;
+    dayTextAtIndex4?: TextStyle;
+    dayTextAtIndex5?: TextStyle;
+    dayTextAtIndex6?: TextStyle;
+};
+
+type ExtendedCalendarTheme = {
+    todayTextColor?: string;
+    selectedDayBackgroundColor?: string;
+    selectedDayTextColor?: string;
+    arrowColor?: string;
+    dayTextColor?: string;
+    'stylesheet.calendar.header'?: CalendarHeaderStyles;
+};
+
+const calendarTheme: ExtendedCalendarTheme = {
+    todayTextColor: "#1ABE17",
+    selectedDayBackgroundColor: "#013220",
+    selectedDayTextColor: "#fff",
+    arrowColor: "#1F1E1E",
+    dayTextColor: '#4D4D4D',
+    'stylesheet.calendar.header': {
+        monthText: { fontSize: 16, fontWeight: '500', color: '#1F1E1E' },
+        dayTextAtIndex0: { color: '#4D4D4D' },
+        dayTextAtIndex1: { color: '#4D4D4D' },
+        dayTextAtIndex2: { color: '#4D4D4D' },
+        dayTextAtIndex3: { color: '#4D4D4D' },
+        dayTextAtIndex4: { color: '#4D4D4D' },
+        dayTextAtIndex5: { color: '#4D4D4D' },
+        dayTextAtIndex6: { color: '#FF0000' }, // Sunday label
+    },
+};
 
 const mock: Slot[] = [  
     { id: "1", start: "2025-11-03T06:30:00.000Z", end: "2025-11-03T14:00:00.000Z", capacity: 2, label: "In Person" },
@@ -127,25 +166,10 @@ const Schedules = () => {
                             enableSwipeMonths 
                             monthFormat="MMM, yyyy"              
                             markedDates={marked}
-                            onDayPress={(d: DateObject) => setSelected(new Date(d.dateString))}
-                            theme={{
-                                todayTextColor: "#1ABE17",
-                                selectedDayBackgroundColor: "#013220",
-                                selectedDayTextColor: "#fff",
-                                arrowColor: "#1F1E1E",
-                                dayTextColor: '#4D4D4D',
-                                'stylesheet.calendar.header': {
-                                    monthText: { fontSize: 16, fontWeight: '500', color: '#1F1E1E' },
-                                    dayTextAtIndex0: { color: '#4D4D4D' },
-                                    dayTextAtIndex1: { color: '#4D4D4D' },
-                                    dayTextAtIndex2: { color: '#4D4D4D' },
-                                    dayTextAtIndex3: { color: '#4D4D4D' },
-                                    dayTextAtIndex4: { color: '#4D4D4D' },
-                                    dayTextAtIndex5: { color: '#4D4D4D' },
-                                    dayTextAtIndex6: { color: '#FF0000' }, // Sunday label
-                                },
-                            }}
+                            onDayPress={(d: DateData) => setSelected(new Date(d.dateString))}
+                            theme={calendarTheme}
                             dayComponent={({ date, state, marking, onPress, onLongPress }) => {
+                                if (!date) return null;
                                 const isSunday = new Date(date.dateString).getDay() === 0;
                                 const isSelected = !!marking?.selected;
                                 const isDisabled =

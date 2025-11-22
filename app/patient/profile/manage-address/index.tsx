@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native'
 import { useRef, useMemo, useCallback, useState } from 'react'
 import * as Location from "expo-location";
 import { router } from 'expo-router';
@@ -13,6 +13,7 @@ const ManageAddress = () => {
     const snapPoints = useMemo(() => ['40%'], []);
     const [isOpen, setIsOpen] = useState(false);
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleAddAddress = () => {
         setIsOpen(true);
@@ -27,43 +28,114 @@ const ManageAddress = () => {
     };
 
     const getCurrentLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") return null;
-      
-        let loc = await Location.getCurrentPositionAsync({});
-        setLocation(loc);
-        return loc;
+        try {
+            const servicesEnabled = await Location.hasServicesEnabledAsync();
+
+            if (!servicesEnabled) {
+                Alert.alert(
+                    'Location services disabled',
+                    'Turn on location / GPS services in your device settings, then try again or choose a different location.'
+                );
+                return null;
+            }
+
+            let { status } = await Location.requestForegroundPermissionsAsync();
+
+            if (status !== "granted") {
+                Alert.alert(
+                    'Location permission needed',
+                    'Allow location access in your device settings to use your current location, or choose a different location instead.'
+                );
+                return null;
+            }
+          
+            let loc = await Location.getCurrentPositionAsync({});
+            setLocation(loc);
+            return loc;
+        } catch (error) {
+            console.error('Error getting current location', error);
+            Alert.alert(
+                'Unable to fetch location',
+                'We could not get your current location. Please try again, or choose a different location.'
+            );
+            return null;
+        }
     };      
 
-    const handleCurrentLocation = async () => {
-        const loc = await getCurrentLocation();
+    // const handleCurrentLocation = async () => {
+    //     const loc = await getCurrentLocation();
       
-        if (loc) {
-            bottomSheetRef.current?.close();
-            setIsOpen(false);
-            router.push({
-                pathname: '/patient/profile/manage-address/add-current-location',
-                params: {
-                    latitude: loc.coords.latitude,
-                    longitude: loc.coords.longitude,
-                },
-            });
+    //     if (loc) {
+    //         bottomSheetRef.current?.close();
+    //         setIsOpen(false);
+    //         router.push({
+    //             pathname: '/patient/profile/manage-address/add-current-location',
+    //             params: {
+    //                 latitude: loc.coords.latitude,
+    //                 longitude: loc.coords.longitude,
+    //             },
+    //         });
+    //     }
+    // };
+
+    const handleCurrentLocation = async () => {
+        if (loading) return; // prevent double taps
+        setLoading(true);
+        try {
+            const loc = await getCurrentLocation();
+          
+            if (loc) {
+                bottomSheetRef.current?.close();
+                setIsOpen(false);
+                router.push({
+                    pathname: '/patient/profile/manage-address/add-current-location',
+                    params: {
+                        latitude: loc.coords.latitude,
+                        longitude: loc.coords.longitude,
+                    },
+                });
+            }
+        } finally {
+            // if navigation unmounts this component, this won't cause issues.
+            setLoading(false);
         }
     };
 
-    const handleChooseDifferentLocation = async () => {
-        const loc = await getCurrentLocation();
+    // const handleChooseDifferentLocation = async () => {
+    //     const loc = await getCurrentLocation();
       
-        if (loc) {
-            bottomSheetRef.current?.close();
-            setIsOpen(false);
-            router.push({
-                pathname: '/patient/profile/manage-address/choose-different-location',
-                params: {
-                    latitude: loc.coords.latitude,
-                    longitude: loc.coords.longitude,
-                },
-            });
+    //     if (loc) {
+    //         bottomSheetRef.current?.close();
+    //         setIsOpen(false);
+    //         router.push({
+    //             pathname: '/patient/profile/manage-address/choose-different-location',
+    //             params: {
+    //                 latitude: loc.coords.latitude,
+    //                 longitude: loc.coords.longitude,
+    //             },
+    //         });
+    //     }
+    // };
+
+    const handleChooseDifferentLocation = async () => {
+        if (loading) return;
+        setLoading(true);
+        try {
+            const loc = await getCurrentLocation();
+          
+            if (loc) {
+                bottomSheetRef.current?.close();
+                setIsOpen(false);
+                router.push({
+                    pathname: '/patient/profile/manage-address/choose-different-location',
+                    params: {
+                        latitude: loc.coords.latitude,
+                        longitude: loc.coords.longitude,
+                    },
+                });
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -153,6 +225,7 @@ const ManageAddress = () => {
                             <Button 
                                 icon={<LocateFixed color="#fff" size={18} />}
                                 onPress={handleCurrentLocation}
+                                disabled={loading}
                             >
                                 Current Location
                             </Button>
@@ -169,11 +242,31 @@ const ManageAddress = () => {
                                 icon={<MapPin color="#1F1E1E" size={18} />}
                                 onPress={handleChooseDifferentLocation}
                                 variant='outline'
+                                disabled={loading}
                             >
                                 Choose a different location
                             </Button>
 
                         </View>
+
+                        {loading && (
+                            <View
+                                style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    right: 0,
+                                    top: 0,
+                                    bottom: 0,
+                                    backgroundColor: 'rgba(255,255,255,0.85)',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                                pointerEvents="auto"
+                            >
+                                <ActivityIndicator size="large" />
+                                <Text style={{ marginTop: 12 }}>Getting location…</Text>
+                            </View>
+                        )}
 
                     </BottomSheetView>
                 </BottomSheet>
