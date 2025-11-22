@@ -1,0 +1,4 @@
+# ensure gradle wrapper is included in the upload
+!android/gradlew
+!android/gradle/wrapper/gradle-wrapper.jar
+!android/gradle/wrapper/gradle-wrapper.properties
