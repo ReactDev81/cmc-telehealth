@@ -7,26 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0DCD2EBC4CF18AD303608590 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E6CF2AC1DDB3542774FC0CA1 /* PrivacyInfo.xcprivacy */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		1EB61D4318B6EC394FE4723A /* libPods-CMCTelehealth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FAA9B3C14CCA9F2CF9FDD72 /* libPods-CMCTelehealth.a */; };
-		28D310917D228767C8413724 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1693D6AA31C73652D788FE1 /* ExpoModulesProvider.swift */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		5AF8E45FD6ABEA71CEABC5DF /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDB11BD1F38F8DDBEA5BAAA /* ExpoModulesProvider.swift */; };
+		98FB0959D48C7AAA82E34895 /* libPods-CMCTelehealth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60714F69AE0BCB2B1E9691C7 /* libPods-CMCTelehealth.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		FF43DECA618DE737A11F43AD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 160C3C6386DA6DF98950A468 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		13B07F961A680F5B00A75B9A /* CMCTelehealth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CMCTelehealth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = CMCTelehealth/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = CMCTelehealth/Info.plist; sourceTree = "<group>"; };
-		160C3C6386DA6DF98950A468 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = CMCTelehealth/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		4FAA9B3C14CCA9F2CF9FDD72 /* libPods-CMCTelehealth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CMCTelehealth.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		86EF8209E7DB723CDBB7A1A8 /* Pods-CMCTelehealth.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CMCTelehealth.release.xcconfig"; path = "Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth.release.xcconfig"; sourceTree = "<group>"; };
-		A1693D6AA31C73652D788FE1 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-CMCTelehealth/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		4EDB11BD1F38F8DDBEA5BAAA /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-CMCTelehealth/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		534DC07C1F7D2A7C749CD655 /* Pods-CMCTelehealth.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CMCTelehealth.release.xcconfig"; path = "Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth.release.xcconfig"; sourceTree = "<group>"; };
+		60714F69AE0BCB2B1E9691C7 /* libPods-CMCTelehealth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CMCTelehealth.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		924B4D834758C6CCBB59474B /* Pods-CMCTelehealth.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CMCTelehealth.debug.xcconfig"; path = "Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth.debug.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = CMCTelehealth/SplashScreen.storyboard; sourceTree = "<group>"; };
-		B76C04639209A01D9B4F4E94 /* Pods-CMCTelehealth.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CMCTelehealth.debug.xcconfig"; path = "Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth.debug.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		E6CF2AC1DDB3542774FC0CA1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = CMCTelehealth/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = CMCTelehealth/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* CMCTelehealth-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CMCTelehealth-Bridging-Header.h"; path = "CMCTelehealth/CMCTelehealth-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1EB61D4318B6EC394FE4723A /* libPods-CMCTelehealth.a in Frameworks */,
+				98FB0959D48C7AAA82E34895 /* libPods-CMCTelehealth.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,28 +53,28 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				160C3C6386DA6DF98950A468 /* PrivacyInfo.xcprivacy */,
+				E6CF2AC1DDB3542774FC0CA1 /* PrivacyInfo.xcprivacy */,
 			);
 			name = CMCTelehealth;
-			sourceTree = "<group>";
-		};
-		207545F8F35686EBF6BA7545 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				B76C04639209A01D9B4F4E94 /* Pods-CMCTelehealth.debug.xcconfig */,
-				86EF8209E7DB723CDBB7A1A8 /* Pods-CMCTelehealth.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				4FAA9B3C14CCA9F2CF9FDD72 /* libPods-CMCTelehealth.a */,
+				60714F69AE0BCB2B1E9691C7 /* libPods-CMCTelehealth.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		55456D2A6C3CCC006F3E4A4C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				924B4D834758C6CCBB59474B /* Pods-CMCTelehealth.debug.xcconfig */,
+				534DC07C1F7D2A7C749CD655 /* Pods-CMCTelehealth.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -91,8 +91,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				207545F8F35686EBF6BA7545 /* Pods */,
-				A241FE83F8ABCC8CB2054611 /* ExpoModulesProviders */,
+				55456D2A6C3CCC006F3E4A4C /* Pods */,
+				8F25232280702DA4AAE231D8 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -107,20 +107,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		932B77CE62166F39476FDDDB /* CMCTelehealth */ = {
+		8F25232280702DA4AAE231D8 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				A1693D6AA31C73652D788FE1 /* ExpoModulesProvider.swift */,
-			);
-			name = CMCTelehealth;
-			sourceTree = "<group>";
-		};
-		A241FE83F8ABCC8CB2054611 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				932B77CE62166F39476FDDDB /* CMCTelehealth */,
+				AE90F60D8165B25A18570E7F /* CMCTelehealth */,
 			);
 			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		AE90F60D8165B25A18570E7F /* CMCTelehealth */ = {
+			isa = PBXGroup;
+			children = (
+				4EDB11BD1F38F8DDBEA5BAAA /* ExpoModulesProvider.swift */,
+			);
+			name = CMCTelehealth;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -140,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "CMCTelehealth" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				10E47DC91DB4E8D59E07074F /* [Expo] Configure project */,
+				69E5CAA87B59BEECDB3A8DF0 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				5A2F2F12D6884DDC9A265356 /* [CP] Embed Pods Frameworks */,
+				888925EEBC8B99759E2381E3 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				FF43DECA618DE737A11F43AD /* PrivacyInfo.xcprivacy in Resources */,
+				0DCD2EBC4CF18AD303608590 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,7 +242,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		10E47DC91DB4E8D59E07074F /* [Expo] Configure project */ = {
+		69E5CAA87B59BEECDB3A8DF0 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -265,34 +265,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-CMCTelehealth/expo-configure-project.sh\"\n";
-		};
-		5A2F2F12D6884DDC9A265356 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/razorpay-core-pod/Razorpay.framework/Razorpay",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/razorpay-core-pod/RazorpayCore.framework/RazorpayCore",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/razorpay-pod/RazorpayStandard.framework/RazorpayStandard",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Razorpay.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RazorpayCore.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RazorpayStandard.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -334,6 +306,34 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		888925EEBC8B99759E2381E3 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/razorpay-core-pod/Razorpay.framework/Razorpay",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/razorpay-core-pod/RazorpayCore.framework/RazorpayCore",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/razorpay-pod/RazorpayStandard.framework/RazorpayStandard",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Razorpay.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RazorpayCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RazorpayStandard.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CMCTelehealth/Pods-CMCTelehealth-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -342,7 +342,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				28D310917D228767C8413724 /* ExpoModulesProvider.swift in Sources */,
+				5AF8E45FD6ABEA71CEABC5DF /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,7 +351,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B76C04639209A01D9B4F4E94 /* Pods-CMCTelehealth.debug.xcconfig */;
+			baseConfigurationReference = 924B4D834758C6CCBB59474B /* Pods-CMCTelehealth.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -387,7 +387,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 86EF8209E7DB723CDBB7A1A8 /* Pods-CMCTelehealth.release.xcconfig */;
+			baseConfigurationReference = 534DC07C1F7D2A7C749CD655 /* Pods-CMCTelehealth.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
