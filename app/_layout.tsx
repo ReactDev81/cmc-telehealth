@@ -183,13 +183,6 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="patient/profile/payment-method" 
-                        options={{ 
-                            headerTitle: 'Payment Method',
-                        }} 
-                    />
-
-                    <Stack.Screen 
                         name="patient/profile/transactions/index" 
                         options={{ 
                             headerTitle: 'Transactions',

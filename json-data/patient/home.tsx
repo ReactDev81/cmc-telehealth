@@ -7,31 +7,31 @@ export const SpecialityData: SpecialityProps[] = [
     {
         id: 1,
         image: require('../../assets/images/speciality/neurology.png'),
-        link: '',
+        link: '/',
         speciality: 'Neurology'
     },
     {
         id: 2,
         image: require('../../assets/images/speciality/cordiology.png'),
-        link: '',
+        link: '/',
         speciality: 'Cordiology'
     },
     {
         id: 3,
         image: require('../../assets/images/speciality/orthopedics.png'),
-        link: '',
+        link: '/',
         speciality: 'Orthopedics'
     },
     {
         id: 4,
         image: require('../../assets/images/speciality/pathology.png'),
-        link: '',
+        link: '/',
         speciality: 'Pathology'
     },
     {
         id: 5,
         image: require('../../assets/images/speciality/dermatology.png'),
-        link: '',
+        link: '/',
         speciality: 'Dermatology'
     }
 ]

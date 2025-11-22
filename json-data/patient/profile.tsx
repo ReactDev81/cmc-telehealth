@@ -3,7 +3,6 @@ import {
     Calendar, 
     ClipboardList, 
     MapPin, 
-    CreditCard, 
     Receipt, 
     Bell, 
     Info, 
@@ -50,13 +49,6 @@ export const menuSections: MenuSection[] = [
                 title: 'Manage Address',
                 description: 'Check and manage addresses',
                 route: '/patient/profile/manage-address'
-            },
-            {
-                id: 'payment-method',
-                icon: <CreditCard size={20} color="#374151" />,
-                title: 'Payment Method',
-                description: 'Check payment method',
-                route: '/patient/profile/payment-method'
             },
             {
                 id: 'transaction',

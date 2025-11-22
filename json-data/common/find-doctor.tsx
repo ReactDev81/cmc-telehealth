@@ -5,91 +5,91 @@ export const SpecialityByDcotorsData: SpecialityByDoctorProps[] = [
     {
         id: 1,
         image: require('../../assets/images/speciality/nephrologist.png'),
-        link: '',
+        link: '/',
         speciality: 'Nephrologist'
     },
     {
         id: 2,
         image: require('../../assets/images/speciality/ophthalmology.png'),
-        link: '',
+        link: '/',
         speciality: 'Ophthalmology'
     },
     {
         id: 3,
         image: require('../../assets/images/speciality/orthopedics.png'),
-        link: '',
+        link: '/',
         speciality: 'Orthopedics'
     },
     {
         id: 4,
         image: require('../../assets/images/speciality/endocrinology.png'),
-        link: '',
+        link: '/',
         speciality: 'Endocrinology'
     },
     {
         id: 5,
         image: require('../../assets/images/speciality/psychiatry.png'),
-        link: '',
+        link: '/',
         speciality: 'Psychiatry'
     },
     {
         id: 6,
         image: require('../../assets/images/speciality/cordiology.png'),
-        link: '',
+        link: '/',
         speciality: 'cordiology'
     },
     {
         id: 7,
         image: require('../../assets/images/speciality/oncology.png'),
-        link: '',
+        link: '/',
         speciality: 'Oncology'
     },
     {
         id: 8,
         image: require('../../assets/images/speciality/general-medicine.png'),
-        link: '',
+        link: '/',
         speciality: 'General Medicine'
     },
     {
         id: 9,
         image: require('../../assets/images/speciality/pathology.png'),
-        link: '',
+        link: '/',
         speciality: 'Pathology'
     },
     {
         id: 10,
         image: require('../../assets/images/speciality/dermatology.png'),
-        link: '',
+        link: '/',
         speciality: 'Dermatology'
     },
     {
         id: 11,
         image: require('../../assets/images/speciality/anatomy.png'),
-        link: '',
+        link: '/',
         speciality: 'Anatomy'
     },
     {
         id: 12,
         image: require('../../assets/images/speciality/anesthesiology.png'),
-        link: '',
+        link: '/',
         speciality: 'Anesthesiology'
     },
     {
         id: 13,
         image: require('../../assets/images/speciality/biochemistry.png'),
-        link: '',
+        link: '/',
         speciality: 'Biochemistry'
     },
     {
         id: 14,
         image: require('../../assets/images/speciality/neurology.png'),
-        link: '',
+        link: '/',
         speciality: 'Neurology'
     },
     {
         id: 15,
         image: require('../../assets/images/speciality/hematology.png'),
-        link: '',
+        link: '/',
         speciality: 'Hematology'
     }
 ]
@@ -98,67 +98,67 @@ export const SymptomsByDcotorsData: SymptomsByDoctorProps[] = [
     {
         id: 1,
         image: require('../../assets/images/symptoms/acne.png'),
-        link: '',
+        link: '/',
         symptoms: 'Acne'
     },
     {
         id: 2,
         image: require('../../assets/images/symptoms/back-pain.png'),
-        link: '',
+        link: '/',
         symptoms: 'Back Pain'
     },
     {
         id: 3,
         image: require('../../assets/images/symptoms/cough.png'),
-        link: '',
+        link: '/',
         symptoms: 'Cough'
     },
     {
         id: 4,
         image: require('../../assets/images/symptoms/eyes-pain.png'),
-        link: '',
+        link: '/',
         symptoms: 'Eyes Pain'
     },
     {
         id: 5,
         image: require('../../assets/images/symptoms/fever.png'),
-        link: '',
+        link: '/',
         symptoms: 'Fever'
     },
     {
         id: 6,
         image: require('../../assets/images/symptoms/headache.png'),
-        link: '',
+        link: '/',
         symptoms: 'Headache'
     },
     {
         id: 7,
         image: require('../../assets/images/symptoms/hair-fall.png'),
-        link: '',
+        link: '/',
         symptoms: 'Hair Fall'
     },
     {
         id: 8,
         image: require('../../assets/images/symptoms/runny-nose.png'),
-        link: '',
+        link: '/',
         symptoms: 'Runny nose'
     },
     {
         id: 9,
         image: require('../../assets/images/symptoms/stess.png'),
-        link: '',
+        link: '/',
         symptoms: 'Stess'
     },
     {
         id: 10,
         image: require('../../assets/images/symptoms/stomach.png'),
-        link: '',
+        link: '/',
         symptoms: 'Stomach'
     },
     {
         id: 11,
         image: require('../../assets/images/symptoms/throat-pain.png'),
-        link: '',
+        link: '/',
         symptoms: 'Throat Pain'
     }
 ]
