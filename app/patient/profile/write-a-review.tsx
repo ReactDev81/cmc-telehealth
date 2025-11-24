@@ -1,12 +1,12 @@
-import { useState } from "react"
-import { View, Text, Image, TouchableOpacity, Modal } from "react-native"
-import { Star } from "lucide-react-native"
-import { useForm, FormProvider, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import TextArea from "@/components/form/TextArea"
 import RadioButton from "@/components/form/radio-button"
 import Button from "@/components/ui/Button"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Star } from "lucide-react-native"
+import { useState } from "react"
+import { Controller, FormProvider, useForm } from "react-hook-form"
+import { Image, Modal, Text, TouchableOpacity, View } from "react-native"
+import * as z from "zod"
 
 // Validation schema
 const reviewSchema = z.object({
@@ -70,7 +70,7 @@ const WriteAReview = () => {
             <View className="flex-1 bg-white p-5">
                 <View className="max-w-52 w-full mx-auto">
                     <Image 
-                        source={require('../../../assets/images/doctor.png')}
+                        source={require('../../../assets/images/female-doctor.png')}
                         className="w-24 h-24 mx-auto"
                     />
                     <Text className="text-base font-medium text-center mt-3">
