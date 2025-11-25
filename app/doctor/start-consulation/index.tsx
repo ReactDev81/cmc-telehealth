@@ -1,14 +1,14 @@
-import * as React from "react";
-import { View, Alert, Platform, Text, TouchableOpacity, Dimensions } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Camera } from "expo-camera";
-import { Phone, FileUser, Pill, MessagesSquare, Video, VideoOff, Mic, MicOff, ClosedCaption, X} from "lucide-react-native";
-import type { LucideIcon } from "lucide-react-native";
-import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import BottomSheet, { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
+import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
+import { Camera } from "expo-camera";
+import type { LucideIcon } from "lucide-react-native";
+import { ClosedCaption, FileUser, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff, X } from "lucide-react-native";
+import * as React from "react";
+import { Alert, Dimensions, Platform, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import ControlsButton from "./controls-button";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AddPrescription from "./add-prescription";
+import ControlsButton from "./controls-button";
 import PatientDetails from "./patient-details";
 
 type ControlKey = "chat" | "camera" | "microphone" | "caption" | "prescription" | "patient_details";
@@ -76,7 +76,7 @@ const StartConsulationWithDoctor = () => {
     const insets = useSafeAreaInsets();
 
     const handleSheetChanges = React.useCallback((index: number) => {
-        setIsBottomSheetExpanded(index === 1);
+        setIsBottomSheetExpanded(index > 0);
     }, []);
 
     React.useEffect(() => {
@@ -120,9 +120,19 @@ const StartConsulationWithDoctor = () => {
 
     const handleToggleChat = React.useCallback(() => {
         const next = !isChatOpen;
+    
         wherebyRoomRef.current?.toggleChat(next);
         setIsChatOpen(next);
+    
+        if (next) {
+            // Expand sheet
+            bottomSheetRef.current?.snapToIndex?.(0);
+        } else {
+            // Collapse sheet
+            bottomSheetRef.current?.snapToIndex?.(1);
+        }
     }, [isChatOpen]);
+    
 
     const handleToggleCaption = React.useCallback(async () => {
         try {
@@ -190,14 +200,6 @@ const StartConsulationWithDoctor = () => {
         caption: isCaptionOn,
     };
 
-    const visibleControls = React.useMemo(() => {
-        const DEFAULT_COUNT = 4;
-        if (isChatOpen) {
-          return CONTROLS.slice(0, DEFAULT_COUNT);
-        }
-        return CONTROLS.slice(0, isBottomSheetExpanded ? CONTROLS.length : DEFAULT_COUNT);
-    }, [isChatOpen, isBottomSheetExpanded]);
-
     if (Platform.OS === "android" && !hasPermissionForAndroid) {
         return <View />;
     }
@@ -241,7 +243,7 @@ const StartConsulationWithDoctor = () => {
 
                 {/* Video Container - Middle Section */}
                 <View className="bg-primary flex-1">
-                    <View className="h-[80%]">
+                    <View className="h-[85%]">
                         {ROOM_URL ? (
                             <WherebyEmbed
                                 ref={wherebyRoomRef}
@@ -278,19 +280,14 @@ const StartConsulationWithDoctor = () => {
                     <BottomSheet
                         ref={bottomSheetRef}
                         index={0}
-                        snapPoints={["18%"]}
+                        snapPoints={["14%"]}
                         onChange={handleSheetChanges}
                         backgroundStyle={{ backgroundColor: "#013220" }}
                         handleIndicatorStyle={{ backgroundColor: "#ccc", width: 40 }}
                     >
                         <BottomSheetView style={{ flex: 1 }}>
-                            <View
-                                className="flex-row flex-wrap justify-center gap-y-5 bg-primary px-5 pb-3 pt-5"
-                                style={{
-                                    paddingBottom: Platform.OS === "ios" ? 10 + insets.bottom : 10 + insets.bottom,
-                                }}
-                            >
-                                {visibleControls.map((item) => {
+                            <View className="flex-row flex-wrap justify-center gap-y-5 bg-primary px-5 pb-3 pt-5">
+                                {CONTROLS.map((item) => {
                                     const isActive = activeMap[item.key];
                                     const iconComponent = isActive ? item.icon : item.inactiveIcon ?? item.icon;
                                     return (
@@ -376,6 +373,12 @@ const StartConsulationWithDoctor = () => {
                 }
 
             </View>
+            <View 
+                className="bg-primary"
+                style={{
+                    paddingBottom: Platform.OS === "ios" ? insets.bottom : insets.bottom,
+                }}
+            ></View>
         </GestureHandlerRootView>
     )
 }

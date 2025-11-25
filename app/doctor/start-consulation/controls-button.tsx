@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity } from "react-native"
 import type { LucideIcon } from "lucide-react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface props {
     action: () => void,
