@@ -1,11 +1,11 @@
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native'
-import { useRef, useMemo, useCallback, useState } from 'react'
+import Button from '@/components/ui/Button';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Location from "expo-location";
 import { router } from 'expo-router';
-import { CirclePlus, BriefcaseBusiness, SquarePen, MapPin, X, LocateFixed } from 'lucide-react-native';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BriefcaseBusiness, CirclePlus, LocateFixed, MapPin, SquarePen, X } from 'lucide-react-native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Button from '@/components/ui/Button'
 
 const ManageAddress = () => {
 
@@ -62,24 +62,8 @@ const ManageAddress = () => {
         }
     };      
 
-    // const handleCurrentLocation = async () => {
-    //     const loc = await getCurrentLocation();
-      
-    //     if (loc) {
-    //         bottomSheetRef.current?.close();
-    //         setIsOpen(false);
-    //         router.push({
-    //             pathname: '/patient/profile/manage-address/add-current-location',
-    //             params: {
-    //                 latitude: loc.coords.latitude,
-    //                 longitude: loc.coords.longitude,
-    //             },
-    //         });
-    //     }
-    // };
-
     const handleCurrentLocation = async () => {
-        if (loading) return; // prevent double taps
+        if (loading) return;
         setLoading(true);
         try {
             const loc = await getCurrentLocation();
@@ -96,26 +80,9 @@ const ManageAddress = () => {
                 });
             }
         } finally {
-            // if navigation unmounts this component, this won't cause issues.
             setLoading(false);
         }
     };
-
-    // const handleChooseDifferentLocation = async () => {
-    //     const loc = await getCurrentLocation();
-      
-    //     if (loc) {
-    //         bottomSheetRef.current?.close();
-    //         setIsOpen(false);
-    //         router.push({
-    //             pathname: '/patient/profile/manage-address/choose-different-location',
-    //             params: {
-    //                 latitude: loc.coords.latitude,
-    //                 longitude: loc.coords.longitude,
-    //             },
-    //         });
-    //     }
-    // };
 
     const handleChooseDifferentLocation = async () => {
         if (loading) return;

@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, FlatList } from "react-native"
-import { Search } from 'lucide-react-native';
 import Feather from '@expo/vector-icons/Feather';
+import { useState } from "react";
+import { FlatList, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type FindDoctorSearchBarProps = {
     selectedFilter: "Speciality" | "Symptoms";
@@ -24,13 +23,7 @@ const FindDoctorSearchBar = ({
     const handleSelect = (option: "Speciality" | "Symptoms") => {
         setSelectedFilter(option);
         setDropdownVisible(false);
-        // Clear search when changing filter category
         setSearchQuery("");
-    };
-
-    const handleSearch = () => {
-        // Additional search logic can be added here if needed
-        console.log(`Searching for: ${searchQuery} in ${selectedFilter}`);
     };
 
     return(
@@ -42,7 +35,6 @@ const FindDoctorSearchBar = ({
                 className='flex-1 text-base text-black py-2 px-2.5 leading-5'
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                onSubmitEditing={handleSearch}
                 returnKeyType="search"
             />
 
@@ -54,14 +46,6 @@ const FindDoctorSearchBar = ({
             >
                 <Text className="text-sm font-medium text-black">{selectedFilter}</Text>
                 <Feather name={dropdownVisible ? "chevron-up" : "chevron-down"} size={16} className="text-black" />
-            </TouchableOpacity>
-
-            {/* Search Button */}
-            <TouchableOpacity 
-                className="w-10 h-10 bg-primary rounded-lg items-center justify-center"
-                onPress={handleSearch}
-            >
-                <Search size={18} color="#fff" />
             </TouchableOpacity>
 
             {/* Dropdown Menu */}
