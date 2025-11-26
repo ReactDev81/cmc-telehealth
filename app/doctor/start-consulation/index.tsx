@@ -71,13 +71,7 @@ const StartConsulationWithDoctor = () => {
     const [isLeaving, setIsLeaving] = React.useState(false);
     const [isJoined, setIsJoined] = React.useState(false);
 
-    const [isBottomSheetExpanded, setIsBottomSheetExpanded] = React.useState<boolean>(false);
-
     const insets = useSafeAreaInsets();
-
-    const handleSheetChanges = React.useCallback((index: number) => {
-        setIsBottomSheetExpanded(index > 0);
-    }, []);
 
     React.useEffect(() => {
         (async () => {
@@ -125,10 +119,10 @@ const StartConsulationWithDoctor = () => {
         setIsChatOpen(next);
     
         if (next) {
-            // Expand sheet
+            // Collapse sheet
             bottomSheetRef.current?.snapToIndex?.(0);
         } else {
-            // Collapse sheet
+            // Expand sheet
             bottomSheetRef.current?.snapToIndex?.(1);
         }
     }, [isChatOpen]);
@@ -281,8 +275,11 @@ const StartConsulationWithDoctor = () => {
                         ref={bottomSheetRef}
                         index={0}
                         snapPoints={["14%"]}
-                        onChange={handleSheetChanges}
-                        backgroundStyle={{ backgroundColor: "#013220" }}
+                        backgroundStyle={{ 
+                            backgroundColor: "#013220",
+                            borderTopLeftRadius: 0,
+                            borderTopRightRadius: 0
+                        }}
                         handleIndicatorStyle={{ backgroundColor: "#ccc", width: 40 }}
                     >
                         <BottomSheetView style={{ flex: 1 }}>
