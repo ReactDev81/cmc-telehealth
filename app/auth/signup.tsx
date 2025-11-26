@@ -1,15 +1,16 @@
-import { Link, router } from "expo-router";
-import { useState } from "react";
-import { View, Text, Pressable, Image, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { z } from "zod";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "../../components/form/Input";
-import PasswordInput from "../../components/form/password";
-import Checkbox from "../../components/form/checkbox";
 import DateField from "@/components/form/date";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/UserContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, router } from "expo-router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+import Checkbox from "../../components/form/checkbox";
+import Input from "../../components/form/Input";
+import PasswordInput from "../../components/form/password";
 
 const step1Schema = z.object({
     email: z.string().email("Enter a valid email"),
@@ -32,7 +33,8 @@ const step2Schema = z.object({
 
 export default function RegisterScreen() {
 
-  const [step, setStep] = useState(1);
+    const [step, setStep] = useState(1);
+    const { user } = useAuth();
 
     // Step 1 form
     const {
@@ -62,13 +64,25 @@ export default function RegisterScreen() {
     });
 
     const onSubmitStep1 = (data: z.infer<typeof step1Schema>) => {
-        console.log("Step 1 data:", data);
         setStep(2);
     };
 
     const onSubmitStep2 = (data: z.infer<typeof step2Schema>) => {
-        console.log("Final Registration Data:", data);
-        router.replace("/(patient)");
+
+        // If for some reason we don't have a user yet, send them to login
+        if (!user) {
+            return router.replace("/auth/login");
+        }
+
+        if (user.role === "patient") {
+            return router.replace("/(patient)");
+        }
+
+        if (user.role === "doctor") {
+            return router.replace("/(doctor)");
+        }
+
+        return router.replace("/auth/login");
     };
 
     // --- Password Strength ---

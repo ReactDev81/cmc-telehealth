@@ -1,14 +1,14 @@
-import { Link, router } from "expo-router";
-import { View, Text, Pressable, Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Button from "../../components/ui/Button";
-import Input from "../../components/form/Input";
-import PasswordInput from "@/components/form/password";
 import Checkbox from "@/components/form/checkbox";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import PasswordInput from "@/components/form/password";
 import { useAuth } from "@/context/UserContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, router } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
+import { Image, Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+import Input from "../../components/form/Input";
+import Button from "../../components/ui/Button";
 
 const loginSchema = z.object({
     email: z.string().email("Enter a valid email address"),
@@ -28,7 +28,7 @@ export default function LoginScreen() {
         defaultValues: { email: "", password: "", role: "", remember: false,  },
     });
 
-    const handleSignIn = (data: LoginFormValues) => {
+    const handleSignIn = async (data: LoginFormValues) => {
         console.log("Form submitted:", data);
 
         // Example user data — replace this with API response later
@@ -40,7 +40,7 @@ export default function LoginScreen() {
         };
 
         // Save to context
-        login(userData);
+        await login(userData);
 
         // Redirect based on role
         if (userData.role === "patient") {

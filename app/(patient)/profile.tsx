@@ -1,11 +1,15 @@
-import { View, Text, ScrollView } from 'react-native';
+import { useAuth } from '@/context/UserContext';
 import { router } from 'expo-router';
-import ProfileEdit from '../../components/common/profile/profile-edit';
-import { menuSections } from '../../json-data/patient/profile';
+import { ScrollView, Text, View } from 'react-native';
 import MenuItem from '../../components/common/profile/menu-item';
+import ProfileEdit from '../../components/common/profile/profile-edit';
 import Button from '../../components/ui/Button';
+import { menuSections } from '../../json-data/patient/profile';
+
 
 const Profile = () => {
+
+    const { logout } = useAuth();
 
     return(
         <ScrollView 
@@ -43,7 +47,15 @@ const Profile = () => {
             {/* app version info and logout button */}
             <View className='mt-7 mb-16'>
                 <Text className='text-sm text-black-400 text-center'>CMC - v 1.1 (518)</Text>
-                <Button className='mt-7'>Logout</Button>
+                <Button 
+                    className='mt-7' 
+                    onPress={async () => {
+                        await logout();
+                        router.replace("/auth/login");
+                    }}
+                >
+                    Logout
+                </Button>
             </View>
 
         </ScrollView>

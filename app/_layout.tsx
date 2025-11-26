@@ -1,12 +1,11 @@
+import { UserProvider } from '@/context/UserContext';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { Stack, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { ChevronLeft } from 'lucide-react-native';
+import { TouchableOpacity } from 'react-native';
 import 'react-native-reanimated';
 import "../global.css";
-import { ThemeProvider, DefaultTheme } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { TouchableOpacity } from 'react-native';
-import { ChevronLeft } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
-import { UserProvider } from '@/context/UserContext';
 
 
 export const unstable_settings = {
@@ -53,6 +52,7 @@ export default function RootLayout() {
                     <Stack.Screen name="auth/change-password" options={{ headerShown: false }} />
                     <Stack.Screen name="(patient)" options={{ headerShown: false }} />
                     <Stack.Screen name="(doctor)" options={{ headerShown: false }} />
+                    <Stack.Screen name="index" options={{ headerShown: false }} />
 
                     <Stack.Screen 
                         name="patient/testimonial" 
