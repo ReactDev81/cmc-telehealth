@@ -1,5 +1,5 @@
-import { ImageSourcePropType } from "react-native";
 import { Href } from "expo-router";
+import { ImageSourcePropType } from "react-native";
 
 // Speciality
 export interface SpecialityProps {
@@ -12,13 +12,15 @@ export interface SpecialityProps {
 // Doctors
 export interface AvailableDoctorsProps {
     id?: number;
-    image: ImageSourcePropType;
+    avatar_url: ImageSourcePropType;
     consultation_type: string,
     consultation_fee: string,
-    name: string;
-    speciality: string;
-    rating: number;
-    expercience: string;
+    first_name: string,
+    last_name: string,
+    speciality?: string,
+    departments?: { name: string; role?: string; order?: number }[],
+    rating: number,
+    years_experience: number,
 }
 
 // Articles

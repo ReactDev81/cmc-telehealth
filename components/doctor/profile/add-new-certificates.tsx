@@ -1,12 +1,12 @@
-import { View, Text, Pressable, Alert } from "react-native";
-import { X } from 'lucide-react-native';
-import Input from "@/components/form/Input";
 import DateField from "@/components/form/date";
 import FileUploadField from "@/components/form/FileUploadField";
-import { useForm } from 'react-hook-form';
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from 'lucide-react-native';
+import { useForm } from 'react-hook-form';
+import { Alert, Pressable, Text, View } from "react-native";
+import { z } from "zod";
 
 const CertificatesSchema = z.object({
     degree: z.string().min(2, "Degree must be at least 2 characters long"),
@@ -35,7 +35,7 @@ const AddNewCertificates = ({ onClose }: { onClose: () => void }) => {
 
     const onSubmit = (data: any) => {
         console.log(data);
-        Alert.alert("Success", "New education history saved successfully!");
+        Alert.alert("Success", "New Certificate saved successfully!");
         reset();
         onClose();
     }
@@ -45,7 +45,7 @@ const AddNewCertificates = ({ onClose }: { onClose: () => void }) => {
 
             {/* headet */}
             <View className="flex-row items-center justify-between">
-                <Text className="text-black text-lg font-semibold">Add Education History</Text>
+                <Text className="text-black text-lg font-semibold">Add New Certificates</Text>
                 <Pressable onPress={onClose}>
                     <X size={18} color="#1F1E1E" strokeWidth={2.5} />
                 </Pressable>

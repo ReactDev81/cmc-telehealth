@@ -65,7 +65,7 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen 
-                        name="patient/doctor/[id]" 
+                        name="patient/doctor/[name]" 
                         options={{
                             headerShown: true,
                             title: "Doctor Profile",

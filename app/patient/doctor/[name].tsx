@@ -1,19 +1,31 @@
-import { useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import useAxios from "@/hooks/useApi";
 import { useLocalSearchParams } from "expo-router";
-import AllDoctorsData from "../../../json-data/patient/doctors";
-import { Stethoscope, BriefcaseBusiness, Star, Hospital, Video } from 'lucide-react-native';
+import { BriefcaseBusiness, Hospital, Star, Stethoscope, Video } from 'lucide-react-native';
+import { useEffect, useState } from "react";
+import { Image, ImageSourcePropType, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import DoctorSchedule from "../../../components/patient/doctor-profile/doctor-schedule";
+
+interface DoctorProps {
+    first_name: string,
+    last_name: string,
+    avatar_url: ImageSourcePropType
+    departments: { name: string; role?: string; order?: number }[]
+    years_experience: string,
+    bio: string,
+    education_info: { degree: string, institution: string, start_date: string, end_date: string }[]
+}
 
 const DoctorDetail = () => {
 
-    const { id } = useLocalSearchParams();
+    const { name } = useLocalSearchParams();
+    const {data, loading, fetchData} = useAxios<{data: DoctorProps}>(`/doctor/${name}`, 'get');
     const [appointementType, setAppointementType] = useState('online')
 
-    // Find doctor by ID (convert id to number since your JSON uses numbers)
-    const doctor = AllDoctorsData.find((doc) => doc.id === Number(id));
+    useEffect(() => {
+        fetchData() 
+    }, [])
 
-    if (!doctor) {
+    if (!data?.data) {
         return (
             <View className="flex-1 items-center justify-center">
                 <Text className="text-gray-600 text-lg">Doctor not found</Text>
@@ -21,12 +33,14 @@ const DoctorDetail = () => {
         );
     }
 
+    console.log(name)
+
     return (
         <ScrollView className="flex-1 bg-white">
 
             <View className="items-center mb-6">
                 <Image
-                    source={doctor.image}
+                    source={data.data.avatar_url}
                     className="w-full h-60"
                     resizeMode="cover"
                 />
@@ -38,9 +52,11 @@ const DoctorDetail = () => {
                 <View>
                     <View className="flex-row gap-x-1">
                         <Stethoscope size={15} color="#013220" />
-                        <Text className="text-primary text-sm">{doctor.speciality}</Text>
+                        <Text className="text-primary text-sm">
+                            {data.data.departments?.map(({ name }) => name).filter(Boolean).join(", ")}
+                        </Text>
                     </View>
-                    <Text className="text-lg font-medium text-black mt-1">{doctor.name}</Text> 
+                    <Text className="text-lg font-medium text-black mt-1">Dr {data.data.first_name} {data.data.last_name}</Text> 
                 </View>
 
                 {/* work experience & review */}
@@ -50,7 +66,7 @@ const DoctorDetail = () => {
                             <BriefcaseBusiness size={18} color="#013220" />
                         </View>
                         <View className="flex-1">
-                            <Text className="text-base font-medium text-black">2 years</Text>
+                            <Text className="text-base font-medium text-black">{data.data.years_experience} years</Text>
                             <Text className="text-xs text-black-400 mt-1">Work Experience</Text>
                         </View>
                     </View>
@@ -69,25 +85,23 @@ const DoctorDetail = () => {
                 <View className="mt-6">
                     <Text className="text-lg font-medium text-black">About Doctor</Text>
                     <Text className="text-sm leading-6 text-black-400 mt-2">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                        {data.data.bio}
                     </Text>
                 </View>
 
                 {/* education */}
                 <View className="mt-6">
                     <Text className="text-lg font-medium text-black">Education</Text>
-                    <View className="flex-row items-center gap-x-2.5 mt-3">
-                        <View className="w-2 h-2 rounded-full bg-primary"></View>
-                        <Text className="text-sm text-black-400">MD, Harvard Medical School</Text>
-                    </View>
-                    <View className="flex-row items-center gap-x-2.5 mt-2">
-                        <View className="w-2 h-2 rounded-full bg-primary"></View>
-                        <Text className="text-sm text-black-400">Residency, Massachusetts General Hospital</Text>
-                    </View>
-                    <View className="flex-row items-center gap-x-2.5 mt-2">
-                        <View className="w-2 h-2 rounded-full bg-primary"></View>
-                        <Text className="text-sm text-black-400">Fellowship in Cardiology, Cleveland Clinic</Text>
-                    </View>
+                    {data.data.education_info &&  
+                        data.data.education_info.map((education, index) => {
+                            return(
+                                <View key={index} className="flex-row items-center gap-x-2.5 mt-3">
+                                    <View className="w-2 h-2 rounded-full bg-primary"></View>
+                                    <Text className="text-sm text-black-400">{education.degree}, {education.institution}</Text>
+                                </View>
+                            )
+                        })
+                    }
                 </View>
 
                 {/* Languages */}

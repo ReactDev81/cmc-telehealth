@@ -1,24 +1,31 @@
-import { View, Text, Image } from "react-native"
-import { router } from "expo-router"
-import { Star, ChevronRight, Video, Hospital} from "lucide-react-native"
-import { AvailableDoctorsProps } from "@/types/patient/home"
 import Button from "@/components/ui/Button"
+import { AvailableDoctorsProps } from "@/types/patient/home"
+import { router } from "expo-router"
+import { ChevronRight, Hospital, Star, Video } from "lucide-react-native"
+import { Image, Text, View } from "react-native"
 
 
-const AvailableDoctors = ({ id, image, name, speciality, rating, consultation_type, consultation_fee, expercience } : AvailableDoctorsProps) => {
+const AvailableDoctors = ({ avatar_url, first_name, last_name, departments, speciality, rating, consultation_type, consultation_fee, years_experience } : AvailableDoctorsProps) => {
+    
+    const department = departments?.map(({ name }) => name).filter(Boolean).join(", ") || speciality || "";
+    const experience = years_experience ? `(${years_experience} Years Exp)` : "";
+    const name = `${first_name}-${last_name}`
+
     return (
         <View className='border border-black-300 rounded-xl p-4 mt-4'>
 
             <View className='flex-row items-center gap-x-3'>
                 <View>
                     <Image 
-                        source={image}
+                        source={avatar_url}
                         className='w-14 h-14 rounded-full' 
                     />
                 </View>
                 <View className='flex-1'>
-                    <Text className='text-sm text-black font-medium'>{name}</Text>
-                    <Text className='text-xs text-black mt-1.5'>{speciality} {expercience}</Text>
+                    <Text className='text-sm text-black font-medium'>Dr {first_name} {last_name}</Text>
+                    <Text className='text-xs text-black mt-1.5'>
+                        {department} {experience}
+                    </Text>
                     <View className='py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1 absolute top-0 right-0'>
                         <Star size={12} fill="#013220" />
                         <Text className='text-primary text-sm font-medium'>{rating}</Text>
@@ -51,7 +58,7 @@ const AvailableDoctors = ({ id, image, name, speciality, rating, consultation_ty
                 <Button 
                     className='mt-3 flex-row-reverse' 
                     icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
-                    onPress={() => router.push(`/patient/doctor/${id}`)}
+                    onPress={() => router.push(`/patient/doctor/${name}`)}
                 >
                     Book Appointment
                 </Button>
