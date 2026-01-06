@@ -12,7 +12,7 @@ export interface SpecialityProps {
 // Doctors
 export interface AvailableDoctorsProps {
     id?: number;
-    avatar_url: ImageSourcePropType;
+    avatar: ImageSourcePropType;
     consultation_type: string,
     consultation_fee: string,
     name: string,

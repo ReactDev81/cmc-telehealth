@@ -5,7 +5,7 @@ import { ChevronRight, Hospital, Star, Video } from "lucide-react-native";
 import { Image, Text, View } from "react-native";
 
 const AvailableDoctors = ({
-  avatar_url,
+  avatar,
   name,
   speciality,
   rating,
@@ -20,12 +20,14 @@ const AvailableDoctors = ({
   const default_avatar =
     "https://cdn-icons-png.flaticon.com/512/387/387561.png";
 
+    console.log("Avatar URL:", avatar);
+
   return (
     <View className="border border-black-300 rounded-xl p-4 mt-4">
       <View className="flex-row items-center gap-x-3">
         <View>
           <Image
-            source={{ uri: avatar_url || default_avatar }}
+            source={{ uri: avatar || default_avatar }}
             className="w-14 h-14 rounded-full"
           />
         </View>

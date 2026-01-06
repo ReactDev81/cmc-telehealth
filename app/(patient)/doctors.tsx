@@ -12,12 +12,12 @@ const Doctors = () => {
     headers: { Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}` },
   });
 
-  console.log("Doctors Data1:", data);
+  // console.log("Doctors Data1:", data);
 
   const renderDoctorItem = ({ item }: { item: AvailableDoctorsProps }) => {
     return (
       <AvailableDoctors
-        avatar_url={item.avatar}
+        avatar={item.avatar}
         name={item.name}
         speciality={item.speciality}
         rating={item.rating}

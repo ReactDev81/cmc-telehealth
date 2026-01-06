@@ -129,7 +129,7 @@ const Home = () => {
                   return (
                     <AvailableDoctors
                       key={availableDoctors.id}
-                      avatar_url={availableDoctors.avatar}
+                      avatar={availableDoctors.avatar}
                       name={availableDoctors.name}
                       speciality={availableDoctors.speciality}
                       rating={availableDoctors.rating}
@@ -201,7 +201,7 @@ const Home = () => {
                     key={index}
                     image={testimonial.patient_image}
                     name={testimonial.patient_name}
-                    age={testimonial.age} // backend does not provide
+                    age={testimonial.patient_age} // backend does not provide
                     city={null} // backend does not provide
                     title={testimonial.title}
                     description={htmlToReadabletext(testimonial.content)}
