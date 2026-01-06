@@ -5,11 +5,10 @@ import { ChevronRight, Hospital, Star, Video } from "lucide-react-native"
 import { Image, Text, View } from "react-native"
 
 
-const AvailableDoctors = ({ avatar_url, first_name, last_name, departments, speciality, rating, consultation_type, consultation_fee, years_experience } : AvailableDoctorsProps) => {
+const AvailableDoctors = ({ avatar_url, name, department, speciality, rating, consultation_type, consultation_fee, years_experience } : AvailableDoctorsProps) => {
     
-    const department = departments?.map(({ name }) => name).filter(Boolean).join(", ") || speciality || "";
+    const doctor_departments = department?.map(({ name }) => name).filter(Boolean).join(", ");
     const experience = years_experience ? `(${years_experience} Years Exp)` : "";
-    const name = `${first_name}-${last_name}`
 
     return (
         <View className='border border-black-300 rounded-xl p-4 mt-4'>
@@ -17,14 +16,15 @@ const AvailableDoctors = ({ avatar_url, first_name, last_name, departments, spec
             <View className='flex-row items-center gap-x-3'>
                 <View>
                     <Image 
-                        source={avatar_url}
-                        className='w-14 h-14 rounded-full' 
+                        source={avatar_url} 
+                        className='w-14 h-14 rounded-full'  
                     />
                 </View>
                 <View className='flex-1'>
-                    <Text className='text-sm text-black font-medium'>Dr {first_name} {last_name}</Text>
+                    <Text className='text-sm text-black font-medium'>{name}</Text>
                     <Text className='text-xs text-black mt-1.5'>
-                        {department} {experience}
+                        {/* {doctor_departments}  */}
+                        {experience}
                     </Text>
                     <View className='py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1 absolute top-0 right-0'>
                         <Star size={12} fill="#013220" />

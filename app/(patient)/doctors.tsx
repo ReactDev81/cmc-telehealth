@@ -8,15 +8,17 @@ import { AvailableDoctorsProps } from '../../types/patient/home';
 
 const Doctors = () => {
 
-    const {data, error, loading, fetchData} = useAxios<{ data: AvailableDoctorsProps[] }>('/doctor/minimal', 'get');
+    const {data, error, loading, fetchData} = useAxios<{ data: AvailableDoctorsProps[] }>('get', `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/all-doctors`, {headers: {Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`}});
+
+    console.log('Doctors Data:', data?.data);
+    console.log('Doctors Error:', error);
 
     const renderDoctorItem = ({ item } : { item: AvailableDoctorsProps }) => {
         return (
             <AvailableDoctors
                 avatar_url={item.avatar_url}
-                first_name={item.first_name}
-                last_name={item.last_name}  
-                departments={item.departments}
+                name={item.name}  
+                department={item.department}
                 rating={item.rating}
                 consultation_type={item.consultation_type}
                 consultation_fee={item.consultation_fee}
