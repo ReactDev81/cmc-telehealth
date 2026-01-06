@@ -8,8 +8,8 @@ const axiosInstance = axios.create({
 });
 
 const useAxios = <T = unknown>(
-    initialUrl: string | null = null,
     method: Method = 'get',
+    initialUrl: string | null = null,
     options: AxiosRequestConfig = {},
 ) => {
 
@@ -26,8 +26,8 @@ const useAxios = <T = unknown>(
 
             try {
                 const response = await axiosInstance.request<T>({
-                    url: requestData.url ?? initialUrl ?? undefined,
                     method,
+                    url: requestData.url ?? initialUrl ?? undefined,
                     ...options,
                     ...requestData, 
                 });
@@ -49,7 +49,7 @@ const useAxios = <T = unknown>(
                 setLoading(false);
             }
         },
-        [initialUrl, method, options]
+        [method, initialUrl, options]
     );
 
     return { data, loading, error, status, fetchData };

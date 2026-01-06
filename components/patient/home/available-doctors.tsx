@@ -6,41 +6,32 @@ import { Image, Text, View } from "react-native";
 
 const AvailableDoctors = ({
   avatar_url,
-  first_name,
-  last_name,
-  departments,
+  name,
   speciality,
   rating,
   consultation_type,
   consultation_fee,
   years_experience,
 }: AvailableDoctorsProps) => {
-  const department =
-    departments
-      ?.map(({ name }) => name)
-      .filter(Boolean)
-      .join(", ") ||
-    speciality ||
-    "";
+
+  const doctor_speciality = Array.isArray(speciality)? speciality.join(", "): "";
   const experience = years_experience ? `(${years_experience} Years Exp)` : "";
-  const name = `${first_name}-${last_name}`;
-  const DEFAULT_AVATAR =
-    "https://cdn-icons-png.flaticon.com/512/387/387561.png";
+  const default_avatar = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
+
   return (
     <View className="border border-black-300 rounded-xl p-4 mt-4">
       <View className="flex-row items-center gap-x-3">
         <View>
           <Image
-            source={{ uri: avatar_url || DEFAULT_AVATAR }}
+            source={{ uri: avatar_url || default_avatar }}
             className="w-14 h-14 rounded-full"
           />
         </View>
         <View className="flex-1">
-          <Text className="text-sm text-black font-medium">
-            Dr {first_name} {last_name}
-          </Text>
+          <Text className="text-sm text-black font-medium">{name}</Text>
           <Text className="text-xs text-black mt-1.5">
-            {department} {experience}
+            {doctor_speciality} 
+            {experience}
           </Text>
           <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1 absolute top-0 right-0">
             <Star size={12} fill="#013220" />

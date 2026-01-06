@@ -10,15 +10,14 @@ const Doctors = () => {
 
     const {data, error, loading, fetchData} = useAxios<{ data: AvailableDoctorsProps[] }>('get', `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/all-doctors`, {headers: {Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`}});
 
-    console.log('Doctors Data:', data?.data);
-    console.log('Doctors Error:', error);
+    console.log('Doctors Data1:', data);
 
     const renderDoctorItem = ({ item } : { item: AvailableDoctorsProps }) => {
         return (
             <AvailableDoctors
-                avatar_url={item.avatar_url}
+                avatar_url={item.avatar}
                 name={item.name}  
-                department={item.department}
+                speciality={item.speciality}
                 rating={item.rating}
                 consultation_type={item.consultation_type}
                 consultation_fee={item.consultation_fee}
