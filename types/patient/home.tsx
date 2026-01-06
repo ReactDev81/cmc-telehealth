@@ -15,9 +15,8 @@ export interface AvailableDoctorsProps {
     avatar_url: ImageSourcePropType;
     consultation_type: string,
     consultation_fee: string,
-    first_name: string,
-    last_name: string,
-    speciality?: string,
+    name: string,
+    speciality?: { name: string; role?: string; order?: number }[],
     departments?: { name: string; role?: string; order?: number }[],
     rating: number,
     years_experience: number,
