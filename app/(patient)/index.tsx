@@ -33,7 +33,7 @@ const Home = () => {
       patient_reviews?: TestimonialProps[];
       speciality_symptoms?: SpecialityProps[];
     };
-  }>(`${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/home`, "get", {
+  }>("get", `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/home`, {
     headers: {
       Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
     },
@@ -129,14 +129,13 @@ const Home = () => {
                   return (
                     <AvailableDoctors
                       key={availableDoctors.id}
-                      id={availableDoctors.id}
-                      image={availableDoctors.avatar}
+                      avatar_url={availableDoctors.avatar}
                       name={availableDoctors.name}
-                      speciality={availableDoctors.department}
+                      speciality={availableDoctors.speciality}
                       rating={availableDoctors.rating}
                       consultation_type={availableDoctors.consultation_type}
                       consultation_fee={availableDoctors.consultation_fee}
-                      expercience={0}
+                      years_experience={availableDoctors.years_experience}
                     />
                   );
                 })
