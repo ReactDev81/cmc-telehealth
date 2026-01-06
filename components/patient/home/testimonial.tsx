@@ -46,8 +46,10 @@ const Testimonial = ({
 
       {/* Footer Section */}
       <View className="flex-row items-center justify-between rounded-b-xl border-t border-[#EDEDED] bg-primary-100 px-3 py-2">
-        <Text className="text-[10px] font-bold text-black">{review_count}</Text>
-        <Image source={image} className="w-6 h-6 rounded-full" />
+        <Text className="text-[10px] font-bold text-black">
+          {review_count} Reviews for this doctor
+        </Text>
+        <Image source={{ uri: image }} className="w-6 h-6 rounded-full" />
       </View>
     </View>
   );

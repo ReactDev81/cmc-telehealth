@@ -18,7 +18,7 @@ const SpecialityCard = ({
         <View
           className={`w-16 h-16 p-4 flex items-center justify-center rounded-full border border-[#EDEDED] bg-primary-100 ${className}`}
         >
-          <Image source={{ uri: image }} />
+          <Image className="h-full w-full" source={{ uri: image }} />
         </View>
         <Text className="text-sm text-black text-center">{speciality}</Text>
       </View>
