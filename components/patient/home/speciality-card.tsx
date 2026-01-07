@@ -12,14 +12,16 @@ const SpecialityCard = ({
   image,
   className = "",
 }: Speciality) => {
+  const resolvedImage = typeof image === "string" ? { uri: image } : image;
+
   return (
     <Link href={link} className="mx-auto">
       <View className="flex justify-center items-center gap-y-2">
-        <View
-          className={`w-16 h-16 p-4 flex items-center justify-center rounded-full border border-[#EDEDED] bg-primary-100 ${className}`}
-        >
-          <Image className="h-full w-full" source={{ uri: image }} />
-        </View>
+      <View
+        className={`w-16 h-16 p-4 flex items-center justify-center rounded-full border border-[#EDEDED] bg-primary-100 ${className}`}
+      >
+        <Image className="h-full w-full" source={resolvedImage} />
+      </View>
         <Text className="text-sm text-black text-center">{speciality}</Text>
       </View>
     </Link>

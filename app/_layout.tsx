@@ -50,6 +50,11 @@ export default function RootLayout() {
                     <Stack.Screen name="auth/reset-password" options={{ headerShown: false }} />
                     <Stack.Screen name="auth/verify-otp" options={{ headerShown: false }} />
                     <Stack.Screen name="auth/change-password" options={{ headerShown: false }} />
+
+                    <Stack.Screen name="auth/register-send-otp" options={{ headerShown: false }} />
+                    <Stack.Screen name="auth/register-verify-otp" options={{ headerShown: false }} />
+                    <Stack.Screen name="auth/register-complete-profile" options={{ headerShown: false }} />
+
                     <Stack.Screen name="(patient)" options={{ headerShown: false }} />
                     <Stack.Screen name="(doctor)" options={{ headerShown: false }} />
                     <Stack.Screen name="index" options={{ headerShown: false }} />

@@ -1,34 +1,48 @@
+import type { ReactNode } from "react";
+import { Control, useController } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
-import { useController, Control } from "react-hook-form";
 
 type CheckboxProps = {
-    name: string;
-    control: Control<any>;
-    label?: string;
-    className?: string;
+  name: string;
+  control: Control<any>;
+  label?: ReactNode;
+  className?: string;
 };
 
 export default function Checkbox({
-    name,
-    control,
-    label,
-    className = "",
+  name,
+  control,
+  label,
+  className = "",
 }: CheckboxProps) {
+  const {
+    field: { value, onChange },
+  } = useController({ name, control });
 
-  const {field: { value, onChange }} = useController({ name, control })
+  const toggle = () => onChange(!value);
 
-    return (
-        <Pressable
-            onPress={() => onChange(!value)}
-            className={`flex-row items-center gap-2 ${className}`}
-            hitSlop={8}
+  return (
+    <Pressable
+      onPress={toggle}
+      hitSlop={10}
+      className={`flex-row items-center gap-2 ${className}`}
+    >
+      {/* Checkbox */}
+      <View
+        className={`h-4 w-4 rounded border ${
+          value ? "bg-primary border-primary" : "border-gray"
+        }`}
+      />
+
+      {/* Label */}
+      {label && (
+        <Text
+          className="text-primary-400 text-sm"
+          selectable={false}   // 🔑 important
         >
-            <View
-                className={`h-4 w-4 rounded border ${
-                    value ? "bg-primary border-primary" : "border-gray"
-                }`}
-            />
-            {label && <Text className="text-[#344054] text-sm">{label}</Text>}
-        </Pressable>
-    );
+          {label}
+        </Text>
+      )}
+    </Pressable>
+  );
 }

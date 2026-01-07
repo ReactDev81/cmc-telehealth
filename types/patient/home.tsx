@@ -6,7 +6,7 @@ export interface SpecialityProps {
     id?: number;
     speciality : string,
     link: Href,
-    image: ImageSourcePropType
+    image: ImageSourcePropType | string
 }
 
 // Doctors
@@ -36,10 +36,12 @@ export interface TestimonialProps {
     image: ImageSourcePropType;
     name: string;
     age: string;
-    city: string;
+    city?: string;
     title: string;
     description: string;
     review_count: string;
+    patient_age: number;
+    doctor_name: string;
 }
 
 // Consultation Type Card

@@ -8,7 +8,7 @@ import { AvailableDoctorsProps } from "../../types/patient/home";
 const Doctors = () => {
   const { data, error, loading, fetchData } = useAxios<{
     data: AvailableDoctorsProps[];
-  }>("get", `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/all-doctors`, {
+  }>("get", `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/browse-doctors`, {
     headers: { Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}` },
   });
 

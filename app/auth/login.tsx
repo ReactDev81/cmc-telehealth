@@ -152,7 +152,10 @@ export default function LoginScreen() {
             <View className="mt-10 items-center">
                 <Text className="text-black-400">
                     Don’t have an account?
-                    <Link href="/auth/signup">
+                    {/* <Link href="/auth/signup">
+                        <Text className="text-primary font-medium"> Sign Up</Text>
+                    </Link> */}
+                    <Link href="/auth/register-send-otp">
                         <Text className="text-primary font-medium"> Sign Up</Text>
                     </Link>
                 </Text>

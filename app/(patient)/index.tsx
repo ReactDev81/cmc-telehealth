@@ -201,11 +201,11 @@ const Home = () => {
                     key={index}
                     image={testimonial.patient_image}
                     name={testimonial.patient_name}
-                    age={testimonial.patient_age} // backend does not provide
-                    city={testimonial.patient_location} // backend does not provide
+                    age={testimonial.patient_age}
                     title={testimonial.title}
                     description={htmlToReadabletext(testimonial.content)}
-                    review_count={testimonial.rating}
+                    review_count={testimonial.total_reviews}
+                    doctor_name={testimonial.doctor_name}
                   />
                 ))
               ) : (

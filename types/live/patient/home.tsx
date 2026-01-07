@@ -24,8 +24,9 @@ export interface AdvertisementProps {
 
 // SpecialityData
 export interface SpecialityProps {
-  id?: number;
-  speciality: string;
-  link: Href;
-  image: ImageSourcePropType;
+  id: string;
+  department: {
+    name: string;
+    icon: string;
+  };
 }

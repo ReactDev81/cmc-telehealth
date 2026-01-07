@@ -1,0 +1,144 @@
+import Checkbox from "@/components/form/checkbox";
+import Input from "@/components/form/Input";
+import PasswordInput from "@/components/form/password";
+import Button from "@/components/ui/Button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, router } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
+import { Image, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+
+const schema = z.object({
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(8, "Minimum 8 characters"),
+  agreedToTerms: z.literal(true, {
+    errorMap: () => ({ message: "You must accept terms" }),
+  }),
+});
+
+export default function RegisterSendOtp() {
+
+  const { control, handleSubmit, watch, formState } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      password: "",
+      agreedToTerms: false,
+    },
+  });
+
+    // --- Password Strength ---
+    const renderPasswordStrength = (password: string) => {
+        const strength = password.length;
+        const bars = Array.from({ length: 4 }, (_, i) => (
+            <View
+                key={i}
+                className={`h-1 flex-1 mx-0.5 rounded ${
+                    i < strength / 2 ? "bg-primary" : "bg-gray-200"
+                }`}
+            />
+        ));
+
+        return (
+            <View className="mt-2">
+                <Text className="text-xs text-gray-600 mb-1">Password strength:</Text>
+                <View className="flex-row">{bars}</View>
+            </View>
+        );
+    };
+
+  const onSubmit = async (data: any) => {
+    // TODO: API → register + send OTP
+    // await authApi.registerSendOtp(data)
+    router.push({
+      pathname: "/auth/register-verify-otp",
+      params: { email: data.email, password: data.password, agreedToTerms: data.agreedToTerms },
+    });
+
+    console.log("Registered:", data);
+  };
+
+  return (
+    <SafeAreaView className="flex-1 justify-center bg-white px-6">
+
+                <View className="mb-6">
+                    <Image
+                        source={require("../../assets/images/cmc-telehealth-logo.png")}
+                        className="w-24 h-24 mx-auto object-contain"
+                    />
+                    <Text className="text-base text-black text-center font-bold mt-1">
+                        CMC Telehealth
+                    </Text>
+                </View>
+
+                <View className="mt-4">
+                    <Text className="text-black text-2xl font-bold text-center">
+                        Create an account
+                    </Text>
+                    <Text className="text-gray-500 mt-2 text-center">
+                        Let's get you started. Please enter your details
+                    </Text>
+                </View>
+
+                {/* Email */}
+                <Input
+                    name="email"
+                    control={control}
+                    label="Email"
+                    keyboardType="email"
+                    autoCapitalize="none"
+                    placeholder="example@email.com"
+                    containerClassName="mt-8"
+                />
+
+                {/* Password */}
+                <Controller
+                    control={control}
+                    name="password"
+                    render={() => (
+                        <View className="mt-5">
+                            <PasswordInput
+                                name="password"
+                                control={control}
+                                placeholder="8 characters minimum"
+                            />
+                                {watch("password") && renderPasswordStrength(watch("password"))}
+                        </View>
+                    )}
+                />
+
+                {/* Terms */}
+                <View className="mt-2 flex-row">
+                    <Checkbox 
+                        name="agreedToTerms" 
+                        control={control} 
+                        label={
+                            <Text className="text-gray-600 text-sm ml-3 mt-4">
+                                By clicking "Continue", you agree to accept our{" "}
+                                <Text className="text-primary font-medium">Privacy Policy</Text> and{" "}
+                                <Text className="text-primary font-medium">Terms of Service</Text>
+                            </Text>
+                        } 
+                    />
+                </View>
+
+                {/* Continue */}
+                <Button
+                    onPress={handleSubmit(onSubmit)}
+                    className="mt-8"
+                >
+                    Continue
+                </Button>
+
+                <View className="mt-10 items-center">
+                    <Text className="text-gray-500">
+                        Already have an account?{" "}
+                        <Link href="/auth/login">
+                            <Text className="text-primary font-medium">Sign In</Text>
+                        </Link>
+                    </Text>
+                </View>
+            </SafeAreaView>
+  );
+}
