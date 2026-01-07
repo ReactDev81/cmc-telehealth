@@ -1,10 +1,56 @@
-import { Text, View, ScrollView } from "react-native"
+import useApi from "@/hooks/useApi";
+import { PrivacyPolicyProps } from "@/types/live/patient/profile";
+import { useEffect } from "react";
+import { ScrollView, Text, useWindowDimensions, View } from "react-native";
+import RenderHTML from "react-native-render-html";
 
 const PrivacyPolicy = () => {
-    return(
-        <ScrollView className="flex-1 bg-white p-5">
+  const { width } = useWindowDimensions();
+  const { data, error, loading, fetchData } = useApi<{
+    data: {
+      privacy_policy: PrivacyPolicyProps;
+    };
+  }>("get", `${process.env.EXPO_PUBLIC_API_BASE_URL}/profile-others`, {
+    headers: {
+      Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
+    },
+  });
 
-            <View className="mt-5">
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const tagsStyles = {
+    h3: {
+      fontSize: 16,
+      fontWeight: "500",
+      color: "#013220",
+      marginTop: 16,
+      marginBottom: 6,
+    },
+    p: {
+      fontSize: 14,
+      lineHeight: 24,
+      color: "#4D4D4D",
+      marginBottom: 10,
+    },
+    ul: {
+      marginTop: 8,
+      paddingLeft: 16,
+    },
+    li: {
+      marginBottom: 8,
+    },
+    strong: {
+      fontWeight: "500",
+      color: "#1F1E1E",
+    },
+  };
+
+  const privacyPolicyData = data?.data.privacy_policy;
+  return (
+    <ScrollView className="flex-1 bg-white p-5">
+      {/* <View className="mt-5">
                 <Text className="text-base text-black font-medium">Privacy Policy</Text>
                 <Text className="text-sm leading-6 text-black-400 mt-2.5">
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been industry's standard dummy text ever since the when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
@@ -54,10 +100,23 @@ const PrivacyPolicy = () => {
                 </View>
 
 
-            </View>
+            </View> */}
 
-        </ScrollView>
-    )
-}
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : privacyPolicyData ? (
+        <View className="mb-14">
+          <RenderHTML
+            source={{ html: privacyPolicyData }}
+            contentWidth={width}
+            tagsStyles={tagsStyles}
+          />
+        </View>
+      ) : (
+        <Text>{error}</Text>
+      )}
+    </ScrollView>
+  );
+};
 
-export default PrivacyPolicy
+export default PrivacyPolicy;

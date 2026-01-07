@@ -202,7 +202,7 @@ const Home = () => {
                     image={testimonial.patient_image}
                     name={testimonial.patient_name}
                     age={testimonial.patient_age} // backend does not provide
-                    city={null} // backend does not provide
+                    city={testimonial.patient_location} // backend does not provide
                     title={testimonial.title}
                     description={htmlToReadabletext(testimonial.content)}
                     review_count={testimonial.rating}
@@ -214,7 +214,7 @@ const Home = () => {
             </ScrollView>
             <Button
               className="mt-5"
-              onPress={() => router.push("/patient/testimonial")}
+              onPress={() => router.push("/reviews/all-reviews" as any)}
             >
               View All Testimonial
             </Button>

@@ -20,8 +20,6 @@ const AvailableDoctors = ({
   const default_avatar =
     "https://cdn-icons-png.flaticon.com/512/387/387561.png";
 
-    console.log("Avatar URL:", avatar);
-
   return (
     <View className="border border-black-300 rounded-xl p-4 mt-4">
       <View className="flex-row items-center gap-x-3">
