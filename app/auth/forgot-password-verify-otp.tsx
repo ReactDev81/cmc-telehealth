@@ -1,15 +1,19 @@
-import { router } from 'expo-router';
-import { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, Image, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { Image, Pressable, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const VerifyOtpScreen = () => {
+const ForgotPasswordVerifyOtp = () => {
 
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
     const [resendTimer, setResendTimer] = useState(54);
     const inputRefs = useRef<TextInput[]>([]);
+
+    const { email } = useLocalSearchParams<{
+        email?: string;
+    }>();
 
     // Countdown timer
     useEffect(() => {
@@ -47,7 +51,11 @@ const VerifyOtpScreen = () => {
 
         setError('');
         console.log('OTP entered:', otpString);
-        router.push('/auth/change-password');
+
+        router.push({
+            pathname: "/auth/forgot-password-change-password",
+            params: { email: email },
+        });
     };
 
     const handleResendOTP = () => {
@@ -144,4 +152,4 @@ const VerifyOtpScreen = () => {
     );
 }
 
-export default VerifyOtpScreen
+export default ForgotPasswordVerifyOtp

@@ -1,8 +1,8 @@
-import { router } from "expo-router";
-import { View, Text, Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLocalSearchParams } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
+import { Image, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 import PasswordInput from "../../components/form/password";
 import Button from "../../components/ui/Button";
@@ -10,30 +10,31 @@ import Button from "../../components/ui/Button";
 
 const passwordSchema = z
     .object({
-        oldPassword: z.string().min(1, "Old password is required"),
         newPassword: z.string().min(8, "Password must be at least 8 characters"),
-        confirmPassword: z.string().min(1, "Please confirm your new password"),
+        confirmNewPassword: z.string().min(1, "Please confirm your new password"),
     })
-    .refine((data) => data.newPassword === data.confirmPassword, {
+    .refine((data) => data.newPassword === data.confirmNewPassword, {
         message: "Passwords do not match",
-        path: ["confirmPassword"],
+        path: ["confirmNewPassword"],
     });
+    
+const ForgotPasswordChangePassword = () => {
 
-export default function SetNewPasswordScreen() {
-
-    const { control, handleSubmit, formState: { errors } } = useForm({
+    const { control, handleSubmit } = useForm({
         resolver: zodResolver(passwordSchema),
         defaultValues: {
-            oldPassword: "",
             newPassword: "",
-            confirmPassword: "",
+            confirmNewPassword: "",
         },
     });
 
+    const { email } = useLocalSearchParams<{
+        email?: string;
+    }>();
+
     const onSubmit = (data: z.infer<typeof passwordSchema>) => {
         console.log("Password changed successfully!", data);
-        alert("Password changed successfully!");
-        router.replace("/auth/login");
+        // router.replace("/auth/login");
     };
 
     return (
@@ -63,22 +64,6 @@ export default function SetNewPasswordScreen() {
             {/* Form */}
             <View className="mt-8">
 
-                {/* Old Password */}
-                <Controller
-                    control={control}
-                    name="oldPassword"
-                    render={() => (
-                        <View>
-                            <PasswordInput
-                                name="oldPassword"
-                                control={control}
-                                label="Old Password"
-                                placeholder="Enter Old Password"
-                            />
-                        </View>
-                    )}
-                />
-
                 {/* New Password */}
                 <Controller
                     control={control}
@@ -98,11 +83,11 @@ export default function SetNewPasswordScreen() {
                 {/* Confirm Password */}
                 <Controller
                     control={control}
-                    name="confirmPassword"
+                    name="confirmNewPassword"
                     render={() => (
                         <View className="mt-5">
                             <PasswordInput
-                                name="confirmPassword"
+                                name="confirmNewPassword"
                                 control={control}
                                 label="Confirm Password"
                                 placeholder="Confirm New Password"
@@ -120,3 +105,5 @@ export default function SetNewPasswordScreen() {
         </SafeAreaView>
     );
 }
+
+export default ForgotPasswordChangePassword;

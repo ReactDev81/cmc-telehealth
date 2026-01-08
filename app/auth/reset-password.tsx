@@ -1,37 +1,47 @@
-import { Link, router } from 'expo-router';
-import { View, Text, Pressable, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Input from '@/components/form/Input';
-import Button from '@/components/ui/Button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { router } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
+import { Image, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+import PasswordInput from "../../components/form/password";
+import Button from "../../components/ui/Button";
 
-const resetPasswordSchema = z.object({
-    email: z.string().min(1, 'Email is required').email('Enter a valid email address'),
-});
 
-type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
-
-export default function ResetPasswordScreen() {
-
-    const { control, handleSubmit, formState: { errors } } = useForm<ResetPasswordForm>({
-        resolver: zodResolver(resetPasswordSchema),
-        defaultValues: { email: '' },
+const passwordSchema = z
+    .object({
+        oldPassword: z.string().min(1, "Old password is required"),
+        newPassword: z.string().min(8, "Password must be at least 8 characters"),
+        confirmPassword: z.string().min(1, "Please confirm your new password"),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
     });
 
-    const onSubmit = (data: ResetPasswordForm) => {
-        console.log('Reset password for:', data.email);
-        router.push('/auth/verify-otp');
+const ResetPassword = () => {
+
+    const { control, handleSubmit } = useForm({
+        resolver: zodResolver(passwordSchema),
+        defaultValues: {
+            oldPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+        },
+    });
+
+    const onSubmit = (data: z.infer<typeof passwordSchema>) => {
+        console.log("Password changed successfully!", data);
+        router.replace("/auth/login");
     };
 
     return (
         <SafeAreaView className="flex-1 justify-center bg-white px-6">
 
-            {/* Logo and App Name */}
+            {/* Logo */}
             <View className="mb-6">
                 <Image
-                    source={require('../../assets/images/cmc-telehealth-logo.png')}
+                    source={require("../../assets/images/cmc-telehealth-logo.png")}
                     className="w-24 h-24 mx-auto object-contain"
                 />
                 <Text className="text-base text-black text-center font-bold mt-1">
@@ -39,48 +49,75 @@ export default function ResetPasswordScreen() {
                 </Text>
             </View>
 
-            {/* Title */}
+            {/* Header */}
             <View className="mt-4">
                 <Text className="text-black text-2xl font-bold text-center">
-                    Reset Password
-                </Text>
-                <Text className="text-gray-500 mt-2 text-center px-4">
-                    Enter your email to receive reset instructions
+                    Set New Password
+                </Text> 
+                <Text className="text-black-400 text-base text-center mt-2">
+                    Enter your old and new password below to update it
                 </Text>
             </View>
 
-            {/* Email Field */}
+            {/* Form */}
             <View className="mt-8">
-                <Input
-                    name="email"
-                    label="Email"
+
+                {/* Old Password */}
+                <Controller
                     control={control}
-                    placeholder="example@email.com"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
+                    name="oldPassword"
+                    render={() => (
+                        <View>
+                            <PasswordInput
+                                name="oldPassword"
+                                control={control}
+                                label="Old Password"
+                                placeholder="Enter Old Password"
+                            />
+                        </View>
+                    )}
+                />
+
+                {/* New Password */}
+                <Controller
+                    control={control}
+                    name="newPassword"
+                    render={() => (
+                        <View className="mt-5">
+                            <PasswordInput
+                                name="newPassword"
+                                control={control}
+                                label="New Password"
+                                placeholder="Enter New Password"
+                            />
+                        </View>
+                    )}
+                />
+
+                {/* Confirm Password */}
+                <Controller
+                    control={control}
+                    name="confirmPassword"
+                    render={() => (
+                        <View className="mt-5">
+                            <PasswordInput
+                                name="confirmPassword"
+                                control={control}
+                                label="Confirm Password"
+                                placeholder="Confirm New Password"
+                            />
+                        </View>
+                    )}
                 />
             </View>
 
             {/* Submit Button */}
-            <View className="mt-5">
-                <Button onPress={handleSubmit(onSubmit)}>
-                    <Text className="text-white text-center text-base font-semibold">
-                        Continue
-                    </Text>
-                </Button>
-            </View>
-
-            {/* Back to Login */}
-            <View className="mt-5">
-                <Link href="/auth/login" asChild>
-                    <Pressable>
-                        <Text className="text-primary text-base text-center">
-                            Back to login
-                        </Text>
-                    </Pressable>
-                </Link>
+            <View className="mt-6">
+                <Button onPress={handleSubmit(onSubmit)}>Change Password</Button>
             </View>
 
         </SafeAreaView>
     );
 }
+
+export default ResetPassword;

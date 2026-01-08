@@ -46,14 +46,15 @@ export default function RootLayout() {
                     {/* Auth & Splash - No Headers */}
                     <Stack.Screen name="splash" options={{ headerShown: false }} />
                     <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-                    <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
                     <Stack.Screen name="auth/reset-password" options={{ headerShown: false }} />
-                    <Stack.Screen name="auth/verify-otp" options={{ headerShown: false }} />
-                    <Stack.Screen name="auth/change-password" options={{ headerShown: false }} />
 
                     <Stack.Screen name="auth/register-send-otp" options={{ headerShown: false }} />
                     <Stack.Screen name="auth/register-verify-otp" options={{ headerShown: false }} />
                     <Stack.Screen name="auth/register-complete-profile" options={{ headerShown: false }} />
+
+                    <Stack.Screen name="auth/forgot-password-send-otp" options={{ headerShown: false }} />
+                    <Stack.Screen name="auth/forgot-password-verify-otp" options={{ headerShown: false }} />
+                    <Stack.Screen name="auth/forgot-password-change-password" options={{ headerShown: false }} />
 
                     <Stack.Screen name="(patient)" options={{ headerShown: false }} />
                     <Stack.Screen name="(doctor)" options={{ headerShown: false }} />

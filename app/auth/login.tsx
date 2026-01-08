@@ -120,7 +120,8 @@ export default function LoginScreen() {
             <View className="mt-5 flex-row items-center justify-between">
                 <Checkbox name="remember" control={control} label="Remember for 30 days" />
                 <Link
-                    href="/auth/reset-password"
+                    href="/auth/forgot-password-send-otp"
+                    // href="/auth/reset-password"
                     className="text-[#D70015] text-sm font-semibold"
                 >
                     Forgot Password?
@@ -152,9 +153,6 @@ export default function LoginScreen() {
             <View className="mt-10 items-center">
                 <Text className="text-black-400">
                     Don’t have an account?
-                    {/* <Link href="/auth/signup">
-                        <Text className="text-primary font-medium"> Sign Up</Text>
-                    </Link> */}
                     <Link href="/auth/register-send-otp">
                         <Text className="text-primary font-medium"> Sign Up</Text>
                     </Link>
