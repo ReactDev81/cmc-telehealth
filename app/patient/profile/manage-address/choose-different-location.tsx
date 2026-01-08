@@ -3,7 +3,7 @@ import Button from "@/components/ui/Button";
 import useApi from "@/hooks/useApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Location from "expo-location";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { MapPin } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -56,12 +56,10 @@ const ChooseDifferentLocation = () => {
     message?: string;
   }>(
     "put",
-    `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/a9f50cac-f1e4-4e4b-a0b1-ed715105bc08`,
+    `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/5fbe4ea5-3461-4659-98b5-c9dde9dec39a`,
     {
       headers: {
         Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
       },
     }
   );
@@ -109,12 +107,12 @@ const ChooseDifferentLocation = () => {
     };
 
     await fetchData({ data: ChooseDifferentLocation });
-    console.log("Form Data:", formData);
-    // Alert.alert("Success", "Address saved successfully!");
-    // router.push("/patient/profile/manage-address");
-    // console.log("different Location Data:", ChooseDifferentLocation);
-    console.log("Api response:", data);
+    // console.log("Form Data:", ChooseDifferentLocation);
+    router.push("/patient/profile/manage-address");
+    
   };
+
+  // console.log("Api response:", data?.data);
 
   return (
     <ScrollView

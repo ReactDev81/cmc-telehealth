@@ -1,11 +1,13 @@
-import { View, TextInput, TextInputProps } from 'react-native';
-import { Search } from 'lucide-react-native';
+import { Search, SlidersHorizontal } from 'lucide-react-native';
+import { Pressable, TextInput, TextInputProps, View } from 'react-native';
 
 interface SearchBarProps extends TextInputProps {
     variant?: 'primary' | 'secondary';
+    onPress?: () => void;
 }
 
-const SearchBar = ({ variant = 'primary', placeholder, ...props }: SearchBarProps) => {
+const SearchBar = ({ variant = 'primary', placeholder, onPress, ...props }: SearchBarProps) => {
+
     const isPrimary = variant === 'primary';
     
     return (
@@ -28,6 +30,15 @@ const SearchBar = ({ variant = 'primary', placeholder, ...props }: SearchBarProp
                 }`}
                 {...props}
             />
+
+            {/* filter icon */}
+            <Pressable onPress={onPress}>
+                <SlidersHorizontal 
+                    size={20} 
+                    color={isPrimary ? '#fff' : '#929292'} 
+                />
+            </Pressable>
+
         </View>
     );
 };

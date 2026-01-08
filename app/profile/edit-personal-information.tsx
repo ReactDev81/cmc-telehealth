@@ -1,14 +1,14 @@
-import { View, Image, TouchableOpacity, Alert, ScrollView } from "react-native"
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
 import { useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
 import * as z from 'zod';
-import Input from "../../components/form/Input";
-import Button from "../../components/ui/Button";
-import RadioButton from "../../components/form/radio-button";
 import DateField from "../../components/form/date";
+import Input from "../../components/form/Input";
+import RadioButton from "../../components/form/radio-button";
+import Button from "../../components/ui/Button";
 
 // Validation schema
 const personalInfoSchema = z.object({
