@@ -7,7 +7,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { MapPin } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as z from "zod";
 
@@ -51,7 +51,7 @@ const ChooseDifferentLocation = () => {
     },
   });
 
-  const { data, error, fetchData } = useApi<{
+  const { data, error, status, fetchData } = useApi<{
     data: {};
     message?: string;
   }>(
@@ -60,6 +60,7 @@ const ChooseDifferentLocation = () => {
     {
       headers: {
         Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
+        Accept: "application/json",
       },
     }
   );
@@ -95,24 +96,29 @@ const ChooseDifferentLocation = () => {
     getAddress();
   }, [lat, lon]);
 
-  const onSubmit = async (formData: LocationFormData) => {
-    const ChooseDifferentLocation = {
-      address: formData.address,
-      area: formData.area,
-      landmark: formData.landmark,
-      pincode: formData.pincode,
-      city: formData.city,
-      state: formData.state,
-      group: "address",
+    const onSubmit = async (formData: LocationFormData) => {
+
+        const payload = new FormData();
+
+        payload.append("address", formData.address);
+        payload.append("area", formData.area ?? "");
+        payload.append("pincode", formData.pincode);
+        payload.append("city", formData.city);
+        payload.append("state", formData.state);
+        payload.append("group", "address");
+
+        await fetchData({
+            data: payload,
+        });
+
+        console.log("Form Data:", payload);
+        
+        if(status === 200){
+            Alert.alert(data?.message || "Address updated successfully!");
+            router.push("/patient/profile/manage-address");
+        }
+        
     };
-
-    await fetchData({ data: ChooseDifferentLocation });
-    // console.log("Form Data:", ChooseDifferentLocation);
-    router.push("/patient/profile/manage-address");
-    
-  };
-
-  // console.log("Api response:", data?.data);
 
   return (
     <ScrollView
