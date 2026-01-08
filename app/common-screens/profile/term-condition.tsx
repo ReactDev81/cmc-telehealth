@@ -47,7 +47,7 @@ const TermAndCondition = () => {
     },
   };
 
-  const termsAndConditionsData = data?.data.term_and_conditios;
+  const termsAndConditionsData = data?.data.term_and_conditions;
   return (
     <ScrollView className="flex-1 bg-white p-5">
       {/* <Text className="text-base text-black font-medium">Term And Condition</Text>

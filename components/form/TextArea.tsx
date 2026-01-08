@@ -55,57 +55,56 @@
 
 // export default TextArea;
 
-import React from "react";
-import { View, Text, TextInput } from "react-native";
 import { useController } from "react-hook-form";
+import { Text, TextInput, View } from "react-native";
 
 interface TextAreaProps {
-    name: string;
-    control: any;
-    label?: string;
-    placeholder?: string;
-    containerClassName?: string;
-    className?: string;
+  name: string;
+  control: any;
+  label?: string;
+  placeholder?: string;
+  containerClassName?: string;
+  className?: string;
 }
 
 const TextArea = ({
+  name,
+  control,
+  label,
+  placeholder,
+  containerClassName = "",
+  className = "",
+}: TextAreaProps) => {
+  const {
+    field: { onChange, onBlur, value },
+    fieldState: { error },
+  } = useController({
     name,
     control,
-    label,
-    placeholder,
-    containerClassName = "",
-    className = "",
-}: TextAreaProps) => {
-    const {
-        field: { onChange, onBlur, value },
-        fieldState: { error },
-    } = useController({
-        name,
-        control,
-    });
+  });
 
-    return (
-        <View className={containerClassName}>
-            {label && <Text className="text-sm text-black mb-1">{label}</Text>}
+  return (
+    <View className={containerClassName}>
+      {label && <Text className="text-sm text-black mb-1">{label}</Text>}
 
-            <TextInput
-                multiline
-                numberOfLines={5}
-                textAlignVertical="top"
-                placeholder={placeholder || label}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                className={`border rounded-lg px-5 py-4 text-sm leading-4 h-32 ${
-                    error ? "border-red-500" : "border-gray"
-                } ${className}`}
-            />
+      <TextInput
+        multiline
+        numberOfLines={5}
+        textAlignVertical="top"
+        placeholder={placeholder || label}
+        onChangeText={onChange}
+        onBlur={onBlur}
+        value={value}
+        className={`border rounded-lg px-5 py-4 text-sm leading-4 h-32 ${
+          error ? "border-red-500" : "border-gray"
+        } ${className}`}
+      />
 
-            {error && (
-                <Text className="text-xs text-red-600 mt-1">{error.message}</Text>
-            )}
-        </View>
-    );
+      {error && (
+        <Text className="text-xs text-red-600 mt-1">{error.message}</Text>
+      )}
+    </View>
+  );
 };
 
 export default TextArea;
