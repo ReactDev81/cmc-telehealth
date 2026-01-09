@@ -96,29 +96,27 @@ const ChooseDifferentLocation = () => {
     getAddress();
   }, [lat, lon]);
 
-    const onSubmit = async (formData: LocationFormData) => {
+  const onSubmit = async (formData: LocationFormData) => {
+    const payload = new FormData();
 
-        const payload = new FormData();
+    payload.append("address", formData.address);
+    payload.append("area", formData.area ?? "");
+    payload.append("pincode", formData.pincode);
+    payload.append("city", formData.city);
+    payload.append("state", formData.state);
+    payload.append("group", "address");
 
-        payload.append("address", formData.address);
-        payload.append("area", formData.area ?? "");
-        payload.append("pincode", formData.pincode);
-        payload.append("city", formData.city);
-        payload.append("state", formData.state);
-        payload.append("group", "address");
+    await fetchData({
+      data: payload,
+    });
 
-        await fetchData({
-            data: payload,
-        });
+    console.log("Form Data:", payload);
 
-        console.log("Form Data:", payload);
-        
-        if(status === 200){
-            Alert.alert(data?.message || "Address updated successfully!");
-            router.push("/patient/profile/manage-address");
-        }
-        
-    };
+    if (status === 200) {
+      Alert.alert(data?.message || "Address updated successfully!");
+      router.push("/patient/profile/manage-address");
+    }
+  };
 
   return (
     <ScrollView
