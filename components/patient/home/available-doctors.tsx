@@ -7,6 +7,7 @@ import { Image, Text, View } from "react-native";
 const AvailableDoctors = ({
   avatar,
   name,
+  id,
   speciality,
   rating,
   consultation_type,
@@ -74,7 +75,7 @@ const AvailableDoctors = ({
         <Button
           className="mt-3 flex-row-reverse"
           icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
-          onPress={() => router.push(`/patient/doctor/${name}`)}
+          onPress={() => router.push(`/patient/doctor/${id}`)}
         >
           Book Appointment
         </Button>
