@@ -4,7 +4,7 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import useApi from "@/hooks/useApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, ScrollView, Text, View } from "react-native";
@@ -67,7 +67,7 @@ export default function RegisterCompleteProfile() {
   useEffect(() => {
     if (data) {
       console.log("API Response (updated):", data);
-      // router.replace("/auth/login");
+      router.replace("/auth/login");
     }
   }, [data]);
 
@@ -75,6 +75,7 @@ export default function RegisterCompleteProfile() {
 
   return (
     <SafeAreaView className="flex-1 bg-white px-6">
+      
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="mt-10 mb-4">
           <Text className="text-black text-2xl font-semibold text-center">

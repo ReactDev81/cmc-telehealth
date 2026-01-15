@@ -68,26 +68,24 @@ const RegisterVerifyOtp = () => {
     };
 
     await fetchData({ data: verifyOTP });
-    if (data) {
-      router.push({
-        pathname: "/auth/register-complete-profile",
-        params: {
-          token: data?.token,
-        },
-      });
-    }
+    // if (data) {
+    //   router.push({
+    //     pathname: "/auth/register-complete-profile",
+    //     params: {
+    //       token: data?.token,
+    //     },
+    //   });
+    // }
   };
 
   useEffect(() => {
     if (data) {
-      console.log("API Response (updated):", data);
-
-      // router.push({
-      //   pathname: "/auth/register-complete-profile",
-      //   params: {
-      //     token: data.token,
-      //   },
-      // });
+      router.push({
+        pathname: "/auth/register-complete-profile",
+        params: {
+          token: data.token,
+        },
+      });
     }
   }, [data]);
 
@@ -196,9 +194,7 @@ const RegisterVerifyOtp = () => {
 
       {/* Verify Button */}
       <Button onPress={handleVerify} className="mt-8">
-        <Text className="text-white text-center text-base font-semibold">
           Continue
-        </Text>
       </Button>
 
       {/* Resend Timer + Back to Login */}

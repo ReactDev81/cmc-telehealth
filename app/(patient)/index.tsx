@@ -3,6 +3,9 @@ import ConsultationTypeCard from "@/components/patient/home/consulation-type-car
 import Header from "@/components/patient/home/header";
 import SpecialityCard from "@/components/patient/home/speciality-card";
 import Testimonial from "@/components/patient/home/testimonial";
+import { useAuth } from "@/context/UserContext";
+import { usePatientHome } from "@/queries/patient/usePatientHome";
+import { htmlToReadableText } from "@/utils/html";
 import { useIsFocused } from "@react-navigation/native";
 import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -12,56 +15,37 @@ import Button from "../../components/ui/Button";
 import Title from "../../components/ui/Title";
 import TitleWithLink from "../../components/ui/title-with-link";
 
-// json data
-import useAxios from "@/hooks/useApi";
-import {
-  AdvertisementProps,
-  SpecialityProps,
-  TestimonialProps,
-} from "@/types/live/patient/home";
-import { AvailableDoctorsProps } from "@/types/patient/home";
-import { useEffect } from "react";
 
 const Home = () => {
+
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
+  const { token } = useAuth();
 
-  const { data, error, loading, fetchData } = useAxios<{
-    data: {
-      available_doctors: AvailableDoctorsProps[];
-      advertisements?: AdvertisementProps[];
-      patient_reviews?: TestimonialProps[];
-      speciality_symptoms?: SpecialityProps[];
-    };
-  }>("get", "https://stagetelehealth.cmcludhiana.in/api/v2/patient/home", {
-    headers: {
-      Authorization: `Bearer 41|uM7q6ucFN1tn7YRI9ttgzSvDMhM2qlXowsaibYyJf57ddc08`,
-    },
-  });
 
-  console.log("Error:", error);
-
-  const htmlToReadabletext = (html: string) => {
-    return html
-      .replace(/<br\s*\/?>/gi, "\n") // Replace <br> tags with newlines
-      .replace(/<\/?[^>]+(>|$)/g, "") // Remove all other HTML tags
-      .trim();
-  };
+  const { data, isLoading, isError, error } = usePatientHome(!!token);
 
   const homeData = data?.data;
   const specialities = homeData?.speciality_symptoms || [];
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (isError) {
+    return <Text>Error loading home</Text>;
+  }
 
   return (
     <View className="flex-1 bg-white">
+
       {isFocused && <StatusBar style="light" />}
+
       <Header insets={insets} />
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         <View className="px-4 py-5">
+
           {/* Consultation Type */}
           <View className="flex flex-row gap-x-2.5">
             <View className="flex-1">
@@ -93,9 +77,7 @@ const Home = () => {
               className="mt-5"
               contentContainerStyle={{ gap: 20, paddingRight: 0 }}
             >
-              {loading ? (
-                <Text>Loading...</Text>
-              ) : specialities ? (
+              {specialities ? (
                 specialities.map((speciality, id) => {
                   return (
                     <SpecialityCard
@@ -124,9 +106,7 @@ const Home = () => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ gap: 15, paddingRight: 0 }}
             >
-              {loading ? (
-                <Text>Loading...</Text>
-              ) : homeData?.available_doctors ? (
+              {homeData?.available_doctors ? (
                 homeData?.available_doctors.map((availableDoctors) => {
                   return (
                     <AvailableDoctors
@@ -157,9 +137,7 @@ const Home = () => {
             className="mt-3"
             contentContainerStyle={{ gap: 15, paddingRight: 0 }}
           >
-            {loading ? (
-              <Text>Loading...</Text>
-            ) : homeData?.advertisements ? (
+            {homeData?.advertisements ? (
               homeData.advertisements.map((article, id) => {
                 return (
                   <View
@@ -195,19 +173,23 @@ const Home = () => {
               className="mt-3"
               contentContainerStyle={{ gap: 15, paddingRight: 0 }}
             >
-              {loading ? (
-                <Text>Loading...</Text>
-              ) : homeData?.patient_reviews ? (
+              {homeData?.patient_reviews ? (
                 homeData.patient_reviews.map((testimonial, index) => (
                   <Testimonial
                     key={index}
-                    image={testimonial.patient_image}
-                    name={testimonial.patient_name}
-                    age={testimonial.patient_age}
+                    patient_id={testimonial.patient_id}
+                    doctor_id={testimonial.doctor_id}
+                    patient_image={testimonial.patient_image}
+                    patient_name={testimonial.patient_name}
+                    patient_age={testimonial.patient_age}
                     title={testimonial.title}
-                    description={htmlToReadabletext(testimonial.content)}
-                    review_count={testimonial.total_reviews}
+                    content={htmlToReadableText(testimonial.content)}
+                    total_reviews={testimonial.total_reviews}
                     doctor_name={testimonial.doctor_name}
+                    rating={testimonial.rating}
+                    is_active={testimonial.is_active}
+                    is_featured={testimonial.is_featured}
+                    slug={testimonial.slug}
                   />
                 ))
               ) : (

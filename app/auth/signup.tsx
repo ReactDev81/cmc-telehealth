@@ -6,7 +6,6 @@ import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 import Checkbox from "../../components/form/checkbox";
 import Input from "../../components/form/Input";
@@ -108,7 +107,7 @@ export default function RegisterScreen() {
     //   STEP 1 VIEW
     if (step === 1) {
         return (
-            <SafeAreaView className="flex-1 justify-center bg-white px-6">
+            <View className="flex-1 justify-center bg-white px-6">
 
                 <View className="mb-6">
                     <Image
@@ -187,13 +186,13 @@ export default function RegisterScreen() {
                         </Link>
                     </Text>
                 </View>
-            </SafeAreaView>
+            </View>
         );
     }
 
     // STEP 2 VIEW
     return (
-        <SafeAreaView className="flex-1 bg-white px-6">
+        <View className="flex-1 bg-white px-6">
             <ScrollView showsVerticalScrollIndicator={false}>
 
                 <View className="mt-10 mb-4">
@@ -289,6 +288,6 @@ export default function RegisterScreen() {
                 </Text>
                 
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }

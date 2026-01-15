@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import useApi from "@/hooks/useApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Image, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -26,13 +27,15 @@ export default function RegisterSendOtp() {
       agreedToTerms: boolean;
     };
     message?: string;
-  }>("post", `${process.env.EXPO_PUBLIC_API_BASE_URL}/register`, {
+  }>("post", '/register', {
     headers: {
       Accept: "application/json",
     },
   });
 
-  const { control, handleSubmit, watch, formState } = useForm({
+  const [submittedForm, setSubmittedForm] = useState<any>(null);
+
+  const { control, handleSubmit, watch } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       email: "",
@@ -63,23 +66,30 @@ export default function RegisterSendOtp() {
 
   const onSubmit = async (formData: any) => {
     console.log("Form Submitted:", formData);
+
     const register = {
       email: formData.email,
       password: formData.password,
       agreedToTerms: formData.agreedToTerms,
     };
 
+    setSubmittedForm(formData);
     await fetchData({ data: register });
-    console.log("API Response:", register);
-
-    router.push({
-      pathname: "/auth/register-verify-otp",
-      params: {
-        email: formData.email,
-        password: formData.password,
-      },
-    });
   };
+
+  useEffect(() => {
+    if (data && submittedForm) {
+      console.log("API Response:", data);
+
+      router.push({
+        pathname: "/auth/register-verify-otp",
+        params: {
+          email: submittedForm.email,
+          password: submittedForm.password,
+        },
+      });
+    }
+  }, [data, submittedForm]);
 
   return (
     <SafeAreaView className="flex-1 justify-center bg-white px-6">
