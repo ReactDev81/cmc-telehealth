@@ -56,9 +56,7 @@ const AvailableDoctors = ({
                 <Hospital color="#1ABE17" size={14} />
               )}
               <Text className="text-success text-sm">
-                {consultation_type === "video"
-                  ? "Video consult"
-                  : "Clinic Visit"}
+                {consultation_type}
               </Text>
             </View>
           </View>

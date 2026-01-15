@@ -9,11 +9,11 @@ import { AvailableDoctorsProps } from "../../types/patient/home";
 const Doctors = () => {
   const { data, error, loading, fetchData } = useAxios<{
     data: AvailableDoctorsProps[];
-  }>("get", `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/browse-doctors`, {
-    headers: { Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}` },
+  }>("get", "https://stagetelehealth.cmcludhiana.in/api/v2/patient/browse-doctors", {
+    headers: { Authorization: `Bearer 44|ipcfgGwomcJMDApL2mbq7eq2ysPs2JM7jbvAiDsp3cfdb739` },
   });
 
-  console.log("Doctors Data1:", data);
+  // console.log("Doctors Data1:", data);
 
   const renderDoctorItem = ({ item }: { item: AvailableDoctorsProps }) => {
     return (
@@ -33,6 +33,8 @@ const Doctors = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  console
 
   return (
     <View className="flex-1 bg-white p-5">

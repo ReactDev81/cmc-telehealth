@@ -1,117 +1,206 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { router } from 'expo-router';
+import useAxios from '@/hooks/useApi';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Button from '../../ui/Button';
 
-type TimeSlot = {
+type BookingData = {
     id: string;
-    time: string;
-    available: boolean;
+    doctor_id: string;
+    availability_id: string;
+    appointment_date: string;
+    appointment_time: string;
+    consultation_type: 'video' | 'in-person';
+    opd_type: 'general' | 'private' | null;
+    consultation_fee: string;
 };
 
-const DoctorSchedule = () => {
+type Slot = {
+    id: string;
+    date: string;
+    start_time: string;
+    end_time: string;
+    consultation_type: 'video' | 'in-person';
+    opd_type?: 'general' | 'private';
+    available: boolean;
+    booked_count: number;
+    consultation_fee: string;
+};
 
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
+type AvailabilityDay = {
+    date: string;
+    slots: Slot[];
+};
 
-    // Generate 14 days from today
-    const generateTwoWeeks = () => {
-        const dates = [];
-        const today = new Date();
-        
-        for (let i = 0; i < 14; i++) {
-            const date = new Date(today);
-            date.setDate(today.getDate() + i);
-            dates.push(date);
+type DoctorScheduleResponse = {
+    success: boolean;
+    data: {
+        id: string;
+        availability: AvailabilityDay[];
+    };
+};
+
+type DoctorScheduleProps = {
+    appointmentType?: "video" | "in_person" | null;
+    opdType?: "general" | "private" | null;
+};
+
+const DoctorSchedule = ({ appointmentType, opdType }: DoctorScheduleProps) => {
+    const { id } = useLocalSearchParams();
+
+    const { data, error, loading, fetchData } = useAxios<{
+        data: DoctorScheduleResponse;
+    }>(
+        "get",
+        `/patient/browse-doctor/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
+            },
         }
-        
-        return dates;
-    };
+    );
 
-    // Format day name (Mon, Tue, Wed, etc.)
-    const getDayName = (date: Date) => {
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        return days[date.getDay()];
-    };
+    const availability = data?.data?.availability ?? [];
 
-    // Get current month and year for header
-    const getMonthYear = (date: Date) => {
-        const months = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ];
-        return `${months[date.getMonth()]} ${date.getFullYear()}`;
-    };
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+    const [bookingData, setBookingData] = useState<BookingData | null>(null);
 
-    // Check if date is selected
-    const isSelected = (date: Date) => {
-        return date.toDateString() === selectedDate.toDateString();
-    };
+    /** Fetch schedule */
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-    // Generate time slots based on selected date
-    const generateTimeSlots = (): TimeSlot[] => {
-        const slots: TimeSlot[] = [
-            { id: '1', time: '09-10 AM', available: true },
-            { id: '2', time: '10-11 AM', available: true },
-            { id: '3', time: '11-12 AM', available: true },
-            { id: '4', time: '12-01 PM', available: true },
-            { id: '5', time: '01-02 PM', available: true },
-            { id: '6', time: '02-03 PM', available: true },
-            { id: '7', time: '03-04 PM', available: true },
-            { id: '8', time: '04-05 PM', available: true },
+    /** Auto-select first available date */
+    useEffect(() => {
+        if (availability.length > 0 && !selectedDate) {
+            setSelectedDate(availability[0].date);
+        }
+    }, [availability]);
+
+    const parseDate = (date: string) => new Date(date);
+
+    const getDayName = (date: string) =>
+        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][
+        parseDate(date).getDay()
         ];
 
-        const dayOfWeek = selectedDate.getDay();
-        
-        // Example: Make some slots unavailable on weekends
-        if (dayOfWeek === 0 || dayOfWeek === 6) {
-            slots[0].available = false;
-            slots[7].available = false;
+    const getMonthYear = (date: string) =>
+        parseDate(date).toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric',
+        });
+
+    /** Slots for selected date */
+    const slots = useMemo(() => {
+        const daySlots = availability.find(d => d.date === selectedDate)?.slots ?? [];
+
+        // If no appointment type is selected, show all slots
+        if (!appointmentType) {
+            return daySlots;
         }
 
-        return slots;
+        // Filter by appointment type
+        return daySlots.filter(slot => {
+            if (appointmentType === "video") {
+                return slot.consultation_type === "video";
+            } else if (appointmentType === "in_person") {
+                // For in-person appointments, also filter by OPD type if specified
+                if (opdType) {
+                    return slot.consultation_type === "in-person" && slot.opd_type === opdType;
+                }
+                return slot.consultation_type === "in-person";
+            }
+            return true;
+        });
+    }, [availability, selectedDate, appointmentType, opdType]);
+
+    /** Get selected slot details */
+    const selectedSlot = useMemo(() => {
+        return slots.find(slot => slot.id === selectedSlotId);
+    }, [slots, selectedSlotId]);
+
+    /** Handle slot selection and prepare booking data */
+    const handleSlotSelection = (slot: Slot) => {
+        setSelectedSlotId(slot.id);
+
+        // Prepare booking data
+        const booking: BookingData = {
+            doctor_id: data?.data?.id,
+            availability_id: slot.id,
+            appointment_date: slot.date,
+            appointment_time: `${slot.start_time} - ${slot.end_time}`,
+            consultation_type: slot.consultation_type,
+            opd_type: slot.opd_type || null,
+            consultation_fee: slot.consultation_fee,
+        };
+
+        setBookingData(booking);
+        console.log('Booking Data:', booking);
     };
 
-    const twoWeeksDates = generateTwoWeeks();
-    const timeSlots = generateTimeSlots();
+    /** Loading */
+    if (loading) {
+        return (
+            <View className="mt-10 items-center">
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    }
+
+    /** Error */
+    if (error) {
+        return (
+            <Text className="text-red-500 mt-5">
+                Failed to load schedule
+            </Text>
+        );
+    }
 
     return (
         <View className="mt-7">
-
             {/* Header */}
-            <View className="flex-row justify-between items-center">
-                <Text className="text-lg font-medium text-black">Schedules</Text>
-                <Text className="text-sm text-black-400 font-medium">{getMonthYear(selectedDate)}</Text>
-            </View>
+            {selectedDate && (
+                <View className="flex-row justify-between items-center">
+                    <Text className="text-lg font-medium text-black">
+                        Schedules
+                    </Text>
+                    <Text className="text-sm text-black-400 font-medium">
+                        {getMonthYear(selectedDate)}
+                    </Text>
+                </View>
+            )}
 
-            {/* Dates ScrollView */}
-            <ScrollView 
-                horizontal 
+            {/* Dates */}
+            <ScrollView
+                horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ gap: 10 }}
                 className="mt-5"
             >
-                {twoWeeksDates.map((date, index) => {
+                {availability.map(day => {
+                    const isActive = day.date === selectedDate;
 
-                    const isCurrentSelected = isSelected(date);
-                    
                     return (
-                        <View key={index} className=''>
+                        <View key={day.date}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    setSelectedDate(date);
-                                    setSelectedTimeSlot(null); 
+                                    setSelectedDate(day.date);
+                                    setSelectedSlotId(null);
                                 }}
-                                className={`items-center justify-center w-11 h-11 rounded-md ${
-                                    isCurrentSelected ? 'bg-primary' : 'bg-gray-100'
-                                }`}
+                                className={`items-center justify-center w-11 h-11 rounded-md ${isActive ? 'bg-primary' : 'bg-gray-100'
+                                    }`}
                             >
-                                <Text className={`text-base font-medium ${isCurrentSelected ? 'text-white' : 'text-black-400'}`}>
-                                    {date.getDate()}
+                                <Text
+                                    className={`text-base font-medium ${isActive ? 'text-white' : 'text-black-400'
+                                        }`}
+                                >
+                                    {parseDate(day.date).getDate()}
                                 </Text>
                             </TouchableOpacity>
+
                             <Text className="text-sm text-black-400 text-center mt-1">
-                                {getDayName(date)}
+                                {getDayName(day.date)}
                             </Text>
                         </View>
                     );
@@ -120,38 +209,71 @@ const DoctorSchedule = () => {
 
             {/* Time Slots */}
             <View className="bg-primary-100 rounded-xl p-4 mt-6">
-                <View className="flex-row flex-wrap gap-y-2.5 justify-between">
-                    {timeSlots.map((slot) => (
-                        <TouchableOpacity
-                            key={slot.id}
-                            onPress={() => slot.available && setSelectedTimeSlot(slot.id)}
-                            disabled={!slot.available}
-                            className={`p-2.5 rounded ${
-                                selectedTimeSlot === slot.id
+                <View className="flex-row flex-wrap gap-y-3 justify-between">
+                    {slots.length === 0 && (
+                        <Text className="text-sm text-black-400">
+                            No slots available
+                        </Text>
+                    )}
+
+                    {slots.map(slot => {
+                        const isSelected = selectedSlotId === slot.id;
+
+                        return (
+                            <TouchableOpacity
+                                key={slot.id}
+                                disabled={!slot.available}
+                                onPress={() => handleSlotSelection(slot)}
+                                className={`p-2.5 rounded ${isSelected
                                     ? 'bg-primary'
                                     : slot.available
-                                    ? 'bg-white'
-                                    : 'bg-gray-200'
-                            }`}
-                            style={{ width: '22%' }}
-                        >
-                            <Text className={`text-xs font-medium text-center ${
-                                selectedTimeSlot === slot.id
-                                    ? 'text-white'
-                                    : slot.available
-                                    ? 'text-black-400'
-                                    : 'text-gray-400'
-                            }`}>
-                                {slot.time}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
+                                        ? 'bg-white'
+                                        : 'bg-gray-200'
+                                    }`}
+                                style={{ width: '48%' }}
+                            >
+                                <Text
+                                    className={`text-xs font-medium text-center ${isSelected
+                                        ? 'text-white'
+                                        : slot.available
+                                            ? 'text-black-400'
+                                            : 'text-gray-400'
+                                        }`}
+                                >
+                                    {slot.start_time} – {slot.end_time}
+                                </Text>
+
+                                <Text className={`text-[10px] text-center mt-0.5 ${isSelected ? 'text-white' : 'text-gray-400'}`}>
+                                    {slot.consultation_type}
+                                    {slot.opd_type && ` (${slot.opd_type})`}
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    })}
                 </View>
             </View>
 
-            {/* Book Appointment */}
-            <Button className='mt-8' onPress={() => router.push('/patient/appointment-summary')}>Book Appointment (₹60.00)</Button>
-
+            {/* CTA */}
+            <Button
+                className="mt-8"
+                disabled={!selectedSlotId || !bookingData}
+                onPress={() => {
+                    if (bookingData) {
+                        // Pass booking data to the next screen
+                        router.push({
+                            pathname: '/patient/appointment-summary',
+                            params: {
+                                bookingData: JSON.stringify(bookingData),
+                            },
+                        });
+                    }
+                }}
+            >
+                {selectedSlot
+                    ? `Book Appointment (₹${parseFloat(selectedSlot.consultation_fee).toFixed(2)})`
+                    : 'Book Appointment'
+                }
+            </Button>
         </View>
     );
 };

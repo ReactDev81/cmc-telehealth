@@ -33,11 +33,13 @@ const Home = () => {
       patient_reviews?: TestimonialProps[];
       speciality_symptoms?: SpecialityProps[];
     };
-  }>("get", `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/home`, {
+  }>("get", "https://stagetelehealth.cmcludhiana.in/api/v2/patient/home", {
     headers: {
-      Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
+      Authorization: `Bearer 41|uM7q6ucFN1tn7YRI9ttgzSvDMhM2qlXowsaibYyJf57ddc08`,
     },
   });
+
+  console.log("Error:", error);
 
   const htmlToReadabletext = (html: string) => {
     return html

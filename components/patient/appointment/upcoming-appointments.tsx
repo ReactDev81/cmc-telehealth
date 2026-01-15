@@ -1,41 +1,41 @@
-import { View, Text, Image } from "react-native"
 import Button from "@/components/ui/Button"
-import { router } from "expo-router"
-import { Star, Video, Hospital, Clock, Calendar, Phone } from "lucide-react-native"
 import { appointmentProps } from "@/types/patient/appointment"
+import { router } from "expo-router"
+import { Calendar, Clock, Hospital, Phone, Star, Video } from "lucide-react-native"
+import { Image, Text, View } from "react-native"
 
-interface props extends appointmentProps{
-    CancelSchedule : () => void
+interface props extends appointmentProps {
+    CancelSchedule: () => void
 }
 
 const UpcomingAppointments = ({
-    id, 
-    image, 
-    name, 
-    speciality, 
-    rating, 
-    consultation_type, 
-    consultation_fee, 
-    expercience,
+    id,
+    image,
+    name,
+    speciality,
+    rating,
+    consultation_type,
+    consultation_fee,
+    experience,
     date,
     time,
     CancelSchedule,
     call_now
-} : props ) => {
+}: props) => {
 
-    return(
+    return (
         <View className='border border-black-300 rounded-xl p-4'>
 
             <View className='flex-row items-center gap-x-3'>
                 <View>
-                    <Image 
+                    <Image
                         source={image}
-                        className='w-14 h-14 rounded-full' 
+                        className='w-14 h-14 rounded-full'
                     />
                 </View>
                 <View className='flex-1'>
                     <Text className='text-sm text-black font-medium'>{name}</Text>
-                    <Text className='text-xs text-black mt-1.5'>{speciality} {expercience}</Text>
+                    <Text className='text-xs text-black mt-1.5'>{speciality} ({experience} Exp)</Text>
                     <View className="flex-row items-center gap-x-3 mt-1">
                         <View className="flex-row items-center gap-x-1.5">
                             <Calendar size={12} strokeWidth={1.5} className="text-black-400" />
@@ -59,14 +59,14 @@ const UpcomingAppointments = ({
                         <Text className='text-sm text-black font-medium'>Consultation Type</Text>
                         <View className='flex-row items-center gap-x-1.5 mt-1'>
                             {
-                                consultation_type === 'video' ? 
-                                    <Video color="#1ABE17" fill="#1ABE17" size={14} /> 
-                                : 
+                                consultation_type === 'video' ?
+                                    <Video color="#1ABE17" fill="#1ABE17" size={14} />
+                                    :
                                     <Hospital color="#1ABE17" size={14} />
                             }
                             <Text className='text-success text-sm'>
-                                {consultation_type === 'video' ? "Video consult" : "Clinic Visit"}
-                            </Text>   
+                                {consultation_type}
+                            </Text>
                         </View>
                     </View>
                     <View className="w-px h-full bg-primary-200"></View>
@@ -80,15 +80,15 @@ const UpcomingAppointments = ({
                         call_now ?
                             <Button
                                 className="flex-1"
-                                icon={<Phone color="#fff" size={16} />} 
+                                icon={<Phone color="#fff" size={16} />}
                                 onPress={() => router.push('/patient/start-consulation')}
                             >
                                 Call Now
                             </Button>
-                        :
+                            :
                             <>
                                 <View className="flex-1">
-                                    <Button 
+                                    <Button
                                         onPress={CancelSchedule}
                                         variant="outline"
                                     >
@@ -96,7 +96,7 @@ const UpcomingAppointments = ({
                                     </Button>
                                 </View>
                                 <View className="flex-1">
-                                    <Button 
+                                    <Button
                                         onPress={() => router.push(`/patient/doctor/${id}`)}
                                     >
                                         Reschedule
@@ -104,9 +104,9 @@ const UpcomingAppointments = ({
                                 </View>
                             </>
                     }
-                    
+
                 </View>
-                
+
             </View>
 
         </View>

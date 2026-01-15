@@ -9,7 +9,7 @@ export interface appointmentProps {
     name: string
     speciality: string
     rating: number
-    expercience: string
+    experience: string
     date: string
     time: string,
     call_now?: boolean

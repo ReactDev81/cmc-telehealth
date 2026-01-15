@@ -1,11 +1,11 @@
-import { useState } from "react"
-import { View, FlatList } from "react-native"
 import { appointmentProps } from "@/types/patient/appointment"
-import { UpcomingAppointmentData } from "@/json-data/patient/appointment"
-import UpcomingAppointments from "./upcoming-appointments"
+import { useState } from "react"
+import { FlatList, View } from "react-native"
+import demoImage from "../../../assets/images/demo.jpg"
 import CancelAppointmentModal from "./cancel-appointment-modal"
+import UpcomingAppointments from "./upcoming-appointments"
 
-const AllUpcomingAppointment = () => {
+const AllUpcomingAppointment = ({ appointments }: { appointments: appointmentProps[] }) => {
 
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedAppointment, setSelectedAppointment] = useState<appointmentProps | null>(null)
@@ -25,29 +25,29 @@ const AllUpcomingAppointment = () => {
         setSelectedAppointment(null)
     }
 
-    const renderDoctorItem = ({ item } : { item: appointmentProps }) => {
+    const renderDoctorItem = ({ item }: { item: appointmentProps }) => {
         return (
             <UpcomingAppointments
                 id={item.id}
-                image={item.image}
-                name={item.name}
-                speciality={item.speciality}
-                rating={item.rating}
-                consultation_type={item.consultation_type}
-                consultation_fee={item.consultation_fee}
-                expercience={item.expercience}
-                date={item.date}
-                time={item.time}
+                image={item.image || demoImage}
+                name={item.doctor.name}
+                speciality={item.doctor.department}
+                rating={item.doctor?.average_rating}
+                consultation_type={item.consultation_type_label}
+                consultation_fee={item.fee_amount}
+                experience={item.doctor?.years_experience}
+                date={item.appointment_date_formatted}
+                time={item.appointment_time_formatted}
                 CancelSchedule={() => handleCancelPress(item)}
                 call_now={item.call_now}
             />
         );
     };
 
-    return(
+    return (
         <>
             <FlatList
-                data={UpcomingAppointmentData}
+                data={appointments}
                 renderItem={renderDoctorItem}
                 keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
@@ -59,7 +59,7 @@ const AllUpcomingAppointment = () => {
                 onConfirm={handleConfirmCancel}
                 appointmentDetails={selectedAppointment ? {
                     doctorName: selectedAppointment.name,
-                    date: selectedAppointment.date,
+                    date: selectedAppointment.appointment_date_formatted,
                     time: selectedAppointment.time
                 } : undefined}
             />

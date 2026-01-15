@@ -1,31 +1,30 @@
-import { View, FlatList } from "react-native"
-import { appointmentProps } from "@/types/patient/appointment"
-import { PastAppointmentData } from "@/json-data/patient/appointment"
-import PastAppointment from "./past-appointments"
+import { appointmentProps } from "@/types/patient/appointment";
+import { FlatList, View } from "react-native";
+import PastAppointment from "./past-appointments";
 
-const AllPastAppointment = () => {
+const AllPastAppointment = ({ appointments }: { appointments: appointmentProps[] }) => {
 
-    const renderDoctorItem = ({ item } : { item: appointmentProps }) => {
+    const renderDoctorItem = ({ item }: { item: appointmentProps }) => {
         return (
             <PastAppointment
                 id={item.id}
-                status={item.status}
-                image={item.image}
-                name={item.name}
-                speciality={item.speciality}
-                rating={item.rating}
-                consultation_type={item.consultation_type}
-                consultation_fee={item.consultation_fee}
-                expercience={item.expercience}
-                date={item.date}
-                time={item.time}
+                status={item.status_label}
+                image={item.doctor?.avatar}
+                name={item.doctor?.name}
+                speciality={item.doctor.department}
+                rating={item.doctor?.average_rating}
+                consultation_type={item.consultation_type_label}
+                consultation_fee={item.fee_amount}
+                experience={item.doctor?.years_experience}
+                date={item.appointment_date_formatted}
+                time={item.appointment_time_formatted}
             />
         );
     };
 
-    return(
+    return (
         <FlatList
-            data={PastAppointmentData}
+            data={appointments}
             renderItem={renderDoctorItem}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
