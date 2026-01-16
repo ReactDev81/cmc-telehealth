@@ -293,13 +293,13 @@ const DoctorDetail = () => {
     );
     const doctor = data?.data;
 
-    console.log("Doctor Data Fetching:", data);
+    // console.log("Doctor Data Fetching:", data);
 
     const [appointementType, setAppointementType] = useState<"video" | "in_person" | null>(null);
     const [opdType, setOpdType] = useState<"general" | "private" | null>(null);
 
-    console.log("Appointments Type Video:", doctor?.appointment_types?.video);
-    console.log("Appointments Type In Person:", doctor?.appointment_types?.in_person);
+    // console.log("Appointments Type Video:", doctor?.appointment_types?.video);
+    // console.log("Appointments Type In Person:", doctor?.appointment_types?.in_person);
 
     useEffect(() => {
         fetchData();
@@ -405,7 +405,7 @@ const DoctorDetail = () => {
                 {/* Languages */}
                 <View className="mt-6">
                     <Text className="text-lg font-medium text-black">Languages</Text>
-                    <View className="flex-row items-center gap-x-2.5 mt-3 flex-wrap">
+                    {/* <View className="flex-row items-center gap-x-2.5 mt-3 flex-wrap">
                         {doctor?.languages?.split(',').map((language, index) => (
                             <View
                                 key={index}
@@ -417,7 +417,7 @@ const DoctorDetail = () => {
                                 </Text>
                             </View>
                         ))}
-                    </View>
+                    </View> */}
                 </View>
 
                 {/* Appointment Type */}
@@ -522,7 +522,7 @@ const DoctorDetail = () => {
 
                 {/* schedules - Only show when appointment type is selected and if in_person, opdType must be selected */}
                 {appointementType && (appointementType === "video" || (appointementType === "in_person" && opdType)) && (
-                    <DoctorSchedule appointmentType={appointementType} opdType={opdType} />
+                    <DoctorSchedule doctorData={data} appointmentType={appointementType} opdType={opdType} />
                 )}
             </View>
         </ScrollView>

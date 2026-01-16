@@ -1,6 +1,7 @@
-import { View, Text, Modal, Image } from 'react-native';
-import { Check, Video, CalendarDays } from 'lucide-react-native';
 import Button from '@/components/ui/Button';
+import { CalendarDays, Check, Video } from 'lucide-react-native';
+import { Image, Modal, Text, View } from 'react-native';
+
 
 type BookingConfirmationModalProps = {
     visible: boolean;
@@ -8,6 +9,7 @@ type BookingConfirmationModalProps = {
 };
 
 const AppointmentConfirmation = ({ visible, onClose }: BookingConfirmationModalProps ) => {
+
     return(
         <Modal
             animationType="fade"
