@@ -47,6 +47,7 @@ const AppointmentSummary = () => {
         amount: total,
         keyId: appointment?.razorpay_key_id,
         orderId: appointment?.razorpay_order_id,
+        appointmentId: appointment?.id
       },
     });
   };

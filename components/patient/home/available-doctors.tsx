@@ -14,16 +14,11 @@ const AvailableDoctors = ({
   consultation_fee,
   years_experience,
 }: AvailableDoctorsProps) => {
-  const doctor_speciality = Array.isArray(speciality)
-    ? speciality.join(", ")
-    : "";
+
   const experience = years_experience ? `(${years_experience} Years Exp)` : "";
-  const default_avatar =
-    "https://cdn-icons-png.flaticon.com/512/387/387561.png";
-  const imageSource =
-    typeof avatar === "string"
-      ? { uri: avatar }
-      : avatar ?? { uri: default_avatar };
+  const default_avatar = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
+  const doctor_speciality = Array.isArray(speciality) ? speciality.map(item => item.name).join(", ") : "";
+  const imageSource = typeof avatar === "string" ? { uri: avatar } : avatar ?? { uri: default_avatar };
 
   return (
     <View className="border border-black-300 rounded-xl p-4 mt-4">

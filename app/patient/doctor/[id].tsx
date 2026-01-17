@@ -237,6 +237,7 @@
 // export default DoctorDetail;
 
 
+import { useAuth } from "@/context/UserContext";
 import useAxios from "@/hooks/useApi";
 import { useLocalSearchParams } from "expo-router";
 import {
@@ -282,13 +283,14 @@ interface DoctorProps {
 
 const DoctorDetail = () => {
     const { id } = useLocalSearchParams();
+    const { token } = useAuth();
 
     const { data, loading, error, fetchData } = useAxios<{ data: DoctorProps }>(
         "get",
         `/patient/browse-doctor/${id}`,
         {
             headers: {
-                Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
+                Authorization: `Bearer ${token}`,
             },
         }
     );

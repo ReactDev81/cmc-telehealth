@@ -1,63 +1,11 @@
-// import AllPastAppointment from '@/components/patient/appointment/all-past-appointment';
-// import AllUpcomingAppointment from '@/components/patient/appointment/all-upcoming-appointment';
-// import useAxios from '@/hooks/useApi';
-// import { useEffect } from 'react';
-// import { View } from 'react-native';
-// import Tab, { TabItem } from '../../components/ui/Tab';
-
-
-// const Appointments = () => {
-
-//     const { data, error, loading, fetchData } = useAxios<{
-//         data: any
-//     }>(
-//         "get",
-//         `/appointments/my`,
-//         {
-//             headers: {
-//                 Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-//                 Accept: 'application/json',
-//             },
-//         }
-//     );
-
-//     console.log("Appointments Data:", data);
-
-//     useEffect(() => {
-//         fetchData();
-//     }, []);
-
-//     const appointmentTabs: TabItem[] = [
-//         {
-//             key: 'upcoming',
-//             label: 'Upcoming',
-//             content: <AllUpcomingAppointment />
-//         },
-//         {
-//             key: 'past',
-//             label: 'Past',
-//             content: <AllPastAppointment />
-//         }
-//     ]
-
-//     return (
-//         <View className='flex-1 bg-white p-5 pb-0'>
-//             <Tab
-//                 tabs={appointmentTabs}
-//                 defaultTab='upcoming'
-//             />
-//         </View>
-//     );
-// }
-
-// export default Appointments
-
 import AllPastAppointment from '@/components/patient/appointment/all-past-appointment';
 import AllUpcomingAppointment from '@/components/patient/appointment/all-upcoming-appointment';
+import { useAuth } from "@/context/UserContext";
 import useAxios from '@/hooks/useApi';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import Tab, { TabItem } from '../../components/ui/Tab';
+
 
 export type Appointment = {
     id: string;
@@ -97,13 +45,13 @@ type AppointmentResponse = {
 
 const Appointments = () => {
     const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
-
+    const { token } = useAuth();
     const { data, error, loading, fetchData } = useAxios<AppointmentResponse>(
         'get',
         `/appointments/my?filter=${activeTab}`,
         {
             headers: {
-                Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
+                Authorization: `Bearer ${token}`,
                 Accept: 'application/json',
             },
         }

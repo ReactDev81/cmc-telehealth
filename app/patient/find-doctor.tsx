@@ -1,7 +1,7 @@
 import FindDoctorSearchBar from "@/components/patient/find-doctor/find-doctor-search-bar";
 import SpecialityCard from "@/components/patient/home/speciality-card";
-import useAxios from "@/hooks/useApi";
-import { useEffect, useMemo, useState } from "react";
+import { useFindDoctorData } from "@/queries/patient/useFindDoctorData";
+import { useMemo, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { SpecialityByDoctorProps, SymptomsByDoctorProps } from "../../types/patient/find-doctor";
 
@@ -10,38 +10,15 @@ const FindDoctor = () => {
 
     const [selectedFilter, setSelectedFilter] = useState<"Speciality" | "Symptoms">("Speciality");
     const [searchQuery, setSearchQuery] = useState("");
-
-    const { data, loading, error, fetchData } = useAxios<{
-        success: boolean;
-        data: {
-            id: string;
-            department: { name: string; icon: string };
-            symptoms: { name: string; icon: string }[];
-        }[];
-    }>(
-        "get",
-        `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/departments-and-symptoms-list`,
-        {
-            headers: {
-                Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-            },
-        }
-    );
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    console.log("Fetched Data:", data);
-
+    const { data, isLoading, isError, error } = useFindDoctorData();
 
     const specialities: SpecialityByDoctorProps[] = useMemo(
         () =>
             data?.data.map(item => ({
-            id: item.id,
-            name: item.department.name,
-            icon: item.department.icon, // string URL
-            link: `/doctors?filter_type=department&id=${item.id}` as const,
+                id: String(item.id),
+                name: item.department.name,
+                icon: item.department.icon, // string URL
+                link: `/doctors?filter_type=department&id=${item.id}` as const,
             })) ?? [],
         [data]
     );
@@ -49,12 +26,12 @@ const FindDoctor = () => {
     const symptoms: SymptomsByDoctorProps[] = useMemo(
         () =>
             data?.data.flatMap(item =>
-            item.symptoms.map(symptom => ({
-            id: `${item.id}-${symptom.name}`,
-            name: symptom.name,
-            icon: symptom.icon, // string URL
-            link: `/doctors?filter_type=symptom&id=${item.id}` as const,
-            }))
+                item.symptoms.map(symptom => ({
+                    id: `${item.id}-${symptom.name}`,
+                    name: symptom.name,
+                    icon: symptom.icon, // string URL
+                    link: `/doctors?filter_type=symptom&id=${item.id}` as const,
+                }))
             ) ?? [],
         [data]
     );
@@ -96,21 +73,25 @@ const FindDoctor = () => {
             />
 
             {/* Loading */}
-            {loading && (
+            {isLoading && (
                 <View className="mt-20 items-center">
-                <Text className="text-gray-400">Loading...</Text>
+                    <Text className="text-gray-400">Loading...</Text>
                 </View>
             )}
 
             {/* Error */}
-            {error && (
+            {isError && (
                 <View className="mt-20 items-center">
-                <Text className="text-red-500">Something went wrong</Text>
+                    <Text className="text-red-500">
+                        {error instanceof Error
+                        ? error.message
+                        : "Something went wrong"}
+                    </Text>
                 </View>
             )}
 
             {/* List */}
-            {!loading && !error && (
+            {!isLoading && !isError && (
                 <FlatList
                     data={filteredData}
                     renderItem={renderItem}

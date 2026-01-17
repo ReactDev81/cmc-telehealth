@@ -1,20 +1,19 @@
-import { View, ScrollView } from "react-native";
-import TitleWithLink from "@/components/ui/title-with-link";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
-import { useIsFocused } from "@react-navigation/native";
-import DoctorHomeHeader from "@/components/doctor/home/header";
-import { AppointementStatusBoxData } from "@/json-data/doctor/home";
-import AppointementStatusBox from "@/components/doctor/home/appointement-status-box";
 import TodayAppointmentCard from "@/components/doctor/appointment/today-appointment-card";
-import { TodayAppointmentData } from "@/json-data/doctor/appointment";
 import UpcomingAppointmentCard from "@/components/doctor/appointment/upcoming-appointment-card";
-import { UpcomingAppointmentData } from "@/json-data/doctor/appointment";
-import Title from "@/components/ui/Title";
-import Button from "@/components/ui/Button";
-import { router } from "expo-router";
-import { TestimonialData } from "@/json-data/patient/home";
+import AppointementStatusBox from "@/components/doctor/home/appointement-status-box";
+import DoctorHomeHeader from "@/components/doctor/home/header";
 import Testimonial from "@/components/patient/home/testimonial";
+import Button from "@/components/ui/Button";
+import Title from "@/components/ui/Title";
+import TitleWithLink from "@/components/ui/title-with-link";
+import { TodayAppointmentData, UpcomingAppointmentData } from "@/json-data/doctor/appointment";
+import { AppointementStatusBoxData } from "@/json-data/doctor/home";
+import { TestimonialData } from "@/json-data/patient/home";
+import { useIsFocused } from "@react-navigation/native";
+import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Home = () => {
 
@@ -23,7 +22,9 @@ const Home = () => {
 
     return (
         <View className="flex-1 bg-white">
+
             {isFocused && <StatusBar style="light" />}
+            
             <DoctorHomeHeader insets={insets} />
 
             <ScrollView 
@@ -100,16 +101,28 @@ const Home = () => {
                             contentContainerStyle={{ gap: 15, paddingRight: 0 }}
                         >
                             {TestimonialData.map((testimonial, id) => {
+                                // Parse review_count to extract total_reviews and doctor_name
+                                // Format: "137+ Reviews for Dr. Ananya Sharma"
+                                const reviewMatch = testimonial.review_count.match(/^(\d+\+)\s+Reviews\s+for\s+(.+)$/);
+                                const total_reviews = reviewMatch ? reviewMatch[1] : testimonial.review_count;
+                                const doctor_name = reviewMatch ? reviewMatch[2] : "";
+                                
                                 return(
                                     <Testimonial
                                         key={id} 
-                                        image={testimonial.image}
-                                        name={testimonial.name}
-                                        age={testimonial.name}
-                                        city={testimonial.city}
+                                        patient_id={String(testimonial.id || id)}
+                                        doctor_id=""
+                                        patient_image={testimonial.image}
+                                        patient_name={testimonial.name}
+                                        patient_age={testimonial.age}
                                         title={testimonial.title}
-                                        description={testimonial.description}
-                                        review_count={testimonial.review_count}
+                                        content={testimonial.description}
+                                        rating={5}
+                                        is_active={true}
+                                        is_featured={true}
+                                        slug={`testimonial-${testimonial.id || id}`}
+                                        total_reviews={total_reviews}
+                                        doctor_name={doctor_name}
                                     />
                                 )
                             })}
