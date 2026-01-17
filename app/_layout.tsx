@@ -120,6 +120,14 @@ export default function RootLayout() {
                             />
 
                             <Stack.Screen 
+                                name="patient/manage-appointment/[appointment_id]" 
+                                options={{
+                                    headerShown: true,
+                                    title: "Manage Appointment",
+                                }}
+                            />
+
+                            <Stack.Screen 
                                 name="patient/start-consulation/index" 
                                 options={{ headerShown: false }}
                             />

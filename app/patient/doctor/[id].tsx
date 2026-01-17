@@ -248,6 +248,7 @@ import {
 } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
+    ActivityIndicator,
     Image,
     ImageSourcePropType,
     ScrollView,
@@ -282,7 +283,7 @@ interface DoctorProps {
 const DoctorDetail = () => {
     const { id } = useLocalSearchParams();
 
-    const { data, loading, fetchData } = useAxios<{ data: DoctorProps }>(
+    const { data, loading, error, fetchData } = useAxios<{ data: DoctorProps }>(
         "get",
         `/patient/browse-doctor/${id}`,
         {
@@ -311,6 +312,15 @@ const DoctorDetail = () => {
             setOpdType(null);
         }
     }, [appointementType]);
+
+    if (loading) {
+        return (
+            <View className="flex-1 items-center justify-center">
+                <ActivityIndicator />
+                {/* <Text className="text-gray-600 text-lg">Loading doctor details...</Text> */}
+            </View>
+        );
+    }
 
     if (!doctor) {
         return (

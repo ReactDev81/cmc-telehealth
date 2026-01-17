@@ -28,7 +28,7 @@ const AllUpcomingAppointment = ({ appointments }: { appointments: appointmentPro
     const renderDoctorItem = ({ item }: { item: appointmentProps }) => {
         return (
             <UpcomingAppointments
-                id={item.id}
+                appointment_id={item.appointment_id}
                 image={item.image || demoImage}
                 name={item.doctor.name}
                 speciality={item.doctor.department}

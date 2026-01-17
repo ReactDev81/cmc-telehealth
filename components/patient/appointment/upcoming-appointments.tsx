@@ -4,12 +4,8 @@ import { router } from "expo-router"
 import { Calendar, Clock, Hospital, Phone, Star, Video } from "lucide-react-native"
 import { Image, Text, View } from "react-native"
 
-interface props extends appointmentProps {
-    CancelSchedule: () => void
-}
-
 const UpcomingAppointments = ({
-    id,
+    appointment_id,
     image,
     name,
     speciality,
@@ -19,9 +15,8 @@ const UpcomingAppointments = ({
     experience,
     date,
     time,
-    CancelSchedule,
     call_now
-}: props) => {
+}: appointmentProps) => {
 
     return (
         <View className='border border-black-300 rounded-xl p-4'>
@@ -89,17 +84,10 @@ const UpcomingAppointments = ({
                             <>
                                 <View className="flex-1">
                                     <Button
-                                        onPress={CancelSchedule}
-                                        variant="outline"
+                                        // onPress={() => router.push(`/patient/${appointment_id}`)}
+                                        onPress={() => router.push(`/patient/manage-appointment/${appointment_id}`)}
                                     >
-                                        Cancel
-                                    </Button>
-                                </View>
-                                <View className="flex-1">
-                                    <Button
-                                        onPress={() => router.push(`/patient/doctor/${id}`)}
-                                    >
-                                        Reschedule
+                                        Manage Appointments
                                     </Button>
                                 </View>
                             </>

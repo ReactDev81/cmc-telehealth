@@ -109,7 +109,7 @@ const Appointments = () => {
         }
     );
 
-    console.log('Appointments Data:', data?.data ?? []);
+    // console.log('Appointments Data:', data?.data ?? []);
 
     useEffect(() => {
         fetchData();
@@ -135,6 +135,8 @@ const Appointments = () => {
             ),
         },
     ];
+
+    // console.log("appointment data :", data?.data)
 
     if (error) {
         return (

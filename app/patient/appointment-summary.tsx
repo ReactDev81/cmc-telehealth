@@ -40,7 +40,7 @@ const AppointmentSummary = () => {
   };
 
   const paymentData = () => {
-    
+
     router.push({
       pathname: "/patient/razorpay",
       params: {
@@ -51,8 +51,8 @@ const AppointmentSummary = () => {
     });
   };
 
-//   console.log("KeyId :", appointment?.razorpay_key_id);
-//   console.log("orderId", appointment?.razorpay_order_id);
+  //   console.log("KeyId :", appointment?.razorpay_key_id);
+  //   console.log("orderId", appointment?.razorpay_order_id);
 
   return (
     <ScrollView className="flex-1 bg-white">
@@ -187,7 +187,7 @@ const AppointmentSummary = () => {
 
         {/* book appointement with razorpay */}
         {/* <Button onPress={() => setModalVisible(true)}>Book Appointment ({total})</Button> */}
-        
+
         <Button onPress={paymentData} variant="outline" className="mt-4">
           Book Appointment (₹{total})
         </Button>
