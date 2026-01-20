@@ -1,26 +1,24 @@
-import { useAuth } from '@/context/UserContext';
-import { router } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
-import MenuItem from '../../components/common/profile/menu-item';
-import ProfileEdit from '../../components/common/profile/profile-edit';
-import Button from '../../components/ui/Button';
-import { menuSections } from '../../json-data/patient/profile';
-
+import { useAuth } from "@/context/UserContext";
+import { router } from "expo-router";
+import { ScrollView, Text, View } from "react-native";
+import MenuItem from "../../components/common/profile/menu-item";
+import ProfileEdit from "../../components/common/profile/profile-edit";
+import Button from "../../components/ui/Button";
+import { menuSections } from "../../json-data/patient/profile";
 
 const Profile = () => {
-
     const { logout } = useAuth();
 
-    return(
-        <ScrollView 
+    return (
+        <ScrollView
             showsVerticalScrollIndicator={false}
-            className='flex-1 p-5 bg-white'
+            className="flex-1 p-5 bg-white"
         >
             {/* profile edit */}
             <ProfileEdit />
 
             {/* menu items */}
-            <View className='mt-5'>
+            <View className="mt-5">
                 {menuSections.map((section, sectionIndex) => (
                     <View key={sectionIndex} className="mb-6">
                         {section.title && (
@@ -45,10 +43,12 @@ const Profile = () => {
             </View>
 
             {/* app version info and logout button */}
-            <View className='mt-7 mb-16'>
-                <Text className='text-sm text-black-400 text-center'>CMC - v 1.1 (518)</Text>
-                <Button 
-                    className='mt-7' 
+            <View className="mt-7 mb-16">
+                <Text className="text-sm text-black-400 text-center">
+                    CMC - v 1.1 (518)
+                </Text>
+                <Button
+                    className="mt-7"
                     onPress={async () => {
                         await logout();
                         router.replace("/auth/login");
@@ -56,10 +56,17 @@ const Profile = () => {
                 >
                     Logout
                 </Button>
+                <Button
+                    className="mt-7"
+                    onPress={async () => {
+                        router.replace("/auth/reset-password");
+                    }}
+                >
+                    Change Password
+                </Button>
             </View>
-
         </ScrollView>
-    )
-}
+    );
+};
 
-export default Profile
+export default Profile;

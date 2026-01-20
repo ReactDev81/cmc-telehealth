@@ -1,3 +1,5 @@
+import { useAuth } from "@/context/UserContext";
+import { useChangePassword } from "@/queries/useChangePassword";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
@@ -7,37 +9,52 @@ import { z } from "zod";
 import PasswordInput from "../../components/form/password";
 import Button from "../../components/ui/Button";
 
-
 const passwordSchema = z
     .object({
-        oldPassword: z.string().min(1, "Old password is required"),
-        newPassword: z.string().min(8, "Password must be at least 8 characters"),
-        confirmPassword: z.string().min(1, "Please confirm your new password"),
+        old_password: z.string().min(1, "Old password is required"),
+        new_password: z.string().min(8, "Password must be at least 8 characters"),
+        new_password_confirmation: z
+            .string()
+            .min(1, "Please confirm your new password"),
     })
-    .refine((data) => data.newPassword === data.confirmPassword, {
+    .refine((data) => data.new_password === data.new_password_confirmation, {
         message: "Passwords do not match",
-        path: ["confirmPassword"],
+        path: ["new_password_confirmation"],
     });
 
-const ResetPassword = () => {
+type PasswordForm = z.infer<typeof passwordSchema>;
 
-    const { control, handleSubmit } = useForm({
+const ResetPassword = () => {
+    const { logout, token } = useAuth();
+    const { mutate, isPending } = useChangePassword();
+
+    console.log("Token in Reset Password:", token);
+
+    const { control, handleSubmit } = useForm<PasswordForm>({
         resolver: zodResolver(passwordSchema),
         defaultValues: {
-            oldPassword: "",
-            newPassword: "",
-            confirmPassword: "",
+            old_password: "",
+            new_password: "",
+            new_password_confirmation: "",
         },
     });
 
-    const onSubmit = (data: z.infer<typeof passwordSchema>) => {
-        console.log("Password changed successfully!", data);
-        router.replace("/auth/login");
+    const onSubmit = (data: PasswordForm) => {
+        mutate(data, {
+            onSuccess: (response) => {
+                logout();
+                // console.log("Logout:", logout());
+                console.log("SUCCESS:", response);
+                router.replace("/auth/login");
+            },
+            onError: (error: any) => {
+                console.log("ERROR:", error?.response?.data);
+            },
+        });
     };
 
     return (
         <SafeAreaView className="flex-1 justify-center bg-white px-6">
-
             {/* Logo */}
             <View className="mb-6">
                 <Image
@@ -53,7 +70,7 @@ const ResetPassword = () => {
             <View className="mt-4">
                 <Text className="text-black text-2xl font-bold text-center">
                     Set New Password
-                </Text> 
+                </Text>
                 <Text className="text-black-400 text-base text-center mt-2">
                     Enter your old and new password below to update it
                 </Text>
@@ -61,15 +78,14 @@ const ResetPassword = () => {
 
             {/* Form */}
             <View className="mt-8">
-
                 {/* Old Password */}
                 <Controller
                     control={control}
-                    name="oldPassword"
+                    name="old_password"
                     render={() => (
                         <View>
                             <PasswordInput
-                                name="oldPassword"
+                                name="old_password"
                                 control={control}
                                 label="Old Password"
                                 placeholder="Enter Old Password"
@@ -81,11 +97,11 @@ const ResetPassword = () => {
                 {/* New Password */}
                 <Controller
                     control={control}
-                    name="newPassword"
+                    name="new_password"
                     render={() => (
                         <View className="mt-5">
                             <PasswordInput
-                                name="newPassword"
+                                name="new_password"
                                 control={control}
                                 label="New Password"
                                 placeholder="Enter New Password"
@@ -97,11 +113,11 @@ const ResetPassword = () => {
                 {/* Confirm Password */}
                 <Controller
                     control={control}
-                    name="confirmPassword"
+                    name="new_password_confirmation"
                     render={() => (
                         <View className="mt-5">
                             <PasswordInput
-                                name="confirmPassword"
+                                name="new_password_confirmation"
                                 control={control}
                                 label="Confirm Password"
                                 placeholder="Confirm New Password"
@@ -113,11 +129,12 @@ const ResetPassword = () => {
 
             {/* Submit Button */}
             <View className="mt-6">
-                <Button onPress={handleSubmit(onSubmit)}>Change Password</Button>
+                <Button onPress={handleSubmit(onSubmit)} disabled={isPending}>
+                    {isPending ? "Updating..." : "Change Password"}
+                </Button>
             </View>
-
         </SafeAreaView>
     );
-}
+};
 
 export default ResetPassword;

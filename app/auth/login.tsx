@@ -44,7 +44,8 @@ export default function LoginScreen() {
           role: data.user.role,
           patientId: (data.user as any).patient_id,
         };
-        // console.log("Render Login Screen", data);
+
+        console.log("Render Login Screen", data);
 
         // ✅ THIS LINE IS ALL YOU NEED
         await login(userData, data.token);
@@ -55,6 +56,9 @@ export default function LoginScreen() {
         } else {
           router.replace("/(doctor)");
         }
+      },
+      onError: (error: any) => {
+        console.log("ERROR:", error?.response?.data);
       },
     });
   };
@@ -107,17 +111,11 @@ export default function LoginScreen() {
           control={control}
           label="Remember for 30 days"
         />
-        {/* <Link
+        <Link
           href="/auth/forgot-password-send-otp"
           className="text-[#D70015] text-sm font-semibold"
         >
           Forgot Password?
-        </Link> */}
-        <Link
-          href="auth/reset-password"
-          className="text-[#D70015] text-sm font-semibold"
-        >
-          Reset Password?
         </Link>
       </View>
 
