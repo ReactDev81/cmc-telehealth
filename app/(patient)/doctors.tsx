@@ -21,7 +21,7 @@ const Doctors = () => {
         departmentId?: string;
         symptomDepartmentId?: string;
       }>({});
-      
+    const [searchText, setSearchText] = useState("");
     const [selectedType, setSelectedType] = useState<ConsultationType>("both");
 
     const handleSelect = (type: ConsultationType) => {
@@ -37,13 +37,18 @@ const Doctors = () => {
         return doctorType === selected;
       };
       
+      const normalize = (text: string) =>
+        text.toLowerCase().trim();
+      
 
-    const filteredDoctors = useMemo(() => {
+      const filteredDoctors = useMemo(() => {
         if (!data?.data) return [];
+      
+        const search = normalize(searchText);
       
         return data.data.filter((doctor) => {
       
-          /** 1️⃣ STRICT consultation mode filter */
+          /** 1️⃣ Consultation type filter */
           if (
             !matchConsultationType(
               selectedType,
@@ -67,9 +72,34 @@ const Doctors = () => {
             }
           }
       
+          /** 3️⃣ SEARCH FILTER */
+          if (search.length > 0) {
+
+            const doctorNameMatch =
+              normalize(doctor.name).includes(search);
+
+            const departmentMatch =
+              doctor.speciality?.some((spec: any) =>
+                normalize(spec.name).includes(search)
+              );
+
+            const symptomMatch =
+              doctor.speciality?.some((spec: any) =>
+                Array.isArray(spec.symptoms) &&
+                spec.symptoms.some((symptom: string) =>
+                  normalize(symptom).includes(search)
+                )
+              );
+
+            if (!doctorNameMatch && !departmentMatch && !symptomMatch) {
+              return false;
+            }
+          }
+
+      
           return true;
         });
-      }, [data, filters, selectedType]);           
+      }, [data, filters, selectedType, searchText]);               
       
       
 
@@ -107,7 +137,9 @@ const Doctors = () => {
 
             <SearchBar 
                 variant="secondary" 
-                placeholder="Search a doctors" 
+                placeholder="Find doctors, symptoms, departments" 
+                value={searchText}
+                onChangeText={setSearchText}
                 onPress={() => setModalVisible(true)}  
             />
 
@@ -117,7 +149,6 @@ const Doctors = () => {
                     className="w-32 mt-4 mb-2"
                     variant={selectedType === "both" ? "filled" : "outline"}
                     onPress={() => handleSelect("both")}
-                    
                 >
                     Both
                 </Button>

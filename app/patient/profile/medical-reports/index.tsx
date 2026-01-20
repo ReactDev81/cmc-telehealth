@@ -1,26 +1,26 @@
-import { useRef, useMemo, useCallback, useState } from 'react';
-import { FlatList, View, Linking, TouchableOpacity, Text } from 'react-native';
+import ReportsCard from '@/components/common/medical-reports/reports-card';
+import Button from '@/components/ui/Button';
+import { ReportCardData } from '@/json-data/common/medical-reports';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { X } from 'lucide-react-native';
-import ReportsCard from '@/components/common/medical-reports/reports-card';
-import { ReportCardData } from '@/json-data/common/medical-reports';
-import Button from '@/components/ui/Button';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { FlatList, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const MedicalRecords = () => {
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const snapPoints = useMemo(() => ['45%'], []);
+    const snapPoints = useMemo(() => ['50%'], []);
     const [isOpen, setIsOpen] = useState(false);
 
     const reportTypes = [
-        'Abdominal Ultrasound Report',
-        'Blood Test Report',
-        'Chest X-Ray Report',
-        'Diabetes Screening Report',
-        'Endoscopy Report',
-    ];
+        { label: "Abdominal Ultrasound Report", value: "abdominal_ultrasound_report" },
+        { label: "Blood Test", value: "blood_test" },
+        { label: "X-Ray", value: "x_ray" },
+        { label: "Diabetes Screening Report", value: "diabetes_screening_report" },
+        { label: "Endoscopy Report", value: "endoscopy_report" }
+    ];      
 
     const handleOpenSheet = useCallback(() => {
         setIsOpen(true);
@@ -122,18 +122,25 @@ const MedicalRecords = () => {
 
                         {/* List of report types */}
                         <View className='pb-5'>
-                            {reportTypes.map((type, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    className="p-5 border-b border-black-200"
-                                    onPress={() => {
-                                        router.push('/patient/profile/medical-reports/upload-your-report');
-                                        handleCloseSheet();
-                                    }}
-                                >
-                                    <Text className="text-base text-gray-700">{type}</Text>
-                                </TouchableOpacity>
-                            ))}
+                        {reportTypes.map((item) => (
+                            <TouchableOpacity
+                                key={item.value}
+                                className="p-5 border-b border-black-200"
+                                onPress={() => {
+                                    router.push({
+                                        pathname: "/patient/profile/medical-reports/upload-your-report",
+                                        params: {
+                                            reportType: item.value,
+                                        },
+                                    });
+                                    handleCloseSheet();
+                                }}
+                            >
+                                <Text className="text-base text-gray-700">
+                                    {item.label}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
                         </View>
 
                     </BottomSheetView>

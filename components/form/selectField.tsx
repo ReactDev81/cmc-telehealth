@@ -1,6 +1,14 @@
-import { Picker } from "@react-native-picker/picker";
+import { ChevronDown } from "lucide-react-native";
+import { useState } from "react";
 import { Control, Controller } from "react-hook-form";
-import { Text, View } from "react-native";
+import {
+    Modal,
+    Pressable,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 interface SelectOption {
     label: string;
@@ -28,41 +36,91 @@ export default function SelectField({
         <Controller
             control={control}
             name={name}
-            defaultValue="" // ✅ IMPORTANT
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
-                <View className={className}>
-                    {label && (
-                        <Text className="mb-1 text-sm font-medium text-black-500">
-                            {label}
-                        </Text>
-                    )}
+            defaultValue=""
+            render={({ field: { value, onChange }, fieldState: { error } }) => {
+                const [modalVisible, setModalVisible] = useState(false);
 
-                    <View
-                        className={`border rounded-lg ${error ? "border-red-500" : "border-gray-300"
+                const selectedOption =
+                    options.find((option) => option.value === value) ?? null;
+
+                const handleSelect = (optionValue: string) => {
+                    onChange(optionValue);
+                    setModalVisible(false);
+                };
+
+                return (
+                    <View className={className}>
+                        {label && (
+                            <Text className="mb-1 text-sm font-medium text-black-500">
+                                {label}
+                            </Text>
+                        )}
+
+                        <Pressable
+                            onPress={() => setModalVisible(true)}
+                            className={`border rounded-lg py-3 px-4 bg-white ${
+                                error ? "border-red-500" : "border-gray"
                             }`}
-                    >
-                        <Picker
-                            selectedValue={value || ""} // ✅ always string
-                            onValueChange={(itemValue) => onChange(itemValue)}
                         >
-                            <Picker.Item label={placeholder} value="" />
-                            {options.map((option) => (
-                                <Picker.Item
-                                    key={option.value}
-                                    label={option.label}
-                                    value={option.value}
-                                />
-                            ))}
-                        </Picker>
-                    </View>
+                            <View className="flex-row items-center justify-between">
+                                <Text className="text-base text-black">
+                                    {selectedOption?.label || placeholder}
+                                </Text>
+                                <ChevronDown size={18} color={error ? "#ef4444" : "#6b7280"} />
+                            </View>
+                        </Pressable>
 
-                    {error && (
-                        <Text className="mt-1 text-xs text-red-500">
-                            {error.message}
-                        </Text>
-                    )}
-                </View>
-            )}
+                        {error && (
+                            <Text className="mt-1 text-xs text-red-500">
+                                {error.message}
+                            </Text>
+                        )}
+
+                        <Modal
+                            transparent
+                            visible={modalVisible}
+                            animationType="fade"
+                            onRequestClose={() => setModalVisible(false)}
+                        >
+                            <Pressable
+                                className="flex-1 bg-black/40 justify-center px-6"
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Pressable className="bg-white rounded-lg p-4 max-h-[60%]">
+                                    <Text className="text-base font-semibold mb-3">
+                                        {label || placeholder}
+                                    </Text>
+
+                                    <ScrollView>
+                                        <TouchableOpacity
+                                            onPress={() => handleSelect("")}
+                                            className="py-2"
+                                        >
+                                            <Text className="text-base text-gray-500">
+                                                {placeholder}
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                        {options.map((option) => (
+                                            <TouchableOpacity
+                                                key={option.value}
+                                                onPress={() =>
+                                                    handleSelect(option.value)
+                                                }
+                                                className="py-2"
+                                            >
+                                                <Text className="text-base text-black">
+                                                    {option.label}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </ScrollView>
+                                </Pressable>
+                            </Pressable>
+                        </Modal>
+                    </View>
+                );
+            }}
         />
     );
 }
