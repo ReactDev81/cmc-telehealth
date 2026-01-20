@@ -1,18 +1,26 @@
 import ReportsCard from '@/components/common/medical-reports/reports-card';
 import Button from '@/components/ui/Button';
-import { ReportCardData } from '@/json-data/common/medical-reports';
+import Pagination from '@/components/ui/Pagination';
+import { useAuth } from "@/context/UserContext";
+import { useMedicalReports } from '@/queries/patient/useGetMedicalReports';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
 import { X } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const MedicalRecords = () => {
 
+    const { user } = useAuth();
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = useMemo(() => ['50%'], []);
     const [isOpen, setIsOpen] = useState(false);
+
+    const [page, setPage] = useState(1);
+    const { data, isLoading, isError, error } = useMedicalReports(user?.id, page);
+    const reports = data?.data ?? [];
+    const meta = data?.meta;
 
     const reportTypes = [
         { label: "Abdominal Ultrasound Report", value: "abdominal_ultrasound_report" },
@@ -55,32 +63,46 @@ const MedicalRecords = () => {
         <GestureHandlerRootView style={{ flex: 1 }}>
 
             <View className="flex-1 bg-white p-5">
+
+                {isLoading && (
+                    <View className="flex-1 items-center justify-center">
+                        <ActivityIndicator size="large" />
+                    </View>
+                )}
+
+                {isError && (
+                    <View className="mt-6 p-4 bg-red-100 rounded-lg">
+                        <Text className="text-red-600">
+                            {error instanceof Error ? error.message : "Failed to load reports"}
+                        </Text>
+                    </View>
+                )}
+
+
                 <View>
                     <FlatList
-                        data={ReportCardData}
-                        keyExtractor={(item) => (item?.id ?? Math.random()).toString()}
-                        renderItem={({ item }) => {
-
-                            const handleViewReport = () => {
-                                const pdfUrl = item.report_view;
-                                if (pdfUrl) {
-                                    Linking.openURL(pdfUrl);
-                                }
-                            };
-
-                            return(
-                                <ReportsCard
-                                    report_name={item.report_name}
-                                    report_date={item.report_date}
-                                    doctor_name={item.doctor_name}
-                                    report_type={item.report_type}
-                                    handleReport={handleViewReport}
-                                />
-                            )
-                        }}
+                        data={reports}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <ReportsCard
+                                report_name={item.report_name}
+                                report_date_formatted={item.report_date_formatted}
+                                type_label={item.type_label}
+                                handleReport={() => Linking.openURL(item.file_url)}
+                            />
+                        )}
                         ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
                         showsVerticalScrollIndicator={false}
                     />
+
+                    {meta && (
+                        <Pagination
+                            currentPage={meta.current_page}
+                            lastPage={meta.last_page}
+                            onPageChange={(page) => setPage(page)}
+                        />
+                    )}
+
                 </View>
             
 
