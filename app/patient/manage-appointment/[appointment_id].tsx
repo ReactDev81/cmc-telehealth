@@ -237,13 +237,13 @@
 //                 );
 // }
 
-
-
+import CancelAppointmentModal from "@/components/patient/appointment/cancel-appointment-modal";
 import Button from "@/components/ui/Button";
+import { useCancelAppointment } from "@/mutations/patient/useCancelAppointment";
 import { useManageAppointment } from "@/mutations/patient/useManageAppointment";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { SquarePen, Stethoscope } from "lucide-react-native";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -264,11 +264,10 @@ const manageAppointmentSchema = z.object({
             z.object({
                 type: z.string(),
                 file: z.any(),
-            })
+            }),
         )
         .optional(),
 });
-
 
 type ManageAppointmentFormData = z.infer<typeof manageAppointmentSchema>;
 
@@ -278,9 +277,12 @@ export default function ManageAppointments() {
         appointment_id: string;
     }>();
 
-    const appointmentId = typeof appointment_id === "string" ? appointment_id : undefined;
+    const appointmentId =
+        typeof appointment_id === "string" ? appointment_id : undefined;
 
     const { data, isLoading, isError } = useAppointmentById(appointmentId);
+    // console.log("Appointment Id :", appointmentId);
+    console.log("Data Response :", data);
 
     const appointment = data?.data;
     const patient = appointment?.patient;
@@ -289,11 +291,15 @@ export default function ManageAppointments() {
     const notes = appointment?.notes;
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [cancelModalVisible, setCancelModalVisible] = useState(false);
     const [reportsAndNotes, setReportsAndNotes] = useState(false);
 
     const { mutate: manageAppointment, isPending } = useManageAppointment(
-        appointment_id || ""
+        appointment_id || "",
     );
+
+    const { mutate: cancelAppointment, isPending: isCancelling } =
+        useCancelAppointment();
 
     const methods = useForm<ManageAppointmentFormData>({
         resolver: zodResolver(manageAppointmentSchema),
@@ -305,38 +311,95 @@ export default function ManageAppointments() {
         },
     });
 
-    console.log("Appointment Data :", data);
-
     const { handleSubmit, reset } = methods;
 
     const onSubmit = (data: ManageAppointmentFormData) => {
         const formData = new FormData();
 
-        formData.append("notes", data.notes);
-
-        if (data.upload_file?.uri) {
-            formData.append("file", {
-                uri: data.upload_file.uri,
-                name: data.upload_file.name || "report.pdf",
-                type: data.upload_file.mimeType || "application/octet-stream",
-            } as any);
+        // Notes
+        if (data.notes) {
+            formData.append("notes", data.notes);
         }
+
+        // Reports
+        data.reports?.forEach((report, index) => {
+            formData.append(`reports[${index}][type]`, report.type);
+
+            if (report.file?.uri) {
+                formData.append(`reports[${index}][file]`, {
+                    uri: report.file.uri,
+                    name: report.file.name,
+                    type: report.file.mimeType,
+                } as any);
+            }
+        });
+
+        console.log("📤 Submitting FormData:", data);
+        console.log("Form Data Submitted:", data.reports);
 
         manageAppointment(formData, {
             onSuccess: (res: any) => {
-                Alert.alert("Success", res?.message || "Appointment updated");
+                console.log("✅ API Response:", res);
                 reset();
                 setModalVisible(false);
             },
             onError: (err: any) => {
+                console.log("❌ API Error:", err);
+            },
+        });
+    };
+
+    // const handleCancel = () => {
+    //     Alert.alert(
+    //         "Cancel Appointment",
+    //         "Are you sure you want to cancel this appointment?",
+    //         [
+    //             {
+    //                 text: "No",
+    //                 style: "cancel",
+    //             },
+    //             {
+    //                 text: "Yes",
+    //                 onPress: () => {
+    //                     // Implement cancellation logic here
+    //                     Alert.alert("Appointment cancelled successfully.");
+    //                 },
+    //             },
+    //         ],
+    //     );
+    // }
+
+    const handleCancelAppointment = () => {
+        if (!appointmentId) return;
+
+        cancelAppointment(appointmentId, {
+            onSuccess: (res) => {
+                console.log("✅ Appointment cancelled:", res?.success);
+
+                if (res?.success === true) {
+                    router.push("/(patient)/appointments");
+                }
+
+                Alert.alert(
+                    "Appointment Cancelled",
+                    "Your appointment has been successfully cancelled.",
+                );
+
+                setCancelModalVisible(false);
+            },
+            onError: (err: any) => {
+                console.log("❌ Cancel error:", err);
+
                 Alert.alert(
                     "Error",
-                    err?.response?.data?.message ||
-                    "Failed to update appointment"
+                    err?.response?.data?.message || "Failed to cancel appointment",
                 );
             },
         });
     };
+
+    const doctorId = data?.data?.doctor?.user_id;
+    console.log("Doctor ID :", doctorId);
 
     return (
         <FormProvider {...methods}>
@@ -344,7 +407,9 @@ export default function ManageAppointments() {
                 {/* Banner */}
                 <Image
                     source={{
-                        uri: doctor?.avatar || "https://cdn-icons-png.flaticon.com/512/387/387561.png",
+                        uri:
+                            doctor?.avatar ||
+                            "https://cdn-icons-png.flaticon.com/512/387/387561.png",
                     }}
                     className="w-full h-60"
                     resizeMode="cover"
@@ -357,9 +422,7 @@ export default function ManageAppointments() {
                             <Stethoscope size={14} color="#013220" />
                             <Text className="text-primary text-sm">Cardiology</Text>
                         </View>
-                        <Text className="text-lg font-medium mt-1">
-                            {doctor?.name}
-                        </Text>
+                        <Text className="text-lg font-medium mt-1">{doctor?.name}</Text>
                     </View>
 
                     {/* Appointment Details */}
@@ -368,7 +431,10 @@ export default function ManageAppointments() {
 
                         <Detail label="Date" value={schedule?.date_formatted} />
                         <Detail label="Time" value={schedule?.time_formatted} />
-                        <Detail label="Booking Type" value={schedule?.consultation_type_label} />
+                        <Detail
+                            label="Booking Type"
+                            value={schedule?.consultation_type_label}
+                        />
                     </View>
 
                     {/* Patient Details */}
@@ -431,11 +497,11 @@ export default function ManageAppointments() {
                                     </View>
                                 </View>
                             </View>
-
                         ) : (
                             <View className="items-center py-6 px-4">
                                 <Text className="text-sm text-black-400 text-center">
-                                    You have not added any medical reports or notes. If you'd like to share them with your doctor,
+                                    You have not added any medical reports or notes. If you'd like
+                                    to share them with your doctor,
                                     <Pressable onPress={() => setModalVisible(true)}>
                                         <Text className="text-primary font-medium underline">
                                             click here to upload.
@@ -445,6 +511,28 @@ export default function ManageAppointments() {
                             </View>
                         )}
 
+                        <View className="flex-row gap-3 mt-6">
+                            <Button
+                                className="flex-1"
+                                onPress={() => router.push(`/patient/doctor/${doctorId}`)}
+                            >
+                                Reschedule
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="flex-1"
+                                onPress={() => setCancelModalVisible(true)}
+                            >
+                                Cancel
+                            </Button>
+                        </View>
+
+                        <CancelAppointmentModal
+                            visible={cancelModalVisible}
+                            onClose={() => setCancelModalVisible(false)}
+                            onConfirm={handleCancelAppointment}
+                        />
+
                         <UploadReportsNotes
                             visible={modalVisible}
                             onClose={() => setModalVisible(false)}
@@ -452,12 +540,6 @@ export default function ManageAppointments() {
                             isPending={isPending}
                             insets={insets}
                         />
-
-                        {/* <View className="mt-6">
-                            <Button onPress={handleSubmit(onSubmit)} disabled={isPending}>
-                                {isPending ? "Submitting..." : "Submit"}
-                            </Button>
-                        </View> */}
                     </View>
                 </View>
             </ScrollView>

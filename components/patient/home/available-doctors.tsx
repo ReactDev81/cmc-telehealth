@@ -14,20 +14,22 @@ const AvailableDoctors = ({
   consultation_fee,
   years_experience,
 }: AvailableDoctorsProps) => {
-
   const experience = years_experience ? `(${years_experience} Years Exp)` : "";
-  const default_avatar = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
-  const doctor_speciality = Array.isArray(speciality) ? speciality.map(item => item.name).join(", ") : "";
-  const imageSource = typeof avatar === "string" ? { uri: avatar } : avatar ?? { uri: default_avatar };
+  const default_avatar =
+    "https://cdn-icons-png.flaticon.com/512/387/387561.png";
+  const doctor_speciality = Array.isArray(speciality)
+    ? speciality.map((item) => item.name).join(", ")
+    : "";
+  const imageSource =
+    typeof avatar === "string"
+      ? { uri: avatar }
+      : (avatar ?? { uri: default_avatar });
 
   return (
     <View className="border border-black-300 rounded-xl p-4 mt-4">
       <View className="flex-row items-center gap-x-3">
         <View>
-          <Image
-            source={imageSource}
-            className="w-14 h-14 rounded-full"
-          />
+          <Image source={imageSource} className="w-14 h-14 rounded-full" />
         </View>
         <View className="flex-1">
           <Text className="text-sm text-black font-medium">{name}</Text>
@@ -54,9 +56,7 @@ const AvailableDoctors = ({
               ) : (
                 <Hospital color="#1ABE17" size={14} />
               )}
-              <Text className="text-success text-sm">
-                {consultation_type}
-              </Text>
+              <Text className="text-success text-sm">{consultation_type}</Text>
             </View>
           </View>
           <View className="w-px h-full bg-primary-200"></View>

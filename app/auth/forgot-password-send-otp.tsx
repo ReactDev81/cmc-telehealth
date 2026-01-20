@@ -1,6 +1,6 @@
 import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
-import useApi from "@/hooks/useApi";
+import { useSendForgotPasswordOtp } from "@/queries/useSendForgotPasswordOtp";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { useForm } from "react-hook-form";
@@ -13,14 +13,15 @@ const schema = z.object({
 });
 
 const ForgotPasswordSendOtp = () => {
-  const { data, error, fetchData } = useApi<{
-    message?: string;
-    email: string;
-  }>("post", "/forgot-password/send-otp", {
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  const { mutate, isPending, isError, error } = useSendForgotPasswordOtp();
+  // const { data, error, fetchData } = useApi<{
+  //   message?: string;
+  //   email: string;
+  // }>("post", "/forgot-password/send-otp", {
+  //   headers: {
+  //     Accept: "application/json",
+  //   },
+  // });
 
   const { control, handleSubmit } = useForm({
     resolver: zodResolver(schema),
@@ -30,16 +31,28 @@ const ForgotPasswordSendOtp = () => {
   });
 
   const onSubmit = async (formData: any) => {
-    const forgotPasswordData = {
-      email: formData.email,
-    };
+    // const forgotPasswordData = {
+    //   email: formData.email,
+    // };
 
-    await fetchData({ data: forgotPasswordData });
+    mutate(
+      { email: formData.email },
+      {
+        onSuccess: () => {
+          router.push({
+            pathname: "/auth/forgot-password-verify-otp",
+            params: { email: formData.email },
+          });
+        },
+      },
+    );
 
-    router.push({
-      pathname: "/auth/forgot-password-verify-otp",
-      params: { email: formData.email },
-    });
+    // await fetchData({ data: forgotPasswordData });
+
+    // router.push({
+    //   pathname: "/auth/forgot-password-verify-otp",
+    //   params: { email: formData.email },
+    // });
   };
 
   return (

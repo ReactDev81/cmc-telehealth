@@ -6,7 +6,6 @@
 // import { Control } from "react-hook-form";
 // import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, View } from "react-native";
 
-
 // interface UploadReportsNotesProps {
 //     visible: boolean;
 //     onClose: () => void;
@@ -106,18 +105,14 @@
 //     );
 // }
 
-
 import FileUploadField from "@/components/form/FileUploadField";
 import SelectField from "@/components/form/selectField";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
 import { Trash2, X } from "lucide-react-native";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import {
-    useFieldArray,
-    useFormContext,
-    useWatch,
-} from "react-hook-form";
-import {
+    Alert,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -152,7 +147,10 @@ export default function UploadReportsNotes({
     const reportFile = useWatch({ control, name: "reportFile" });
 
     const handleAddReport = () => {
-        if (!reportType || !reportFile) return;
+        if (!reportType || !reportFile) {
+            Alert.alert("Error", "Please select report type and file");
+            return;
+        }
 
         append({
             type: reportType,
@@ -162,7 +160,6 @@ export default function UploadReportsNotes({
         setValue("reportType", "");
         setValue("reportFile", null);
     };
-
 
     return (
         <Modal visible={visible} animationType="slide" transparent>
@@ -233,11 +230,7 @@ export default function UploadReportsNotes({
 
                         {/* Footer */}
                         <View className="flex-row gap-3 mt-6">
-                            <Button
-                                variant="outline"
-                                className="flex-1"
-                                onPress={onClose}
-                            >
+                            <Button variant="outline" className="flex-1" onPress={onClose}>
                                 Cancel
                             </Button>
                             <Button

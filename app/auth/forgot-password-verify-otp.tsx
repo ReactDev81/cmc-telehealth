@@ -1,18 +1,25 @@
 import Button from "@/components/ui/Button";
-import useApi from "@/hooks/useApi";
+import { useVerifyForgotPasswordOtp } from "@/queries/useVerifyForgotPasswordOtp";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Image, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ForgotPasswordVerifyOtp = () => {
-  const { data, fetchData } = useApi<{
-    token: string;
-  }>("post", "/verify-otp", {
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  // const { data, fetchData } = useApi<{
+  //   token: string;
+  // }>("post", "/verify-otp", {
+  //   headers: {
+  //     Accept: "application/json",
+  //   },
+  // });
+
+  const {
+    mutate,
+    isPending,
+    isError,
+    error: apiError,
+  } = useVerifyForgotPasswordOtp();
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
@@ -60,18 +67,40 @@ const ForgotPasswordVerifyOtp = () => {
     setError("");
     console.log("OTP entered:", otpString);
 
-    const verifyOTP = {
-      email: email,
-      otp: otpString,
-      context: "forgot_password",
-    };
+    // const verifyOTP = {
+    //   email: email,
+    //   otp: otpString,
+    //   context: "forgot_password",
+    // };
 
-    await fetchData({ data: verifyOTP });
+    // await fetchData({ data: verifyOTP });
 
-    router.push({
-      pathname: "/auth/forgot-password-change-password",
-      params: { email: email },
-    });
+    // router.push({
+    //   pathname: "/auth/forgot-password-change-password",
+    //   params: { email: email },
+    // });
+
+    mutate(
+      {
+        email,
+        otp: otpString,
+        context: "forgot_password",
+      },
+      {
+        onSuccess: () => {
+          router.push({
+            pathname: "/auth/forgot-password-change-password",
+            params: { email },
+          });
+        },
+        onError: () => {
+          setError(
+            (apiError as any)?.response?.data?.message ||
+            "Invalid OTP. Please try again.",
+          );
+        },
+      },
+    );
   };
 
   const handleResendOTP = () => {
@@ -111,9 +140,8 @@ const ForgotPasswordVerifyOtp = () => {
               ref={(ref) => {
                 if (ref) inputRefs.current[index] = ref;
               }}
-              className={`w-12 h-12 border rounded-lg text-center text-lg leading-5 font-semibold ${
-                error ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-12 h-12 border rounded-lg text-center text-lg leading-5 font-semibold ${error ? "border-red-500" : "border-gray-300"
+                }`}
               value={digit}
               onChangeText={(value) => handleOtpChange(value, index)}
               onKeyPress={({ nativeEvent }) =>
@@ -154,9 +182,8 @@ const ForgotPasswordVerifyOtp = () => {
           disabled={resendTimer > 0}
         >
           <Text
-            className={`font-medium ${
-              resendTimer > 0 ? "text-gray-400" : "text-primary"
-            }`}
+            className={`font-medium ${resendTimer > 0 ? "text-gray-400" : "text-primary"
+              }`}
           >
             Resend OTP
           </Text>

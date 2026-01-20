@@ -32,7 +32,7 @@ export default function RegisterCompleteProfile() {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
       },
-    }
+    },
   );
 
   const { user } = useAuth();
@@ -57,7 +57,7 @@ export default function RegisterCompleteProfile() {
     payload.append("mobile_no", formData.mobile_no);
     payload.append(
       "date_of_birth",
-      formData.date_of_birth.toISOString().split("T")[0]
+      formData.date_of_birth.toISOString().split("T")[0],
     );
     payload.append("gender", formData.gender.toLowerCase());
 
@@ -75,7 +75,6 @@ export default function RegisterCompleteProfile() {
 
   return (
     <SafeAreaView className="flex-1 bg-white px-6">
-      
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="mt-10 mb-4">
           <Text className="text-black text-2xl font-semibold text-center">
@@ -141,14 +140,12 @@ export default function RegisterCompleteProfile() {
                 <Pressable
                   key={g}
                   onPress={() => onChange(g)}
-                  className={`flex-1 py-4 px-4 rounded-xl border ${
-                    value === g ? "bg-primary border-primary" : "border-primary"
-                  }`}
+                  className={`flex-1 py-4 px-4 rounded-xl border ${value === g ? "bg-primary border-primary" : "border-primary"
+                    }`}
                 >
                   <Text
-                    className={`text-center ${
-                      value === g ? "text-white" : "text-primary"
-                    }`}
+                    className={`text-center ${value === g ? "text-white" : "text-primary"
+                      }`}
                   >
                     {g}
                   </Text>

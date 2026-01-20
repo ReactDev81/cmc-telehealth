@@ -1,8 +1,10 @@
 export interface MedicineCardProps {
-    id?: number,
-    patient_symptoms: string,
-    doctor_name: string,
-    consulated_date: string,
+    id?: number;
+    prescription_id?: string;
+    appointment_id?: string;
+    patient_symptoms: string;
+    doctor_name: string;
+    consulated_date: string;
 }
 
 export type MedicineProps = {
@@ -10,8 +12,8 @@ export type MedicineProps = {
     name: string;
     dose: string;
     schedule?: {
-      times: string[];
-      frequency?: string; 
+        times: string[];
+        frequency?: string;
     };
     startDate: string;
-};
+    instructions?: string[];

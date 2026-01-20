@@ -1,11 +1,16 @@
-import { View, Text } from "react-native"
-import { router } from "expo-router";
-import { Calendar } from 'lucide-react-native';
-import { MedicineCardProps } from "@/types/common/my-medicines";
 import Button from "@/components/ui/Button";
+import { MedicineCardProps } from "@/types/common/my-medicines";
+import { router } from "expo-router";
+import { Calendar } from "lucide-react-native";
+import { Text, View } from "react-native";
 
-const MedicineCard = ({ patient_symptoms, doctor_name, consulated_date } : MedicineCardProps) => {
-    return(
+const MedicineCard = ({
+    appointment_id,
+    patient_symptoms,
+    doctor_name,
+    consulated_date,
+}: MedicineCardProps) => {
+    return (
         <View className="border border-black-300 rounded-xl p-4">
             <View className="flex-row items-center">
                 <Text className="text-base font-medium">Symptoms: </Text>
@@ -20,11 +25,18 @@ const MedicineCard = ({ patient_symptoms, doctor_name, consulated_date } : Medic
                     </View>
                 </View>
                 <View>
-                    <Button onPress={() => router.push('/patient/my-medicines/1')} className="[&]:py-3">View Detail</Button>
+                    <Button
+                        onPress={() =>
+                            router.push(`/patient/my-medicines/${appointment_id}`)
+                        }
+                        className="[&]:py-3"
+                    >
+                        View Detail
+                    </Button>
                 </View>
             </View>
         </View>
-    )
-}
+    );
+};
 
-export default MedicineCard
+export default MedicineCard;

@@ -1,4 +1,4 @@
-import useApi from "@/hooks/useApi";
+import { useResetForgotPassword } from "@/queries/useResetForgotPassword";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
@@ -22,13 +22,15 @@ const passwordSchema = z
 
 const ForgotPasswordChangePassword = () => {
   const router = useRouter();
-  const { data, error, fetchData } = useApi<{
-    token: string;
-  }>("post", "/forgot-password/reset-password", {
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  // const { data, error, fetchData } = useApi<{
+  //   token: string;
+  // }>("post", "/forgot-password/reset-password", {
+  //   headers: {
+  //     Accept: "application/json",
+  //   },
+  // });
+
+  const { mutate, isPending, isError, error } = useResetForgotPassword();
 
   const { control, handleSubmit } = useForm({
     resolver: zodResolver(passwordSchema),
@@ -43,14 +45,29 @@ const ForgotPasswordChangePassword = () => {
   }>();
 
   const onSubmit = async (formData: z.infer<typeof passwordSchema>) => {
-    const confirmPassword = {
-      email: email,
-      password: formData.password,
-      password_confirmation: formData.password_confirmation,
-    };
+    // const confirmPassword = {
+    //   email: email,
+    //   password: formData.password,
+    //   password_confirmation: formData.password_confirmation,
+    // };
 
-    await fetchData({ data: confirmPassword });
-    router.replace("/auth/login");
+    if (!email) return;
+
+    mutate(
+      {
+        email,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation,
+      },
+      {
+        onSuccess: () => {
+          router.replace("/auth/login");
+        },
+      },
+    );
+
+    // await fetchData({ data: confirmPassword });
+    // router.replace("/auth/login");
   };
 
   return (

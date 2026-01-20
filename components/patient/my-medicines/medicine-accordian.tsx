@@ -1,9 +1,19 @@
-import React, { useCallback, useState } from "react";
-import { View, Text, TouchableOpacity, LayoutAnimation, Platform, UIManager } from "react-native";
-import { Clock, Calendar, Plus, Minus } from "lucide-react-native";
 import { MedicineProps } from "@/types/common/my-medicines";
+import { Calendar, Clock, Minus, Plus } from "lucide-react-native";
+import React, { useCallback, useState } from "react";
+import {
+    LayoutAnimation,
+    Platform,
+    Text,
+    TouchableOpacity,
+    UIManager,
+    View,
+} from "react-native";
 
-if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+    Platform.OS === "android" &&
+    UIManager.setLayoutAnimationEnabledExperimental
+) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -11,11 +21,17 @@ type Props = {
     medicine: MedicineProps;
     defaultExpanded?: boolean;
     onToggle?: (expanded: boolean) => void;
+    index?: number;
 };
 
-const MedicineAccordian: React.FC<Props> = ({ medicine, defaultExpanded = true, onToggle }) => {
-
+const MedicineAccordian: React.FC<Props> = ({
+    medicine,
+    defaultExpanded = true,
+    onToggle,
+    index,
+}) => {
     const [expanded, setExpanded] = useState<boolean>(defaultExpanded);
+    console.log("Medicine in Accordian:", medicine);
 
     const toggle = useCallback(() => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -25,12 +41,24 @@ const MedicineAccordian: React.FC<Props> = ({ medicine, defaultExpanded = true, 
             return next;
         });
     }, [onToggle]);
-  
-    const timesText = medicine.schedule?.times?.join(", ") ?? "";
+
+    // const medicineTimes = medicine.schedule?.times?.join(", ") ?? "";
+    // const timesText = medicineTimes || medicine.times || "";
+
+    const medicineName = medicine.name || "";
+    const medicineFrequency = medicine.frequencylabel || "";
+    const medicineDate = medicine.date || "";
+    const medicineInstructions = medicine.instructions || "";
+    const medicineStatus = medicine.status || "";
+    const medicineTimes = medicine.times || "";
+    const medicineDosage = medicine.dosage || "";
+    const number = index !== undefined ? `${index + 1}. ` : "";
+    const notes = medicine.notes || "";
+    const startdate = medicine.start_date || "";
+    const enddate = medicine.end_date || "";
 
     return (
         <View className="border border-[#EDEDED] rounded-xl overflow-hidden bg-white mb-5">
-
             <TouchableOpacity
                 activeOpacity={0.85}
                 onPress={toggle}
@@ -39,43 +67,58 @@ const MedicineAccordian: React.FC<Props> = ({ medicine, defaultExpanded = true, 
                 accessibilityState={{ expanded }}
             >
                 <Text className="text-base font-medium text-black">
-                    {medicine.id}. {medicine.name}
+                    {number}
+                    {medicineName}
                 </Text>
 
                 <View className="ml-3">
-                    {expanded ? <Minus color="#4D4D4D" size={16} /> : <Plus color="#4D4D4D" size={16} />}
+                    {expanded ? (
+                        <Minus color="#4D4D4D" size={16} />
+                    ) : (
+                        <Plus color="#4D4D4D" size={16} />
+                    )}
                 </View>
             </TouchableOpacity>
 
             {expanded && (
                 <View className="p-4">
-                    
                     <View className="flex-row gap-x-2.5">
                         <View className="mt-1">
                             <Clock size={14} color="#1F1E1E" />
                         </View>
                         <View className="flex-1">
                             <Text className="text-sm font-medium text-black">
-                                {medicine.dose}
+                                {medicineDosage}, {medicineFrequency}
                             </Text>
-                            {timesText ? (
-                                <Text className="text-sm text-[#6B6B6B] mt-1">{timesText}</Text>
-                            ) : null}
+                            <Text className="text-xs text-[#6B6B6B] mt-1">
+                                {medicineTimes} ({medicineInstructions})
+                            </Text>
                         </View>
                     </View>
 
-                    <View className="flex-row items-center gap-x-2.5 mt-3">
-                        <Calendar size={14} color="#4D4D4D" />
-                        <Text className="text-sm text-[#6B6B6B]">{medicine.schedule?.frequency}</Text>
+                    <View className="flex-row items-center gap-x-2.5 mt-1">
+                        <Calendar size={14} color="#1F1E1E" />
+                        <Text className="text-sm text-[#6B6B6B]">{medicineStatus}</Text>
                     </View>
 
-                    <View className="flex-row items-center gap-x-1 mt-2">
-                        <Text className="text-sm text-[#6B6B6B]">From:</Text>
+                    <View className="flex-row items-center gap-x-1 mt-1">
+                        <Text className="text-sm font-medium text-black">From:</Text>
                         <Text className="text-sm text-[#6B6B6B] font-medium">
-                            {medicine.startDate}
+                            {startdate}
+                        </Text>
+                        <Text className="text-sm font-medium text-black">To</Text>
+                        <Text className="text-sm text-[#6B6B6B] font-medium">
+                            {enddate}
                         </Text>
                     </View>
 
+                    {notes ? (
+                        <View className="mt-1 flex-row gap-1">
+                            <Text className="text-sm font-medium text-black">
+                                Notes: <Text className="text-sm text-[#6B6B6B]">{notes}</Text>
+                            </Text>
+                        </View>
+                    ) : null}
                 </View>
             )}
         </View>

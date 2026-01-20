@@ -25,10 +25,7 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const { mutate: signIn, isPending } = useLogin();
 
-  const {
-    control,
-    handleSubmit,
-  } = useForm<LoginFormValues>({
+  const { control, handleSubmit } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -45,11 +42,13 @@ export default function LoginScreen() {
           name: data.user.name,
           email: data.user.email,
           role: data.user.role,
+          patientId: (data.user as any).patient_id,
         };
-  
+        // console.log("Render Login Screen", data);
+
         // ✅ THIS LINE IS ALL YOU NEED
         await login(userData, data.token);
-  
+
         // ✅ Safe navigation AFTER token is in memory
         if (data.user.role === "patient") {
           router.replace("/(patient)");
@@ -59,7 +58,6 @@ export default function LoginScreen() {
       },
     });
   };
-  
 
   return (
     <SafeAreaView className="flex-1 justify-center bg-white px-6">
@@ -109,11 +107,17 @@ export default function LoginScreen() {
           control={control}
           label="Remember for 30 days"
         />
-        <Link
+        {/* <Link
           href="/auth/forgot-password-send-otp"
           className="text-[#D70015] text-sm font-semibold"
         >
           Forgot Password?
+        </Link> */}
+        <Link
+          href="auth/reset-password"
+          className="text-[#D70015] text-sm font-semibold"
+        >
+          Reset Password?
         </Link>
       </View>
 
@@ -129,9 +133,7 @@ export default function LoginScreen() {
 
         <View className="flex-row items-center mt-7">
           <View className="flex-1 h-px bg-primary-200" />
-          <Text className="mx-3 text-black-400 text-base">
-            or Sign In with
-          </Text>
+          <Text className="mx-3 text-black-400 text-base">or Sign In with</Text>
           <View className="flex-1 h-px bg-primary-200" />
         </View>
 
