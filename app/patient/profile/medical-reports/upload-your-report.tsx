@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useUploadMedicalReport } from "@/mutations/patient/useUploadMedicalReport";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useForm } from "react-hook-form";
 import { Text, View } from "react-native";
 import { z } from "zod";
@@ -43,38 +43,67 @@ const UploadYourReport = () => {
 
     const documentDate = watch('report_date');
 
-    const onSubmit = (data: UploadFormData) => {
-        if (!user?.id) return;
-        
-        console.log('data', data);
+    // const onSubmit = (data: UploadFormData) => {
 
-        mutate(
-            {
-                patientId: user.id,
-                name: data.name,
-                report_date: data.report_date,
-                type: reportType,
-                is_public: 0,
-                file: {
-                    uri: data.file.uri,
-                    name: data.file.name,
-                    mimeType: data.file.mimeType,
-                    size: data.file.size
-                }                  
-            },
-            {
-                onSuccess: (res) => {
-                    console.log('data submitted sucesffully', res)
-                    reset();
-                    router.back();
-                },
-                onError: (error: any) => {
-                    console.log("Upload error:", error.response?.data || error.message);
-                },
-            }
-        );
-    };
+        
+    //     if (!user?.id) return;
+        
+    //     console.log('data', data);
+
+    //     mutate(
+    //         {
+    //             patientId: user.id,
+    //             name: data.name,
+    //             report_date: data.report_date,
+    //             type: reportType,
+    //             is_public: 0,
+    //             file: {
+    //                 uri: data.file.uri,
+    //                 name: data.file.name,
+    //                 mimeType: data.file.mimeType,
+    //                 size: data.file.size
+    //             }                  
+    //         },
+    //         {
+    //             onSuccess: (res) => {
+    //                 console.log('data submitted sucesffully', res)
+    //                 reset();
+    //                 router.back();
+    //             },
+    //             onError: (error: any) => {
+    //                 console.log("Upload error:", error.response?.data || error.message);
+    //             },
+    //         }
+    //     );
+    // };
       
+    const onSubmit = async (data: UploadFormData) => {
+
+        const formdata = {
+            ...data,
+            is_public: 0,
+            type: reportType
+        }
+        
+        console.log('data', formdata)
+    
+        // axios.post(
+        //     "https://stagetelehealth.cmcludhiana.in/api/v2/patient/fc46d4c2-ca17-4c6b-a857-63aeaa81ae9a/medical-reports", 
+        //     formdata,
+        //     {
+        //         headers: {
+        //             'Authorization': `Bearer 8|EfgzSd6ST65xEndvRDwjgqZ6mxYVU9yJnuE7Q4Fe79ee1ccb`,
+        //             // 'Content-Type': 'application/json'
+        //         }
+        //     }
+        // )
+        // .then(function (response) {
+        //     console.log(response);
+        // })
+        // .catch(function (error) {
+        //     console.log(error.response?.data);
+        // });
+    };
 
     return (
         <View className="flex-1 bg-white p-5">

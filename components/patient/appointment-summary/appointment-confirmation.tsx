@@ -3,12 +3,13 @@ import { CalendarDays, Check, Video } from 'lucide-react-native';
 import { Image, Modal, Text, View } from 'react-native';
 
 
-type BookingConfirmationModalProps = {
+type BookingConfirmationModalProps<T = any> = {
     visible: boolean;
     onClose: () => void;
+    data: T;
 };
 
-const AppointmentConfirmation = ({ visible, onClose }: BookingConfirmationModalProps ) => {
+const AppointmentConfirmation = ({ visible, onClose, data }: BookingConfirmationModalProps ) => { 
 
     return(
         <Modal
@@ -23,7 +24,7 @@ const AppointmentConfirmation = ({ visible, onClose }: BookingConfirmationModalP
                     {/* Success Icon */}
                     <View className="items-center mb-5">
                         <View className="w-12 h-12 bg-primary-100 rounded-full items-center justify-center">
-                            <Check size={22} color="#2D4095" strokeWidth={3} />
+                            <Check size={22} color="#013220" strokeWidth={3} />
                         </View>
                     </View>
 
@@ -32,7 +33,7 @@ const AppointmentConfirmation = ({ visible, onClose }: BookingConfirmationModalP
                         Thanks, your booking has been confirmed
                     </Text>
                     <Text className="text-base text-black-400 text-center mb-5">
-                        Please check your email for receipt and booking details.
+                        Please check the My Appointments in the app for details.
                     </Text>
 
                     {/* Appointment Details Card */}
@@ -41,16 +42,16 @@ const AppointmentConfirmation = ({ visible, onClose }: BookingConfirmationModalP
                         {/* Doctor Info */}
                         <View className="flex-row items-center mb-5">
                             <Image
-                                source={require('../../../assets/images/doctors/jubbin-j-jacob.png')}
+                                source={{ uri: data.doctor_avatar }}
                                 className="w-12 h-12 rounded-lg"
                                 resizeMode="cover"
                             />
                             <View className="ml-3 flex-1">
                                 <Text className="text-base font-semibold text-black">
-                                    Dr. Jubbin J Jacob
+                                    {data.doctor_name}
                                 </Text>
                                 <Text className="text-sm text-black-400 mt-0.5">
-                                    Endocrinology
+                                    {data.doctor_department}
                                 </Text>
                             </View>
                         </View>
@@ -59,7 +60,7 @@ const AppointmentConfirmation = ({ visible, onClose }: BookingConfirmationModalP
                         <View className="flex-row mb-3">
                             <Video size={16} color="#4D4D4D" />
                             <Text className="text-sm text-black-400 ml-3">
-                                Online Consultation
+                                {data.consultation_type_label}
                             </Text>
                         </View>
 
@@ -67,7 +68,9 @@ const AppointmentConfirmation = ({ visible, onClose }: BookingConfirmationModalP
                         <View className="flex-row">
                             <CalendarDays size={16} color="#4D4D4D" />
                             <Text className="text-sm text-black-400 ml-3">
-                                Wednesday, February 17, 2024 {'\n'} 06:40 PM - 07:30 PM
+                                {data.schedule_date}
+                                {'\n'} 
+                                {data.schedule_time}
                             </Text>
                         </View>
 

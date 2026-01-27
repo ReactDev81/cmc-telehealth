@@ -50,14 +50,14 @@ const Home = () => {
           <View className="flex flex-row gap-x-2.5">
             <View className="flex-1">
               <ConsultationTypeCard
-                link="/patient/find-doctor"
+                link="/(patient)/doctors"
                 image={require("../../assets/images/video-consultation.png")}
                 text="Instant Video Consultation"
               />
             </View>
             <View className="flex-1">
               <ConsultationTypeCard
-                link="/patient/find-doctor"
+                link="/(patient)/doctors"
                 image={require("../../assets/images/clinic-appointment.png")}
                 text="Book In-Clinic Appointment"
               />

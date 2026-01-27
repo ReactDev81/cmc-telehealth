@@ -6,7 +6,7 @@ import MedicineCard from "./medicine-card";
 const CurrentMedicines = () => {
     const { user } = useAuth(); // assuming patient id is here
     const patient_id = user?.patientId as string;
-    console.log("Patient ID:", patient_id);
+    // console.log("Patient ID:", patient_id);
 
     const { data, isLoading, error } = usePrescriptions(patient_id, "current");
     // console.log("x Data:", data?.data ?? []);

@@ -52,18 +52,15 @@ type DoctorScheduleProps = {
   opdType?: "general" | "private" | null;
 };
 
-const DoctorSchedule = ({
-  doctorData,
-  appointmentType,
-  opdType,
-}: DoctorScheduleProps) => {
-  const availability = doctorData?.data?.availability ?? [];
+const DoctorSchedule = ({ doctorData, appointmentType, opdType }: DoctorScheduleProps) => {
 
+  const availability = doctorData?.data?.availability ?? [];
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
-
   const { mutate: submitBooking, isPending } = useBookAppointment();
+
+  // console.log('booking', bookingData);
 
   /** Auto-select first available date */
   useEffect(() => {
@@ -132,7 +129,6 @@ const DoctorSchedule = ({
     };
 
     setBookingData(booking);
-    // console.log("Booking Data:", booking);
   };
 
   /** Loading */
@@ -169,16 +165,17 @@ const DoctorSchedule = ({
       {
         onSuccess: (response) => {
           console.log("Booking Success:", response);
-
+          console.log('bookingId:', response?.data?.appointment?.id)
           router.replace({
             pathname: "/patient/appointment-summary",
             params: {
-              bookingId: response?.appointment?.id,
+              bookingId: response?.data?.appointment?.id,
             },
           });
         },
         onError: (error: any) => {
           console.log("Booking Failed:", error?.response?.data || error);
+          console.log('Booking Error', error)
         },
       }
     );

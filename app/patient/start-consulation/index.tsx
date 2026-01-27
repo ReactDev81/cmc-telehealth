@@ -1,6 +1,7 @@
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import { Camera } from "expo-camera";
+import { useLocalSearchParams } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
 import { ClosedCaption, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff } from "lucide-react-native";
 import * as React from "react";
@@ -10,7 +11,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AddPrescription from "./add-prescription";
 import ControlsButton from "./controls-button";
 
-const ROOM_URL = process.env.EXPO_PUBLIC_PATIENT_CALL_LINK + "?bottomToolbar=off";
 
 type ControlKey = "chat" | "camera" | "microphone" | "caption" | "prescription";
 
@@ -30,6 +30,14 @@ const CONTROLS: ControlConfig[] = [
 ];
 
 const StartConsulationWithDoctor = () => {
+
+    const { patient_call_link } = useLocalSearchParams<{
+        patient_call_link?: string;
+    }>();
+    
+    const ROOM_URL = patient_call_link + "&bottomToolbar=off";
+    
+    console.log('ROOM_URL', ROOM_URL);
 
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);

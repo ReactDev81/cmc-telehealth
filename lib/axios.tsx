@@ -9,7 +9,7 @@ const api = axios.create({
   },
 });
 api.interceptors.request.use((config) => {
-  const token = getAuthToken(); 
+  const token = getAuthToken(); // :white_check_mark: sync, instant
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

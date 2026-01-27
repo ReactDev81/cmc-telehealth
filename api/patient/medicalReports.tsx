@@ -17,6 +17,16 @@ export interface UploadMedicalReportPayload {
 
 export const uploadMedicalReport = async ( payload: UploadMedicalReportPayload ) => {
 
+
+    console.log("UPLOAD PAYLOAD RECEIVED", {
+        patientId: payload.patientId,
+        name: payload.name,
+        type: payload.type,
+        report_date: payload.report_date,
+        is_public: payload.is_public,
+        file: payload.file,
+      });
+
     const formData = new FormData();
 
     const reportDateString =
@@ -35,12 +45,19 @@ export const uploadMedicalReport = async ( payload: UploadMedicalReportPayload )
     formData.append("type", payload.type ?? "");
     formData.append("report_date", reportDateString);
     formData.append("is_public", String(payload.is_public ?? 0));
-    formData.append("file", filePart as any);
+    // formData.append("file", filePart as any);
+
+    formData.append("file", {
+        uri: payload.file.uri,
+        name: payload.file.name,
+        type: payload.file.mimeType || payload.file.type || "image/jpeg",
+    } as any);
 
     const response = await api.post(
         `/patient/${payload.patientId}/medical-reports`,
         formData
     );
+      
     
     return response.data;
 };

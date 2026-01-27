@@ -282,7 +282,7 @@ export default function ManageAppointments() {
 
     const { data, isLoading, isError } = useAppointmentById(appointmentId);
     // console.log("Appointment Id :", appointmentId);
-    console.log("Data Response :", data);
+    // console.log("Data Response :", data);
 
     const appointment = data?.data;
     const patient = appointment?.patient;
@@ -399,7 +399,7 @@ export default function ManageAppointments() {
     };
 
     const doctorId = data?.data?.doctor?.user_id;
-    console.log("Doctor ID :", doctorId);
+    // console.log("Doctor ID :", doctorId);
 
     return (
         <FormProvider {...methods}>
