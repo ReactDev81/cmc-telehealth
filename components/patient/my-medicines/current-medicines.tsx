@@ -9,7 +9,7 @@ const CurrentMedicines = () => {
     console.log("Patient ID:", patient_id);
 
     const { data, isLoading, error } = usePrescriptions(patient_id, "current");
-    console.log("x Data:", data?.data ?? []);
+    // console.log("x Data:", data?.data ?? []);
 
     if (isLoading) return <Text>Loading...</Text>;
     if (error) return <Text>Something went wrong</Text>;

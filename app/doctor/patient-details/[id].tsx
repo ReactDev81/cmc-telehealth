@@ -6,44 +6,95 @@ import UpcomingAppointment from "@/components/doctor/patient-detail/upcoming-app
 import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
 import Button from "@/components/ui/Button";
 import TitleWithLink from "@/components/ui/title-with-link";
-import { ReportCardData } from "@/json-data/common/medical-reports";
-import { PreviousAppointmentData } from "@/json-data/doctor/previous-appointment";
-import { MedicinesData } from "@/json-data/patient/my-medicines";
-import { router } from "expo-router";
+import { useAuth } from "@/context/UserContext";
+import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
+import { router, useLocalSearchParams } from "expo-router";
 import { ChevronRight } from "lucide-react-native";
-import { Linking, ScrollView, View } from "react-native";
+import { ActivityIndicator, Linking, ScrollView, Text, View } from "react-native";
 
 const PatientDetails = () => {
+    const params = useLocalSearchParams();
+    const appointmentId = typeof params.id === 'string' ? params.id : (Array.isArray(params.id) ? params.id[0] : undefined);
+    const { token } = useAuth();
+
+    const { data: patient, isLoading, isError, error } = usePatientDetail(appointmentId || "", token || "");
+
+    const joinUrl = patient?.upcoming_appointments?.video_join_link;
+    console.log("Join URL:", joinUrl);
+
+    if (!appointmentId) {
+        return (
+            <View className="flex-1 items-center justify-center p-5">
+                <Text className="text-base text-red-500">No appointment ID provided</Text>
+            </View>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 items-center justify-center">
+                <ActivityIndicator size="large" />
+                <Text className="mt-3 text-black-400">Loading patient details...</Text>
+            </View>
+        );
+    }
+
+    if (isError || !patient) {
+        return (
+            <View className="flex-1 items-center justify-center p-5">
+                <Text className="text-base text-red-500">Failed to load patient details</Text>
+                {error && (
+                    <Text className="text-sm text-black-400 mt-2">
+                        {error instanceof Error ? error.message : "Unknown error occurred"}
+                    </Text>
+                )}
+                <Button className="mt-4" onPress={() => router.back()}>
+                    Go Back
+                </Button>
+            </View>
+        );
+    }
+
+    // console.log("Patient Details:", patient);
+
+    // Get the first upcoming appointment if available
+    const upcomingAppointment = patient.upcoming_appointments;
+    console.log("Upcoming Appointment sssss:", upcomingAppointment);
+
     return (
         <ScrollView className="flex-1 bg-white p-5">
             <View className="pb-20">
                 {/* headet */}
                 <PatientInfoHeader
-                    image={require("../../assets/images/patient/mark-stonis.png")}
-                    name="Rohan Singh"
-                    age={42}
-                    gender="Male"
-                    problem="I've been neglecting my teeth care lately, and l'm not sure"
+                    image={{ uri: patient.avatar }}
+                    name={patient.name}
+                    age={patient.age}
+                    gender={patient.gender}
+                    problem={patient.problem}
                 />
-
                 {/* contact information of this patient */}
                 <ContactInformation
-                    number="(555) 123-4567"
-                    email="rohansignh@gmail.com"
+                    number={patient?.contact?.phone_formatted}
+                    email={patient?.contact?.email}
                 />
-
                 {/* upcoming appointement details of this patient */}
-                <UpcomingAppointment date="Sat, Jul 30" time="10:00 AM" mode="video" />
-
+                <UpcomingAppointment
+                    call_now={upcomingAppointment?.call_now}
+                    date={upcomingAppointment?.date}
+                    time={upcomingAppointment?.time}
+                    mode={upcomingAppointment?.consultation_type_label}
+                />
                 {/* click here to start consulation */}
-                <Button
+                {joinUrl && <Button
                     icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
                     className="flex-row-reverse mt-5"
-                    onPress={() => router.push("/doctor/start-consulation")}
+                    onPress={() => router.push({
+                        pathname: '/doctor/start-consulation',
+                        params: { docotor_call_link: joinUrl }
+                    })}
                 >
                     Start Consultation
-                </Button>
-
+                </Button>}
                 {/* mdeical reports */}
                 <View className="mt-8">
                     <TitleWithLink
@@ -51,14 +102,13 @@ const PatientDetails = () => {
                         link="/"
                         link_text="See All"
                     />
-                    {ReportCardData.slice(0, 2).map((report) => {
+                    {patient?.medical_reports.slice(0, 2).map((report) => {
                         const handleViewReport = () => {
                             const pdfUrl = report.report_view;
                             if (pdfUrl) {
                                 Linking.openURL(pdfUrl);
                             }
                         };
-
                         return (
                             <View className="mt-5" key={report.id}>
                                 <ReportsCard
@@ -72,7 +122,6 @@ const PatientDetails = () => {
                         );
                     })}
                 </View>
-
                 {/* currently running medicine */}
                 <View className="mt-8">
                     <TitleWithLink
@@ -81,7 +130,7 @@ const PatientDetails = () => {
                         link_text="See All"
                     />
                     <View className="mt-5">
-                        {MedicinesData.slice(0, 2).map((med, index) => (
+                        {patient?.medical_reports.slice(0, 2).map((med, index) => (
                             <MedicineAccordian
                                 key={med.id}
                                 medicine={med}
@@ -91,7 +140,6 @@ const PatientDetails = () => {
                         ))}
                     </View>
                 </View>
-
                 {/* previous appointement with this client */}
                 <View className="mt-2">
                     <TitleWithLink
@@ -99,14 +147,14 @@ const PatientDetails = () => {
                         link="/"
                         link_text="See All"
                     />
-                    {PreviousAppointmentData.slice(0, 2).map((appointment) => (
+                    {patient?.previous_appointments.slice(0, 2).map((appointment) => (
                         <PreviousAppointment
-                            key={appointment.id}
-                            subject={appointment.subject}
+                            key={appointment.appointment_id}
+                            subject={appointment.notes?.problem}
                             status={appointment.status}
-                            time={appointment.time}
-                            date={appointment.date}
-                            mode={appointment.mode}
+                            time={appointment.appointment_time_formatted}
+                            date={appointment.appointment_date_formatted}
+                            mode={appointment.consultation_type_label}
                         />
                     ))}
                 </View>

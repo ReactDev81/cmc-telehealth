@@ -9,7 +9,8 @@ const Testimonial = ({
   patient_image,
   patient_name,
   patient_age,
-  // city,
+  patient_location,
+  days_ago,
   title,
   content,
   total_reviews,
@@ -35,11 +36,10 @@ const Testimonial = ({
           <View className="flex-1">
             <View className="flex-row items-center justify-between">
               <Text className="text-sm font-medium text-black">{patient_name}</Text>
-              <Text className="text-xs text-black/80">1d ago</Text>
+              <Text className="text-xs text-black/80">{days_ago}</Text>
             </View>
             <Text className="text-sm text-gray-600 mt-0.5">
-              {patient_age}, 
-              {/* {city} */}
+              {patient_age} years, {patient_location}
             </Text>
           </View>
         </View>

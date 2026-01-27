@@ -7,15 +7,16 @@ import Button from "../../components/ui/Button";
 import { menuSections } from "../../json-data/patient/profile";
 
 const Profile = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
 
+    const userData = user;
     return (
         <ScrollView
             showsVerticalScrollIndicator={false}
             className="flex-1 p-5 bg-white"
         >
             {/* profile edit */}
-            <ProfileEdit />
+            <ProfileEdit user={userData} />
 
             {/* menu items */}
             <View className="mt-5">

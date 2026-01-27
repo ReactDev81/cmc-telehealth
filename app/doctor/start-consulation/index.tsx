@@ -1,6 +1,7 @@
 import BottomSheet, { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import { Camera } from "expo-camera";
+import { useLocalSearchParams } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
 import { ClosedCaption, FileUser, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff, X } from "lucide-react-native";
 import * as React from "react";
@@ -33,8 +34,11 @@ const MAX_BOTTOM_SHEET_HEIGHT = Dimensions.get("window").height * 0.8;
 
 const StartConsulationWithDoctor = () => {
 
+    const { docotor_call_link } = useLocalSearchParams<{ docotor_call_link: string }>();
+    console.log("Doctor Call Link Param:", docotor_call_link);
+
     const ROOM_URL = React.useMemo(() => {
-        const baseUrl = process.env.EXPO_PUBLIC_DOCTOR_CALL_LINK?.trim();
+        const baseUrl = docotor_call_link?.trim();
         if (!baseUrl) {
             return "";
         }
@@ -55,7 +59,7 @@ const StartConsulationWithDoctor = () => {
 
     // Add Prescription Bottom Sheet
     const addPrescriptionBottomSheetRef = React.useRef<BottomSheet>(null);
-    
+
     // Patient Details Bottom Sheet
     const patientDetailsBottomSheetRef = React.useRef<BottomSheet>(null);
 
@@ -114,10 +118,10 @@ const StartConsulationWithDoctor = () => {
 
     const handleToggleChat = React.useCallback(() => {
         const next = !isChatOpen;
-    
+
         wherebyRoomRef.current?.toggleChat(next);
         setIsChatOpen(next);
-    
+
         if (next) {
             // Collapse sheet
             bottomSheetRef.current?.snapToIndex?.(0);
@@ -126,7 +130,7 @@ const StartConsulationWithDoctor = () => {
             bottomSheetRef.current?.snapToIndex?.(1);
         }
     }, [isChatOpen]);
-    
+
 
     const handleToggleCaption = React.useCallback(async () => {
         try {
@@ -198,7 +202,7 @@ const StartConsulationWithDoctor = () => {
         return <View />;
     }
 
-    return(
+    return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View
                 className="flex-1 bg-white"
@@ -275,7 +279,7 @@ const StartConsulationWithDoctor = () => {
                         ref={bottomSheetRef}
                         index={0}
                         snapPoints={["14%"]}
-                        backgroundStyle={{ 
+                        backgroundStyle={{
                             backgroundColor: "#013220",
                             borderTopLeftRadius: 0,
                             borderTopRightRadius: 0
@@ -314,12 +318,12 @@ const StartConsulationWithDoctor = () => {
                         backgroundStyle={{ backgroundColor: "#fff" }}
                         handleIndicatorStyle={{ width: 0 }}
                     >
-                        <BottomSheetScrollView 
+                        <BottomSheetScrollView
                             stickyHeaderIndices={[0]}
                             keyboardShouldPersistTaps="handled"
                         >
                             {/* Header */}
-                            <View 
+                            <View
                                 className='flex-row items-center justify-between p-5 pt-0 bg-white'
                                 style={{
                                     boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
@@ -348,12 +352,12 @@ const StartConsulationWithDoctor = () => {
                         backgroundStyle={{ backgroundColor: "#fff" }}
                         handleIndicatorStyle={{ width: 0, height: 0 }}
                     >
-                        <BottomSheetScrollView 
+                        <BottomSheetScrollView
                             stickyHeaderIndices={[0]}
                             keyboardShouldPersistTaps="handled"
                         >
                             {/* Header */}
-                            <View 
+                            <View
                                 className='flex-row items-center justify-between p-5 pt-0 bg-white'
                                 style={{
                                     boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
@@ -370,7 +374,7 @@ const StartConsulationWithDoctor = () => {
                 }
 
             </View>
-            <View 
+            <View
                 className="bg-primary"
                 style={{
                     paddingBottom: Platform.OS === "ios" ? insets.bottom : insets.bottom,

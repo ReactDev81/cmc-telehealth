@@ -1,31 +1,32 @@
-import { View, Text} from "react-native"
+import { Href, Link } from "expo-router";
 import { ChevronRight } from 'lucide-react-native';
-import { Link, Href } from "expo-router"
-import Title from "./Title"
+import { Text, View } from "react-native";
+import Title from "./Title";
 
 interface TitleWithLinkProps {
-    title_text : string,
+    title_text: string,
     link: Href,
     link_text: string
 }
 
-const TitleWithLink = ({title_text, link, link_text} : TitleWithLinkProps) => {
-    return(
-        <View className="flex-row items-center justify-between">
-            <Title 
+const TitleWithLink = ({ title_text, link, link_text }: TitleWithLinkProps) => {
+    return (
+        <View className="flex-row justify-between">
+            <Title
+                className="max-w-72"
                 text={title_text}
             />
-            <Link 
+            <Link
                 href={link}
             >
                 <View className="flex-row items-center gap-x-1">
                     <Text className="text-base font-medium text-primary">{link_text}</Text>
-                    <ChevronRight  
+                    <ChevronRight
                         size={18}
                         color="#013220"
                     />
                 </View>
-            </Link>  
+            </Link>
         </View>
     )
 }

@@ -1,14 +1,14 @@
-import { View, Text } from "react-native"
 import { AppointementStatusBoxProps } from "@/types/doctor/home"
+import { Text, View } from "react-native"
 
 
-const AppointementStatusBox = ({ status, status_count } : AppointementStatusBoxProps) => {
-    return(
-        <View 
+const AppointementStatusBox = ({ status, status_count }: AppointementStatusBoxProps) => {
+    return (
+        <View
             className={`px-3 py-4 rounded-xl flex-1 items-center
             ${status === "completed" ? 'bg-success-400' : status === "cancelled" ? 'bg-danger-400' : 'bg-info-400'} `}
         >
-            <Text 
+            <Text
                 className={`text-lg font-medium
                     ${status === "completed" ? 'text-success' : status === "cancelled" ? 'text-danger' : 'text-info'} `}
             >

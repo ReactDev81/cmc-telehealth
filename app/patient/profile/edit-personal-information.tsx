@@ -1,232 +1,313 @@
-import useApi from "@/hooks/useApi";
+import { useUpdatePatientProfile } from "@/queries/patient/useUpdatePatientProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as ImagePicker from "expo-image-picker";
 import { Camera } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    ScrollView,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import * as z from "zod";
-import DateField from "../../../components/form/date";
+
+import DateField from "@/components/form/date";
+import { useAuth } from "@/context/UserContext";
+import { usePatientProfile } from "@/queries/patient/usePatientProfile";
 import Input from "../../../components/form/Input";
 import RadioButton from "../../../components/form/radio-button";
 import Button from "../../../components/ui/Button";
 
-// Validation schema
+/* -------------------------------------------------------------------------- */
+/*                               ZOD SCHEMA                                   */
+/* -------------------------------------------------------------------------- */
+
 const personalInfoSchema = z.object({
-  firstName: z
-    .string()
-    .min(1, "First name is required")
-    .min(2, "First name must be at least 2 characters"),
-  lastName: z
-    .string()
-    .min(1, "Last name is required")
-    .min(2, "Last name must be at least 2 characters"),
-  phone: z
-    .string()
-    .min(1, "Phone number is required")
-    .regex(/^[+]?[\d\s-()]+$/, "Invalid phone number format"),
-  dateOfBirth: z.date({ required_error: "Date of birth is required" }).refine(
-    (date) => {
-      const age = new Date().getFullYear() - date.getFullYear();
-      return age >= 13;
-    },
-    { message: "You must be at least 13 years old" }
-  ),
-  gender: z.enum(["male", "female", "other"], {
-    required_error: "Please select a gender",
-  }),
+    first_name: z
+        .string()
+        .min(1, "First name is required")
+        .min(2, "First name must be at least 2 characters"),
+
+    last_name: z
+        .string()
+        .min(1, "Last name is required")
+        .min(2, "Last name must be at least 2 characters"),
+
+    mobile_no: z
+        .string()
+        .min(1, "Phone number is required")
+        .regex(/^[+]?[\d\s-()]+$/, "Invalid phone number format"),
+
+    date_of_birth: z
+        .date({
+            required_error: "Date of birth is required",
+            invalid_type_error: "Invalid date",
+        })
+        .refine((date) => {
+            const today = new Date();
+            let age = today.getFullYear() - date.getFullYear();
+            const m = today.getMonth() - date.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
+                age--;
+            }
+            return age >= 13;
+        }, "You must be at least 13 years old"),
+
+    gender: z.enum(["male", "female", "other"], {
+        required_error: "Please select a gender",
+    }),
 });
 
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
+/* -------------------------------------------------------------------------- */
+/*                              COMPONENT                                     */
+/* -------------------------------------------------------------------------- */
+
 const EditPersonalInformation = () => {
-  const { data, error, loading, fetchData } = useApi<{
-    data: {};
-  }>(
-    "put",
-    `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/${process.env.EXPO_PUBLIC_PATIENT_ID}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+    const { user, token } = useAuth();
+    if (!user) {
+        return null;
     }
-  );
+    const patientId = user.id;
 
-  const [profileImage, setProfileImage] = useState(
-    require("../../../assets/images/edit-profile.png")
-  );
-  const [isImageUri, setIsImageUri] = useState(false);
+    const { data: profileData, isLoading } = usePatientProfile(patientId, token!);
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<PersonalInfoFormData>({
-    resolver: zodResolver(personalInfoSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phone: "",
-      gender: "male",
-      dateOfBirth: undefined,
-    },
-  });
+    useEffect(() => {
+        if (!profileData) return;
 
-  const dateOfBirth = watch("dateOfBirth");
-  const gender = watch("gender");
+        setValue("first_name", profileData.first_name);
+        setValue("last_name", profileData.last_name);
+        setValue("mobile_no", profileData.mobile_no);
+        setValue("gender", profileData.gender);
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (profileData.date_of_birth) {
+            setValue("date_of_birth", new Date(profileData.date_of_birth), {
+                shouldValidate: true,
+            });
+        }
 
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission Denied",
-        "Sorry, we need camera roll permissions to upload images."
-      );
-      return;
-    }
+        if (profileData.avatar) {
+            setProfileImage({ uri: profileData.avatar });
+        }
+    }, [profileData]);
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
+    const { mutate: updateProfile, isPending } =
+        useUpdatePatientProfile(patientId);
+
+    const [profileImage, setProfileImage] = useState<any>(
+        require("../../../assets/images/edit-profile.png"),
+    );
+
+    const {
+        control,
+        handleSubmit,
+        setValue,
+        watch,
+        formState: { errors },
+    } = useForm<PersonalInfoFormData>({
+        resolver: zodResolver(personalInfoSchema),
+        defaultValues: {
+            first_name: "",
+            last_name: "",
+            mobile_no: "",
+            gender: "male",
+            date_of_birth: undefined as unknown as Date,
+        },
     });
 
-    if (!result.canceled && result.assets[0]) {
-      setProfileImage({ uri: result.assets[0].uri });
-      setIsImageUri(true);
-    }
-  };
+    const dateOfBirth = watch("date_of_birth");
+    const gender = watch("gender");
 
-  const takePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    /* -------------------------------------------------------------------------- */
+    /*                           IMAGE PICKER LOGIC                               */
+    /* -------------------------------------------------------------------------- */
 
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission Denied",
-        "Sorry, we need camera permissions to take photos."
-      );
-      return;
-    }
+    const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
+        if (status !== "granted") {
+            Alert.alert(
+                "Permission Denied",
+                "Sorry, we need gallery permissions to upload images.",
+            );
+            return;
+        }
 
-    if (!result.canceled && result.assets[0]) {
-      setProfileImage({ uri: result.assets[0].uri });
-      setIsImageUri(true);
-    }
-  };
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
 
-  const handleImageUpload = () => {
-    Alert.alert("Upload Photo", "Choose an option", [
-      { text: "Take Photo", onPress: takePhoto },
-      { text: "Choose from Gallery", onPress: pickImage },
-      { text: "Cancel", style: "cancel" },
-    ]);
-  };
-
-  const genderOptions = [
-    { value: "male", label: "Male" },
-    { value: "female", label: "Female" },
-    { value: "other", label: "Other" },
-  ];
-
-  const onSubmit = async (formData: PersonalInfoFormData) => {
-    const information = {
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      mobile_no: formData.phone,
-      date_of_birth: formData.dateOfBirth.toISOString(),
-      gender: formData.gender,
-      group: "personal_information",
+        if (!result.canceled && result.assets?.[0]?.uri) {
+            setProfileImage({ uri: result.assets[0].uri });
+        }
     };
 
-    // await fetchData({ data: information });
-    console.log("Submitted formData Data:", information);
-  };
+    const takePhoto = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
-  return (
-    <ScrollView className="flex-1 bg-white p-5">
-      {/* upload image */}
-      <View className="max-w-32 w-full mx-auto items-center justify-center relative">
-        <Image
-          source={isImageUri ? profileImage : profileImage}
-          className="w-32 h-32 rounded-full"
-          resizeMode="cover"
-        />
-        <TouchableOpacity
-          className="w-8 h-8 rounded-full bg-primary-100 absolute bottom-0 right-0 items-center justify-center"
-          activeOpacity={0.7}
-          onPress={handleImageUpload}
-        >
-          <Camera size={16} color="#013220" />
-        </TouchableOpacity>
-      </View>
+        if (status !== "granted") {
+            Alert.alert(
+                "Permission Denied",
+                "Sorry, we need camera permissions to take photos.",
+            );
+            return;
+        }
 
-      {/* form fields */}
-      <View className="max-w-[350px] w-full mx-auto bg-white p-5 rounded-xl shadow-custom mt-10">
-        <View className="mb-5">
-          <Input
-            name="firstName"
-            control={control}
-            label="First Name"
-            placeholder="Enter First Name"
-          />
-          <Input
-            name="lastName"
-            control={control}
-            label="Last Name"
-            placeholder="Enter Last Name"
-            containerClassName="mt-5"
-          />
-          <Input
-            name="phone"
-            control={control}
-            label="Phone"
-            autoCapitalize="none"
-            placeholder="+123-456-789"
-            keyboardType="phone-pad"
-            containerClassName="mt-5"
-          />
-          <DateField
-            label="Date of Birth"
-            value={dateOfBirth}
-            onChange={(date) =>
-              setValue("dateOfBirth", date as Date, { shouldValidate: true })
-            }
-            placeholder="DD/MM/YYYY"
-            maximumDate={new Date()}
-            error={errors.dateOfBirth?.message}
-            className="mt-5"
-          />
-          <RadioButton
-            name="gender"
-            label="Gender"
-            options={genderOptions}
-            value={gender}
-            onChange={(value) =>
-              setValue("gender", value as "male" | "female" | "other", {
-                shouldValidate: true,
-              })
-            }
-            direction="horizontal"
-            className="mt-5"
-          />
-        </View>
+        const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
 
-        <Button onPress={handleSubmit(onSubmit)}>Save</Button>
-      </View>
-    </ScrollView>
-  );
+        if (!result.canceled && result.assets?.[0]?.uri) {
+            setProfileImage({ uri: result.assets[0].uri });
+        }
+    };
+
+    const handleImageUpload = () => {
+        Alert.alert("Upload Photo", "Choose an option", [
+            { text: "Take Photo", onPress: takePhoto },
+            { text: "Choose from Gallery", onPress: pickImage },
+            { text: "Cancel", style: "cancel" },
+        ]);
+    };
+
+    /* -------------------------------------------------------------------------- */
+    /*                               SUBMIT                                       */
+    /* -------------------------------------------------------------------------- */
+
+    const onSubmit = (formData: PersonalInfoFormData) => {
+        const payload = {
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            mobile_no: formData.mobile_no,
+            date_of_birth: formData.date_of_birth.toISOString().split("T")[0],
+            gender: formData.gender,
+            group: "personal_information" as const,
+        };
+
+        console.log("payload :", payload);
+        updateProfile(payload, {
+            onSuccess: (response: any) => {
+                Alert.alert("Success", response?.message || "Profile updated");
+                console.log("response :", response);
+            },
+            onError: (error: any) => {
+                Alert.alert(
+                    "Error",
+                    error?.response?.data?.message || "Something went wrong",
+                );
+                console.log("error:", error?.response?.data?.message);
+            },
+        });
+    };
+
+    /* -------------------------------------------------------------------------- */
+    /*                                 UI                                         */
+    /* -------------------------------------------------------------------------- */
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 items-center justify-center">
+                <ActivityIndicator size="large" color="#013220" />
+            </View>
+        );
+    }
+
+    return (
+        <ScrollView className="flex-1 bg-white p-5">
+            {/* Profile Image */}
+            <View className="w-32 h-32 mx-auto relative">
+                <Image
+                    source={profileImage}
+                    className="w-32 h-32 rounded-full"
+                    resizeMode="cover"
+                />
+
+                <TouchableOpacity
+                    className="w-8 h-8 rounded-full bg-primary-100 absolute bottom-0 right-0 items-center justify-center"
+                    onPress={handleImageUpload}
+                    activeOpacity={0.7}
+                >
+                    <Camera size={16} color="#013220" />
+                </TouchableOpacity>
+            </View>
+
+            {/* Form */}
+            <View className="max-w-[350px] w-full mx-auto bg-white p-5 rounded-xl shadow-custom mt-10">
+                <Input
+                    name="first_name"
+                    control={control}
+                    label="First Name"
+                    placeholder="Enter First Name"
+                />
+
+                <Input
+                    name="last_name"
+                    control={control}
+                    label="Last Name"
+                    placeholder="Enter Last Name"
+                    containerClassName="mt-5"
+                />
+
+                <Input
+                    name="mobile_no"
+                    control={control}
+                    label="Phone"
+                    keyboardType="phone-pad"
+                    placeholder="+123-456-789"
+                    containerClassName="mt-5"
+                />
+
+                <DateField
+                    label="Date of Birth"
+                    value={dateOfBirth}
+                    onChange={(date) =>
+                        setValue("date_of_birth", date as Date, {
+                            shouldValidate: true,
+                        })
+                    }
+                    maximumDate={new Date()}
+                    placeholder="DD/MM/YYYY"
+                    error={errors.date_of_birth?.message}
+                    className="mt-5"
+                />
+
+                <RadioButton
+                    name="gender"
+                    label="Gender"
+                    value={gender}
+                    options={[
+                        { value: "male", label: "Male" },
+                        { value: "female", label: "Female" },
+                        { value: "other", label: "Other" },
+                    ]}
+                    onChange={(value) =>
+                        setValue("gender", value as "male" | "female" | "other", {
+                            shouldValidate: true,
+                        })
+                    }
+                    direction="horizontal"
+                    className="mt-5"
+                />
+
+                <Button
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={isPending}
+                    className="mt-6"
+                >
+                    {isPending ? "Saving..." : "Save"}
+                </Button>
+            </View>
+        </ScrollView>
+    );
 };
 
 export default EditPersonalInformation;

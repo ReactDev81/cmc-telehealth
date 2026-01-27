@@ -1,6 +1,6 @@
-import { View, Text, Image} from "react-native"
-import { appointmentProps } from "@/types/doctor/appointment"
-import { Calendar, Clock, Hospital, Video } from "lucide-react-native"
+import { appointmentProps } from "@/types/doctor/appointment";
+import { Calendar, Clock, Hospital, Video } from "lucide-react-native";
+import { Image, Text, View } from "react-native";
 
 
 const PastAppointmentCard = ({ image, name, time, date, mode, status } : appointmentProps ) => {
@@ -12,7 +12,7 @@ const PastAppointmentCard = ({ image, name, time, date, mode, status } : appoint
             <View className="flex-1">
                 <Text 
                     className={`text-xs capitalize font-medium w-fit p-2 rounded-md absolute right-0
-                        ${status === 'completed' ? 'text-success bg-success-400' : 'text-danger bg-danger-400'}
+                        ${status === "Completed" ? 'text-success bg-success-400' : 'text-danger bg-danger-400'}
                         `}
                 >
                     {status}
@@ -31,14 +31,14 @@ const PastAppointmentCard = ({ image, name, time, date, mode, status } : appoint
                 <View className="flex-row items-center gap-x-1 mt-2">
                     <View className="flex items-center justify-center w-8 h-8 bg-primary-200 rounded-full">
                         {   
-                            mode === 'video' ? 
+                            mode === 'Video' ? 
                                 <Video size={14} className="text-black-400" /> 
                             : 
                                 <Hospital size={14} className="text-black-400" />
                         }
                     </View>
                     <Text className="text-sm text-black-400">
-                        {mode === 'video' ? 'Video consultation' : 'Clinic Visit'}
+                        {mode}
                     </Text>
                 </View>
             </View>

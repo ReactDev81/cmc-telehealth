@@ -11,7 +11,6 @@ const AppointmentSummary = () => {
 
   const { data, isLoading, isError } = useAppointmentById(appointmentId);
 
-
   const appointment = data?.data;
   const patient = appointment?.patient;
   const schedule = appointment?.schedule;
@@ -23,7 +22,7 @@ const AppointmentSummary = () => {
 
   const calculateAppointmentFee = () => {
     const consultationFee = parseFloat(
-      payment?.consultation_fee_formatted?.replace(/[₹,\s]/g, "") || "0"
+      payment?.consultation_fee_formatted?.replace(/[₹,\s]/g, "") || "0",
     );
     const discount = discountedValue;
     const total = Math.max(0, consultationFee - discount);
@@ -40,14 +39,13 @@ const AppointmentSummary = () => {
   };
 
   const paymentData = () => {
-
     router.push({
       pathname: "/patient/razorpay",
       params: {
         amount: total,
         keyId: appointment?.razorpay_key_id,
         orderId: appointment?.razorpay_order_id,
-        appointmentId: appointment?.id
+        appointmentId: appointment?.id,
       },
     });
   };
@@ -174,13 +172,13 @@ const AppointmentSummary = () => {
             <View className="flex-row items-center justify-between mt-3">
               <Text className="text-sm text-black-400">Aditional Discount</Text>
               <Text className="text-sm font-medium text-black-400">
-                {discountedValue}
+                ₹{discountedValue}
               </Text>
             </View>
             <View className="flex-row items-center justify-between mt-3">
               <Text className="text-sm text-black-400">Total</Text>
               <Text className="text-sm font-medium text-black-400">
-                {total}
+                ₹{total}
               </Text>
             </View>
           </View>
@@ -192,7 +190,6 @@ const AppointmentSummary = () => {
         <Button onPress={paymentData} variant="outline" className="mt-4">
           Book Appointment (₹{total})
         </Button>
-
 
         {/* <Button 
                   onPress={() => router.push('/patient/razorpay')}
