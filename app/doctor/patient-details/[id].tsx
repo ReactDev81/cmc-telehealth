@@ -20,7 +20,7 @@ const PatientDetails = () => {
     const { data: patient, isLoading, isError, error } = usePatientDetail(appointmentId || "", token || "");
 
     const joinUrl = patient?.upcoming_appointments?.video_join_link;
-    console.log("Join URL:", joinUrl);
+    // console.log("Join URL:", joinUrl);
 
     if (!appointmentId) {
         return (
@@ -59,7 +59,7 @@ const PatientDetails = () => {
 
     // Get the first upcoming appointment if available
     const upcomingAppointment = patient.upcoming_appointments;
-    console.log("Upcoming Appointment sssss:", upcomingAppointment);
+    // console.log("Upcoming Appointment sssss:", upcomingAppointment);
 
     return (
         <ScrollView className="flex-1 bg-white p-5">
@@ -150,7 +150,7 @@ const PatientDetails = () => {
                     {patient?.previous_appointments.slice(0, 2).map((appointment) => (
                         <PreviousAppointment
                             key={appointment.appointment_id}
-                            subject={appointment.notes?.problem}
+                            subject={appointment.notes?.problem || "No problem specified"}
                             status={appointment.status}
                             time={appointment.appointment_time_formatted}
                             date={appointment.appointment_date_formatted}

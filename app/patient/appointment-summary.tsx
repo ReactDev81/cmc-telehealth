@@ -48,7 +48,7 @@ const AppointmentSummary = () => {
   };
 
   const { mutate: verifyPayment } = useVerifyPayment();
-  
+
   const handlePayment = () => {
 
     const options = {
@@ -87,6 +87,7 @@ const AppointmentSummary = () => {
             onSuccess: (res) => {
               setModalVisible(true);
               setVerifyData(res?.data)
+              console.log("Verify Success Data:", res);
             },
             onError: (error: any) => {
               console.log("Verify Failed Status:", error?.response?.status);

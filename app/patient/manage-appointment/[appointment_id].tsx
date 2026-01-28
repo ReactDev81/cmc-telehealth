@@ -349,26 +349,6 @@ export default function ManageAppointments() {
         });
     };
 
-    // const handleCancel = () => {
-    //     Alert.alert(
-    //         "Cancel Appointment",
-    //         "Are you sure you want to cancel this appointment?",
-    //         [
-    //             {
-    //                 text: "No",
-    //                 style: "cancel",
-    //             },
-    //             {
-    //                 text: "Yes",
-    //                 onPress: () => {
-    //                     // Implement cancellation logic here
-    //                     Alert.alert("Appointment cancelled successfully.");
-    //                 },
-    //             },
-    //         ],
-    //     );
-    // }
-
     const handleCancelAppointment = () => {
         if (!appointmentId) return;
 
@@ -514,7 +494,14 @@ export default function ManageAppointments() {
                         <View className="flex-row gap-3 mt-6">
                             <Button
                                 className="flex-1"
-                                onPress={() => router.push(`/patient/doctor/${doctorId}`)}
+                                onPress={() => router.push({
+                                    pathname: `/patient/doctor/${doctorId}` as any,
+                                    params: {
+                                        consultation_type: schedule?.consultation_type,
+                                        booking_type: "reschedule"
+                                    },
+                                })}
+                                disabled={!doctorId}
                             >
                                 Reschedule
                             </Button>
@@ -543,7 +530,7 @@ export default function ManageAppointments() {
                     </View>
                 </View>
             </ScrollView>
-        </FormProvider>
+        </FormProvider >
     );
 }
 

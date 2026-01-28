@@ -43,7 +43,7 @@ interface DoctorProps {
 }
 
 const DoctorDetail = () => {
-    const { id } = useLocalSearchParams();
+    const { id, consultation_type, booking_type } = useLocalSearchParams();
     const { token } = useAuth();
 
     const { data, loading, error, fetchData } = useAxios<{ data: DoctorProps }>(

@@ -35,7 +35,7 @@ const MAX_BOTTOM_SHEET_HEIGHT = Dimensions.get("window").height * 0.8;
 const StartConsulationWithDoctor = () => {
 
     const { docotor_call_link } = useLocalSearchParams<{ docotor_call_link: string }>();
-    console.log("Doctor Call Link Param:", docotor_call_link);
+    // console.log("Doctor Call Link Param:", docotor_call_link);
 
     const ROOM_URL = React.useMemo(() => {
         const baseUrl = docotor_call_link?.trim();

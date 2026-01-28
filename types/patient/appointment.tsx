@@ -13,6 +13,7 @@ export interface appointmentProps {
   date?: string;
   time?: string;
   call_now?: boolean;
+  join_url?: string;
 }
 
 export type Appointment = {

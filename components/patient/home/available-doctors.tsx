@@ -72,7 +72,12 @@ const AvailableDoctors = ({
         <Button
           className="mt-3 flex-row-reverse"
           icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
-          onPress={() => router.push(`/patient/doctor/${id}`)}
+          onPress={() => router.push({
+            pathname: `/patient/doctor/${id}` as any,
+            params: {
+              booking_type: "new appointment"
+            },
+          })}
         >
           Book Appointment
         </Button>

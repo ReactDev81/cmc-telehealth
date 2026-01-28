@@ -28,7 +28,6 @@ const Home = () => {
     if (!data) return <Text>No data available</Text>;
 
     const summary = data.summary;
-    console.log("🏥 summary:", summary);
     const todays = data.todays_appointments;
     const upcoming = data.upcoming_appointments;
     const reviews = data.doctor_reviews;
