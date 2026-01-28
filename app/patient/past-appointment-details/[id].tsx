@@ -7,12 +7,12 @@ import { Image, Linking, ScrollView, Text, View } from "react-native";
 
 const AppointementDetails = () => {
     const { id } = useLocalSearchParams();
-    console.log("ID from params :", id);
+    // console.log("ID from params :", id);
     const appointmentId = typeof id === "string" ? id : undefined;
-    console.log("Appointment ID in details page :", appointmentId);
+    // console.log("Appointment ID in details page :", appointmentId);
 
     const { data, isLoading, isError } = useAppointmentById(appointmentId);
-    console.log("Appointment Details Data :", data);
+    // console.log("Appointment Details Data :", data);
 
     const appointment = data?.data;
     const patient = appointment?.patient;

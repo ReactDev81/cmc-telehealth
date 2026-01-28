@@ -10,10 +10,10 @@ const AllPastAppointment = ({
     isLoading?: boolean;
 }) => {
     const renderDoctorItem = ({ item }: { item: Appointment }) => {
-        console.log("Past Appointment Item :", item);
-        console.log("Doctor data:", item.doctor);
-        console.log("Average rating from doctor:", item.doctor?.average_rating);
-        console.log("Average rating from root:", item.average_rating);
+        // console.log("Past Appointment Item :", item);
+        // console.log("Doctor data:", item.doctor);
+        // console.log("Average rating from doctor:", item.doctor?.average_rating);
+        // console.log("Average rating from root:", item.average_rating);
         return (
             <PastAppointment
                 appointment_id={item.appointment_id}

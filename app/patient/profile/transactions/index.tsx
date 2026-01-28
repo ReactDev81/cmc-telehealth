@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { Check, Clock, RotateCcw, X } from "lucide-react-native";
 import { useState } from "react";
 import { FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const tabs = ["All", "Completed", "Pending", "Cancelled", "Refunded"];
 
@@ -56,29 +57,32 @@ const Transaction = () => {
       
 
     return(
-        <View className='flex-1 bg-white p-5'>
+        <SafeAreaView className='flex-1 bg-white p-5 pt-0'>
 
             {/* Tabs */}
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 12 }}
-            >
-                {tabs.map((tab) => (
-                    <TouchableOpacity
-                        key={tab}
-                        className={`px-5 py-2.5 rounded-lg ${activeTab === tab ? "bg-primary" : "border border-gray"}`}
-                        onPress={() => setActiveTab(tab)}
-                    >
-                        <Text className={`text-sm font-medium ${activeTab === tab ? "text-white" : "text-gray-600"}`}>
-                            {tab}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
+            <View className="mb-3">
+              <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 12 }}
+              >
+                  {tabs.map((tab) => (
+                      <TouchableOpacity
+                          key={tab}
+                          className={`px-5 py-2.5 max-h-11 rounded-lg ${activeTab === tab ? "bg-primary" : "border border-gray"}`}
+                          onPress={() => setActiveTab(tab)}
+                      >
+                          <Text className={`text-sm font-medium ${activeTab === tab ? "text-white" : "text-gray-600"}`}>
+                              {tab}
+                          </Text>
+                      </TouchableOpacity>
+                  ))}
+              </ScrollView>
+            </View>
+            
 
 
-            {/* Transactions List */}
+          {/* Transactions List */}
           {!isLoading && !isError && (
             <FlatList
               data={filteredData}
@@ -102,7 +106,13 @@ const Transaction = () => {
                         {item.patient_name}
                       </Text>
                       <Text className="text-black-400 text-sm mt-1.5">
-                        {item.upi_id}
+                        {item.payment_type === "Card"
+                          ? `${item.payment_method}${item.payment_type}****${item.card_last4}`
+                          : item.payment_type === "UPI"
+                          ? item.upi_id
+                          : item.payment_type === "Net Banking" 
+                          ? item.payment_method + ' ' + item.payment_type
+                          : null}
                       </Text>
                     </View>
                   </View>
@@ -125,7 +135,7 @@ const Transaction = () => {
             />
           )}
 
-        </View>
+        </SafeAreaView>
     )
 }
 export default Transaction

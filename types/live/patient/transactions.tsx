@@ -1,9 +1,10 @@
 export interface Transaction {
     id: string;
     amount: number;
-    // API can return paid/pending/failed/refunded; allow "success" for backward compatibility
     status: "paid" | "pending" | "failed" | "refunded";
     payment_method: string;
+    payment_type: "Card" | "UPI";
+    card_last4: string;
     transaction_id: string;
     created_at: string;
     patient_name: string;

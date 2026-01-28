@@ -8,6 +8,11 @@ export interface TransactionDetails {
     transaction_id: string;
     order_id: string;
     payment_method: string;
+    payment_type: "UPI Payment" | "Card" | "Net Banking";
+    upi_id: string;
+    bank_name: string;
+    card_type: string;
+    card_last4: string;
     paid_to: string;
     account_details: string;
     receipt_url: string;

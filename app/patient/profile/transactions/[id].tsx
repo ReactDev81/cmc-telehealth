@@ -1,7 +1,7 @@
 import { useTransactionDetails } from "@/queries/patient/useTransactionDetails";
 import { useLocalSearchParams } from "expo-router";
 import { ArrowDownToLine, Check, Clock, FileText, X } from 'lucide-react-native';
-import { ActivityIndicator, Image, Linking, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Linking, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const TransactionDetails = () => {
 
@@ -85,28 +85,38 @@ const TransactionDetails = () => {
                 <View className="flex-row items-center justify-between py-4 border-b border-black-300">
                     <Text className="text-sm text-black-400">Paid To:</Text>
                     <View className="flex-row items-center gap-x-1.5">
-                        <Image source={require('../../../../assets/images/transactions/sbi.png')} />
-                        <Text className="text-sm text-black-400 font-medium">SBI, Hanamkonda Branch</Text>
+                        <Text className="text-sm text-black-400 font-medium">
+                            {
+                                transaction.payment_type === "UPI Payment" ?
+                                transaction.upi_id :
+                                transaction.payment_type === "Card" ?
+                                transaction.bank_name + ' Bank' :
+                                transaction.payment_type === "Net Banking" ?
+                                transaction.bank_name + ' Bank' :
+                                null
+                            }
+                        </Text>
                     </View>
                 </View>
 
                 <View className="flex-row items-center justify-between py-4 border-b border-black-300">
-                    <Text className="text-sm text-black-400">Account No.</Text>
-                    <Text className="text-sm text-black-400 font-medium">1161289120851</Text>
-                </View>
-
-                <View className="flex-row items-center justify-between py-4 border-b border-black-300">
-                    <Text className="text-sm text-black-400">Transaction type:</Text>
-                    <View>
-                        <Text className="text-sm text-black-400 font-medium text-right">Investment</Text>
-                        <Text className="text-sm text-black-400">Chio mutual funds</Text>
-                    </View>
+                    <Text className="text-sm text-black-400">Payment type:</Text>
+                    <Text className="text-sm text-black-400 font-medium capitalize pr-1">
+                        {
+                            transaction.payment_type === "UPI Payment" ?
+                            transaction.payment_type :
+                            transaction.payment_type === "Card" ?
+                            transaction.card_type + ' Card' : 
+                            transaction.payment_type === "Net Banking" ?
+                            transaction.payment_type
+                            : null
+                        }
+                    </Text>
                 </View>
 
                 <View className="flex-row items-center justify-between py-4 border-b border-black-300">
                     <Text className="text-sm text-black-400">Payment method:</Text>
                     <View className="flex-row items-center gap-x-1.5">
-                        <Image source={require('../../../../assets/images/transactions/gpay.png')} />
                         <Text className="text-sm text-black-400 font-medium">{transaction.payment_method}</Text>
                     </View>
                 </View>
@@ -114,8 +124,39 @@ const TransactionDetails = () => {
                 <View className="flex-row items-center justify-between py-4">
                     <Text className="text-sm text-black-400">Account details:</Text>
                     <View>
-                        <Text className="text-sm text-black-400 font-medium text-right">{transaction.account_details}</Text>
-                        <Text className="text-sm text-black-400">UPI Id:123645054@axl</Text>
+                        {
+                            transaction.payment_type === "Card" ? 
+                                (
+                                    <>
+                                        <Text className="text-sm text-black-400 font-medium text-right">
+                                            {transaction.bank_name} Bank
+                                        </Text>
+                                        <Text className="text-sm text-black-400">
+                                            {transaction.payment_method}{transaction.payment_type}****{transaction.card_last4}
+                                        </Text>
+                                    </>
+                                )
+                                    
+                                
+                                // `${transaction.payment_method}${transaction.payment_type}****${transaction.card_last4}`
+                                : transaction.payment_type === "UPI Payment" ? 
+                                    (
+                                        <Text className="text-sm text-black-400">{transaction.upi_id}</Text>
+                                    )
+                                : 
+                                transaction.payment_type === "Net Banking" ? 
+                                    (
+                                        <>
+                                            <Text className="text-sm text-black-400 font-medium text-right">
+                                                {transaction.bank_name} Bank
+                                            </Text>
+                                            <Text className="text-sm text-black-400">
+                                                {transaction.payment_type}
+                                            </Text>
+                                        </>
+                                    )
+                                : null
+                        }
                     </View>
                 </View>
 

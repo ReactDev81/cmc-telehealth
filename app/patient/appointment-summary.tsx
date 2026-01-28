@@ -1,4 +1,5 @@
 import AppointmentConfirmation from "@/components/patient/appointment-summary/appointment-confirmation";
+import PaymentFailedModal from "@/components/patient/appointment-summary/payment-failed";
 import Button from "@/components/ui/Button";
 import { useVerifyPayment } from "@/mutations/patient/useVerifyPayment";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
@@ -24,6 +25,7 @@ const AppointmentSummary = () => {
   const doctor = appointment?.doctor;
   const payment = appointment?.payment;
 
+  console.log('doctor', doctor?.user_id)
   // console.log('appointment data', appointment);
   // console.log('razorpay_key_id', appointment?.razorpay_key_id);
 
@@ -41,10 +43,16 @@ const AppointmentSummary = () => {
   const total = calculateAppointmentFee();
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
 
   const handleDone = () => {
     setModalVisible(false);
     router.push("/(patient)/appointments");
+  };
+
+  const handleTryAgain = () => {
+    setPaymentModalVisible(false);
+    router.push(`/patient/doctor/${doctor?.user_id}`);
   };
 
   const { mutate: verifyPayment } = useVerifyPayment();
@@ -98,6 +106,7 @@ const AppointmentSummary = () => {
 
       })
       .catch((error) => {
+        setPaymentModalVisible(true);
         console.log("Payment Error:", error);
         const errorMessage =
           error.description || error.message || "Payment failed";
@@ -105,6 +114,7 @@ const AppointmentSummary = () => {
         // Alert.alert("Payment Failed", `${errorCode}: ${errorMessage}`);
         console.log('errorMessage', errorMessage);
         console.log('errorCode', errorCode);
+        
       });
   };
 
@@ -240,6 +250,9 @@ const AppointmentSummary = () => {
 
       {/* Appointement Confirmation Message */}
       <AppointmentConfirmation visible={modalVisible} onClose={handleDone} data={verifyData} />
+
+      {/* Payment Failed */}
+      <PaymentFailedModal visible={paymentModalVisible} onClose={handleTryAgain} />
 
     </ScrollView>
   );

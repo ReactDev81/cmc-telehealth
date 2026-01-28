@@ -8,7 +8,7 @@ const AllUpcomingAppointment = ({ appointments }: { appointments: Appointment[] 
 
         return (
             <UpcomingAppointments
-                appointment_id={item.appointment_id}
+                appointment_id={item.id}
                 image={item.doctor.avatar ? { uri: item.doctor.avatar } : require("../../../assets/images/demo.jpg")}
                 name={item.doctor.name}
                 speciality={item.doctor.department}
@@ -35,4 +35,4 @@ const AllUpcomingAppointment = ({ appointments }: { appointments: Appointment[] 
     )
 }
 
-export default AllUpcomingAppointment;
+export default AllUpcomingAppointment
