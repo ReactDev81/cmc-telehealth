@@ -5,10 +5,12 @@ import UpcomingAppointments from "./upcoming-appointments";
 const AllUpcomingAppointment = ({ appointments }: { appointments: Appointment[] }) => {
 
     const renderDoctorItem = ({ item }: { item: Appointment }) => {
+        // console.log("Appointment Item:", item);
 
         return (
             <UpcomingAppointments
-                appointment_id={item.id}
+                // appointment_id={item.id}
+                appointment_id={item.appointment_id}
                 image={item.doctor.avatar ? { uri: item.doctor.avatar } : require("../../../assets/images/demo.jpg")}
                 name={item.doctor.name}
                 speciality={item.doctor.department}

@@ -8,11 +8,17 @@ export interface BookAppointmentPayload {
   consultation_type: "video" | "in-person";
   opd_type: "general" | "private" | null;
   consultation_fee: string;
+  booking_type?: "new" | "reschedule";
+  appointment_id?: string;
 }
 
 export const bookAppointment = async (
   payload: BookAppointmentPayload
 ) => {
-  const { data } = await api.post("/book-appointment", payload);
+  const endpoint = payload.booking_type === "reschedule" && payload.appointment_id
+    ? `/appointments/${payload.appointment_id}/reschedule`
+    : "/book-appointment";
+
+  const { data } = await api.post(endpoint, payload);
   return data;
 };

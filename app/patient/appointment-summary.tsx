@@ -3,20 +3,32 @@ import PaymentFailedModal from "@/components/patient/appointment-summary/payment
 import Button from "@/components/ui/Button";
 import { useVerifyPayment } from "@/mutations/patient/useVerifyPayment";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { Stethoscope } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, View } from "react-native";
 import RazorpayCheckout from "react-native-razorpay";
 
 const AppointmentSummary = () => {
-
-  const { bookingId } = useLocalSearchParams();
+  const queryClient = useQueryClient();
+  const { bookingId, isRescheduled } = useLocalSearchParams();
 
   // console.log('bookingId', bookingId)
   const appointmentId = typeof bookingId === "string" ? bookingId : undefined;
   // console.log('appointmentId', appointmentId);
-  const { data, isLoading, isError } = useAppointmentById(appointmentId);
+  const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
+
+  // Refetch appointment data if coming from reschedule flow
+  useEffect(() => {
+    if (isRescheduled === "true" && appointmentId) {
+      // Invalidate query cache and refetch to get updated rescheduled appointment data
+      queryClient.invalidateQueries({
+        queryKey: ["appointment", appointmentId],
+      });
+      refetch();
+    }
+  }, [isRescheduled, appointmentId, queryClient, refetch]);
   const [verifyData, setVerifyData] = useState([])
 
   const appointment = data?.data;
@@ -114,7 +126,7 @@ const AppointmentSummary = () => {
         // Alert.alert("Payment Failed", `${errorCode}: ${errorMessage}`);
         console.log('errorMessage', errorMessage);
         console.log('errorCode', errorCode);
-        
+
       });
   };
 
@@ -150,12 +162,13 @@ const AppointmentSummary = () => {
             Appointment Details
           </Text>
           <View className="mt-4">
-            <View className="flex-row items-center justify-between">
+            {/* <View className="flex-row items-center justify-between">
               <Text className="text-sm text-black-400">Date</Text>
               <Text className="text-sm font-medium text-black-400">
                 {schedule?.date_formatted}
               </Text>
-            </View>
+            </View> */}
+            <Detail label="Date" value={schedule?.date_formatted} />
             <View className="flex-row items-center justify-between mt-3">
               <Text className="text-sm text-black-400">Time</Text>
               <Text className="text-sm font-medium text-black-400">
@@ -242,9 +255,11 @@ const AppointmentSummary = () => {
           </View>
         </View>
 
-        <Button onPress={handlePayment} variant="outline" className="mt-4">
-          Book Appointment (₹{total})
-        </Button>
+        {isRescheduled !== "true" && (
+          <Button onPress={handlePayment} variant="outline" className="mt-4">
+            Book Appointment (₹{total})
+          </Button>
+        )}
 
       </View>
 
@@ -259,3 +274,11 @@ const AppointmentSummary = () => {
 };
 
 export default AppointmentSummary;
+
+/* ---------------------- Reusable Row ---------------------- */
+const Detail = ({ label, value }: { label: string; value: string }) => (
+  <View className="flex-row justify-between mt-3">
+    <Text className="text-sm text-black-400">{label}</Text>
+    <Text className="text-sm font-medium text-black-400">{value}</Text>
+  </View>
+);

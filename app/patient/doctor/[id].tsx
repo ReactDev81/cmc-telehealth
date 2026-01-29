@@ -1,5 +1,6 @@
 import { useAuth } from "@/context/UserContext";
 import useAxios from "@/hooks/useApi";
+import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { useLocalSearchParams } from "expo-router";
 import {
     BriefcaseBusiness,
@@ -43,7 +44,7 @@ interface DoctorProps {
 }
 
 const DoctorDetail = () => {
-    const { id, consultation_type, booking_type } = useLocalSearchParams();
+    const { id, consultation_type, booking_type, consultation_opd_type, appointment_id, appointment_date, appointment_time, can_reschedule, appointment_status } = useLocalSearchParams();
     const { token } = useAuth();
 
     const { data, loading, error, fetchData } = useAxios<{ data: DoctorProps }>(
@@ -56,6 +57,7 @@ const DoctorDetail = () => {
         }
     );
     const doctor = data?.data;
+    console.log("Doctor Detail Params:", { consultation_type, booking_type, consultation_opd_type });
 
     // console.log("Doctor Data Fetching:", data);
 
@@ -69,12 +71,82 @@ const DoctorDetail = () => {
         fetchData();
     }, []);
 
+    // If appointment_id supplied (reschedule) fetch appointment and prefill missing values
+    const { data: appointmentData } = useAppointmentById(
+        typeof appointment_id === "string" ? appointment_id : undefined
+    );
+
+    // Auto-prefill appointment type and OPD type from route params when rescheduling
+    useEffect(() => {
+        // Helper to detect opd containing keywords (handles variations like 'General', 'general_opd', 'OPD-GENERAL')
+        const detectOpd = (val: any) => {
+            if (!val) return null;
+            const s = String(val).toLowerCase();
+            if (s.includes("general")) return "general" as const;
+            if (s.includes("private")) return "private" as const;
+            return null;
+        };
+
+        // Priority: if consultation_opd_type is present and recognizable, treat as in-person and set OPD
+        const inferredOpd = detectOpd(consultation_opd_type);
+        if (inferredOpd) {
+            setAppointementType("in_person");
+            setOpdType(inferredOpd);
+            return;
+        }
+
+        // Fallback to consultation_type if OPD not provided
+        if (consultation_type) {
+            const consultationType = String(consultation_type).toLowerCase();
+            if (consultationType.includes("video")) {
+                setAppointementType("video");
+            } else if (
+                consultationType.includes("in-person") ||
+                consultationType.includes("in_person") ||
+                consultationType.includes("in person") ||
+                consultationType.includes("clinic")
+            ) {
+                // treat 'clinic' as in-person (backend may use 'clinic' instead of 'in-person')
+                setAppointementType("in_person");
+                // try setting OPD from consultation_opd_type if available
+                const opd = detectOpd(consultation_opd_type);
+                if (opd) setOpdType(opd);
+            } else {
+                // Unknown value: do not prefill
+            }
+        }
+    }, [consultation_type, consultation_opd_type]);
+
     // Reset OPD type when appointment type changes
     useEffect(() => {
         if (appointementType !== "in_person") {
             setOpdType(null);
         }
     }, [appointementType]);
+
+    // Prefill from fetched appointment schedule if rescheduling and opd not set
+    useEffect(() => {
+        if (booking_type !== "reschedule" || !appointmentData) return;
+        const schedule = (appointmentData as any)?.data?.schedule;
+        if (!schedule) return;
+
+        // set appointment type if not already prefilling
+        if (!appointementType && schedule.consultation_type) {
+            const ct = String(schedule.consultation_type).toLowerCase();
+            if (ct.includes("video")) setAppointementType("video");
+            else if (ct.includes("in-person") || ct.includes("in_person") || ct.includes("clinic")) setAppointementType("in_person");
+        }
+
+        // set opd type if not already prefilling
+        if (!opdType) {
+            const val = schedule?.opd_type ?? schedule?.consultation_opd_type ?? schedule?.opdType;
+            if (val) {
+                const s = String(val).toLowerCase();
+                if (s.includes("general")) setOpdType("general");
+                else if (s.includes("private")) setOpdType("private");
+            }
+        }
+    }, [appointmentData, booking_type, appointementType, opdType]);
 
     if (loading) {
         return (
@@ -92,6 +164,8 @@ const DoctorDetail = () => {
             </View>
         );
     }
+
+    // console.log("OPD Type:", opdType);
 
     return (
         <ScrollView className="flex-1 bg-white">
@@ -197,16 +271,20 @@ const DoctorDetail = () => {
                 <View className="mt-6">
                     <Text className="text-lg font-medium text-black">
                         Appointment type
+                        {booking_type === "reschedule" && (
+                            <Text className="text-xs text-black-400 font-normal"> (Locked)</Text>
+                        )}
                     </Text>
                     <View className="flex-row items-center mt-4 gap-x-4">
                         {doctor?.appointment_types?.video && (
                             <TouchableOpacity
+                                disabled={booking_type === "reschedule" && appointementType !== null}
                                 onPress={() => setAppointementType("video")}
-                                activeOpacity={1}
+                                activeOpacity={booking_type === "reschedule" && appointementType !== null ? 1 : 0.7}
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${appointementType === "video"
                                     ? "border-primary"
                                     : "border-gray"
-                                    }`}
+                                    } ${booking_type === "reschedule" && appointementType !== null && appointementType !== "video" ? "opacity-50" : ""}`}
                             >
                                 <Video
                                     color={appointementType === "video" ? "#013220" : "#4D4D4D"}
@@ -223,12 +301,13 @@ const DoctorDetail = () => {
                         )}
                         {doctor?.appointment_types?.in_person && (
                             <TouchableOpacity
+                                disabled={booking_type === "reschedule" && appointementType !== null}
                                 onPress={() => setAppointementType("in_person")}
-                                activeOpacity={1}
+                                activeOpacity={booking_type === "reschedule" && appointementType !== null ? 1 : 0.7}
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${appointementType === "in_person"
                                     ? "border-primary"
                                     : "border-gray"
-                                    }`}
+                                    } ${booking_type === "reschedule" && appointementType !== null && appointementType !== "in_person" ? "opacity-50" : ""}`}
                             >
                                 <Hospital
                                     color={
@@ -253,15 +332,19 @@ const DoctorDetail = () => {
                     <View className="mt-6">
                         <Text className="text-lg font-medium text-black">
                             OPD Type
+                            {booking_type === "reschedule" && (
+                                <Text className="text-xs text-black-400 font-normal"> (Locked)</Text>
+                            )}
                         </Text>
                         <View className="flex-row items-center mt-4 gap-x-4">
                             <TouchableOpacity
+                                disabled={booking_type === "reschedule" && opdType !== null && opdType !== "general"}
                                 onPress={() => setOpdType("general")}
-                                activeOpacity={1}
+                                activeOpacity={booking_type === "reschedule" && opdType !== null && opdType !== "general" ? 1 : 0.7}
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "general"
                                     ? "border-primary bg-primary-100"
                                     : "border-gray"
-                                    }`}
+                                    } ${booking_type === "reschedule" && opdType !== null && opdType !== "general" ? "opacity-50" : ""}`}
                             >
                                 <Text
                                     className={`text-sm font-medium text-center ${opdType === "general"
@@ -273,12 +356,13 @@ const DoctorDetail = () => {
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
+                                disabled={booking_type === "reschedule" && opdType !== null && opdType !== "private"}
                                 onPress={() => setOpdType("private")}
-                                activeOpacity={1}
+                                activeOpacity={booking_type === "reschedule" && opdType !== null && opdType !== "private" ? 1 : 0.7}
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "private"
                                     ? "border-primary bg-primary-100"
                                     : "border-gray"
-                                    }`}
+                                    } ${booking_type === "reschedule" && opdType !== null && opdType !== "private" ? "opacity-50" : ""}`}
                             >
                                 <Text
                                     className={`text-sm font-medium text-center ${opdType === "private"
@@ -295,7 +379,17 @@ const DoctorDetail = () => {
 
                 {/* schedules - Only show when appointment type is selected and if in_person, opdType must be selected */}
                 {appointementType && (appointementType === "video" || (appointementType === "in_person" && opdType)) && (
-                    <DoctorSchedule doctorData={data} appointmentType={appointementType} opdType={opdType} />
+                    <DoctorSchedule
+                        doctorData={data}
+                        appointmentType={appointementType}
+                        opdType={opdType}
+                        bookingType={booking_type as string}
+                        appointmentIdToReschedule={appointment_id as string}
+                        initialSelectedDate={appointment_date as string}
+                        initialSelectedTime={appointment_time as string}
+                        canReschedule={can_reschedule === "true"}
+                        appointmentStatus={appointment_status as string}
+                    />
                 )}
             </View>
         </ScrollView>

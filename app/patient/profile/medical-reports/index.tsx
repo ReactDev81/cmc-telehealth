@@ -28,15 +28,15 @@ const MedicalRecords = () => {
         { label: "X-Ray", value: "x_ray" },
         { label: "Diabetes Screening Report", value: "diabetes_screening_report" },
         { label: "Endoscopy Report", value: "endoscopy_report" }
-    ];      
+    ];
 
     const handleOpenSheet = useCallback(() => {
         setIsOpen(true);
         setTimeout(() => {
-          bottomSheetRef.current?.snapToIndex(0);
+            bottomSheetRef.current?.snapToIndex(0);
         }, 100);
     }, []);
-    
+
     const handleCloseSheet = useCallback(() => {
         bottomSheetRef.current?.close();
         setIsOpen(false);
@@ -54,7 +54,7 @@ const MedicalRecords = () => {
         ),
         []
     );
-    
+
     const handleSheetChanges = useCallback((index: number) => {
         if (index === -1) setIsOpen(false);
     }, []);
@@ -104,7 +104,7 @@ const MedicalRecords = () => {
                     )}
 
                 </View>
-            
+
 
                 <View className='mt-8'>
                     <Button onPress={handleOpenSheet}>Upload New Report</Button>
@@ -130,7 +130,7 @@ const MedicalRecords = () => {
                     <BottomSheetView style={{ flex: 1 }}>
 
                         {/* Header */}
-                        <View 
+                        <View
                             className="flex-row justify-between items-center p-5 pt-0"
                             style={{
                                 boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
@@ -144,25 +144,25 @@ const MedicalRecords = () => {
 
                         {/* List of report types */}
                         <View className='pb-5'>
-                        {reportTypes.map((item) => (
-                            <TouchableOpacity
-                                key={item.value}
-                                className="p-5 border-b border-black-200"
-                                onPress={() => {
-                                    router.push({
-                                        pathname: "/patient/profile/medical-reports/upload-your-report",
-                                        params: {
-                                            reportType: item.value,
-                                        },
-                                    });
-                                    handleCloseSheet();
-                                }}
-                            >
-                                <Text className="text-base text-gray-700">
-                                    {item.label}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
+                            {reportTypes.map((item) => (
+                                <TouchableOpacity
+                                    key={item.value}
+                                    className="p-5 border-b border-black-200"
+                                    onPress={() => {
+                                        router.push({
+                                            pathname: "/patient/profile/medical-reports/upload-your-report",
+                                            params: {
+                                                reportType: item.value,
+                                            },
+                                        });
+                                        handleCloseSheet();
+                                    }}
+                                >
+                                    <Text className="text-base text-gray-700">
+                                        {item.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
 
                     </BottomSheetView>

@@ -238,6 +238,7 @@
 // }
 
 import CancelAppointmentModal from "@/components/patient/appointment/cancel-appointment-modal";
+import RescheduleAttemptModal from "@/components/patient/appointment/reschedule-attempt-modal";
 import Button from "@/components/ui/Button";
 import { useCancelAppointment } from "@/mutations/patient/useCancelAppointment";
 import { useManageAppointment } from "@/mutations/patient/useManageAppointment";
@@ -292,6 +293,7 @@ export default function ManageAppointments() {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [cancelModalVisible, setCancelModalVisible] = useState(false);
+    const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] = useState(false);
     const [reportsAndNotes, setReportsAndNotes] = useState(false);
 
     const { mutate: manageAppointment, isPending } = useManageAppointment(
@@ -354,15 +356,27 @@ export default function ManageAppointments() {
 
         cancelAppointment(appointmentId, {
             onSuccess: (res) => {
-                console.log("✅ Appointment cancelled:", res?.success);
+                console.log("✅ Appointment cancelled:", res?.status);
 
-                if (res?.success === true) {
-                    router.push("/(patient)/appointments");
-                }
+                // if (res?.status === true) {
+                //     router.push("/(patient)/doctors");
+                // }
 
+                // Alert.alert(
+                //     res?.message || "Appointment cancelled"
+                // );
                 Alert.alert(
-                    "Appointment Cancelled",
-                    "Your appointment has been successfully cancelled.",
+                    res?.message || "Appointment cancelled",
+                    undefined,
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                setCancelModalVisible(false);
+                                router.push("/(patient)/doctors");
+                            },
+                        },
+                    ]
                 );
 
                 setCancelModalVisible(false);
@@ -380,6 +394,9 @@ export default function ManageAppointments() {
 
     const doctorId = data?.data?.doctor?.user_id;
     // console.log("Doctor ID :", doctorId);
+
+    // console.log("schedule:", schedule?.opd_type);
+    // console.log("appointment:", appointment);
 
     return (
         <FormProvider {...methods}>
@@ -400,14 +417,23 @@ export default function ManageAppointments() {
                     <View className="pb-5 mb-5 border-b border-[#EDEDED]">
                         <View className="flex-row items-center gap-x-1">
                             <Stethoscope size={14} color="#013220" />
-                            <Text className="text-primary text-sm">Cardiology</Text>
+                            <Text className="text-primary text-sm">{doctor?.department}</Text>
                         </View>
                         <Text className="text-lg font-medium mt-1">{doctor?.name}</Text>
                     </View>
 
                     {/* Appointment Details */}
                     <View className="pb-5 mb-5 border-b border-[#EDEDED]">
-                        <Text className="text-lg font-medium">Appointment Details</Text>
+                        <View>
+                            <Text className="text-lg font-medium">Appointment Details</Text>
+                            <Text
+                                className={`text-xs capitalize font-medium w-fit p-2 rounded-md absolute right-0
+                        ${appointment?.status === "confirmed" ? "text-success bg-success-400" : "text-info bg-info-400"}
+                        `}
+                            >
+                                {appointment?.status}
+                            </Text>
+                        </View>
 
                         <Detail label="Date" value={schedule?.date_formatted} />
                         <Detail label="Time" value={schedule?.time_formatted} />
@@ -492,19 +518,34 @@ export default function ManageAppointments() {
                         )}
 
                         <View className="flex-row gap-3 mt-6">
-                            <Button
-                                className="flex-1"
-                                onPress={() => router.push({
-                                    pathname: `/patient/doctor/${doctorId}` as any,
-                                    params: {
-                                        consultation_type: schedule?.consultation_type,
-                                        booking_type: "reschedule"
-                                    },
-                                })}
-                                disabled={!doctorId}
-                            >
-                                Reschedule
-                            </Button>
+                            {appointment?.status !== "rescheduled" ? (
+                                <Button
+                                    className="flex-1"
+                                    onPress={() => router.push({
+                                        pathname: `/patient/doctor/${doctorId}` as any,
+                                        params: {
+                                            consultation_type: schedule?.consultation_type,
+                                            consultation_opd_type: schedule?.opd_type,
+                                            booking_type: "reschedule",
+                                            appointment_id: appointmentId,
+                                            appointment_date: schedule?.date,
+                                            appointment_time: schedule?.time,
+                                            can_reschedule: String(appointment?.can_reschedule ?? false),
+                                            appointment_status: String(appointment?.status ?? ""),
+                                        },
+                                    })}
+                                    disabled={!doctorId || !appointment?.can_reschedule}
+                                >
+                                    Reschedule
+                                </Button>
+                            ) : (
+                                <Button
+                                    className="flex-1"
+                                    onPress={() => setRescheduleAttemptModalVisible(true)}
+                                >
+                                    Reschedule
+                                </Button>
+                            )}
                             <Button
                                 variant="outline"
                                 className="flex-1"
@@ -513,6 +554,11 @@ export default function ManageAppointments() {
                                 Cancel
                             </Button>
                         </View>
+
+                        <RescheduleAttemptModal
+                            visible={rescheduleAttemptModalVisible}
+                            onClose={() => setRescheduleAttemptModalVisible(false)}
+                        />
 
                         <CancelAppointmentModal
                             visible={cancelModalVisible}

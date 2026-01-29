@@ -19,6 +19,8 @@ const UpcomingAppointments = ({
     join_url
 }: appointmentProps) => {
 
+    console.log("Call Now:", call_now);
+
     return (
         <View className='border border-black-300 rounded-xl p-4'>
 
@@ -57,7 +59,7 @@ const UpcomingAppointments = ({
                             {
                                 consultation_type === 'video' ?
                                     <Video color="#1ABE17" fill="#1ABE17" size={14} />
-                                :
+                                    :
                                     <Hospital color="#1ABE17" size={14} />
                             }
                             <Text className='text-success text-sm'>
@@ -82,11 +84,11 @@ const UpcomingAppointments = ({
                                     params: {
                                         patient_call_link: join_url,
                                     },
-                                })}                                
+                                })}
                             >
                                 Call Now
                             </Button>
-                        : 
+                            :
                             <Button
                                 className="flex-1"
                                 onPress={() => router.push(`/patient/manage-appointment/${appointment_id}`)}
