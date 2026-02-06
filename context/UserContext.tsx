@@ -1,3 +1,101 @@
+// import { setAuthToken } from "@/lib/authToken";
+// import { User } from "@/types/common/user-context";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import { createContext, useContext, useEffect, useState } from "react";
+
+
+// interface UserContextType {
+//   user: User | null;
+//   token: string | null;
+//   initializing: boolean;
+//   login: (user: User, token: string) => Promise<void>;
+//   logout: () => Promise<void>;
+//   updateUser: (updatedData: Partial<User>) => Promise<void>;
+// }
+
+// const UserContext = createContext<UserContextType | undefined>(undefined);
+
+// const USER_KEY = "@user";
+// const TOKEN_KEY = "@token";
+
+// export function UserProvider({ children }: { children: React.ReactNode }) {
+//   const [user, setUser] = useState<User | null>(null);
+//   const [token, setToken] = useState<string | null>(null);
+//   const [initializing, setInitializing] = useState(true);
+
+//   useEffect(() => {
+//     (async () => {
+//       try {
+//         const storedUser = await AsyncStorage.getItem(USER_KEY);
+//         const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
+
+//         if (storedUser) setUser(JSON.parse(storedUser));
+
+//         if (storedToken) {
+//           setToken(storedToken);
+//           setAuthToken(storedToken);
+//         }
+//       } catch (e) {
+//         console.log("Error loading auth data", e);
+//       } finally {
+//         setInitializing(false);
+//       }
+//     })();
+//   }, []);
+
+//   const login = async (userData: User, authToken: string) => {
+//     setUser(userData);
+//     setToken(authToken);
+
+//     try {
+//       await AsyncStorage.multiSet([
+//         [USER_KEY, JSON.stringify(userData)],
+//         [TOKEN_KEY, authToken],
+//       ]);
+//     } catch (e) {
+//       console.log("Error saving auth data", e);
+//     }
+//   };
+
+//   const logout = async () => {
+//     setUser(null);
+//     setToken(null);
+
+//     try {
+//       await AsyncStorage.multiRemove([USER_KEY, TOKEN_KEY]);
+//     } catch (e) {
+//       console.log("Error clearing auth data", e);
+//     }
+//   };
+
+//   const updateUser = async (updatedData: Partial<User>) => {
+//     if (!user) return;
+
+//     const updatedUser = { ...user, ...updatedData };
+//     setUser(updatedUser);
+
+//     try {
+//       await AsyncStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+//     } catch (e) {
+//       console.log("Error updating user data", e);
+//     }
+//   };
+
+//   return (
+//     <UserContext.Provider value={{ user, token, initializing, login, logout, updateUser }}>
+//       {children}
+//     </UserContext.Provider>
+//   );
+// }
+
+
+// export const useAuth = () => {
+//   const context = useContext(UserContext);
+//   if (!context) throw new Error("useAuth must be used within a UserProvider");
+//   return context;
+// };
+
+
 import { setAuthToken } from "@/lib/authToken";
 import { User } from "@/types/common/user-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -5,11 +103,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 
 interface UserContextType {
-    user: User | null;
-    token: string | null;
-    initializing: boolean;
-    login: (user: User, token: string) => Promise<void>;
-    logout: () => Promise<void>;
+  user: User | null;
+  token: string | null;
+  initializing: boolean;
+  login: (user: User, token: string) => Promise<void>;
+  logout: () => Promise<void>;
+  updateUser: (updatedData: Partial<User>) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -30,10 +129,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
         if (storedUser) setUser(JSON.parse(storedUser));
 
-        if (storedToken){
+        if (storedToken) {
           setToken(storedToken);
           setAuthToken(storedToken);
-        } 
+        }
       } catch (e) {
         console.log("Error loading auth data", e);
       } finally {
@@ -67,16 +166,29 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUser = async (updatedData: Partial<User>) => {
+    if (!user) return;
+
+    const updatedUser = { ...user, ...updatedData };
+    setUser(updatedUser);
+
+    try {
+      await AsyncStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+    } catch (e) {
+      console.log("Error updating user data", e);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, token, initializing, login, logout }}>
+    <UserContext.Provider value={{ user, token, initializing, login, logout, updateUser }}>
       {children}
     </UserContext.Provider>
   );
 }
 
 
-export const useAuth = () => {              
-    const context = useContext(UserContext);
-    if (!context) throw new Error("useAuth must be used within a UserProvider");
-    return context;
+export const useAuth = () => {
+  const context = useContext(UserContext);
+  if (!context) throw new Error("useAuth must be used within a UserProvider");
+  return context;
 };

@@ -3,7 +3,8 @@ import AllUpcomingAppointment from "@/components/patient/appointment/all-upcomin
 import Tab, { TabItem } from "@/components/ui/Tab";
 import { useAuth } from "@/context/UserContext";
 import { useAppointments } from "@/queries/patient/useAppointments";
-import { useState } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 export type Appointment = {
@@ -21,22 +22,25 @@ export type Appointment = {
   call_now: boolean;
   join_url: string;
   video_consultation?: {
-      join_url: string;
+    join_url: string;
   };
   notes?: {
-      reason?: string;
-      symptoms?: string[];
-      allergies?: string | null;
-      problem?: string;
+    reason?: string;
+    symptoms?: string[];
+    allergies?: string | null;
+    problem?: string;
   };
+  appointment_id?: string;
   doctor: {
-      id: string;
-      name: string;
-      first_name: string;
-      last_name: string;
-      avatar: string | null;
-      department: string;
-      slug: string;
+    id: string;
+    name: string;
+    first_name: string;
+    last_name: string;
+    avatar: string | null;
+    department: string;
+    slug: string;
+    years_experience?: string;
+    average_rating?: number;
   };
 };
 
@@ -48,10 +52,18 @@ type AppointmentResponse = {
 };
 
 const Appointments = () => {
-  
+
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
   const { token } = useAuth();
-  const { data: appointments = [], isLoading, isError } = useAppointments(activeTab, token!);
+  const isFocused = useIsFocused();
+  const { data: appointments = [], isLoading, isError, refetch } = useAppointments(activeTab, token!);
+
+  // ✅ Refetch appointments only when screen comes into focus (critical data)
+  useEffect(() => {
+    if (isFocused) {
+      refetch();
+    }
+  }, [isFocused, refetch]);
 
   const appointmentTabs: TabItem[] = [
     {

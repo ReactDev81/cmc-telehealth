@@ -20,5 +20,9 @@ export const useAppointments = (
       return res.data.data;
     },
     enabled: !!token,
+    staleTime: 3 * 60 * 1000,  // cache for 3 min
+    retry: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };

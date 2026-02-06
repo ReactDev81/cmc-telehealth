@@ -1,20 +1,36 @@
 import { MenuSection } from '@/types/common/profile'
-import { 
+import {
+    Award,
     BriefcaseBusiness,
-    GraduationCap,
-    FileText,
     ChartColumn,
-    Info, 
-    HelpCircle, 
-    Headphones, 
-    ShieldCheck,
+    FileText,
+    GraduationCap,
     Handshake,
-    UserStar,
+    Headphones,
+    HelpCircle,
+    Info,
+    MapPin,
+    ShieldCheck,
+    UserStar
 } from 'lucide-react-native'
 
 export const DoctorMenuSections: MenuSection[] = [
     {
         items: [
+            {
+                id: 'address-contact',
+                icon: <MapPin size={20} color="#374151" />,
+                title: 'Address & Contact',
+                description: 'Update your contact details and address.',
+                route: '/doctor/profile/address-contact'
+            },
+            {
+                id: 'awards',
+                icon: <Award size={20} color="#374151" />,
+                title: 'Awards',
+                description: 'List your achievements and awards.',
+                route: '/doctor/profile/awards'
+            },
             {
                 id: 'working-experience',
                 icon: <BriefcaseBusiness size={20} color="#374151" />,
@@ -42,6 +58,13 @@ export const DoctorMenuSections: MenuSection[] = [
                 title: 'Usage Analytics',
                 description: 'View analytics which based on your appointment',
                 route: '/doctor/profile/usage-analytics'
+            },
+            {
+                id: 'social-media',
+                icon: <Handshake size={20} color="#374151" />,
+                title: 'Social Media',
+                description: 'Manage your social media presence.',
+                route: '/doctor/profile/social-media'
             },
         ]
     },

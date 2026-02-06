@@ -1,11 +1,11 @@
-import { View, Text, Pressable, Alert } from "react-native";
-import { X, ChevronRight } from 'lucide-react-native';
 import Input from "@/components/form/Input";
-import { useForm } from 'react-hook-form';
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Button from "@/components/ui/Button";
 import TextArea from "@/components/form/TextArea";
+import Button from "@/components/ui/Button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronRight, X } from 'lucide-react-native';
+import { useForm } from 'react-hook-form';
+import { Alert, Pressable, Text, View } from "react-native";
+import { z } from "zod";
 
 const CertificatesSchema = z.object({
     medication: z.string().min(2, "Medication must be at least 2 characters long"),
@@ -14,7 +14,7 @@ const CertificatesSchema = z.object({
     duration: z.string().min(2, "Duration Address is required"),
     notes: z.string().min(2, "Notes is required"),
 });
-  
+
 type EducationHistoryFormData = z.infer<typeof CertificatesSchema>;
 
 const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
@@ -31,13 +31,13 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
     });
 
     const onSubmit = (data: any) => {
-        console.log(data);
+        // console.log(data);
         Alert.alert("Success", "New education history saved successfully!");
         reset();
         onClose();
     }
 
-    return(
+    return (
         <View className="p-5 bg-white rounded-xl">
 
             {/* headet */}
@@ -61,21 +61,21 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
                     name="dosage"
                     label="Dosage"
                     control={control}
-                    containerClassName="mt-5" 
+                    containerClassName="mt-5"
                 />
 
                 <Input
-                    name="frequency"  
+                    name="frequency"
                     label="Frequency"
                     control={control}
-                    containerClassName="mt-5" 
+                    containerClassName="mt-5"
                 />
 
                 <Input
-                    name="duration"  
+                    name="duration"
                     label="Duration"
                     control={control}
-                    containerClassName="mt-5" 
+                    containerClassName="mt-5"
                 />
 
                 <TextArea
@@ -85,12 +85,12 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
                     containerClassName="mt-5"
                 />
 
-                <Button 
-                    onPress={handleSubmit(onSubmit)} 
+                <Button
+                    onPress={handleSubmit(onSubmit)}
                     className="mt-5 flex-row-reverse"
                     icon={<ChevronRight size={16} color="#fff" strokeWidth={3} />}
                 >
-                    Add Prescriptions 
+                    Add Prescriptions
                 </Button>
             </View>
 

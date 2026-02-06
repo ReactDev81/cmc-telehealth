@@ -123,14 +123,26 @@ const Doctors = () => {
   // }
 
   useEffect(() => {
-    if (params.filter_type === "department" && params.id) {
-      setFilters({ departmentId: String(params.id) });
-    }
+    // Only react to the specific param values instead of the whole `params` object
+    const filterType = (params as any)?.filter_type;
+    const id = (params as any)?.id;
 
-    if (params.filter_type === "symptom" && params.id) {
-      setFilters({ symptomDepartmentId: String(params.id) });
+    if (!filterType) return;
+
+    if (filterType === "department" && id) {
+      setFilters((prev) => {
+        const departmentId = String(id);
+        if (prev.departmentId === departmentId) return prev;
+        return { ...prev, departmentId };
+      });
+    } else if (filterType === "symptom" && id) {
+      setFilters((prev) => {
+        const symptomDepartmentId = String(id);
+        if (prev.symptomDepartmentId === symptomDepartmentId) return prev;
+        return { ...prev, symptomDepartmentId };
+      });
     }
-  }, [params]);
+  }, [params?.filter_type, params?.id]);
 
   return (
     <View className="flex-1 bg-white p-5 relative">

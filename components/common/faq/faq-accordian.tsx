@@ -3,13 +3,12 @@ import { ChevronDown, ChevronRight } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   AccessibilityProps,
-  Image,
   LayoutAnimation,
   Platform,
   Text,
   TouchableOpacity,
   UIManager,
-  View,
+  View
 } from "react-native";
 
 if (
@@ -70,13 +69,17 @@ const FAQAccordian: React.FC<Props> = ({
         accessibilityLabel={accessibilityLabel ?? `${faq.title} toggle`}
         accessibilityState={{ expanded }}
       >
-        <View className="w-10 h-10 rounded-full bg-primary-100 items-center justify-center mr-3 overflow-hidden">
-          <Image
-            className="w-6 h-6"
-            source={{ uri: faq.icon }}
-            resizeMode="cover"
-          />
-        </View>
+        {/* <View className="w-10 h-10 rounded-full bg-primary-100 items-center justify-center mr-3 overflow-hidden">
+          {typeof faq.icon === "string" ? (
+            <Image
+              className="w-6 h-6"
+              source={{ uri: faq.icon }}
+              resizeMode="cover"
+            />
+          ) : (
+            faq.icon as React.ReactNode
+          )}
+        </View> */}
 
         <View className="flex-1">
           <Text className="text-sm font-medium text-black mt-2">

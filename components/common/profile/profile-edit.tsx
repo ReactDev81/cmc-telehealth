@@ -34,12 +34,16 @@ interface ProfileEditProps {
 }
 
 const ProfileEdit = ({ user }: ProfileEditProps) => {
+    const profileImageSource = user?.avatar
+        ? { uri: user.avatar }
+        : require("../../../assets/images/profile.png");
+
     return (
         <View className="bg-primary-100 p-4 flex-row items-start rounded-xl">
             <View className="flex-1 flex-row items-center gap-x-3">
                 <View className="w-14">
                     <Image
-                        source={require("../../../assets/images/profile.png")}
+                        source={profileImageSource}
                         className="w-full h-14 object-cover rounded-full"
                     />
                 </View>

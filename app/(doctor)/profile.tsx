@@ -9,15 +9,16 @@ import { ScrollView, Text, View } from "react-native";
 
 const Profile = () => {
 
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
+    console.log("User: ", user);
 
     return (
-        <ScrollView 
+        <ScrollView
             showsVerticalScrollIndicator={false}
             className='flex-1 p-5 bg-white'
         >
-            
-            <DoctorProfileEdit />
+
+            <DoctorProfileEdit user={user} />
 
             {/* menu items */}
             <View className='mt-5'>
@@ -47,8 +48,8 @@ const Profile = () => {
             {/* app version info and logout button */}
             <View className='mt-7 mb-16'>
                 <Text className='text-sm text-black-400 text-center'>CMC - v 1.1 (518)</Text>
-                <Button 
-                    className='mt-7' 
+                <Button
+                    className='mt-7'
                     onPress={async () => {
                         await logout();
                         router.replace("/auth/login");

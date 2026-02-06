@@ -21,7 +21,7 @@ export const getMedicines = async (
 ): Promise<Medicine[]> => {
     try {
         if (!token) {
-            console.warn("No token provided for getMedicines");
+            // console.warn("No token provided for getMedicines");
             return [];
         }
 
@@ -36,10 +36,10 @@ export const getMedicines = async (
         }
 
         // Full endpoint: https://stagetelehealth.cmcludhiana.in/api/v2/doctor/medicines
-        console.log("Fetching medicines with token and search:", { searchQuery, hasToken: !!token });
+        // console.log("Fetching medicines with token and search:", { searchQuery, hasToken: !!token });
         const response = await api.get<MedicinesResponse>("/doctor/medicines", config);
 
-        console.log("Raw response:", response.data);
+        // console.log("Raw response:", response.data);
 
         // Try to extract medicines from the response
         let medicines: Medicine[] = [];
@@ -47,7 +47,7 @@ export const getMedicines = async (
         // First, try to get from response.data.data if it's an array
         if (response.data?.data && Array.isArray(response.data.data)) {
             medicines = response.data.data;
-            console.log("Got medicines from data array:", medicines.length);
+            // console.log("Got medicines from data array:", medicines.length);
         }
         // Second, try to get from indexed keys (0, 1, 2, etc.)
         else if (response.data) {
@@ -60,13 +60,13 @@ export const getMedicines = async (
                     }
                 }
             });
-            console.log("Got medicines from indexed keys:", medicines.length);
+            // console.log("Got medicines from indexed keys:", medicines.length);
         }
 
-        console.log("Successfully fetched medicines:", medicines.length);
+        // console.log("Successfully fetched medicines:", medicines.length);
         return medicines;
     } catch (error) {
-        console.error("Error fetching medicines:", error);
+        // console.error("Error fetching medicines:", error);
         throw error;
     }
 };

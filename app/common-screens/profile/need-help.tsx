@@ -1,11 +1,13 @@
 import Input from "@/components/form/Input";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
-import useApi from "@/hooks/useApi";
+import { useAuth } from "@/context/UserContext";
+import { useContactUs } from "@/mutations/common/useContactUs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Alert, View } from "react-native";
 import * as z from "zod";
+
 
 // Validation schema
 const needHelpSchema = z.object({
@@ -33,23 +35,27 @@ const needHelpSchema = z.object({
 type NeedHelpFormData = z.infer<typeof needHelpSchema>;
 
 const NeedHelp = () => {
-  const { data, error, loading, fetchData } = useApi<{
-    data: {};
-    message?: string;
-  }>("post", `${process.env.EXPO_PUBLIC_API_BASE_URL}/contact-us`, {
-    headers: {
-      Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-      Accept: "application/json",
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  // const { data, error, loading, fetchData } = useApi<{
+  //   data: {};
+  //   message?: string;
+  // }>("post", `${process.env.EXPO_PUBLIC_API_BASE_URL}/contact-us`, {
+  //   headers: {
+  //     Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
+  //     Accept: "application/json",
+  //     "Content-Type": "multipart/form-data",
+  //   },
+  // });
+
+  const { mutate: sendMessage, isPending } = useContactUs();
+  const { user } = useAuth();
+  const userId = user?.id || "";
 
   const methods = useForm<NeedHelpFormData>({
     resolver: zodResolver(needHelpSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
-      email: "",
+      email: user?.email ?? "",
       message: "",
     },
     mode: "onBlur",
@@ -57,31 +63,55 @@ const NeedHelp = () => {
 
   const { handleSubmit, reset } = methods;
 
-  const onSubmit = async (formData: NeedHelpFormData) => {
-    try {
-      const payload = new FormData();
+  // const onSubmit = async (formData: NeedHelpFormData) => {
+  //   try {
+  //     const payload = new FormData();
 
-      payload.append("first_name", formData.firstName);
-      payload.append("last_name", formData.lastName);
-      payload.append("email", formData.email);
-      payload.append("message", formData.message);
+  //     payload.append("first_name", formData.firstName);
+  //     payload.append("last_name", formData.lastName);
+  //     payload.append("email", formData.email);
+  //     payload.append("message", formData.message);
 
-      // Optional
-      // payload.append("user_id", userId);
+  //     // Optional
+  //     // payload.append("user_id", userId);
 
-      await fetchData({
-        data: payload,
-      });
+  //     await fetchData({
+  //       data: payload,
+  //     });
 
-      Alert.alert("Success", data?.message, [
-        { text: "OK", onPress: () => reset() },
-      ]);
-    } catch (error) {
-      Alert.alert("Error", "Failed to send message.");
-    }
+  //     Alert.alert("Success", data?.message, [
+  //       { text: "OK", onPress: () => reset() },
+  //     ]);
+  //   } catch (error) {
+  //     Alert.alert("Error", "Failed to send message.");
+  //   }
 
-    console.log("API Response:", data);
+  //   console.log("API Response:", data);
+  // };
+
+  const onSubmit = (formData: NeedHelpFormData) => {
+    sendMessage(
+      {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: user?.email,
+        message: formData.message,
+        user_id: userId,
+      },
+      {
+        onSuccess: (res) => {
+          console.log("Response:", res);
+          Alert.alert("Success", res.message);
+          reset();
+        },
+        onError: (res) => {
+          console.log("Response:", res);
+          Alert.alert("Error", "Failed to send message");
+        },
+      }
+    );
   };
+
 
   return (
     <View className="flex-1 bg-white p-5">
@@ -101,15 +131,16 @@ const NeedHelp = () => {
           autoCapitalize="words"
           containerClassName="mt-5"
         />
-        <Input
-          name="email"
-          control={methods.control}
-          label="Email"
-          placeholder="your.email@example.com"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          containerClassName="mt-5"
-        />
+        <View pointerEvents="none">
+          <Input
+            name="email"
+            control={methods.control}
+            label="Email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            containerClassName="mt-5 opacity-40"
+          />
+        </View>
         <TextArea
           name="message"
           label="Message"

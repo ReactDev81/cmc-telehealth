@@ -31,7 +31,7 @@ const MedicineAccordian: React.FC<Props> = ({
     index,
 }) => {
     const [expanded, setExpanded] = useState<boolean>(defaultExpanded);
-    console.log("Medicine in Accordian:", medicine);
+    // console.log("Medicine in Accordian:", medicine);
 
     const toggle = useCallback(() => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -46,9 +46,11 @@ const MedicineAccordian: React.FC<Props> = ({
     // const timesText = medicineTimes || medicine.times || "";
 
     const medicineName = medicine.name || "";
-    const medicineFrequency = medicine.frequencylabel || "";
+    const medicineFrequency = (medicine.frequencylabel && medicine.frequencylabel !== "N/A") ? medicine.frequencylabel : (medicine.frequency || "");
     const medicineDate = medicine.date || "";
-    const medicineInstructions = medicine.instructions || "";
+    const medicineInstructions = Array.isArray(medicine.instructions)
+        ? medicine.instructions.join(", ")
+        : (medicine.instructions || "");
     const medicineStatus = medicine.status || "";
     const medicineTimes = medicine.times || "";
     const medicineDosage = medicine.dosage || "";
@@ -66,10 +68,14 @@ const MedicineAccordian: React.FC<Props> = ({
                 accessibilityRole="button"
                 accessibilityState={{ expanded }}
             >
-                <Text className="text-base font-medium text-black">
-                    {number}
-                    {medicineName}
-                </Text>
+                <View className="flex-row items-center gap-x-2">
+                    <Text className="text-base font-medium text-black">
+                        {number}
+                    </Text>
+                    <Text className="text-base font-medium text-black">
+                        {medicineName} ({medicineDosage})
+                    </Text>
+                </View>
 
                 <View className="ml-3">
                     {expanded ? (
@@ -88,7 +94,7 @@ const MedicineAccordian: React.FC<Props> = ({
                         </View>
                         <View className="flex-1">
                             <Text className="text-sm font-medium text-black">
-                                {medicineDosage}, {medicineFrequency}
+                                {medicineFrequency}
                             </Text>
                             <Text className="text-xs text-[#6B6B6B] mt-1">
                                 {medicineTimes} ({medicineInstructions})

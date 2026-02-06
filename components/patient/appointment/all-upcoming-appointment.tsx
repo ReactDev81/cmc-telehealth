@@ -1,5 +1,5 @@
 import { Appointment } from "@/app/(patient)/appointments";
-import { FlatList, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import UpcomingAppointments from "./upcoming-appointments";
 
 const AllUpcomingAppointment = ({ appointments }: { appointments: Appointment[] }) => {
@@ -14,10 +14,10 @@ const AllUpcomingAppointment = ({ appointments }: { appointments: Appointment[] 
                 image={item.doctor.avatar ? { uri: item.doctor.avatar } : require("../../../assets/images/demo.jpg")}
                 name={item.doctor.name}
                 speciality={item.doctor.department}
-                rating={0}
                 consultation_type={item.consultation_type_label}
                 consultation_fee={item.fee_amount}
-                experience={""}
+                experience={item.doctor.years_experience}
+                average_rating={item.doctor.average_rating}
                 date={item.appointment_date_formatted}
                 time={item.appointment_time_formatted}
                 call_now={item.call_now}
@@ -33,6 +33,11 @@ const AllUpcomingAppointment = ({ appointments }: { appointments: Appointment[] 
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => <View className="h-5" />}
+            ListEmptyComponent={
+                <View className="flex-1 items-center justify-center py-20">
+                    <Text className="text-black-400 text-base">No upcoming appointments</Text>
+                </View>
+            }
         />
     )
 }

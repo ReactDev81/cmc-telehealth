@@ -77,7 +77,7 @@ const useAxios = <T = unknown>(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<number | null>(null);
-  
+
   const optionsRef = useRef(initialOptions);
   optionsRef.current = initialOptions;
   const requestIdRef = useRef(0);
@@ -86,14 +86,14 @@ const useAxios = <T = unknown>(
   const fetchData = useCallback(
     async (requestData: AxiosRequestConfig = {}) => {
       const requestId = ++requestIdRef.current;
-      
+
       // Cancel previous request if still pending
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      
+
       abortControllerRef.current = new AbortController();
-      
+
       setLoading(true);
       setError(null);
 
@@ -123,10 +123,10 @@ const useAxios = <T = unknown>(
         }
 
         const axiosError = err as AxiosError<{ message?: string }>;
-        
+
         if (requestId === requestIdRef.current) {
           let errorMessage = "Something went wrong. Please try again.";
-          
+
           if (axiosError.code === 'ECONNABORTED') {
             errorMessage = "Request is taking too long. Please try again.";
           } else if (axiosError.code === 'ERR_NETWORK') {
@@ -134,7 +134,7 @@ const useAxios = <T = unknown>(
           } else if (axiosError.response?.data?.message) {
             errorMessage = axiosError.response.data.message;
           }
-          
+
           setError(errorMessage);
           setStatus(axiosError.response?.status ?? null);
         }
@@ -144,7 +144,7 @@ const useAxios = <T = unknown>(
           code: axiosError.code,
           message: axiosError.message,
         });
-        
+
         throw axiosError;
       } finally {
         if (requestId === requestIdRef.current) {

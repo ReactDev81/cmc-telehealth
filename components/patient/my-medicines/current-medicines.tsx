@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/UserContext";
 import { usePrescriptions } from "@/queries/patient/usePrescriptions";
-import { FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import MedicineCard from "./medicine-card";
 
 const CurrentMedicines = () => {
@@ -11,8 +12,16 @@ const CurrentMedicines = () => {
     const { data, isLoading, error } = usePrescriptions(patient_id, "current");
     // console.log("x Data:", data?.data ?? []);
 
-    if (isLoading) return <Text>Loading...</Text>;
-    if (error) return <Text>Something went wrong</Text>;
+    if (isLoading) return (
+        <SafeAreaView className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="primary" />
+        </SafeAreaView>
+    );
+    if (error) return (
+        <SafeAreaView className="flex-1 items-center justify-center">
+            <Text className="text-black">Something went wrong</Text>
+        </SafeAreaView>
+    );
 
     const renderMedicines = ({ item }: { item: any }) => {
         return (
@@ -29,8 +38,13 @@ const CurrentMedicines = () => {
         <FlatList
             data={data?.data ?? []}
             renderItem={renderMedicines}
-            keyExtractor={(item) => item.prescription_id}
+            keyExtractor={(item, index) => item.prescription_id || index.toString()}
             ItemSeparatorComponent={() => <View className="h-5" />}
+            ListEmptyComponent={
+                <View className="flex-1 items-center justify-center py-20">
+                    <Text className="text-black-400 text-base">No current medicines</Text>
+                </View>
+            }
         />
     );
 };

@@ -13,7 +13,10 @@ const UpcomingAppointmentCard = ({
     return (
         <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
             <View className="w-24">
-                <Image source={image} className="w-full h-24 rounded-xl" />
+                <Image
+                    source={typeof image === 'string' ? { uri: image } : image}
+                    className="w-full h-24 rounded-xl"
+                />
             </View>
             <View className="flex-1">
                 <Text
@@ -36,7 +39,7 @@ const UpcomingAppointmentCard = ({
                 </View>
                 <View className="flex-row items-center gap-x-1 mt-2">
                     <View className="flex items-center justify-center w-8 h-8 bg-primary-200 rounded-full">
-                        {mode === "Video" ? (
+                        {mode?.toLowerCase() === "video" ? (
                             <Video size={14} className="text-black-400" />
                         ) : (
                             <Hospital size={14} className="text-black-400" />

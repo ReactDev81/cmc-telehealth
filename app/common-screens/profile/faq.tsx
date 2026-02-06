@@ -1,25 +1,10 @@
 import FAQAccordian from "@/components/common/faq/faq-accordian";
-import useApi from "@/hooks/useApi";
-import { FAQProps } from "@/types/live/patient/profile";
-import { useCallback, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { useAppProfileScreens } from "@/queries/common/useAppProfileScreens";
+import { useCallback, useState } from "react";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
 const Faq = () => {
-  const { data, error, loading, fetchData } = useApi<{
-    data: {
-      faq: FAQProps[];
-    };
-  }>("get", `${process.env.EXPO_PUBLIC_API_BASE_URL}/profile-others`, {
-    headers: {
-      Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-    },
-  });
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const faqData = data?.data.faq;
+  const { data, isLoading, error } = useAppProfileScreens();
 
   // singleOpen behavior: only one item open at a time
   const singleOpen = true;
@@ -46,17 +31,28 @@ const Faq = () => {
     [singleOpen]
   );
 
+  const faqData = data?.faq;
+  console.log("data: ", faqData)
+
   return (
     <View className="flex-1 bg-white p-5">
       <ScrollView>
-        {faqData?.map((item: FAQProps) => (
-          <FAQAccordian
-            key={item.title}
-            faq={item}
-            expanded={openId === item.title}
-            onToggle={handleToggle(item.title)}
-          />
-        ))}
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#013220" />
+        ) : error ? (
+          <Text className="text-red-500">{error.message || "Error loading FAQs"}</Text>
+        ) : faqData && faqData.length > 0 ? (
+          faqData.map((item) => (
+            <FAQAccordian
+              key={item.title}
+              faq={item}
+              expanded={openId === item.title}
+              onToggle={handleToggle(item.title)}
+            />
+          ))
+        ) : (
+          <Text>No FAQs available</Text>
+        )}
       </ScrollView>
     </View>
   );

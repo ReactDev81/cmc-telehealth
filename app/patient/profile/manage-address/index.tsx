@@ -48,26 +48,26 @@ const ManageAddress = () => {
                 );
                 return null;
             }
-          
+
             let loc = await Location.getCurrentPositionAsync({});
             setLocation(loc);
             return loc;
         } catch (error) {
-            console.error('Error getting current location', error);
+            // console.error('Error getting current location', error);
             Alert.alert(
                 'Unable to fetch location',
                 'We could not get your current location. Please try again, or choose a different location.'
             );
             return null;
         }
-    };      
+    };
 
     const handleCurrentLocation = async () => {
         if (loading) return;
         setLoading(true);
         try {
             const loc = await getCurrentLocation();
-          
+
             if (loc) {
                 bottomSheetRef.current?.close();
                 setIsOpen(false);
@@ -89,7 +89,7 @@ const ManageAddress = () => {
         setLoading(true);
         try {
             const loc = await getCurrentLocation();
-          
+
             if (loc) {
                 bottomSheetRef.current?.close();
                 setIsOpen(false);
@@ -125,7 +125,7 @@ const ManageAddress = () => {
         }
     }, []);
 
-    return(
+    return (
         <GestureHandlerRootView style={{ flex: 1 }}>
 
             <View className='flex-1 bg-white p-5'>
@@ -134,7 +134,7 @@ const ManageAddress = () => {
                     <Button
                         icon={<CirclePlus color="#fff" size={18} />}
                         onPress={handleAddAddress}
-                    > 
+                    >
                         Add New Address
                     </Button>
                 </View>
@@ -150,7 +150,7 @@ const ManageAddress = () => {
                             <SquarePen size={16} color="#013220" />
                         </TouchableOpacity>
                     </View>
-                    
+
                     <View className='mt-2'>
                         <Text className='text-sm text-black-400'>364, Sector32A, Ludhiana, PUNJAB, 141010</Text>
                     </View>
@@ -172,9 +172,9 @@ const ManageAddress = () => {
                     handleIndicatorStyle={{ backgroundColor: '#ccc', width: 40 }}
                 >
                     <BottomSheetView style={{ flex: 1 }}>
-                        
+
                         {/* Header */}
-                        <View 
+                        <View
                             className='flex-row items-center justify-between p-5 pt-0'
                             style={{
                                 boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
@@ -189,7 +189,7 @@ const ManageAddress = () => {
                         <View className='pt-5 pb-14 px-5'>
 
                             {/* Current Location Button */}
-                            <Button 
+                            <Button
                                 icon={<LocateFixed color="#fff" size={18} />}
                                 onPress={handleCurrentLocation}
                                 disabled={loading}
@@ -205,7 +205,7 @@ const ManageAddress = () => {
                             </View>
 
                             {/* Choose Different Location Button */}
-                            <Button 
+                            <Button
                                 icon={<MapPin color="#1F1E1E" size={18} />}
                                 onPress={handleChooseDifferentLocation}
                                 variant='outline'

@@ -99,19 +99,28 @@
 // export default MedicinesDetail;
 
 import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
+import { useAuth } from "@/context/UserContext";
 // import { MedicinesData } from "@/json-data/patient/my-medicines";
 import { usePrescriptionDetail } from "@/queries/patient/usePrescriptionDetail";
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { Linking, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MedicinesDetail = () => {
+    const { token } = useAuth();
+    // console.log("token :", token);
     const { id } = useLocalSearchParams();
     const appointmentId = Array.isArray(id) ? id[0] : id;
+    // console.log("appointmentId :", appointmentId);
 
     const { data, isLoading, error } = usePrescriptionDetail(appointmentId);
 
-    const MedicinesData = data?.data || [];
+    const list = data?.data as any;
+    // console.log("list :", list);
+    const MedicinesData = list?.medicines || (Array.isArray(list) ? list : []);
+    const pdfUrl = list?.pdf_url;
+
+    // console.log("MedicinesData :", MedicinesData);
 
     // console.log("Medicine Detail Data:", data);
 
@@ -128,7 +137,7 @@ const MedicinesDetail = () => {
             <ScrollView className="flex-1 bg-white px-5">
                 {MedicinesData.map((med, index) => (
                     <MedicineAccordian
-                        key={index}
+                        key={med.prescription_id || index}
                         medicine={med}
                         defaultExpanded={true}
                         index={index}
@@ -149,6 +158,18 @@ const MedicinesDetail = () => {
                     <Text className="text-base font-medium text-black">Next Visit: </Text>
                     <Text className="text-base text-black-400">2025-02-10 Tusday</Text>
                 </View>
+
+                {pdfUrl && (
+                    <TouchableOpacity
+                        onPress={() => Linking.openURL(pdfUrl)}
+                        className="flex-row items-center gap-x-2 mb-5"
+                    >
+                        <Text className="text-base font-medium text-black">Prescription:</Text>
+                        <Text className="text-base text-blue-600 underline">
+                            View/Download PDF
+                        </Text>
+                    </TouchableOpacity>
+                )}
 
                 {/* <View className="mt-3 pb-14">
                 <Text className="text-base font-medium text-black mb-3">

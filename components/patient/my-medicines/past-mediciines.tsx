@@ -1,5 +1,7 @@
 import { useAuth } from "@/context/UserContext";
 import { usePrescriptions } from "@/queries/patient/usePrescriptions";
+import { useIsFocused } from "@react-navigation/native";
+import { useEffect } from "react";
 import { FlatList, Text, View } from "react-native";
 import MedicineCard from "./medicine-card";
 
@@ -7,7 +9,15 @@ const PastMedicines = () => {
     const { user } = useAuth();
     const patient_id = user?.patientId as string;
 
-    const { data, isLoading, error } = usePrescriptions(patient_id, "past");
+    const isFocused = useIsFocused();
+    const { data, isLoading, error, refetch } = usePrescriptions(patient_id, "past");
+
+    // Refetch prescriptions when component comes into focus
+    useEffect(() => {
+        if (isFocused) {
+            refetch();
+        }
+    }, [isFocused, refetch]);
 
     if (isLoading) return <Text>Loading...</Text>;
     if (error) return <Text>Something went wrong</Text>;
@@ -27,8 +37,13 @@ const PastMedicines = () => {
         <FlatList
             data={data?.data ?? []}
             renderItem={renderMedicines}
-            keyExtractor={(item) => item.prescription_id}
+            keyExtractor={(item, index) => item.prescription_id || index.toString()}
             ItemSeparatorComponent={() => <View className="h-5" />}
+            ListEmptyComponent={
+                <View className="flex-1 items-center justify-center py-20">
+                    <Text className="text-black-400 text-base">No past medicines</Text>
+                </View>
+            }
         />
     );
 };

@@ -72,7 +72,7 @@ const AppointementDetails = () => {
                         </View>
                         <View className="flex-1">
                             <Text className="text-base font-medium text-black">
-                                {doctor?.years_experience}
+                                {typeof doctor?.years_experience === 'string' ? doctor?.years_experience : ''}
                             </Text>
                             <Text className="text-xs text-black-400 mt-1">
                                 Work Experience
@@ -135,11 +135,11 @@ const AppointementDetails = () => {
                                 {patient?.gender_formatted}
                             </Text>
                         </View>
-                        {notes && (
+                        {notes?.problem && (
                             <View className="flex-row items-center justify-between mt-3">
                                 <Text className="text-sm text-black-400">Problem</Text>
                                 <Text className="text-sm font-medium text-black-400">
-                                    {notes}
+                                    {notes.problem}
                                 </Text>
                             </View>
                         )}

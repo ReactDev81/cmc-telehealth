@@ -12,25 +12,37 @@ import { useIsFocused } from "@react-navigation/native";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Home = () => {
     const insets = useSafeAreaInsets();
     const isFocused = useIsFocused();
 
     const { token } = useAuth();
+    // console.log("token: ", token)
     // console.log("🏥 Doctor Home Token:", token);
 
     const { data, isLoading, isError } = useDoctorDashboard(token!);
 
-    if (isLoading) return <ActivityIndicator />;
-    if (isError) return <Text>Error loading dashboard</Text>;
-    if (!data) return <Text>No data available</Text>;
+    if (isLoading) return <SafeAreaView className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="primary" />
+    </SafeAreaView>;
+    if (isError) return <SafeAreaView className="flex-1 items-center justify-center">
+        <Text className="text-black">Error loading dashboard</Text>
+    </SafeAreaView>;
+    if (!data) return <SafeAreaView className="flex-1 items-center justify-center">
+        <Text className="text-black">No data available</Text>
+    </SafeAreaView>;
 
     const summary = data.summary;
     const todays = data.todays_appointments;
     const upcoming = data.upcoming_appointments;
+    // console.log("upcomming: ", upcoming)
     const reviews = data.doctor_reviews;
+
+    // if (todays.length === 0) {
+    //     return <Text>No appointments today</Text>;
+    // }
 
     const appointmentStatusData = [
         {
@@ -77,17 +89,21 @@ const Home = () => {
                         link="/appointments"
                         link_text="See All"
                     />
-                    {todays.slice(0, 2).map((item) => (
-                        <View key={item.id} className="mt-5">
-                            <TodayAppointmentCard
-                                appointmentId={item.id}
-                                image={item.patient_image}
-                                name={item.patient_name}
-                                time={item.time}
-                                mode={item.consultation_type}
-                            />
-                        </View>
-                    ))}
+                    {todays.length === 0 ? (
+                        <Text className="text-center text-gray-500 mt-5">No appointments today</Text>
+                    ) : (
+                        todays.slice(0, 2).map((item) => (
+                            <View key={item.id} className="mt-5">
+                                <TodayAppointmentCard
+                                    appointmentId={item.id}
+                                    image={item.patient_image}
+                                    name={item.patient_name}
+                                    time={item.time}
+                                    mode={item.consultation_type}
+                                />
+                            </View>
+                        ))
+                    )}
                 </View>
 
                 {/* today's appointement */}

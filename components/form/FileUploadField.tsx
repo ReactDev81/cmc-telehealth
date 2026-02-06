@@ -32,7 +32,7 @@ const FileUploadField = ({ name, control, label, className }: any) => {
         });
       }
     } catch (err) {
-      console.error("File picking error:", err);
+      // console.error("File picking error:", err);
     } finally {
       isPickingRef.current = false; // 🔓 unlock
     }
@@ -45,9 +45,8 @@ const FileUploadField = ({ name, control, label, className }: any) => {
       <TouchableOpacity
         onPress={handlePickFile}
         disabled={isPickingRef.current} // 🔒 disable UI
-        className={`border rounded-lg py-3 px-4 ${
-          error ? "border-red-500" : "border-gray-300"
-        }`}
+        className={`border rounded-lg py-3 px-4 ${error ? "border-red-500" : "border-gray-300"
+          }`}
       >
         <Text>{value?.name || "Choose File"}</Text>
       </TouchableOpacity>

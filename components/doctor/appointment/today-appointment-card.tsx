@@ -14,7 +14,10 @@ const TodayAppointmentCard = ({
     return (
         <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
             <View className="w-24">
-                <Image source={image} className="w-full h-24 rounded-xl" />
+                <Image
+                    source={typeof image === 'string' ? { uri: image } : image}
+                    className="w-full h-24 rounded-xl"
+                />
             </View>
             <View className="flex-1">
                 {/* <Text className={`text-xs text-success bg-success-400 capitalize font-medium w-fit p-2 rounded-md absolute right-0`}>

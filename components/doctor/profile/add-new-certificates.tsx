@@ -1,7 +1,9 @@
-import DateField from "@/components/form/date";
 import FileUploadField from "@/components/form/FileUploadField";
 import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/UserContext";
+import { useUpdateDoctorProfile } from "@/queries/doctor/useUpdateDoctorProfile";
+import { CertificationInfo } from "@/types/live/doctor/profile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from 'lucide-react-native';
 import { useForm } from 'react-hook-form';
@@ -9,41 +11,82 @@ import { Alert, Pressable, Text, View } from "react-native";
 import { z } from "zod";
 
 const CertificatesSchema = z.object({
-    degree: z.string().min(2, "Degree must be at least 2 characters long"),
-    institution: z.string().min(2, "Institutionn Name must be at least 2 characters long"),
-    collage_address: z.string().min(2, "Collage Address is required"),
-    compliance_year: z.date({ required_error: "Compliance Year is required" }).nullable(),
-    upload_file: z.any().refine((file) => !!file, "Upload File is required"),
+    name: z.string().min(2, "Certificate Name must be at least 2 characters long"),
+    organization: z.string().min(2, "Organization Name must be at least 2 characters long"),
+    certification_image: z.any().refine((file) => !!file, "Certificate image is required"),
 });
-  
-type EducationHistoryFormData = z.infer<typeof CertificatesSchema>;
 
-const AddNewCertificates = ({ onClose }: { onClose: () => void }) => {
+type CertificatesFormData = z.infer<typeof CertificatesSchema>;
 
-    const { control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<EducationHistoryFormData>({
+const AddNewCertificates = ({
+    existingCertificates = [],
+    onClose
+}: {
+    existingCertificates?: CertificationInfo[],
+    onClose: () => void
+}) => {
+    const { user } = useAuth();
+    const doctorID = user?.id || "";
+
+    const { mutate: updateProfile, isPending } = useUpdateDoctorProfile(doctorID, "certifications_info");
+
+    const { control, handleSubmit, reset, formState: { errors } } = useForm<CertificatesFormData>({
         resolver: zodResolver(CertificatesSchema),
         defaultValues: {
-            degree: '',
-            institution: '',
-            collage_address: '',
-            compliance_year: null,
-            upload_file: null,
+            name: '',
+            organization: '',
+            certification_image: null,
         }
     });
 
-    const compliance_year = watch('compliance_year');
+    const onSubmit = (data: CertificatesFormData) => {
+        const fd = new FormData();
 
-    const onSubmit = (data: any) => {
-        console.log(data);
-        Alert.alert("Success", "New Certificate saved successfully!");
-        reset();
-        onClose();
+        // Append existing certificates
+        existingCertificates.forEach((cert, index) => {
+            fd.append(`certifications_info[${index}][name]`, cert.name);
+            fd.append(`certifications_info[${index}][organization]`, cert.organization);
+            fd.append(`certifications_info[${index}][certification_image]`, cert.certification_image);
+        });
+
+        // Append new certificate
+        const nextIndex = existingCertificates.length;
+        fd.append(`certifications_info[${nextIndex}][name]`, data.name);
+        fd.append(`certifications_info[${nextIndex}][organization]`, data.organization);
+
+        if (data.certification_image) {
+            const uri = data.certification_image.uri;
+            const fileName = data.certification_image.name || uri.split("/").pop() || "certificate.jpg";
+            const match = /\.([0-9a-z]+)(?:\?|$)/i.exec(fileName);
+            const fileType = match ? `image/${match[1]}` : "image/jpeg";
+
+            // @ts-ignore
+            fd.append(`certifications_info[${nextIndex}][certification_image]`, {
+                uri,
+                name: fileName,
+                type: fileType
+            });
+        }
+
+        fd.append("group", "certifications_info");
+
+        updateProfile(fd, {
+            onSuccess: () => {
+                Alert.alert("Success", "Certificate added successfully!");
+                reset();
+                onClose();
+            },
+            onError: (error: any) => {
+                console.log(error);
+                Alert.alert("Error", error?.response?.data?.message || "Something went wrong while saving certificate");
+            }
+        });
     }
 
-    return(
+    return (
         <View className="p-5 bg-white rounded-xl">
 
-            {/* headet */}
+            {/* header */}
             <View className="flex-row items-center justify-between">
                 <Text className="text-black text-lg font-semibold">Add New Certificates</Text>
                 <Pressable onPress={onClose}>
@@ -55,44 +98,30 @@ const AddNewCertificates = ({ onClose }: { onClose: () => void }) => {
             <View className="mt-5">
 
                 <Input
-                    name="degree"
-                    label="Degree"
+                    name="name"
+                    label="Certificate Name"
+                    placeholder="e.g. Advanced Surgery"
                     control={control}
                 />
 
                 <Input
-                    name="institution"
-                    label="Institution"
+                    name="organization"
+                    label="Organization"
+                    placeholder="e.g. Medical Council"
                     control={control}
-                    containerClassName="mt-5" 
-                />
-
-                <Input
-                    name="collage_address"  
-                    label="Address of Collage"
-                    control={control}
-                    containerClassName="mt-5" 
-                />
-
-                <DateField
-                    label="Compliance Year"
-                    value={compliance_year}
-                    onChange={(date) => setValue('compliance_year', date ? new Date(date) : null, { shouldValidate: true })}
-                    placeholder="DD/MM/YYYY"
-                    maximumDate={new Date()}
-                    error={errors.compliance_year?.message}
-                    className="mt-5"
+                    containerClassName="mt-5"
                 />
 
                 <FileUploadField
-                    name="upload_file"
+                    name="certification_image"
                     control={control}
-                    label="Upload File"
+                    label="Upload Certificate Image"
                     className="mt-5"
+                    error={errors.certification_image?.message as string}
                 />
 
-                <Button onPress={handleSubmit(onSubmit)} className="mt-5">
-                    Add Education 
+                <Button onPress={handleSubmit(onSubmit)} className="mt-5" disabled={isPending}>
+                    {isPending ? "Adding..." : "Add Certificate"}
                 </Button>
             </View>
 

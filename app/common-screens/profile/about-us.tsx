@@ -1,29 +1,15 @@
-import useApi from "@/hooks/useApi";
-import { aboutProps } from "@/types/live/patient/profile";
-import { useEffect } from "react";
-import { ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { useAppProfileScreens } from "@/queries/common/useAppProfileScreens";
+import { ActivityIndicator, ScrollView, Text, View, useWindowDimensions } from "react-native";
 import RenderHTML from "react-native-render-html";
 
 const AboutUs = () => {
   const { width } = useWindowDimensions();
-  const { data, error, loading, fetchData } = useApi<{
-    data: {
-      about_us: aboutProps;
-    };
-  }>("get", `${process.env.EXPO_PUBLIC_API_BASE_URL}/profile-others`, {
-    headers: {
-      Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-    },
-  });
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data, isLoading, error } = useAppProfileScreens();
 
   const tagsStyles = {
     h3: {
       fontSize: 16,
-      fontWeight: "500",
+      fontWeight: "500" as const,
       color: "#013220",
       marginTop: 16,
       marginBottom: 6,
@@ -42,84 +28,22 @@ const AboutUs = () => {
       marginBottom: 8,
     },
     strong: {
-      fontWeight: "500",
+      fontWeight: "500" as const,
       color: "#1F1E1E",
     },
   };
 
-  const aboutUsData = data?.data.about_us;
+  const aboutUsData = data?.about_us;
+  console.log("data: ", aboutUsData);
+
   return (
     <ScrollView className="flex-1 bg-white p-5">
-      {loading ? (
-        <Text>Loading...</Text>
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#013220" />
+      ) : error ? (
+        <Text className="text-red-500">{error.message || "Error loading content"}</Text>
       ) : aboutUsData ? (
         <View className="mb-14">
-          {/* <Text className="text-base text-black font-medium">
-            Know more about us, we are more than a hospital
-          </Text>
-
-          <View className="mt-5">
-            <Text className="text-base text-black font-medium">
-              Who we are?
-            </Text>
-            <Text className="text-sm leading-6 text-black-400 mt-2.5">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been industry's standard dummy text ever
-              since the when an unknown printer took a galley of type and
-              scrambled it to make a type specimen book. It is a long
-              established fact that a reader will be distracted by the readable
-              content of a page when.
-            </Text>
-          </View>
-
-          <View className="mt-5">
-            <Text className="text-base text-black font-medium">
-              What we do?
-            </Text>
-            <Text className="text-sm leading-6 text-black-400 mt-2.5">
-              The point of using Lorem Ipsum is that it has a more-or-less
-              normal distribution of letters, as opposed to using 'Content here,
-              content here', making it look like readable English. Many desktop
-              publishing.
-            </Text>
-
-            <View className="flex-row gap-x-2 mt-5">
-              <View className="w-1 h-1 rounded-full bg-black-400 mt-2.5"></View>
-              <Text className="text-sm text-black-400 font-medium leading-6">
-                Lorem Ipsum:
-                <Text className=" font-normal">
-                  {" "}
-                  is simply dummy text of the and typesetting industry 1500s,
-                  when an unknown printer took a galley of type and scrambled
-                </Text>
-              </Text>
-            </View>
-
-            <View className="flex-row gap-x-2 mt-5">
-              <View className="w-1 h-1 rounded-full bg-black-400 mt-2.5"></View>
-              <Text className="text-sm text-black-400 font-medium leading-6">
-                Contrary:
-                <Text className=" font-normal">
-                  {" "}
-                  popular belief, Lorem Ipsum is not simply random text. It has
-                  roots in a piece of classical Latin literature from.
-                </Text>
-              </Text>
-            </View>
-
-            <View className="flex-row gap-x-2 mt-5">
-              <View className="w-1 h-1 rounded-full bg-black-400 mt-2.5"></View>
-              <Text className="text-sm text-black-400 font-medium leading-6">
-                Variations:
-                <Text className=" font-normal">
-                  {" "}
-                  There are many variations of passages of Lorem Ipsum
-                  available, but the majority have suffered alteration in some
-                  form, by injected.
-                </Text>
-              </Text>
-            </View>
-          </View> */}
           <RenderHTML
             source={{ html: aboutUsData }}
             contentWidth={width}
@@ -127,7 +51,7 @@ const AboutUs = () => {
           />
         </View>
       ) : (
-        <Text>{error}</Text>
+        <Text>No content available</Text>
       )}
     </ScrollView>
   );

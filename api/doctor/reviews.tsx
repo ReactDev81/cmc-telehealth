@@ -1,18 +1,11 @@
 import api from "@/lib/axios";
-import { Review, ReviewPagination } from "@/types/doctor/review";
+import { ReviewsResponse } from "@/types/live/doctor/feedback";
 
-export const fetchReviews = async (token: string) => {
+export const fetchReviews = async (token: string, page: number = 1, per_page: number = 5) => {
   const res = await api.get(`/reviews/my`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
+    params: { page, per_page }
   });
 
-  const raw = res.data;
-
-  const reviews: Review[] = Object.keys(raw)
-    .filter(key => !isNaN(Number(key))) // filter 0,1,2...
-    .map(key => raw[key]);
-
-  const pagination: ReviewPagination = raw.pagination;
-
-  return { reviews, pagination };
+  return res.data as ReviewsResponse;
 };

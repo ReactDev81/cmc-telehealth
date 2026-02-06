@@ -1,10 +1,10 @@
 import { ImageSourcePropType } from "react-native";
 
 export interface appointmentProps {
-  id?: number;
+  id?: string | number;
   appointmentId?: string;
   status?: string;
-  image?: ImageSourcePropType;
+  image?: ImageSourcePropType | string;
   name: string;
   mode: string;
   date?: string;

@@ -49,7 +49,7 @@ const EditPersonalInformation = () => {
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        
+
         if (status !== 'granted') {
             Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to upload images.');
             return;
@@ -70,7 +70,7 @@ const EditPersonalInformation = () => {
 
     const takePhoto = async () => {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        
+
         if (status !== 'granted') {
             Alert.alert('Permission Denied', 'Sorry, we need camera permissions to take photos.');
             return;
@@ -107,17 +107,17 @@ const EditPersonalInformation = () => {
     ];
 
     const onSubmit = (data: PersonalInfoFormData) => {
-        console.log('Form Data:', data);
+        // console.log('Form Data:', data);
         Alert.alert('Success', 'Personal information saved successfully!');
     };
 
-    return(
+    return (
         <ScrollView className="flex-1 bg-white p-5">
 
             {/* upload image */}
             <View className="max-w-32 w-full mx-auto items-center justify-center relative">
-                <Image 
-                    source={isImageUri ? profileImage : profileImage} 
+                <Image
+                    source={isImageUri ? profileImage : profileImage}
                     className="w-32 h-32 rounded-full"
                     resizeMode="cover"
                 />
@@ -134,13 +134,13 @@ const EditPersonalInformation = () => {
             <View className="max-w-[350px] w-full mx-auto bg-white p-5 rounded-xl shadow-custom mt-10">
 
                 <View className="mb-5">
-                    <Input 
+                    <Input
                         name="firstName"
                         control={control}
                         label="First Name"
                         placeholder="Enter First Name"
                     />
-                    <Input 
+                    <Input
                         name="lastName"
                         control={control}
                         label="Last Name"

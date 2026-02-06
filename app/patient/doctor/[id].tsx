@@ -13,30 +13,36 @@ import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Image,
-    ImageSourcePropType,
     ScrollView,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from "react-native";
 import DoctorSchedule from "../../../components/patient/doctor-profile/doctor-schedule";
 
 interface DoctorProps {
     id: string;
-    first_name: string;
-    last_name: string;
-    name: string;
-    avatar: ImageSourcePropType;
-    departments: { name: string; role?: string; order?: number }[];
-    years_experience: string;
-    bio: string;
-    education_info: {
+    profile?: {
+        name: string;
+        department: string;
+        years_experience: string;
+        avatar?: string;
+    };
+    about?: {
+        bio: string;
+        description?: string;
+    };
+    education?: {
         degree: string;
         institution: string;
-        start_date: string;
-        end_date: string;
+        start_date?: string;
+        end_date?: string;
     }[];
-    languages?: string;
+    languages?: string | string[];
+    review_summary?: {
+        average_rating: number;
+        total_reviews: number;
+    };
     appointment_types?: {
         video?: boolean;
         in_person?: boolean;
@@ -57,9 +63,6 @@ const DoctorDetail = () => {
         }
     );
     const doctor = data?.data;
-    console.log("Doctor Detail Params:", { consultation_type, booking_type, consultation_opd_type });
-
-    // console.log("Doctor Data Fetching:", data);
 
     const [appointementType, setAppointementType] = useState<"video" | "in_person" | null>(null);
     const [opdType, setOpdType] = useState<"general" | "private" | null>(null);
@@ -250,27 +253,43 @@ const DoctorDetail = () => {
                 </View>
 
                 {/* Languages */}
-                <View className="mt-6">
-                    <Text className="text-lg font-medium text-black">Languages</Text>
-                    {/* <View className="flex-row items-center gap-x-2.5 mt-3 flex-wrap">
-                        {doctor?.languages?.split(',').map((language, index) => (
-                            <View
-                                key={index}
-                                className="px-4 py-1.5 border border-gray bg-primary-100 rounded-3xl mb-1.5"
-                            >
-                                <Text className="text-sm text-black-400">
-                                    {language.trim().charAt(0).toUpperCase() +
-                                        language.trim().slice(1)}
-                                </Text>
+                {(() => {
+                    const languages = doctor?.languages;
+                    if (!languages) return null;
+
+                    const languageArray = Array.isArray(languages)
+                        ? languages
+                        : typeof languages === 'string'
+                            ? languages.split(',')
+                            : [];
+
+                    if (languageArray.length === 0) return null;
+
+                    return (
+                        <View className="mt-6">
+                            <Text className="text-lg font-medium text-black">Languages</Text>
+                            <View className="flex-row items-center gap-x-2.5 mt-3 flex-wrap">
+                                {languageArray.map((language: string, index: number) => (
+                                    <View
+                                        key={index}
+                                        className="px-4 py-1.5 border border-gray bg-primary-100 rounded-3xl mb-1.5"
+                                    >
+                                        <Text className="text-sm text-black-400">
+                                            {typeof language === 'string'
+                                                ? language.trim().charAt(0).toUpperCase() + language.trim().slice(1)
+                                                : String(language)}
+                                        </Text>
+                                    </View>
+                                ))}
                             </View>
-                        ))}
-                    </View> */}
-                </View>
+                        </View>
+                    );
+                })()}
 
                 {/* Appointment Type */}
                 <View className="mt-6">
                     <Text className="text-lg font-medium text-black">
-                        Appointment type
+                        Select Appointment type
                         {booking_type === "reschedule" && (
                             <Text className="text-xs text-black-400 font-normal"> (Locked)</Text>
                         )}
@@ -282,16 +301,16 @@ const DoctorDetail = () => {
                                 onPress={() => setAppointementType("video")}
                                 activeOpacity={booking_type === "reschedule" && appointementType !== null ? 1 : 0.7}
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${appointementType === "video"
-                                    ? "border-primary"
+                                    ? "border-primary bg-primary"
                                     : "border-gray"
                                     } ${booking_type === "reschedule" && appointementType !== null && appointementType !== "video" ? "opacity-50" : ""}`}
                             >
                                 <Video
-                                    color={appointementType === "video" ? "#013220" : "#4D4D4D"}
+                                    color={appointementType === "video" ? "#fff" : "#4D4D4D"}
                                 />
                                 <Text
                                     className={`text-sm font-medium text-center mt-2 ${appointementType === "video"
-                                        ? "text-primary"
+                                        ? "text-white"
                                         : "text-black-400"
                                         }`}
                                 >
@@ -305,18 +324,18 @@ const DoctorDetail = () => {
                                 onPress={() => setAppointementType("in_person")}
                                 activeOpacity={booking_type === "reschedule" && appointementType !== null ? 1 : 0.7}
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${appointementType === "in_person"
-                                    ? "border-primary"
+                                    ? "border-primary bg-primary"
                                     : "border-gray"
                                     } ${booking_type === "reschedule" && appointementType !== null && appointementType !== "in_person" ? "opacity-50" : ""}`}
                             >
                                 <Hospital
                                     color={
-                                        appointementType === "in_person" ? "#013220" : "#4D4D4D"
+                                        appointementType === "in_person" ? "#fff" : "#4D4D4D"
                                     }
                                 />
                                 <Text
                                     className={`text-sm font-medium text-center mt-2 ${appointementType === "in_person"
-                                        ? "text-primary"
+                                        ? "text-white"
                                         : "text-black-400"
                                         }`}
                                 >
@@ -342,13 +361,13 @@ const DoctorDetail = () => {
                                 onPress={() => setOpdType("general")}
                                 activeOpacity={booking_type === "reschedule" && opdType !== null && opdType !== "general" ? 1 : 0.7}
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "general"
-                                    ? "border-primary bg-primary-100"
+                                    ? "border-primary bg-primary"
                                     : "border-gray"
                                     } ${booking_type === "reschedule" && opdType !== null && opdType !== "general" ? "opacity-50" : ""}`}
                             >
                                 <Text
                                     className={`text-sm font-medium text-center ${opdType === "general"
-                                        ? "text-primary"
+                                        ? "text-white"
                                         : "text-black-400"
                                         }`}
                                 >
@@ -360,13 +379,13 @@ const DoctorDetail = () => {
                                 onPress={() => setOpdType("private")}
                                 activeOpacity={booking_type === "reschedule" && opdType !== null && opdType !== "private" ? 1 : 0.7}
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "private"
-                                    ? "border-primary bg-primary-100"
+                                    ? "border-primary bg-primary"
                                     : "border-gray"
                                     } ${booking_type === "reschedule" && opdType !== null && opdType !== "private" ? "opacity-50" : ""}`}
                             >
                                 <Text
                                     className={`text-sm font-medium text-center ${opdType === "private"
-                                        ? "text-primary"
+                                        ? "text-white"
                                         : "text-black-400"
                                         }`}
                                 >

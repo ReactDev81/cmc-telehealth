@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { router } from 'expo-router';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Bell, ChevronDown } from 'lucide-react-native';
 import SearchBar from '@/components/form/search';
+import { router } from 'expo-router';
+import { Bell, ChevronDown } from 'lucide-react-native';
+import { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 interface HeaderProps {
     insets?: { top?: number };
@@ -13,7 +13,7 @@ const Header = ({ insets }: HeaderProps) => {
     const [location, setLocation] = useState('Ludhiana 141001');
 
     return (
-        <View 
+        <View
             className="bg-primary px-4 pb-5"
             style={{
                 paddingTop: insets?.top ?? 0,
@@ -43,7 +43,7 @@ const Header = ({ insets }: HeaderProps) => {
             </View>
 
             {/* Search Bar */}
-            <SearchBar 
+            <SearchBar
                 variant="primary"
                 placeholder="Search for Doctors / Specialist"
             />

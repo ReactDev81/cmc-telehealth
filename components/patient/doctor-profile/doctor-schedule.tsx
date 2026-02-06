@@ -1,5 +1,6 @@
 import { useBookAppointment } from "@/mutations/patient/useBookAppointment";
 import { useRescheduleAppointment } from "@/mutations/patient/useRescheduleAppointment";
+import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -61,6 +62,7 @@ type DoctorScheduleProps = {
 
 const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, appointmentIdToReschedule, initialSelectedDate, initialSelectedTime, canReschedule, appointmentStatus }: DoctorScheduleProps) => {
 
+  const queryClient = useQueryClient();
   const availability = doctorData?.data?.availability ?? [];
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
@@ -68,10 +70,10 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
   const [rescheduleError, setRescheduleError] = useState<string | null>(null);
   const { mutate: submitBooking, isPending } = useBookAppointment();
   const { mutate: submitReschedule, isPending: isReschedulePending } = useRescheduleAppointment();
-  const [rescheduleModalVisible, setRescheduleModalVisible] = useState(false);
-  const [rescheduleModalMessage, setRescheduleModalMessage] = useState<string | null>(null);
-  const [rescheduleModalSuccess, setRescheduleModalSuccess] = useState<boolean | null>(null);
-  const [rescheduleRouteParams, setRescheduleRouteParams] = useState<any>(null);
+  const [resultModalVisible, setResultModalVisible] = useState(false);
+  const [resultModalMessage, setResultModalMessage] = useState<string | null>(null);
+  const [resultModalSuccess, setResultModalSuccess] = useState<boolean | null>(null);
+  const [resultRouteParams, setResultRouteParams] = useState<any>(null);
 
   // console.log('booking', bookingData);
 
@@ -233,8 +235,13 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
         },
         {
           onSuccess: (response) => {
-            console.log("Reschedule Success:", response);
+            // console.log("Reschedule Success:", response);
             setRescheduleError(null);
+
+            // Invalidate appointment queries to refresh data
+            queryClient.invalidateQueries({
+              queryKey: ["appointment"],
+            });
 
             // Prepare route params to navigate after user dismisses modal
             const params = {
@@ -255,21 +262,23 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
               },
             };
 
-            setRescheduleRouteParams(params);
-            setRescheduleModalMessage(response?.message ?? "Appointment rescheduled successfully.");
-            setRescheduleModalSuccess(true);
-            setRescheduleModalVisible(true);
+            setResultRouteParams(params);
+            setResultModalMessage(response?.message ?? "Appointment rescheduled successfully.");
+            setResultModalSuccess(true);
+            setResultModalVisible(true);
           },
           onError: (error: any) => {
-            console.log("Reschedule Failed:", error?.response?.data || error);
-            const errorMsg = error?.response?.data?.errors?.appointment?.[0] ||
-              error?.response?.data?.message ||
+            // console.log("Reschedule Failed:", error?.response?.data || error);
+            const errorData = error?.response?.data;
+            const errorMsg = errorData?.errors?.appointment?.[0] ||
+              (Array.isArray(errorData?.errors) ? errorData.errors[0] : null) ||
+              errorData?.message ||
               "Failed to reschedule appointment. Please try again.";
             setRescheduleError(errorMsg);
 
-            setRescheduleModalMessage(errorMsg);
-            setRescheduleModalSuccess(false);
-            setRescheduleModalVisible(true);
+            setResultModalMessage(errorMsg);
+            setResultModalSuccess(false);
+            setResultModalVisible(true);
           },
         }
       );
@@ -278,8 +287,14 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
 
       submitBooking(payload, {
         onSuccess: (response) => {
-          console.log("Booking Success:", response);
-          console.log("bookingId:", response?.data?.appointment?.id);
+          // console.log("Booking Success:", response);
+          // console.log("bookingId:", response?.data?.appointment?.id);
+
+          // Invalidate appointment queries to refresh data
+          queryClient.invalidateQueries({
+            queryKey: ["appointment"],
+          });
+
           router.replace({
             pathname: "/patient/appointment-summary",
             params: {
@@ -288,8 +303,12 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
           });
         },
         onError: (error: any) => {
-          console.log("Booking Failed:", error?.response?.data || error);
-          console.log("Booking Error", error);
+          // console.log("Booking Failed:", error?.response?.data || error);
+          const errorMsg = error?.response?.data?.message || "Failed to book appointment. Please try again.";
+
+          setResultModalMessage(errorMsg);
+          setResultModalSuccess(false);
+          setResultModalVisible(true);
         },
       });
     }
@@ -300,7 +319,7 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
       {/* Header */}
       {selectedDate && (
         <View className="flex-row justify-between items-center">
-          <Text className="text-lg font-medium text-black">Schedules</Text>
+          <Text className="text-lg font-medium text-black">Select Schedules</Text>
           <Text className="text-sm text-black-400 font-medium">
             {getMonthYear(selectedDate)}
           </Text>
@@ -378,7 +397,7 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
                 </Text>
 
                 <Text
-                  className={`text-[10px] text-center mt-0.5 ${isSelected ? "text-white" : "text-gray-400"
+                  className={`text-[10px] text-center mt-0.5 ${isSelected ? "text-white" : "text-black"
                     }`}
                 >
                   {slot.consultation_type}
@@ -401,30 +420,30 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
       <Modal
         animationType="fade"
         transparent={true}
-        visible={rescheduleModalVisible}
-        onRequestClose={() => setRescheduleModalVisible(false)}
+        visible={resultModalVisible}
+        onRequestClose={() => setResultModalVisible(false)}
       >
         <Pressable
           className="flex-1 bg-black/60 justify-center items-center"
-          onPress={() => setRescheduleModalVisible(false)}
+          onPress={() => setResultModalVisible(false)}
         >
           <Pressable
             className="bg-white rounded-xl p-6 mx-5 w-full max-w-sm"
             onPress={(e) => e.stopPropagation()}
           >
             <Text className="text-lg font-semibold text-center text-black mb-2">
-              {rescheduleModalSuccess ? "Rescheduled" : "Failed"}
+              {resultModalSuccess ? "Success" : "Failed"}
             </Text>
 
             <Text className="text-base text-black-400 text-center mb-6">
-              {rescheduleModalMessage}
+              {resultModalMessage}
             </Text>
 
             <Button
               onPress={() => {
-                setRescheduleModalVisible(false);
-                if (rescheduleModalSuccess && rescheduleRouteParams) {
-                  router.replace(rescheduleRouteParams);
+                setResultModalVisible(false);
+                if (resultModalSuccess && resultRouteParams) {
+                  router.replace(resultRouteParams);
                 }
               }}
               className="mx-auto px-8"

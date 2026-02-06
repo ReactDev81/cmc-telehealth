@@ -15,24 +15,25 @@ export interface UploadMedicalReportPayload {
     };
 }
 
-export const uploadMedicalReport = async ( payload: UploadMedicalReportPayload ) => {
+export const uploadMedicalReport = async (payload: UploadMedicalReportPayload) => {
 
 
-    console.log("UPLOAD PAYLOAD RECEIVED", {
+    /*
+    /* console.log("UPLOAD PAYLOAD RECEIVED", {
         patientId: payload.patientId,
         name: payload.name,
-        type: payload.type,
-        report_date: payload.report_date,
+        report_type_id: payload.report_type_id,
         is_public: payload.is_public,
         file: payload.file,
-      });
+    }); */
+    */
 
     const formData = new FormData();
 
     const reportDateString =
         payload.report_date instanceof Date
-        ? payload.report_date.toISOString()
-        : payload.report_date;
+            ? payload.report_date.toISOString()
+            : payload.report_date;
 
     const filePart = {
         uri: payload.file.uri,
@@ -40,7 +41,7 @@ export const uploadMedicalReport = async ( payload: UploadMedicalReportPayload )
         size: payload.file.size,
         mimeType: payload.file.mimeType || payload.file.type || "application/octet-stream",
     };
-  
+
     formData.append("name", payload.name);
     formData.append("type", payload.type ?? "");
     formData.append("report_date", reportDateString);
@@ -53,11 +54,27 @@ export const uploadMedicalReport = async ( payload: UploadMedicalReportPayload )
         type: payload.file.mimeType || payload.file.type || "image/jpeg",
     } as any);
 
-    const response = await api.post(
+    // Try both singular and plural patient routes if server differs
+    const candidates = [
         `/patient/${payload.patientId}/medical-reports`,
-        formData
-    );
-      
-    
-    return response.data;
+        `/patients/${payload.patientId}/medical-reports`,
+    ];
+
+    let lastError: any = null;
+    for (let i = 0; i < candidates.length; i++) {
+        const url = candidates[i];
+        try {
+            // console.log(`[api/uploadMedicalReport] POST ${url}`);
+            const response = await api.post(url, formData);
+            // console.log(`[api/uploadMedicalReport] Success ${url}`, response.data);
+            return response.data;
+        } catch (err: any) {
+            lastError = err;
+            const status = err?.response?.status;
+            // console.log(`[api/uploadMedicalReport] Error ${url} status=${status}`, err?.response?.data || err.message);
+            if (status !== 404) throw err;
+        }
+    }
+
+    throw lastError;
 };

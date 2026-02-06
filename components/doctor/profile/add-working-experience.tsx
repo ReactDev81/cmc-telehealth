@@ -1,47 +1,66 @@
-import { View, Text, Pressable, Alert } from "react-native";
-import { X } from 'lucide-react-native';
 import Input from "@/components/form/Input";
-import DateField from "@/components/form/date";
 import TextArea from "@/components/form/TextArea";
-import { useForm } from 'react-hook-form';
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/ui/Button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from 'lucide-react-native';
+import { useForm } from 'react-hook-form';
+import { Alert, Pressable, Text, View } from "react-native";
+import { z } from "zod";
+
+import { useAuth } from "@/context/UserContext";
+import { useUpdateDoctorProfile } from "@/queries/doctor/useUpdateDoctorProfile";
+
+import { WorkingExperience } from "@/types/live/doctor/profile";
 
 const WorkingExperienceSchema = z.object({
-    job_title: z.string().min(2, "Job Title must be at least 2 characters long"),
-    hospital_organization: z.string().min(2, "Hospital/Organization Name must be at least 2 characters long"),
-    hospital_address: z.string().min(2, "Hospital Address is required"),
-    start_date: z.date({ required_error: 'Start Date is required' }),
-    end_date: z.date({ required_error: 'End Date is required' }),
-    notes: z.string().min(2, "Notes is required"),
+    career_start: z.string().min(4, "Career Start year is required"),
+    past_associations: z.string().min(2, "Past Associations are required"),
 });
-  
+
 type WorkingExperienceFormData = z.infer<typeof WorkingExperienceSchema>;
 
-const AddNewWorkingExperience = ({ onClose }: { onClose: () => void }) => {
+const AddNewWorkingExperience = ({
+    existingExperiences = [],
+    onClose
+}: {
+    existingExperiences?: WorkingExperience[],
+    onClose: () => void
+}) => {
+    const { user } = useAuth();
+    const doctorID = user?.id || "";
 
-    const { control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<WorkingExperienceFormData>({
+    const { mutate: updateProfile, isPending } = useUpdateDoctorProfile(doctorID, "working_experience");
+
+    const { control, handleSubmit, reset, formState: { errors } } = useForm<WorkingExperienceFormData>({
         resolver: zodResolver(WorkingExperienceSchema),
         defaultValues: {
-            job_title: '',
-            hospital_organization: '',
-            hospital_address: '',
-            notes: '',
+            career_start: '',
+            past_associations: '',
         }
     });
 
-    const start_date = watch('start_date');
-    const end_date = watch('end_date');
+    // const start_date = watch('start_date');
+    // const end_date = watch('end_date');
 
-    const onSubmit = (data: any) => {
-        console.log(data);
-        Alert.alert("Success", "New experience saved successfully!");
-        reset();
-        onClose();
+    const onSubmit = (data: WorkingExperienceFormData) => {
+        const payload = {
+            professional_experience_info: [...existingExperiences, data]
+        };
+
+        updateProfile(payload, {
+            onSuccess: () => {
+                Alert.alert("Success", "Working experience updated successfully!");
+                reset();
+                onClose();
+            },
+            onError: (error: any) => {
+                console.log(error);
+                Alert.alert("Error", error?.response?.data?.message || "Something went wrong while saving experience");
+            }
+        });
     }
 
-    return(
+    return (
         <View className="p-5 bg-white rounded-xl">
 
             {/* headet */}
@@ -56,54 +75,23 @@ const AddNewWorkingExperience = ({ onClose }: { onClose: () => void }) => {
             <View className="mt-5">
 
                 <Input
-                    name="job_title"
-                    label="Job Title"
+                    name="career_start"
+                    label="Career Start Year"
+                    placeholder="e.g. 2015"
                     control={control}
+                    keyboardType="numeric"
                 />
 
-                <Input
-                    name="hospital_organization"
-                    label="Hospital/Organization"
-                    control={control}
-                    containerClassName="mt-5" 
-                />
-
-                <Input
-                    name="hospital_address"
-                    label="Address of Hospital"
-                    control={control}
-                    containerClassName="mt-5" 
-                />
-
-                <DateField
-                    label="Start Date"
-                    value={start_date}
-                    onChange={(date) => setValue('start_date', date as Date, { shouldValidate: true })}
-                    placeholder="DD/MM/YYYY"
-                    maximumDate={new Date()}
-                    error={errors.start_date?.message}
-                    className="mt-5"
-                />
-
-                <DateField
-                    label="End Date"
-                    value={end_date}
-                    onChange={(date) => setValue('end_date', date as Date, { shouldValidate: true })}
-                    placeholder="DD/MM/YYYY"
-                    maximumDate={new Date()}
-                    error={errors.end_date?.message}
-                    className="mt-5"
-                />
-                
                 <TextArea
-                    name="notes"
-                    label="Notes"
+                    name="past_associations"
+                    label="Past Associations"
+                    placeholder="e.g. CMC, Metro Hospital"
                     control={control}
                     containerClassName="mt-5"
                 />
 
-                <Button onPress={handleSubmit(onSubmit)} className="mt-5">
-                    Add Experience 
+                <Button onPress={handleSubmit(onSubmit)} className="mt-5" disabled={isPending}>
+                    {isPending ? "Adding..." : "Add Experience"}
                 </Button>
             </View>
 

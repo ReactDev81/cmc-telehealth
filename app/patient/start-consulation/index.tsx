@@ -34,10 +34,10 @@ const StartConsulationWithDoctor = () => {
     const { patient_call_link } = useLocalSearchParams<{
         patient_call_link?: string;
     }>();
-    
+
     const ROOM_URL = patient_call_link + "&bottomToolbar=off";
-    
-    console.log('ROOM_URL', ROOM_URL);
+
+    // console.log('ROOM_URL', ROOM_URL);
 
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);
@@ -203,10 +203,10 @@ const StartConsulationWithDoctor = () => {
                             room={ROOM_URL ?? ""}
                             skipMediaPermissionPrompt
                             onWherebyMessage={(event) => {
-                                console.log(event);
+                                // console.log(event);
                             }}
                             onReady={() => {
-                                console.log("ready");
+                                // console.log("ready");
                             }}
                             onJoin={() => {
                                 setIsJoined(true);
@@ -228,7 +228,7 @@ const StartConsulationWithDoctor = () => {
                         ref={bottomSheetRef}
                         index={0}
                         snapPoints={["14%"]}
-                        backgroundStyle={{ 
+                        backgroundStyle={{
                             backgroundColor: "#013220",
                             borderTopLeftRadius: 0,
                             borderTopRightRadius: 0
@@ -274,7 +274,7 @@ const StartConsulationWithDoctor = () => {
                 }
 
             </View>
-            <View 
+            <View
                 className="bg-primary"
                 style={{
                     paddingBottom: Platform.OS === "ios" ? insets.bottom : insets.bottom,

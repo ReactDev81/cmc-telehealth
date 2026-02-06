@@ -1,11 +1,10 @@
-import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
-import { MapPin } from 'lucide-react-native';
-import { View, Text, ActivityIndicator } from "react-native"
-import { router } from 'expo-router';
-import MapView, { Marker } from 'react-native-maps';
-import { useLocalSearchParams } from 'expo-router';
 import Button from '@/components/ui/Button';
+import * as Location from 'expo-location';
+import { router, useLocalSearchParams } from 'expo-router';
+import { MapPin } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from "react-native";
+import MapView, { Marker } from 'react-native-maps';
 
 
 const AddCurrentLocation = () => {
@@ -34,17 +33,17 @@ const AddCurrentLocation = () => {
                     setAddress('Address not found');
                 }
             } catch (error) {
-                console.error('Reverse geocoding failed', error);
+                // console.error('Reverse geocoding failed', error);
                 setAddress('Unable to fetch address');
             } finally {
                 setLoading(false);
             }
         };
-    
+
         getAddress();
     }, [lat, lon]);
 
-    return(
+    return (
         <View className='flex-1 relative'>
 
             <MapView
@@ -58,7 +57,7 @@ const AddCurrentLocation = () => {
             >
                 <Marker coordinate={{ latitude: lat, longitude: lon }} />
             </MapView>
-  
+
             <View className='w-full absolute bottom-0 left-0 right-0 rounded-t-3xl p-5 pb-14 bg-white'>
 
                 <View className='bg-primary-100 rounded-xl p-5 mb-5'>
@@ -82,8 +81,8 @@ const AddCurrentLocation = () => {
                 <Button onPress={() => router.push('/patient/profile/manage-address')}>Proceed</Button>
 
             </View>
-            
-      </View>
+
+        </View>
     )
 }
 

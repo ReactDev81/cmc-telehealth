@@ -10,8 +10,10 @@ export interface appointmentProps {
   speciality?: string;
   rating?: number;
   experience?: string;
+  years_experience?: string;
   date?: string;
   time?: string;
+  average_rating?: number;
   call_now?: boolean;
   join_url?: string;
 }

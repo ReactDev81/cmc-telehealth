@@ -74,9 +74,8 @@ const ChooseDifferentLocation = () => {
         });
 
         if (place) {
-          const formatted = `${place.name || ""}, ${place.street || ""}, ${
-            place.city || ""
-          }, ${place.region || ""}, ${place.postalCode || ""}`;
+          const formatted = `${place.name || ""}, ${place.street || ""}, ${place.city || ""
+            }, ${place.region || ""}, ${place.postalCode || ""}`;
           setAddress(formatted);
           setStreetName(place.street);
           setValue("pincode", place.postalCode || "");
@@ -86,7 +85,7 @@ const ChooseDifferentLocation = () => {
           setAddress("Address not found");
         }
       } catch (error) {
-        console.error("Reverse geocoding failed", error);
+        // console.error("Reverse geocoding failed", error);
         setAddress("Unable to fetch address");
       } finally {
         setLoading(false);
@@ -110,7 +109,7 @@ const ChooseDifferentLocation = () => {
       data: payload,
     });
 
-    console.log("Form Data:", payload);
+    // console.log("Form Data:", payload);
 
     if (status === 200) {
       Alert.alert(data?.message || "Address updated successfully!");

@@ -41,10 +41,13 @@ export interface TestimonialProps {
   is_active: boolean;
   is_featured: boolean;
   slug: string;
-  patient_image: ImageSourcePropType;
+  patient_image: string | ImageSourcePropType;
   total_reviews: string;
   patient_age: string;
   doctor_name: string;
+  patient_location?: string;
+  days_ago?: string;
+  created_at?: string;
 }
 
 export interface PatientHomeResponse {

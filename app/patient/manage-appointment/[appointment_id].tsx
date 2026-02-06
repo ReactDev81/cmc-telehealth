@@ -241,14 +241,15 @@ import CancelAppointmentModal from "@/components/patient/appointment/cancel-appo
 import RescheduleAttemptModal from "@/components/patient/appointment/reschedule-attempt-modal";
 import Button from "@/components/ui/Button";
 import { useCancelAppointment } from "@/mutations/patient/useCancelAppointment";
-import { useManageAppointment } from "@/mutations/patient/useManageAppointment";
+import { useUploadReportsAndNotes } from "@/mutations/patient/useUploadReportsAndNotes";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { SquarePen, Stethoscope } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Image, Linking, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as z from "zod";
 import UploadReportsNotes from "./upload-reports-notes";
@@ -274,6 +275,7 @@ type ManageAppointmentFormData = z.infer<typeof manageAppointmentSchema>;
 
 export default function ManageAppointments() {
     const insets = useSafeAreaInsets();
+    const queryClient = useQueryClient();
     const { appointment_id } = useLocalSearchParams<{
         appointment_id: string;
     }>();
@@ -281,24 +283,40 @@ export default function ManageAppointments() {
     const appointmentId =
         typeof appointment_id === "string" ? appointment_id : undefined;
 
-    const { data, isLoading, isError } = useAppointmentById(appointmentId);
+    const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
     // console.log("Appointment Id :", appointmentId);
     // console.log("Data Response :", data);
+
+    // Refetch data when screen first loads or when appointmentId changes
+    useEffect(() => {
+        if (appointmentId) {
+            refetch();
+        }
+    }, [appointmentId, refetch]);
 
     const appointment = data?.data;
     const patient = appointment?.patient;
     const schedule = appointment?.schedule;
     const doctor = appointment?.doctor;
     const notes = appointment?.notes;
+    const medicalReports = appointment?.medical_reports || [];
+
+    // Automatically show reports section if data exists
+    const hasReportsAndNotes =
+        (medicalReports.length > 0) && (notes?.problem || notes?.reason);
 
     const [modalVisible, setModalVisible] = useState(false);
     const [cancelModalVisible, setCancelModalVisible] = useState(false);
-    const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] = useState(false);
-    const [reportsAndNotes, setReportsAndNotes] = useState(false);
+    const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] =
+        useState(false);
 
-    const { mutate: manageAppointment, isPending } = useManageAppointment(
-        appointment_id || "",
-    );
+    // const { mutate: manageAppointment, isPending } = useManageAppointment(
+    //     appointment_id || "",
+    // );
+
+    const { mutate: uploadReports, isPending } =
+        useUploadReportsAndNotes(appointment_id || "");
+
 
     const { mutate: cancelAppointment, isPending: isCancelling } =
         useCancelAppointment();
@@ -315,56 +333,191 @@ export default function ManageAppointments() {
 
     const { handleSubmit, reset } = methods;
 
-    const onSubmit = (data: ManageAppointmentFormData) => {
-        const formData = new FormData();
+    // const onSubmit = (data: ManageAppointmentFormData) => {
+    //     // Validate that we have at least something to submit
+    //     // if (!data.notes && (!data.reports || data.reports.length === 0)) {
+    //     //     Alert.alert("Error", "Please add notes or upload at least one report");
+    //     //     return;
+    //     // }
 
-        // Notes
-        if (data.notes) {
-            formData.append("notes", data.notes);
+    //     // Validate reports have files
+    //     const hasInvalidReports = data.reports?.some(r => !r.file?.uri || !r.type);
+    //     if (data.reports && data.reports.length > 0 && hasInvalidReports) {
+    //         Alert.alert("Error", "All reports must have a file and type selected");
+    //         return;
+    //     }
+
+    //     const formData = new FormData();
+
+    //     // Notes
+    //     if (data.notes?.trim()) {
+    //         formData.append("notes", data.notes.trim());
+    //     }
+
+    //     // Reports - only include valid reports
+    //     // const validReports = data.reports?.filter(r => r.file?.uri && r.type) || [];
+    //     // validReports.forEach((report, index) => {
+    //     //     formData.append(`reports[${index}][type]`, report.type);
+
+    //     //     if (report.file?.uri) {
+    //     //         // React Native FormData requires correct file object structure
+    //     //         const fileObject = {
+    //     //             uri: report.file.uri,
+    //     //             name: report.file.name || `report_${index}`,
+    //     //             type: report.file.mimeType || report.file.type || "application/octet-stream",
+    //     //         };
+
+    //     //         console.log(`📎 Adding file ${index}:`, fileObject);
+    //     //         formData.append(`reports[${index}][file]`, fileObject as any);
+    //     //     }
+    //     // });
+    //     const validReports =
+    //         data.reports?.filter(
+    //             (r) => r?.type && r?.file && r.file.uri
+    //         ) || [];
+
+    //     // validReports.forEach((report, index) => {
+    //     //     formData.append(`reports[${index}][type]`, report.type);
+
+    //     //     formData.append(`reports[${index}][file]`, {
+    //     //         uri: report.file.uri,
+    //     //         name:
+    //     //             report.file.name ||
+    //     //             `report_${index}.${report.file.uri.split(".").pop()}`,
+    //     //         type:
+    //     //             report.file.mimeType ||
+    //     //             report.file.type ||
+    //     //             "application/octet-stream",
+    //     //     } as any);
+    //     // });
+
+    //     if (!data.notes?.trim() && validReports.length === 0) {
+    //         Alert.alert("Error", "Please add notes or at least one report");
+    //         return;
+    //     }
+
+    //     console.log("FormData parts:", (formData as any)._parts);
+
+
+    //     // console.log("📤 Submitting FormData with", validReports.length, "reports");
+
+    //     // Diagnostic: print FormData internal parts (React Native FormData uses _parts)
+    //     try {
+    //         const anyFd: any = formData as any;
+    //         if (anyFd && anyFd._parts) {
+    //             console.log("📋 FormData parts:", anyFd._parts);
+    //         }
+    //     } catch (e) {
+    //         console.log("Could not read FormData parts", e);
+    //     }
+    //     console.log("📝 Notes:", data.notes?.trim());
+    //     console.log("📊 Reports:", validReports);
+
+    //     manageAppointment(formData, {
+    //         onSuccess: (res: any) => {
+    //             console.log("✅ API Response:", res);
+
+    //             // Invalidate and refetch appointment data to show updated info
+    //             queryClient.invalidateQueries({
+    //                 queryKey: ["appointment", appointmentId],
+    //             });
+    //             refetch();
+
+    //             Alert.alert("Success", "Appointment updated successfully", [
+    //                 {
+    //                     text: "OK",
+    //                     onPress: () => {
+    //                         reset();
+    //                         setReportsAndNotes(false);
+    //                     },
+    //                 },
+    //             ]);
+    //         },
+    //         onError: (err: any) => {
+    //             console.log("❌ API Error Status:", err?.response?.status);
+    //             console.log("❌ Full Error Response:", JSON.stringify(err?.response?.data, null, 2));
+    //             console.log("❌ Error Message:", err?.message);
+
+    //             // Extract all validation errors
+    //             const allErrors = err?.response?.data?.errors || {};
+    //             const errorMessages = Object.entries(allErrors)
+    //                 .map(([key, value]: [string, any]) => {
+    //                     if (Array.isArray(value)) {
+    //                         return `${key}: ${value.join(", ")}`;
+    //                     }
+    //                     return `${key}: ${value}`;
+    //                 })
+    //                 .join("\n");
+
+    //             const errorMsg = errorMessages ||
+    //                 err?.response?.data?.message ||
+    //                 "Failed to update appointment";
+
+    //             console.log("❌ All Errors:", errorMsg);
+    //             Alert.alert("Error", errorMsg);
+    //         },
+    //     });
+    // };
+
+    const onSubmit = (data: ManageAppointmentFormData) => {
+        const validReports =
+            data.reports?.filter(r => r?.type && r?.file?.uri) || [];
+
+        if (!data.notes?.trim() && validReports.length === 0) {
+            Alert.alert("Error", "Please add notes or at least one report");
+            return;
         }
 
-        // Reports
-        data.reports?.forEach((report, index) => {
-            formData.append(`reports[${index}][type]`, report.type);
-
-            if (report.file?.uri) {
-                formData.append(`reports[${index}][file]`, {
-                    uri: report.file.uri,
-                    name: report.file.name,
-                    type: report.file.mimeType,
-                } as any);
+        uploadReports(
+            {
+                notes: data.notes,
+                reports: validReports.map(r => ({
+                    type: r.type,
+                    file: {
+                        uri: r.file.uri,
+                        name:
+                            r.file.name ||
+                            `report.${r.file.uri.split(".").pop()}`,
+                        type:
+                            r.file.mimeType ||
+                            r.file.type ||
+                            "application/octet-stream",
+                    },
+                })),
+            },
+            {
+                onSuccess: (res) => {
+                    queryClient.invalidateQueries({
+                        queryKey: ["appointment", appointmentId],
+                    });
+                    refetch();
+                    reset();
+                    setModalVisible(false);
+                    Alert.alert("Success", "Appointment updated successfully");
+                },
+                onError: (err: any) => {
+                    Alert.alert(
+                        "Error",
+                        err?.response?.data?.message || "Upload failed"
+                    );
+                },
             }
-        });
-
-        console.log("📤 Submitting FormData:", data);
-        console.log("Form Data Submitted:", data.reports);
-
-        manageAppointment(formData, {
-            onSuccess: (res: any) => {
-                console.log("✅ API Response:", res);
-                reset();
-                setModalVisible(false);
-            },
-            onError: (err: any) => {
-                console.log("❌ API Error:", err);
-            },
-        });
+        );
     };
+
 
     const handleCancelAppointment = () => {
         if (!appointmentId) return;
 
         cancelAppointment(appointmentId, {
             onSuccess: (res) => {
-                console.log("✅ Appointment cancelled:", res?.status);
+                // console.log("✅ Appointment cancelled:", res?.status);
 
-                // if (res?.status === true) {
-                //     router.push("/(patient)/doctors");
-                // }
+                // Invalidate appointment query to clear cache
+                queryClient.invalidateQueries({
+                    queryKey: ["appointment", appointmentId],
+                });
 
-                // Alert.alert(
-                //     res?.message || "Appointment cancelled"
-                // );
                 Alert.alert(
                     res?.message || "Appointment cancelled",
                     undefined,
@@ -382,7 +535,7 @@ export default function ManageAppointments() {
                 setCancelModalVisible(false);
             },
             onError: (err: any) => {
-                console.log("❌ Cancel error:", err);
+                // console.log("❌ Cancel error:", err);
 
                 Alert.alert(
                     "Error",
@@ -392,11 +545,18 @@ export default function ManageAppointments() {
         });
     };
 
-    const doctorId = data?.data?.doctor?.user_id;
+    // Derive a usable doctor id for navigation. backend may provide different fields.
+    const doctorId =
+        data?.data?.doctor?.user_id ||
+        data?.data?.doctor?.id ||
+        data?.data?.doctor?.profile?.id ||
+        (data?.data as any)?.doctor_id ||
+        appointment?.doctor_id;
     // console.log("Doctor ID :", doctorId);
 
     // console.log("schedule:", schedule?.opd_type);
     // console.log("appointment:", appointment);
+
 
     return (
         <FormProvider {...methods}>
@@ -453,7 +613,7 @@ export default function ManageAppointments() {
 
                     <View>
                         {/* Medical Reports & Notes */}
-                        {reportsAndNotes ? (
+                        {hasReportsAndNotes ? (
                             <View className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
                                 {/* Header */}
                                 <View className="flex-row justify-between items-center mb-4">
@@ -468,28 +628,45 @@ export default function ManageAppointments() {
                                     </Pressable>
                                 </View>
 
-                                {/* Report Card */}
-                                <View className="flex-row justify-between items-center mb-5 p-3.5 bg-gray-50 rounded-xl border border-gray-200">
-                                    <View>
-                                        <Text className="text-sm font-medium text-black mb-2">
-                                            Blood Test Results
-                                        </Text>
-                                        <Text className="text-sm text-black mb-1">
-                                            Dr. John Smith
-                                        </Text>
-                                        <Text className="text-sm text-black mb-3">
-                                            Type: Lab Report
-                                        </Text>
-                                    </View>
-                                    <Button
-                                        className="bg-primary"
-                                        onPress={() => {
-                                            Alert.alert("View Report", "Opening report...");
-                                        }}
+                                {/* Report Cards - Dynamic List */}
+                                {medicalReports.map((report: any, index: number) => (
+                                    <View
+                                        key={report.id || index}
+                                        className="flex-row justify-between items-center mb-5 p-3.5 bg-gray-50 rounded-xl border border-gray-200"
                                     >
-                                        <Text className="text-white font-medium">View Report</Text>
-                                    </Button>
-                                </View>
+                                        <View className="flex-1">
+                                            <Text className="text-sm font-medium text-black mb-2">
+                                                {report.name || `Report ${index + 1}`}
+                                            </Text>
+                                            <Text className="text-sm text-black mb-1">
+                                                {report.report_date || "Date not specified"}
+                                            </Text>
+                                            <Text className="text-sm text-black mb-3">
+                                                Type: {report.type || "Unknown"}
+                                            </Text>
+                                        </View>
+                                        <Button
+                                            className="bg-primary"
+                                            onPress={() => {
+                                                if (report.file_url) {
+                                                    Linking.openURL(report.file_url).catch(() => {
+                                                        Alert.alert(
+                                                            "Error",
+                                                            "Unable to open report"
+                                                        );
+                                                    });
+                                                } else {
+                                                    Alert.alert(
+                                                        "Error",
+                                                        "Report URL not available"
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <Text className="text-white font-medium">View</Text>
+                                        </Button>
+                                    </View>
+                                ))}
 
                                 {/* Note Section */}
                                 <View>
@@ -498,7 +675,9 @@ export default function ManageAppointments() {
                                     </Text>
                                     <View className="bg-gray-50 rounded-xl border border-gray-200 p-4">
                                         <Text className="text-sm text-black-400">
-                                            {notes?.reason || "No notes available."}
+                                            {typeof notes === "object" && notes?.problem
+                                                ? notes.problem
+                                                : notes?.reason || "No notes available."}
                                         </Text>
                                     </View>
                                 </View>
@@ -521,20 +700,28 @@ export default function ManageAppointments() {
                             {appointment?.status !== "rescheduled" ? (
                                 <Button
                                     className="flex-1"
-                                    onPress={() => router.push({
-                                        pathname: `/patient/doctor/${doctorId}` as any,
-                                        params: {
-                                            consultation_type: schedule?.consultation_type,
-                                            consultation_opd_type: schedule?.opd_type,
-                                            booking_type: "reschedule",
-                                            appointment_id: appointmentId,
-                                            appointment_date: schedule?.date,
-                                            appointment_time: schedule?.time,
-                                            can_reschedule: String(appointment?.can_reschedule ?? false),
-                                            appointment_status: String(appointment?.status ?? ""),
-                                        },
-                                    })}
-                                    disabled={!doctorId || !appointment?.can_reschedule}
+                                    onPress={() => {
+                                        // If doctor id is missing, show attempt modal instead of navigating
+                                        if (!doctorId) {
+                                            setRescheduleAttemptModalVisible(true);
+                                            return;
+                                        }
+
+                                        router.push({
+                                            pathname: `/patient/doctor/${doctorId}` as any,
+                                            params: {
+                                                consultation_type: schedule?.consultation_type,
+                                                consultation_opd_type: schedule?.opd_type,
+                                                booking_type: "reschedule",
+                                                appointment_id: appointmentId,
+                                                appointment_date: schedule?.date,
+                                                appointment_time: schedule?.time,
+                                                can_reschedule: String(appointment?.can_reschedule ?? false),
+                                                appointment_status: String(appointment?.status ?? ""),
+                                            },
+                                        });
+                                    }}
+                                    disabled={!appointment?.can_reschedule}
                                 >
                                     Reschedule
                                 </Button>

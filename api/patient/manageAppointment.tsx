@@ -16,7 +16,12 @@ export const manageAppointment = async (
   // Content-Type header is automatically handled by axios interceptor for FormData
   const { data } = await api.post(
     `/appointments/${appointmentId}/update-information`,
-    payload
+    payload,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
   return data;
 };

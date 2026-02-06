@@ -9,8 +9,8 @@ import { htmlToReadableText } from "@/utils/html";
 import { useIsFocused } from "@react-navigation/native";
 import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Image, ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Button from "../../components/ui/Button";
 import Title from "../../components/ui/Title";
 import TitleWithLink from "../../components/ui/title-with-link";
@@ -22,24 +22,33 @@ const Home = () => {
   const isFocused = useIsFocused();
   const { token } = useAuth();
 
-
   const { data, isLoading, isError, error } = usePatientHome(!!token);
 
   const homeData = data?.data;
   const specialities = homeData?.speciality_symptoms || [];
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#000000" />
+      </SafeAreaView>
+    );
   }
 
   if (isError) {
-    return <Text>Error loading home</Text>;
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+        <Text className="text-black">Error loading home</Text>
+      </SafeAreaView>
+    );
   }
+
+  // console.log("Home Data:", homeData?.available_doctors);
 
   return (
     <View className="flex-1 bg-white">
 
-      {isFocused && <StatusBar style="light" />}
+      {isFocused && <StatusBar style="light" translucent />}
 
       <Header insets={insets} />
 
@@ -111,6 +120,7 @@ const Home = () => {
                   return (
                     <AvailableDoctors
                       key={availableDoctors.id}
+                      id={availableDoctors.id}
                       avatar={availableDoctors.avatar}
                       name={availableDoctors.name}
                       speciality={availableDoctors.speciality}
@@ -182,6 +192,8 @@ const Home = () => {
                     patient_image={testimonial.patient_image}
                     patient_name={testimonial.patient_name}
                     patient_age={testimonial.patient_age}
+                    patient_location={testimonial.patient_location}
+                    days_ago={testimonial.created_at}
                     title={testimonial.title}
                     content={htmlToReadableText(testimonial.content)}
                     total_reviews={testimonial.total_reviews}
@@ -198,7 +210,7 @@ const Home = () => {
             </ScrollView>
             <Button
               className="mt-5"
-              onPress={() => router.push("/reviews/all-reviews" as any)}
+              onPress={() => router.push("/patient/all-testimonials" as any)}
             >
               View All Testimonial
             </Button>

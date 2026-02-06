@@ -29,6 +29,13 @@ const AppointmentSummary = () => {
       refetch();
     }
   }, [isRescheduled, appointmentId, queryClient, refetch]);
+
+  // Also refetch on initial load when appointmentId is set
+  useEffect(() => {
+    if (appointmentId) {
+      refetch();
+    }
+  }, [appointmentId]);
   const [verifyData, setVerifyData] = useState([])
 
   const appointment = data?.data;
@@ -37,7 +44,7 @@ const AppointmentSummary = () => {
   const doctor = appointment?.doctor;
   const payment = appointment?.payment;
 
-  console.log('doctor', doctor?.user_id)
+  // console.log('doctor', doctor?.user_id)
   // console.log('appointment data', appointment);
   // console.log('razorpay_key_id', appointment?.razorpay_key_id);
 
@@ -89,10 +96,10 @@ const AppointmentSummary = () => {
 
     RazorpayCheckout.open(options)
       .then((data) => {
-        console.log("Payment Success:", data);
+        // console.log("Payment Success:", data);
 
         if (!data?.razorpay_order_id || !data?.razorpay_payment_id || !appointment?.appointment_id || !data?.razorpay_signature) {
-          console.log("Payment Error: Missing required payment verification details");
+          // console.log("Payment Error: Missing required payment verification details");
           return;
         }
 
@@ -105,13 +112,19 @@ const AppointmentSummary = () => {
           },
           {
             onSuccess: (res) => {
+              // Invalidate and refetch appointment to get updated data after payment
+              queryClient.invalidateQueries({
+                queryKey: ["appointment", appointmentId],
+              });
+              refetch();
+
               setModalVisible(true);
               setVerifyData(res?.data)
-              console.log("Verify Success Data:", res);
+              // console.log("Verify Success Data:", res);
             },
             onError: (error: any) => {
-              console.log("Verify Failed Status:", error?.response?.status);
-              console.log("Verify Failed Data:", error?.response?.data);
+              // console.log("Verify Failed Status:", error?.response?.status);
+              // console.log("Verify Failed Data:", error?.response?.data);
             },
           }
         );
@@ -119,149 +132,154 @@ const AppointmentSummary = () => {
       })
       .catch((error) => {
         setPaymentModalVisible(true);
-        console.log("Payment Error:", error);
+        // console.log("Payment Error:", error);
         const errorMessage =
           error.description || error.message || "Payment failed";
         const errorCode = error.code || "UNKNOWN";
         // Alert.alert("Payment Failed", `${errorCode}: ${errorMessage}`);
-        console.log('errorMessage', errorMessage);
-        console.log('errorCode', errorCode);
+        // console.log('errorMessage', errorMessage);
+        // console.log('errorCode', errorCode);
 
       });
   };
 
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="items-center mb-6">
-        <Image
-          source={{
-            uri:
-              appointment?.doctor?.avatar ||
-              "https://cdn-icons-png.flaticon.com/512/387/387561.png",
-          }}
-          className="w-full h-60"
-          resizeMode="cover"
-        />
-      </View>
-
-      <View className="p-5 pb-12">
-        {/* name & speciality */}
-        <View className="pb-5 mb-5 border-b border-[#EDEDED]">
-          <View className="flex-row gap-x-1">
-            <Stethoscope size={15} color="#013220" />
-            <Text className="text-primary text-sm">{doctor?.department}</Text>
-          </View>
-          <Text className="text-lg font-medium text-black mt-1">
-            {doctor?.name}
-          </Text>
+    <View className="flex-1 bg-white">
+      <ScrollView className="flex-1">
+        <View className="items-center mb-6">
+          <Image
+            source={{
+              uri:
+                appointment?.doctor?.avatar ||
+                "https://cdn-icons-png.flaticon.com/512/387/387561.png",
+            }}
+            className="w-full h-60"
+            resizeMode="cover"
+          />
         </View>
 
-        {/* Appointment Details */}
-        <View className="pb-5 mb-5 border-b border-[#EDEDED]">
-          <Text className="text-lg text-black font-medium">
-            Appointment Details
-          </Text>
-          <View className="mt-4">
-            {/* <View className="flex-row items-center justify-between">
+        <View className="p-5 pb-12">
+          {/* name & speciality */}
+          <View className="pb-5 mb-5 border-b border-[#EDEDED]">
+            <View className="flex-row gap-x-1">
+              <Stethoscope size={15} color="#013220" />
+              <Text className="text-primary text-sm">{doctor?.department}</Text>
+            </View>
+            <Text className="text-lg font-medium text-black mt-1">
+              {doctor?.name}
+            </Text>
+          </View>
+
+          {/* Appointment Details */}
+          <View className="pb-5 mb-5 border-b border-[#EDEDED]">
+            <Text className="text-lg text-black font-medium">
+              Appointment Details
+            </Text>
+            <View className="mt-4">
+              {/* <View className="flex-row items-center justify-between">
               <Text className="text-sm text-black-400">Date</Text>
               <Text className="text-sm font-medium text-black-400">
                 {schedule?.date_formatted}
               </Text>
             </View> */}
-            <Detail label="Date" value={schedule?.date_formatted} />
-            <View className="flex-row items-center justify-between mt-3">
-              <Text className="text-sm text-black-400">Time</Text>
-              <Text className="text-sm font-medium text-black-400">
-                {schedule?.time_formatted}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between mt-3">
-              <Text className="text-sm text-black-400">Booking Type</Text>
-              <Text className="text-sm font-medium text-black-400">
-                {schedule?.consultation_type_label}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Patient Details */}
-        <View className="pb-5 mb-5 border-b border-[#EDEDED]">
-          <Text className="text-lg text-black font-medium">Patient Age</Text>
-          <View className="mt-4">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm text-black-400">Patient Age</Text>
-              <Text className="text-sm font-medium text-black-400">
-                {patient?.age}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between mt-3">
-              <Text className="text-sm text-black-400">Gender</Text>
-              <Text className="text-sm font-medium text-black-400">
-                {patient?.gender_formatted}
-              </Text>
-            </View>
-            {patient?.allergies && (
+              <Detail label="Date" value={schedule?.date_formatted} />
               <View className="flex-row items-center justify-between mt-3">
-                <Text className="text-sm text-black-400">Allergies</Text>
+                <Text className="text-sm text-black-400">Time</Text>
                 <Text className="text-sm font-medium text-black-400">
-                  {patient?.allergies}
+                  {schedule?.time_formatted}
                 </Text>
               </View>
-            )}
-            {patient?.problem && (
               <View className="flex-row items-center justify-between mt-3">
-                <Text className="text-sm text-black-400">Problem</Text>
+                <Text className="text-sm text-black-400">Booking Type</Text>
                 <Text className="text-sm font-medium text-black-400">
-                  {patient?.problem}
-                </Text>
-              </View>
-            )}
-            <View className="flex-row justify-between mt-3">
-              <View className="basis-2/5">
-                <Text className="text-sm text-black-400">Subject</Text>
-              </View>
-              <View className="basis-3/5">
-                <Text className="text-sm text-right text-nowrap font-medium text-black-400">
-                  I've been neglecting my teeth care lately, and l'm not sure
+                  {schedule?.consultation_type_label}
                 </Text>
               </View>
             </View>
           </View>
-        </View>
 
-        {/* Payment Detail */}
-        <View className="pb-5 mb-5">
-          <Text className="text-lg text-black font-medium">Payment Detail</Text>
-          <View className="mt-4">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm text-black-400">Consultation Fee</Text>
-              <Text className="text-sm font-medium text-black-400">
-                {payment?.consultation_fee_formatted}
-              </Text>
-            </View>
-
-            <View className="flex-row items-center justify-between mt-3">
-              <Text className="text-sm text-black-400">Aditional Discount</Text>
-              <Text className="text-sm font-medium text-black-400">
-                {discountedValue}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between mt-3">
-              <Text className="text-sm text-black-400">Total</Text>
-              <Text className="text-sm font-medium text-black-400">
-                {total}
-              </Text>
+          {/* Patient Details */}
+          <View className="pb-5 mb-5 border-b border-[#EDEDED]">
+            <Text className="text-lg text-black font-medium">Patient Age</Text>
+            <View className="mt-4">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-sm text-black-400">Patient Age</Text>
+                <Text className="text-sm font-medium text-black-400">
+                  {patient?.age}
+                </Text>
+              </View>
+              <View className="flex-row items-center justify-between mt-3">
+                <Text className="text-sm text-black-400">Gender</Text>
+                <Text className="text-sm font-medium text-black-400">
+                  {patient?.gender_formatted}
+                </Text>
+              </View>
+              {patient?.allergies && (
+                <View className="flex-row items-center justify-between mt-3">
+                  <Text className="text-sm text-black-400">Allergies</Text>
+                  <Text className="text-sm font-medium text-black-400">
+                    {patient?.allergies}
+                  </Text>
+                </View>
+              )}
+              {patient?.problem && (
+                <View className="flex-row items-center justify-between mt-3">
+                  <Text className="text-sm text-black-400">Problem</Text>
+                  <Text className="text-sm font-medium text-black-400">
+                    {patient?.problem}
+                  </Text>
+                </View>
+              )}
+              <View className="flex-row justify-between mt-3">
+                <View className="basis-2/5">
+                  <Text className="text-sm text-black-400">Subject</Text>
+                </View>
+                <View className="basis-3/5">
+                  <Text className="text-sm text-right text-nowrap font-medium text-black-400">
+                    I've been neglecting my teeth care lately, and l'm not sure
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
-        </View>
 
-        {isRescheduled !== "true" && (
-          <Button onPress={handlePayment} variant="outline" className="mt-4">
+          {/* Payment Detail */}
+          <View className="pb-5 mb-5">
+            <Text className="text-lg text-black font-medium">Payment Detail</Text>
+            <View className="mt-4">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-sm text-black-400">Consultation Fee</Text>
+                <Text className="text-sm font-medium text-black-400">
+                  {payment?.consultation_fee_formatted}
+                </Text>
+              </View>
+
+              <View className="flex-row items-center justify-between mt-3">
+                <Text className="text-sm text-black-400">Aditional Discount</Text>
+                <Text className="text-sm font-medium text-black-400">
+                  {discountedValue}
+                </Text>
+              </View>
+              <View className="flex-row items-center justify-between mt-3">
+                <Text className="text-sm text-black-400">Total</Text>
+                <Text className="text-sm font-medium text-black-400">
+                  {total}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+        </View>
+      </ScrollView>
+
+      {/* Sticky Button Footer */}
+      {isRescheduled !== "true" && (
+        <View className="p-5 bg-white border-t border-gray-200">
+          <Button onPress={handlePayment}>
             Book Appointment (₹{total})
           </Button>
-        )}
-
-      </View>
+        </View>
+      )}
 
       {/* Appointement Confirmation Message */}
       <AppointmentConfirmation visible={modalVisible} onClose={handleDone} data={verifyData} />
@@ -269,7 +287,7 @@ const AppointmentSummary = () => {
       {/* Payment Failed */}
       <PaymentFailedModal visible={paymentModalVisible} onClose={handleTryAgain} />
 
-    </ScrollView>
+    </View>
   );
 };
 

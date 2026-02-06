@@ -13,13 +13,15 @@ const UpcomingAppointments = ({
     consultation_type,
     consultation_fee,
     experience,
+    years_experience,
+    average_rating,
     date,
     time,
     call_now,
     join_url
 }: appointmentProps) => {
 
-    console.log("Call Now:", call_now);
+    // console.log("Call Now:", call_now);
 
     return (
         <View className='border border-black-300 rounded-xl p-4'>
@@ -46,7 +48,7 @@ const UpcomingAppointments = ({
                     </View>
                     <View className='py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1 absolute top-0 right-0'>
                         <Star size={12} fill="#013220" />
-                        <Text className='text-primary text-sm font-medium'>{rating}</Text>
+                        <Text className='text-primary text-sm font-medium'>{average_rating}</Text>
                     </View>
                 </View>
             </View>

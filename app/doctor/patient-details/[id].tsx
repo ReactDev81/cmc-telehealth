@@ -18,9 +18,10 @@ const PatientDetails = () => {
     const { token } = useAuth();
 
     const { data: patient, isLoading, isError, error } = usePatientDetail(appointmentId || "", token || "");
-
-    const joinUrl = patient?.upcoming_appointments?.video_join_link;
+    const upcomingAppointment = patient?.data?.upcoming_appointments;
+    const joinUrl = upcomingAppointment?.video_join_link;
     // console.log("Join URL:", joinUrl);
+    // console.log("patient", patient)
 
     if (!appointmentId) {
         return (
@@ -39,7 +40,7 @@ const PatientDetails = () => {
         );
     }
 
-    if (isError || !patient) {
+    if (isError || !patient?.data) {
         return (
             <View className="flex-1 items-center justify-center p-5">
                 <Text className="text-base text-red-500">Failed to load patient details</Text>
@@ -57,33 +58,31 @@ const PatientDetails = () => {
 
     // console.log("Patient Details:", patient);
 
-    // Get the first upcoming appointment if available
-    const upcomingAppointment = patient.upcoming_appointments;
-    // console.log("Upcoming Appointment sssss:", upcomingAppointment);
+
 
     return (
         <ScrollView className="flex-1 bg-white p-5">
             <View className="pb-20">
                 {/* headet */}
                 <PatientInfoHeader
-                    image={{ uri: patient.avatar }}
-                    name={patient.name}
-                    age={patient.age}
-                    gender={patient.gender}
-                    problem={patient.problem}
+                    image={{ uri: patient.data.avatar }}
+                    name={patient.data.name}
+                    age={patient.data.age}
+                    gender={patient.data.gender}
+                    problem={patient.data.problem}
                 />
                 {/* contact information of this patient */}
                 <ContactInformation
-                    number={patient?.contact?.phone_formatted}
-                    email={patient?.contact?.email}
+                    number={patient?.data?.contact?.phone_formatted}
+                    email={patient?.data?.contact?.email}
                 />
                 {/* upcoming appointement details of this patient */}
-                <UpcomingAppointment
+                {upcomingAppointment && <UpcomingAppointment
                     call_now={upcomingAppointment?.call_now}
-                    date={upcomingAppointment?.date}
-                    time={upcomingAppointment?.time}
-                    mode={upcomingAppointment?.consultation_type_label}
-                />
+                    date={upcomingAppointment?.date || ""}
+                    time={upcomingAppointment?.time || ""}
+                    mode={upcomingAppointment?.consultation_type || ""}
+                />}
                 {/* click here to start consulation */}
                 {joinUrl && <Button
                     icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
@@ -102,9 +101,9 @@ const PatientDetails = () => {
                         link="/"
                         link_text="See All"
                     />
-                    {patient?.medical_reports.slice(0, 2).map((report) => {
+                    {patient?.data?.medical_reports?.slice(0, 2).map((report: any) => {
                         const handleViewReport = () => {
-                            const pdfUrl = report.report_view;
+                            const pdfUrl = report.file_url;
                             if (pdfUrl) {
                                 Linking.openURL(pdfUrl);
                             }
@@ -113,9 +112,8 @@ const PatientDetails = () => {
                             <View className="mt-5" key={report.id}>
                                 <ReportsCard
                                     report_name={report.report_name}
-                                    report_date={report.report_date}
-                                    doctor_name={report.doctor_name}
-                                    report_type={report.report_type}
+                                    report_date_formatted={report.report_date_formatted}
+                                    type_label={report.type_label}
                                     handleReport={handleViewReport}
                                 />
                             </View>
@@ -130,14 +128,18 @@ const PatientDetails = () => {
                         link_text="See All"
                     />
                     <View className="mt-5">
-                        {patient?.medical_reports.slice(0, 2).map((med, index) => (
-                            <MedicineAccordian
-                                key={med.id}
-                                medicine={med}
-                                defaultExpanded={true}
-                                index={index}
-                            />
-                        ))}
+                        {patient?.data?.current_medications && patient.data.current_medications.length > 0 ? (
+                            patient.data.current_medications.slice(0, 2).map((med: any, index: number) => (
+                                <MedicineAccordian
+                                    key={med.id}
+                                    medicine={med}
+                                    defaultExpanded={true}
+                                    index={index}
+                                />
+                            ))
+                        ) : (
+                            <Text className="text-black-400 text-sm italic">No current medicine</Text>
+                        )}
                     </View>
                 </View>
                 {/* previous appointement with this client */}
@@ -147,16 +149,22 @@ const PatientDetails = () => {
                         link="/"
                         link_text="See All"
                     />
-                    {patient?.previous_appointments.slice(0, 2).map((appointment) => (
-                        <PreviousAppointment
-                            key={appointment.appointment_id}
-                            subject={appointment.notes?.problem || "No problem specified"}
-                            status={appointment.status}
-                            time={appointment.appointment_time_formatted}
-                            date={appointment.appointment_date_formatted}
-                            mode={appointment.consultation_type_label}
-                        />
-                    ))}
+                    {patient?.data?.previous_appointments && patient.data.previous_appointments.length > 0 ? (
+                        patient.data.previous_appointments.slice(0, 2).map((appointment: any) => (
+                            <PreviousAppointment
+                                key={appointment.appointment_id}
+                                subject={appointment.notes?.problem || "No problem specified"}
+                                status={appointment.status}
+                                time={appointment.appointment_time_formatted}
+                                date={appointment.appointment_date_formatted}
+                                mode={appointment.consultation_type_label}
+                            />
+                        ))
+                    ) : (
+                        <View className="mt-5">
+                            <Text className="text-black-400 text-sm italic">No past appointments</Text>
+                        </View>
+                    )}
                 </View>
             </View>
         </ScrollView>

@@ -1,9 +1,8 @@
 import Input from "@/components/form/Input";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
-import useApi from "@/hooks/useApi";
+import { useCreateReview } from "@/queries/patient/useCreateReview";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocalSearchParams } from "expo-router";
 import { Star } from "lucide-react-native";
 import { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -30,14 +29,10 @@ const reviewSchema = z.object({
 type ReviewFormData = z.infer<typeof reviewSchema>;
 
 const WriteAReview = () => {
-  // Get doctor ID and name from route params
-  const { doctorName } = useLocalSearchParams<{
-    doctorId: string;
-    doctorName: string;
-  }>();
 
   // Static doctor ID
-  const doctorId = process.env.EXPO_PUBLIC_DOCTOR_ID;
+  const doctorId = "ef6dc00b-0eaa-4900-b0bb-6e15ab50f5f3";
+  const doctorName = "Dr. Jane Doe"; // Replace with dynamic value as needed
 
   const methods = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
@@ -49,16 +44,7 @@ const WriteAReview = () => {
     mode: "onSubmit",
   });
 
-  const { data, error, loading, fetchData } = useApi<{
-    data: {};
-    message?: string;
-  }>("post", `${process.env.EXPO_PUBLIC_API_BASE_URL}/reviews`, {
-    headers: {
-      Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  });
+  const { mutate, isPending } = useCreateReview();
 
   const { handleSubmit, control, setValue, watch, reset } = methods;
 
@@ -70,17 +56,25 @@ const WriteAReview = () => {
   };
 
   const onSubmit = async (formData: ReviewFormData) => {
-    // try {
-    const review = {
-      doctor_user_id: doctorId, // Send as string for UUID
-      title: formData.title,
-      content: formData.review,
-      rating: formData.rating,
-    };
 
-    await fetchData({ data: review });
-    console.log("Submitted formData Data:", formData);
-    reset();
+    mutate(
+      {
+        doctor_id: doctorId,
+        title: formData.title,
+        content: formData.review,
+        rating: formData.rating,
+      },
+      {
+        onSuccess: (res) => {
+          console.log("Review submitted successfully:", res);
+          setShowSuccessModal(true);
+          reset();
+        },
+        onError: (err: any) => {
+          console.log("Review error message:", err?.message);
+        },
+      },
+    );
   };
 
   const closeModal = () => {
@@ -166,9 +160,9 @@ const WriteAReview = () => {
             <Button
               className="[&]:px-8"
               onPress={handleSubmit(onSubmit)}
-              disabled={loading}
+              disabled={isPending}
             >
-              {loading ? "Submitting..." : "Submit"}
+              {isPending ? "Submitting..." : "Submit"}
             </Button>
           </View>
         </View>
