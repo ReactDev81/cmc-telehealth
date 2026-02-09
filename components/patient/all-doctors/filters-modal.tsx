@@ -1,7 +1,7 @@
 import { useFindDoctorData } from "@/queries/patient/useFindDoctorData";
 import { useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import FilterOptionCard from "./filter-option-card";
 
 interface FiltersModalProps {
@@ -22,7 +22,10 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
     const insets = useSafeAreaInsets();
     const { data, isLoading, isError, error } = useFindDoctorData();
     const [activeTab, setActiveTab] = useState<"speciality" | "symptoms">("speciality");
-    const items = Array.isArray(data) ? data : [];
+    // const items = Array.isArray(data) ? data : [];
+
+    const items = Array.isArray(data?.data) ? data.data : [];
+
 
     const symptoms = items.flatMap((item) =>
         Array.isArray(item.symptoms)
@@ -42,9 +45,9 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
             transparent
             onRequestClose={onClose}
         >
-            <View className="absolute top-0 left-0 w-full h-full justify-between bg-white"
+            <SafeAreaView className="absolute top-0 left-0 w-full h-full justify-between bg-white"
                 style={{
-                    paddingTop: insets?.top,
+                    // paddingTop: insets?.top,
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: 0.25,
@@ -142,24 +145,42 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                         )} */}
 
                         {activeTab === "speciality" && (
-                        <View className="flex-row flex-wrap gap-4">
-                            {items.map((item) => (
-                            <FilterOptionCard
-                                key={item.id}
-                                id={String(item.id)} // department ID
-                                label={item.department.name}
-                                icon={item.department.icon}
-                                selected={filters.departmentId === String(item.id)}
-                                onPress={(id) =>
-                                    setFilters((prev) => ({
-                                        ...prev,
-                                        departmentId: prev.departmentId === id ? undefined : id,
-                                        symptomDepartmentId: undefined, // 🔥 reset symptom
-                                    }))
-                                }
-                            />
-                            ))}
-                        </View>
+                            <View className="flex-row flex-wrap justify-between gap-4">
+                                {/* {items.map((item) => (
+                                    <FilterOptionCard
+                                        key={item.id}
+                                        id={String(item.id)} // department ID
+                                        label={item.department.name}
+                                        icon={item.department.icon}
+                                        selected={filters.departmentId === String(item.id)}
+                                        onPress={(id) =>
+                                            setFilters((prev) => ({
+                                                ...prev,
+                                                departmentId: prev.departmentId === id ? undefined : id,
+                                                symptomDepartmentId: undefined, // 🔥 reset symptom
+                                            }))
+                                        }
+                                    />
+                                ))} */}
+                                {items.map((item) => {
+                                    return(
+                                        <FilterOptionCard
+                                            key={item.id}
+                                            id={String(item.id)} // department ID
+                                            label={item.department.name}
+                                            icon={item.department.icon}
+                                            selected={filters.departmentId === String(item.id)}
+                                            onPress={(id) =>
+                                                setFilters((prev) => ({
+                                                    ...prev,
+                                                    departmentId: prev.departmentId === id ? undefined : id,
+                                                    symptomDepartmentId: undefined, // 🔥 reset symptom
+                                                }))
+                                            }
+                                        />      
+                                    )
+                                })}
+                            </View>
                         )}
 
 
@@ -169,7 +190,7 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
       No symptoms available
     </Text>
   ) : (
-    <View className="flex-row flex-wrap gap-4">
+    <View className="flex-row flex-wrap justify-between gap-4">
       {symptoms.map((symptom, index) => (
         <FilterOptionCard
         key={`${symptom.name}-${index}`}
@@ -199,19 +220,15 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                 </View>
 
                 {/* footer */}
-                <View className="flex-row item-center px-5"
-                    style={{
-                        paddingBottom: insets?.bottom
-                    }}
-                >
-                    <View className="w-3/6 flex-row justify-center">
+                <View className="flex-row item-center px-5 h-14">
+                    <View className="w-3/6 h-full flex-row items-center justify-center">
                         <Pressable
                             onPress={onClose}
                         >
                             <Text>Close</Text>
                         </Pressable>
                     </View>
-                    <View className="w-3/6 flex-row justify-center">
+                    <View className="w-3/6 h-full flex-row items-center justify-center">
                         <Pressable
                             onPress={onClose}
                         >
@@ -220,7 +237,7 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                     </View>
                 </View>
 
-            </View>
+            </SafeAreaView>
 
         </Modal>
     );

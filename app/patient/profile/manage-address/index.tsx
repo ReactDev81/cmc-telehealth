@@ -1,4 +1,6 @@
 import Button from '@/components/ui/Button';
+import { useAuth } from '@/context/UserContext';
+import { usePatientAddress } from '@/queries/patient/usePatientAddress';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Location from "expo-location";
 import { router } from 'expo-router';
@@ -12,8 +14,14 @@ const ManageAddress = () => {
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = useMemo(() => ['40%'], []);
     const [isOpen, setIsOpen] = useState(false);
-    const [location, setLocation] = useState<Location.LocationObject | null>(null);
+    // const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [loading, setLoading] = useState(false);
+    const { user } = useAuth();
+    const { data, isLoading, error } = usePatientAddress(user?.id);
+
+    const adress = data?.data;
+
+    // console.log('adress', adress);
 
     const handleAddAddress = () => {
         setIsOpen(true);
@@ -50,7 +58,7 @@ const ManageAddress = () => {
             }
 
             let loc = await Location.getCurrentPositionAsync({});
-            setLocation(loc);
+            // setLocation(loc);
             return loc;
         } catch (error) {
             // console.error('Error getting current location', error);
@@ -71,7 +79,7 @@ const ManageAddress = () => {
             if (loc) {
                 bottomSheetRef.current?.close();
                 setIsOpen(false);
-                router.push({
+                router.replace({
                     pathname: '/patient/profile/manage-address/add-current-location',
                     params: {
                         latitude: loc.coords.latitude,
@@ -93,7 +101,7 @@ const ManageAddress = () => {
             if (loc) {
                 bottomSheetRef.current?.close();
                 setIsOpen(false);
-                router.push({
+                router.replace({
                     pathname: '/patient/profile/manage-address/choose-different-location',
                     params: {
                         latitude: loc.coords.latitude,
@@ -139,23 +147,30 @@ const ManageAddress = () => {
                     </Button>
                 </View>
 
-                <View className='border border-gray rounded-xl mt-5 px-5 py-4'>
 
-                    <View className='flex-row items-center justify-between'>
-                        <View className='flex-row items-center justify-center gap-x-2'>
-                            <BriefcaseBusiness color="#013220" size={20} />
-                            <Text>32 Sector</Text>
+                {adress?.address == null ? '' :
+                    <View className='border border-gray rounded-xl mt-5 px-5 py-4'>
+
+                        <View className='flex-row items-center justify-between'>
+                            <View className='flex-row items-center justify-center gap-x-2'>
+                                <BriefcaseBusiness color="#013220" size={20} />
+                                <Text>
+                                    {adress?.area ? adress?.area : adress?.address}
+                                </Text>
+                            </View>
+                            <TouchableOpacity>
+                                <SquarePen size={16} color="#013220" />
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity>
-                            <SquarePen size={16} color="#013220" />
-                        </TouchableOpacity>
-                    </View>
 
-                    <View className='mt-2'>
-                        <Text className='text-sm text-black-400'>364, Sector32A, Ludhiana, PUNJAB, 141010</Text>
-                    </View>
+                        <View className='mt-2'>
+                            <Text className='text-sm text-black-400'>
+                                {`${adress?.address}, ${adress?.city}, ${adress?.state}, ${adress?.pincode}`}
+                            </Text>
+                        </View>
 
-                </View>
+                    </View>
+                }
 
             </View>
 

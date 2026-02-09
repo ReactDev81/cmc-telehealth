@@ -5,7 +5,7 @@ import { useAuth } from "@/context/UserContext";
 import { useBrowseDoctors } from "@/queries/patient/useBrowseDoctors";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, ScrollView, Text, View } from "react-native";
 import SearchBar from "../../components/form/search";
 import { AvailableDoctorsProps } from "../../types/patient/home";
 
@@ -156,30 +156,36 @@ const Doctors = () => {
       />
 
       <View className="flex-row gap-x-2.5">
-        <Button
-          id="both"
-          className="w-32 mt-4 mb-2"
-          variant={selectedType === "both" ? "filled" : "outline"}
-          onPress={() => handleSelect("both")}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 12 }}
         >
-          Both
-        </Button>
-        <Button
-          id="video"
-          className="w-32 mt-4 mb-2"
-          variant={selectedType === "video" ? "filled" : "outline"}
-          onPress={() => handleSelect("video")}
-        >
-          Video Call
-        </Button>
-        <Button
-          id="in-person"
-          className="w-32 mt-4 mb-2"
-          variant={selectedType === "in-person" ? "filled" : "outline"}
-          onPress={() => handleSelect("in-person")}
-        >
-          In Person
-        </Button>
+          <Button
+            id="video"
+            className="w-32 mt-4 mb-2"
+            variant={selectedType === "video" ? "filled" : "outline"}
+            onPress={() => handleSelect("video")}
+          >
+            Video Call
+          </Button>
+          <Button
+            id="in-person"
+            className="w-32 mt-4 mb-2"
+            variant={selectedType === "in-person" ? "filled" : "outline"}
+            onPress={() => handleSelect("in-person")}
+          >
+            In Person
+          </Button>
+          <Button
+            id="both"
+            className="w-32 mt-4 mb-2"
+            variant={selectedType === "both" ? "filled" : "outline"}
+            onPress={() => handleSelect("both")}
+          >
+            Both
+          </Button>
+        </ScrollView>
       </View>
 
       {isLoading && (

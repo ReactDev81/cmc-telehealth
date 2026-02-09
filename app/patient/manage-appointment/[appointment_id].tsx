@@ -701,6 +701,7 @@ export default function ManageAppointments() {
                                 <Button
                                     className="flex-1"
                                     onPress={() => {
+
                                         // If doctor id is missing, show attempt modal instead of navigating
                                         if (!doctorId) {
                                             setRescheduleAttemptModalVisible(true);

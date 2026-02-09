@@ -1,9 +1,11 @@
 import Button from '@/components/ui/Button';
+import { useAuth } from "@/context/UserContext";
+import { useSavePatientAddress } from "@/queries/patient/useSavePatientAddress";
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { MapPin } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
 
 
@@ -14,8 +16,14 @@ const AddCurrentLocation = () => {
     const lon = parseFloat(longitude as string);
 
     const [address, setAddress] = useState<string | null>(null);
-    const [streetName, setStreetName] = useState<string | null>(null);
+    const [district, setDistrict] = useState<string | null>(null);
+    const [place, setPlace] = useState<Location.LocationGeocodedAddress | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const { user } = useAuth();
+    const { mutate, isPending } = useSavePatientAddress(user?.id ?? "");  
+
+    // console.log('place ', place)
 
     useEffect(() => {
         const getAddress = async () => {
@@ -26,9 +34,10 @@ const AddCurrentLocation = () => {
                 });
 
                 if (place) {
-                    const formatted = `${place.name || ''}, ${place.street || ''}, ${place.city || ''}, ${place.region || ''}, ${place.postalCode || ''}`;
-                    setAddress(formatted);
-                    setStreetName(place.street);
+                    setAddress(place.formattedAddress);
+                    setDistrict(place.district);
+                    setPlace(place);
+                    // console.log('place', place);
                 } else {
                     setAddress('Address not found');
                 }
@@ -42,6 +51,38 @@ const AddCurrentLocation = () => {
 
         getAddress();
     }, [lat, lon]);
+
+    const onSubmit = () => {
+        if (!place) {
+          Alert.alert("Error", "Location details are not available yet.");
+          return;
+        }
+
+        const payload = {
+          address: (place.name ?? "") + " " + (place.district ?? ""),
+          area: place.district ?? "",
+          pincode: place.postalCode ?? "",
+          city: place.city ?? "",
+          state: place.region ?? "",
+          group: "address" as const,
+        };
+    
+        mutate(payload, {
+          onSuccess: (response) => {
+            Alert.alert(
+              "Success",
+              response?.message || "Address updated successfully!"
+            );
+            router.replace("/patient/profile/manage-address");
+          },
+          onError: (error: any) => {
+            Alert.alert(
+              "Error",
+              error?.response?.data?.message || "Failed to update address"
+            );
+          },
+        });
+      }; 
 
     return (
         <View className='flex-1 relative'>
@@ -68,7 +109,7 @@ const AddCurrentLocation = () => {
                             <View className='flex-row items-center gap-x-2'>
                                 <MapPin size={20} color="#1F1E1E" />
                                 <Text className='text-lg font-medium'>
-                                    {streetName}
+                                    {district}
                                 </Text>
                             </View>
                             <Text className='text-base text-black-400 rounded-xl mt-1'>
@@ -78,7 +119,12 @@ const AddCurrentLocation = () => {
                     )}
                 </View>
 
-                <Button onPress={() => router.push('/patient/profile/manage-address')}>Proceed</Button>
+                <Button 
+                    disabled={isPending} onPress={onSubmit}
+                // onPress={() => router.replace('/patient/profile/manage-address')}
+                >
+                    Proceed
+                </Button>
 
             </View>
 

@@ -178,9 +178,9 @@ const AppointementDetails = () => {
                     </Text>
                     <ReportsCard
                         report_name="Blood Test Results"
-                        report_date="Sat, Jun 18"
+                        report_date_formatted="Sat, Jun 18"
                         doctor_name="Dr. John Smith"
-                        report_type="Lab Report"
+                        type_label="Lab Report"
                         handleReport={handleViewReport}
                     />
                 </View>
@@ -194,6 +194,7 @@ const AppointementDetails = () => {
                         patient_symptoms="Depression and Anxiety"
                         doctor_name="Dr Rajeshwar"
                         consulated_date="Sat, Feb 18"
+                        appointment_id={appointmentId}
                     />
                 </View>
             </View>

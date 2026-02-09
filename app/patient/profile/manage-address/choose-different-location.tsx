@@ -1,6 +1,7 @@
 import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
-import useApi from "@/hooks/useApi";
+import { useAuth } from "@/context/UserContext";
+import { useSavePatientAddress } from "@/queries/patient/useSavePatientAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
@@ -14,7 +15,7 @@ import * as z from "zod";
 const locationSchema = z.object({
   address: z.string().min(1, "House / Floor / Flat Number is required"),
   area: z.string().optional(),
-  landmark: z.string().optional(),
+  // landmark: z.string().optional(),
   pincode: z
     .string()
     .min(5, "Pincode must be at least 5 digits")
@@ -31,8 +32,11 @@ const ChooseDifferentLocation = () => {
   const lon = parseFloat(longitude as string);
 
   const [address, setAddress] = useState<string | null>(null);
-  const [streetName, setStreetName] = useState<string | null>(null);
+  const [district, setDistrict] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  const { mutate, isPending } = useSavePatientAddress(user?.id ?? "");  
 
   const {
     control,
@@ -44,26 +48,12 @@ const ChooseDifferentLocation = () => {
     defaultValues: {
       address: "",
       area: "",
-      landmark: "",
+      // landmark: "",
       pincode: "",
       city: "",
       state: "",
     },
   });
-
-  const { data, error, status, fetchData } = useApi<{
-    data: {};
-    message?: string;
-  }>(
-    "put",
-    `${process.env.EXPO_PUBLIC_API_BASE_URL}/patient/5fbe4ea5-3461-4659-98b5-c9dde9dec39a`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-        Accept: "application/json",
-      },
-    }
-  );
 
   useEffect(() => {
     const getAddress = async () => {
@@ -74,10 +64,14 @@ const ChooseDifferentLocation = () => {
         });
 
         if (place) {
-          const formatted = `${place.name || ""}, ${place.street || ""}, ${place.city || ""
-            }, ${place.region || ""}, ${place.postalCode || ""}`;
+
+          // console.log('place', place);
+
+          // const formatted = `${place?.district}, ${place.name || ""}, ${place.street || ""}`;
+          const formatted = place.formattedAddress;
           setAddress(formatted);
-          setStreetName(place.street);
+          setDistrict(place.district)
+          setValue("address", `${place.name} ${place.district}` || "");
           setValue("pincode", place.postalCode || "");
           setValue("city", place.city || "");
           setValue("state", place.region || "");
@@ -95,27 +89,73 @@ const ChooseDifferentLocation = () => {
     getAddress();
   }, [lat, lon]);
 
-  const onSubmit = async (formData: LocationFormData) => {
-    const payload = new FormData();
+  // const onSubmit = async (formData: LocationFormData) => {
+  //   const payload = new FormData();
 
-    payload.append("address", formData.address);
-    payload.append("area", formData.area ?? "");
-    payload.append("pincode", formData.pincode);
-    payload.append("city", formData.city);
-    payload.append("state", formData.state);
-    payload.append("group", "address");
+  //   payload.append("address", formData.address);
+  //   payload.append("area", formData.area ?? "");
+  //   payload.append("pincode", formData.pincode);
+  //   payload.append("city", formData.city);
+  //   payload.append("state", formData.state);
+  //   payload.append("group", "address");
 
-    await fetchData({
-      data: payload,
+  //   await fetchData({
+  //     data: payload,
+  //   });
+
+  //   // console.log("Form Data:", payload);
+
+  //   if (status === 200) {
+  //     Alert.alert(data?.message || "Address updated successfully!");
+  //     router.push("/patient/profile/manage-address");
+  //   }
+  // };
+
+  // const onSubmit =  (formData: LocationFormData) => {
+
+  //   const payload = new FormData();
+
+  //   payload.append("address", formData.address);
+  //   payload.append("area", formData.area ?? "");
+  //   payload.append("pincode", formData.pincode);
+  //   payload.append("city", formData.city);
+  //   payload.append("state", formData.state);
+  //   payload.append("group", "address");
+
+  //   mutate(payload);
+
+  //   if (status === 200) {
+  //     Alert.alert(data?.message || "Address updated successfully!");
+  //     router.push("/patient/profile/manage-address");
+  //   }
+  // };
+
+  const onSubmit = (formData: LocationFormData) => {
+    const payload = {
+      address: formData.address,
+      area: formData.area ?? "",
+      pincode: formData.pincode,
+      city: formData.city,
+      state: formData.state,
+      group: "address" as const,
+    };
+
+    mutate(payload, {
+      onSuccess: (response) => {
+        Alert.alert(
+          "Success",
+          response?.message || "Address updated successfully!"
+        );
+        router.replace("/patient/profile/manage-address");
+      },
+      onError: (error: any) => {
+        Alert.alert(
+          "Error",
+          error?.response?.data?.message || "Failed to update address"
+        );
+      },
     });
-
-    // console.log("Form Data:", payload);
-
-    if (status === 200) {
-      Alert.alert(data?.message || "Address updated successfully!");
-      router.push("/patient/profile/manage-address");
-    }
-  };
+  };  
 
   return (
     <ScrollView
@@ -147,7 +187,7 @@ const ChooseDifferentLocation = () => {
           <View className="bg-primary-100 rounded-b-xl p-5">
             <View className="flex-row items-center gap-x-2">
               <MapPin size={20} color="#1F1E1E" />
-              <Text className="text-lg font-medium">{streetName}</Text>
+              <Text className="text-lg font-medium">{district}</Text>
             </View>
             <Text className="text-base text-black-400 rounded-xl mt-1">
               {address}
@@ -173,7 +213,7 @@ const ChooseDifferentLocation = () => {
           containerClassName="mt-5"
         />
 
-        <View>
+        {/* <View>
           <Input
             name="landmark"
             control={control}
@@ -184,7 +224,7 @@ const ChooseDifferentLocation = () => {
           <Text className="text-base text-primary mt-2.5">
             196m away from your selected location
           </Text>
-        </View>
+        </View> */}
 
         <View className="flex-row gap-x-2.5">
           <View className="flex-1">
@@ -216,7 +256,7 @@ const ChooseDifferentLocation = () => {
           containerClassName="mt-5"
         />
 
-        <Button className="mt-7" onPress={handleSubmit(onSubmit)}>
+        <Button className="mt-7" disabled={isPending} onPress={handleSubmit(onSubmit)}>
           Save & Next
         </Button>
       </View>

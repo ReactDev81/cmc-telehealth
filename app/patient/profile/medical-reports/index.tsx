@@ -185,6 +185,7 @@ import { X } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MedicalRecords = () => {
 
@@ -192,6 +193,7 @@ const MedicalRecords = () => {
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = useMemo(() => ['50%'], []);
     const [isOpen, setIsOpen] = useState(false);
+    const insets = useSafeAreaInsets();
 
     const [page, setPage] = useState(1);
     const { data, isLoading, isError, error } = useMedicalReports(user?.id, page);
@@ -235,12 +237,12 @@ const MedicalRecords = () => {
         if (index === -1) setIsOpen(false);
     }, []);
 
-    console.log("reports", reports);
+    // console.log("reports", reports);
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
 
-            <View className="flex-1 bg-white p-5">
+            <SafeAreaView className="flex-1 bg-white p-5 pt-0">
 
                 {isLoading && (
                     <View className="flex-1 items-center justify-center">
@@ -287,7 +289,8 @@ const MedicalRecords = () => {
                 <View className='mt-5'>
                     <Button onPress={handleOpenSheet}>Upload New Report</Button>
                 </View>
-            </View>
+
+            </SafeAreaView>
 
             {/* Bottom Sheet Modal */}
             {isOpen && (
@@ -305,7 +308,12 @@ const MedicalRecords = () => {
                     }}
                     handleIndicatorStyle={{ width: 0 }}
                 >
-                    <BottomSheetView style={{ flex: 1 }}>
+                    <BottomSheetView 
+                        style={{ 
+                            flex: 1 ,
+                            paddingBottom: insets?.bottom ?? 0,
+                        }}
+                    >
 
                         {/* Header */}
                         <View
