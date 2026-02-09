@@ -1,28 +1,47 @@
 import { Appointment } from "@/types/doctor/appointment"
 import { Link } from "expo-router"
-import { ScrollView } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import PastAppointmentCard from "./past-appointment-card"
 
-const AllPastAppointment = ({data}: {data?: Appointment[]}) => {
+const AllPastAppointment = ({ data }: { data?: Appointment[] }) => {
     const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
     const appointments = data || [];
 
-    return(
+    if (appointments.length === 0) {
+        return (
+            <View className="flex-1 items-center justify-center py-20">
+                <Text className="text-neutral-500 text-lg font-medium">No past appointments</Text>
+            </View>
+        );
+    }
+
+    return (
         <ScrollView>
-            {appointments.map((appointement) => {   
-                const imageSource = appointement.patient.avatar 
-                    ? { uri: appointement.patient.avatar }
+            {appointments.map((appointement) => {
+                // Safeguard against missing patient data
+                const patientName = appointement?.patient?.name || "Unknown Patient";
+                const avatar = appointement?.patient?.avatar || appointement?.patient?.image;
+                const imageSource = avatar
+                    ? { uri: avatar as string }
                     : { uri: defaultAvatar };
 
-                return(
-                    <Link href='/doctor/appointment-detail' className="mb-5" key={appointement.appointment_id}>
+                return (
+                    <Link
+                        href={`/doctor/patient-details/${appointement.appointment_id}`}
+                        className="mb-5"
+                        key={appointement.appointment_id || Math.random().toString()}
+                    >
                         <PastAppointmentCard
                             image={imageSource}
-                            name={appointement.patient.name}
-                            time={appointement.appointment_time_formatted}
-                            date={appointement.appointment_date_formatted}
-                            mode={appointement.consultation_type === "video" ? "Video" : "In Person"}
-                            status={appointement.status_label} 
+                            name={patientName}
+                            time={appointement.appointment_time_formatted || appointement.appointment_time}
+                            date={appointement.appointment_date_formatted || appointement.appointment_date}
+                            mode={
+                                (appointement.consultation_type || "").toLowerCase().includes("video")
+                                    ? "Video"
+                                    : "In Person"
+                            }
+                            status={appointement.status_label || "Completed"}
                         />
                     </Link>
                 )

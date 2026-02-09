@@ -19,13 +19,17 @@ const Appointments = () => {
     const isError =
         todayQuery.isError || upcomingQuery.isError || pastQuery.isError;
 
-    if (isLoading) return <ActivityIndicator />;
-    if (isError)
+    if (isLoading) return <ActivityIndicator className="flex-1" />;
+
+    if (isError) {
         return (
             <View className="flex-1 items-center justify-center">
                 <Text className="text-red-500">Failed to load appointments</Text>
             </View>
         );
+    }
+    // console.log("upcomingQuery", upcomingQuery.data);
+    // console.log("pastQuery", pastQuery.data);
 
     const appointmentTabs: TabItem[] = [
         {

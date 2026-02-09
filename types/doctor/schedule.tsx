@@ -1,9 +1,31 @@
-export type VisitType = "In Person" | "Video Call";
+export type ConsultationType = "video" | "in-person";
 
-export type Slot = {
+export interface Slot {
     id: string;
-    start: string;  
-    end: string;     
+    date: string;
+    start_time: string;
+    end_time: string;
+    time_range: string;
+    consultation_type: ConsultationType;
+    consultation_type_label: string;
     capacity: number;
-    label: VisitType;
-};
+    slot_capacity: number;
+    booked_count: number;
+    available_slots: number;
+    is_recurring: boolean;
+    doctor_room: string | null;
+}
+
+export interface ScheduleData {
+    date: string;
+    day_name: string;
+    slots: Slot[];
+}
+
+export interface ScheduleResponse {
+    status: boolean;
+    message: string;
+    path: string;
+    timestamp: string;
+    data: ScheduleData;
+}

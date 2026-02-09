@@ -5,6 +5,7 @@ import PreviousAppointment from "@/components/doctor/patient-detail/previous-app
 import UpcomingAppointment from "@/components/doctor/patient-detail/upcoming-appointments";
 import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
 import Button from "@/components/ui/Button";
+import Title from "@/components/ui/Title";
 import TitleWithLink from "@/components/ui/title-with-link";
 import { useAuth } from "@/context/UserContext";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
@@ -57,6 +58,7 @@ const PatientDetails = () => {
     }
 
     // console.log("Patient Details:", patient);
+    console.log("medical reports :", patient?.data?.medical_reports?.slice(0, 2));
 
 
 
@@ -65,7 +67,7 @@ const PatientDetails = () => {
             <View className="pb-20">
                 {/* headet */}
                 <PatientInfoHeader
-                    image={{ uri: patient.data.avatar }}
+                    image={{ uri: patient.data.avatar || "https://cdn-icons-png.flaticon.com/512/387/387561.png" }}
                     name={patient.data.name}
                     age={patient.data.age}
                     gender={patient.data.gender}
@@ -96,12 +98,16 @@ const PatientDetails = () => {
                 </Button>}
                 {/* mdeical reports */}
                 <View className="mt-8">
-                    <TitleWithLink
+                    {/* <TitleWithLink
                         title_text="Medical Reports"
                         link="/"
                         link_text="See All"
+                    /> */}
+                    <Title
+                        className="max-w-72"
+                        text="Medical Reports"
                     />
-                    {patient?.data?.medical_reports?.slice(0, 2).map((report: any) => {
+                    {patient?.data?.medical_reports.map((report: any) => {
                         const handleViewReport = () => {
                             const pdfUrl = report.file_url;
                             if (pdfUrl) {
@@ -122,10 +128,14 @@ const PatientDetails = () => {
                 </View>
                 {/* currently running medicine */}
                 <View className="mt-8">
-                    <TitleWithLink
+                    {/* <TitleWithLink
                         title_text="Current Medication"
                         link="/"
                         link_text="See All"
+                    /> */}
+                    <Title
+                        className="max-w-72"
+                        text="Current Medication"
                     />
                     <View className="mt-5">
                         {patient?.data?.current_medications && patient.data.current_medications.length > 0 ? (
