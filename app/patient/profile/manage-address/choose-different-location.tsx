@@ -64,10 +64,6 @@ const ChooseDifferentLocation = () => {
         });
 
         if (place) {
-
-          // console.log('place', place);
-
-          // const formatted = `${place?.district}, ${place.name || ""}, ${place.street || ""}`;
           const formatted = place.formattedAddress;
           setAddress(formatted);
           setDistrict(place.district)
@@ -88,47 +84,6 @@ const ChooseDifferentLocation = () => {
 
     getAddress();
   }, [lat, lon]);
-
-  // const onSubmit = async (formData: LocationFormData) => {
-  //   const payload = new FormData();
-
-  //   payload.append("address", formData.address);
-  //   payload.append("area", formData.area ?? "");
-  //   payload.append("pincode", formData.pincode);
-  //   payload.append("city", formData.city);
-  //   payload.append("state", formData.state);
-  //   payload.append("group", "address");
-
-  //   await fetchData({
-  //     data: payload,
-  //   });
-
-  //   // console.log("Form Data:", payload);
-
-  //   if (status === 200) {
-  //     Alert.alert(data?.message || "Address updated successfully!");
-  //     router.push("/patient/profile/manage-address");
-  //   }
-  // };
-
-  // const onSubmit =  (formData: LocationFormData) => {
-
-  //   const payload = new FormData();
-
-  //   payload.append("address", formData.address);
-  //   payload.append("area", formData.area ?? "");
-  //   payload.append("pincode", formData.pincode);
-  //   payload.append("city", formData.city);
-  //   payload.append("state", formData.state);
-  //   payload.append("group", "address");
-
-  //   mutate(payload);
-
-  //   if (status === 200) {
-  //     Alert.alert(data?.message || "Address updated successfully!");
-  //     router.push("/patient/profile/manage-address");
-  //   }
-  // };
 
   const onSubmit = (formData: LocationFormData) => {
     const payload = {

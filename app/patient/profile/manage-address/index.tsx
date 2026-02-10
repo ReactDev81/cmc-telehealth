@@ -21,8 +21,6 @@ const ManageAddress = () => {
 
     const adress = data?.data;
 
-    // console.log('adress', adress);
-
     const handleAddAddress = () => {
         setIsOpen(true);
         setTimeout(() => {
@@ -58,10 +56,8 @@ const ManageAddress = () => {
             }
 
             let loc = await Location.getCurrentPositionAsync({});
-            // setLocation(loc);
             return loc;
         } catch (error) {
-            // console.error('Error getting current location', error);
             Alert.alert(
                 'Unable to fetch location',
                 'We could not get your current location. Please try again, or choose a different location.'
@@ -158,7 +154,7 @@ const ManageAddress = () => {
                                     {adress?.area ? adress?.area : adress?.address}
                                 </Text>
                             </View>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={handleChooseDifferentLocation}>
                                 <SquarePen size={16} color="#013220" />
                             </TouchableOpacity>
                         </View>

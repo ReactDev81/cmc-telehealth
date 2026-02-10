@@ -3,7 +3,6 @@ import { useDoctorProfile } from "@/queries/doctor/useDoctorProfile";
 import { AddressContact, PersonalInformation } from "@/types/live/doctor/profile";
 import { router } from "expo-router";
 import { Bell, ChevronDown, MapPin } from "lucide-react-native";
-import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 interface HeaderProps {
@@ -19,8 +18,7 @@ const DoctorHomeHeader = ({ insets }: HeaderProps) => {
     const formattedAddress = addressData?.data
         ? `${addressData.data.city}, ${addressData.data.state}`
         : 'Sec 39, Ldh, Punjab';
-
-    const [location, setLocation] = useState(formattedAddress);
+        
     const statusPadding = insets?.top ?? 0;
 
     return (
@@ -44,9 +42,9 @@ const DoctorHomeHeader = ({ insets }: HeaderProps) => {
                         <Text className="text-white text-base font-medium">
                             {profile?.data ? `Dr. ${profile.data.first_name} ${profile.data.last_name}` : "Dr. M Joseph John"}
                         </Text>
-                        <TouchableOpacity className="flex-row items-center gap-1 mt-1">
+                        <TouchableOpacity className="flex-row items-center gap-1 mt-0.5">
                             <MapPin color="#fff" size={16} />
-                            <Text className="text-white text-sm">{addressData?.data ? formattedAddress : location}</Text>
+                            <Text className="text-white text-sm">{addressData?.data && formattedAddress}</Text>
                             <ChevronDown size={16} color="#fff" />
                         </TouchableOpacity>
                     </View>

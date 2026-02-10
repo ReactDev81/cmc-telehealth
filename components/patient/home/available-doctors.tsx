@@ -14,12 +14,19 @@ const AvailableDoctors = ({
   consultation_fee,
   years_experience,
 }: AvailableDoctorsProps) => {
+
   const experience = years_experience ? `(${years_experience} Years Exp)` : "";
-  const default_avatar =
-    "https://cdn-icons-png.flaticon.com/512/387/387561.png";
+  const default_avatar = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
+
   const doctor_speciality = Array.isArray(speciality)
-    ? speciality.map((item) => item.name).join(", ")
-    : "";
+  ? speciality
+      .map((item) =>
+        typeof item === "string" ? item : item?.name
+      )
+      .filter(Boolean)
+      .join(", ")
+  : "";
+
   const imageSource =
     typeof avatar === "string"
       ? { uri: avatar }
@@ -34,7 +41,7 @@ const AvailableDoctors = ({
         <View className="flex-1">
           <Text className="text-sm text-black font-medium">{name}</Text>
           <Text className="text-xs text-black mt-1.5">
-            {doctor_speciality}
+            {doctor_speciality ? doctor_speciality : 'no department'}
             {experience}
           </Text>
           <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1 absolute top-0 right-0">

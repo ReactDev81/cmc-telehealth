@@ -26,6 +26,7 @@ const Home = () => {
 
   const homeData = data?.data;
   const specialities = homeData?.speciality_symptoms || [];
+  const availableDoctors = homeData?.available_doctors || [];
 
   if (isLoading) {
     return (
@@ -43,8 +44,6 @@ const Home = () => {
     );
   }
 
-  // console.log("Home Data:", homeData?.available_doctors);
-
   return (
     <View className="flex-1 bg-white">
 
@@ -59,14 +58,20 @@ const Home = () => {
           <View className="flex flex-row gap-x-2.5">
             <View className="flex-1">
               <ConsultationTypeCard
-                link="/(patient)/doctors"
+                link={{
+                  pathname: "/(patient)/doctors",
+                  params: { consultation_type: "video" },
+                }}
                 image={require("../../assets/images/video-consultation.png")}
                 text="Instant Video Consultation"
               />
             </View>
             <View className="flex-1">
               <ConsultationTypeCard
-                link="/(patient)/doctors"
+                link={{
+                  pathname: "/(patient)/doctors",
+                  params: { consultation_type: "in-person" },
+                }}
                 image={require("../../assets/images/clinic-appointment.png")}
                 text="Book In-Clinic Appointment"
               />
@@ -90,15 +95,23 @@ const Home = () => {
                 specialities.map((speciality, id) => {
                   return (
                     <SpecialityCard
-                      key={id}
+                      key={speciality.id}
                       speciality={speciality.department.name}
-                      link="/doctors"
-                      image={speciality?.department?.icon}
+                      image={speciality.department.icon}
+                      link={{
+                        pathname: "/(patient)/doctors",
+                        params: {
+                          filter_type: "department",
+                          id: speciality.id,
+                        },
+                      }}
                     />
                   );
                 })
               ) : (
-                <Text>No specialities available</Text>
+                <View className="py-4">
+                  <Text>No speciality available</Text>
+                </View>
               )}
             </ScrollView>
           </View>
@@ -115,8 +128,8 @@ const Home = () => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ gap: 15, paddingRight: 0 }}
             >
-              {homeData?.available_doctors ? (
-                homeData?.available_doctors.map((availableDoctors) => {
+              {availableDoctors.length > 0 ? (
+                availableDoctors.map((availableDoctors) => {
                   return (
                     <AvailableDoctors
                       key={availableDoctors.id}
@@ -132,7 +145,9 @@ const Home = () => {
                   );
                 })
               ) : (
-                <Text>No doctors available</Text>
+                <View className="py-4">
+                  <Text>No doctors available</Text>
+                </View>
               )}
             </ScrollView>
           </View>
@@ -168,7 +183,9 @@ const Home = () => {
                 );
               })
             ) : (
-              <Text>No articles available</Text>
+              <View className="py-4">
+                <Text>No articles available</Text>
+              </View>
             )}
           </ScrollView>
         </View>
@@ -205,7 +222,9 @@ const Home = () => {
                   />
                 ))
               ) : (
-                <Text>No testimonials available</Text>
+                <View className="py-4">
+                  <Text>No testimonials available</Text>
+                </View>
               )}
             </ScrollView>
             <Button

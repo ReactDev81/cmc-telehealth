@@ -1,4 +1,5 @@
 import { useFindDoctorData } from "@/queries/patient/useFindDoctorData";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -61,9 +62,21 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                         <Text>Filters</Text>
                     </View>
                     <View>
-                    <Pressable onPress={() => setFilters({})}>
+                    {/* <Pressable onPress={() => setFilters({})}>
+                        <Text className="text-danger font-medium">Clear All</Text>
+                    </Pressable> */}
+                    <Pressable
+                        onPress={() => {
+                            setFilters({});
+                            router.setParams({
+                                filter_type: undefined,
+                                id: undefined,
+                            });
+                        }}
+                    >
                         <Text className="text-danger font-medium">Clear All</Text>
                     </Pressable>
+
                     </View>
                 </View>
 
@@ -103,65 +116,9 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                     {/* RIGHT CONTENT */}
                     <View className="w-4/6 bg-white p-4">
 
-                        {/* {activeTab === "speciality" && (
-                            <View>
-                                <View className="flex-row flex-wrap gap-4">
-                                    {items.map((item) => (
-                                        <SpecialityCard
-                                            key={item.id}
-                                            speciality={item.department.name}
-                                            image={item.department.icon}
-                                            link={{
-                                                pathname: "/patient/doctors",
-                                                params: {
-                                                    department: item.department.name,
-                                                },
-                                            }}
-                                        />
-                                    ))}
-                                </View>
-                            </View>
-                        )} */}
-
-                        {/* {activeTab === "speciality" && (
-                            <View className="flex-row flex-wrap gap-4">
-                                {items.map(item => (
-                                    <FilterOptionCard
-                                        key={item.id}
-                                        id={String(item.id)}
-                                        label={item.department.name}
-                                        icon={item.department.icon}
-                                        selected={filters.departmentId === String(item.id)}
-                                        onPress={(id) =>
-                                            setFilters((prev) => ({
-                                                ...prev,
-                                                departmentId: prev.departmentId === id ? undefined : id,
-                                                symptomDepartmentId: undefined,
-                                            }))
-                                        }                                          
-                                    />
-                                ))}
-                            </View>
-                        )} */}
-
                         {activeTab === "speciality" && (
                             <View className="flex-row flex-wrap justify-between gap-4">
-                                {/* {items.map((item) => (
-                                    <FilterOptionCard
-                                        key={item.id}
-                                        id={String(item.id)} // department ID
-                                        label={item.department.name}
-                                        icon={item.department.icon}
-                                        selected={filters.departmentId === String(item.id)}
-                                        onPress={(id) =>
-                                            setFilters((prev) => ({
-                                                ...prev,
-                                                departmentId: prev.departmentId === id ? undefined : id,
-                                                symptomDepartmentId: undefined, // 🔥 reset symptom
-                                            }))
-                                        }
-                                    />
-                                ))} */}
+
                                 {items.map((item) => {
                                     return(
                                         <FilterOptionCard

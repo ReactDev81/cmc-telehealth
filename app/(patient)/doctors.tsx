@@ -3,7 +3,7 @@ import AvailableDoctors from "@/components/patient/home/available-doctors";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useBrowseDoctors } from "@/queries/patient/useBrowseDoctors";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, ScrollView, Text, View } from "react-native";
 import SearchBar from "../../components/form/search";
@@ -26,6 +26,7 @@ const Doctors = () => {
 
   const handleSelect = (type: ConsultationType) => {
     setSelectedType(type);
+    router.setParams({ consultation_type: type });
   };
 
   const matchConsultationType = (
@@ -122,27 +123,61 @@ const Doctors = () => {
   //     return <Text>Error loading home</Text>;
   // }
 
+  // useEffect(() => {
+  //   // Only react to the specific param values instead of the whole `params` object
+  //   const filterType = (params as any)?.filter_type;
+  //   const id = (params as any)?.id;
+
+  //   if (!filterType) return;
+
+  //   if (filterType === "department" && id) {
+  //     setFilters((prev) => {
+  //       const departmentId = String(id);
+  //       if (prev.departmentId === departmentId) return prev;
+  //       return { ...prev, departmentId };
+  //     });
+  //   } else if (filterType === "symptom" && id) {
+  //     setFilters((prev) => {
+  //       const symptomDepartmentId = String(id);
+  //       if (prev.symptomDepartmentId === symptomDepartmentId) return prev;
+  //       return { ...prev, symptomDepartmentId };
+  //     });
+  //   }
+  // }, [params?.filter_type, params?.id]);
+
   useEffect(() => {
-    // Only react to the specific param values instead of the whole `params` object
-    const filterType = (params as any)?.filter_type;
-    const id = (params as any)?.id;
-
-    if (!filterType) return;
-
-    if (filterType === "department" && id) {
-      setFilters((prev) => {
-        const departmentId = String(id);
-        if (prev.departmentId === departmentId) return prev;
-        return { ...prev, departmentId };
-      });
-    } else if (filterType === "symptom" && id) {
-      setFilters((prev) => {
-        const symptomDepartmentId = String(id);
-        if (prev.symptomDepartmentId === symptomDepartmentId) return prev;
-        return { ...prev, symptomDepartmentId };
+    const filterType = params?.filter_type as "department" | "symptom" | undefined;
+    const id = params?.id;
+  
+    if (!filterType || !id) return;
+  
+    if (filterType === "department") {
+      setFilters({
+        departmentId: String(id),
+        symptomDepartmentId: undefined,
       });
     }
-  }, [params?.filter_type, params?.id]);
+  
+    if (filterType === "symptom") {
+      setFilters({
+        symptomDepartmentId: String(id),
+        departmentId: undefined,
+      });
+    }
+  }, [params?.filter_type, params?.id]);  
+
+
+  useEffect(() => {
+    const consultationType = params?.consultation_type as ConsultationType;
+  
+    if (
+      consultationType &&
+      ["video", "in-person", "both"].includes(consultationType)
+    ) {
+      setSelectedType(consultationType);
+    }
+  }, [params?.consultation_type]);
+  
 
   return (
     <View className="flex-1 bg-white p-5 relative">
@@ -202,11 +237,9 @@ const Doctors = () => {
 
       {!isLoading && !error && (
         <FlatList
-          // data={data?.data ?? []}
           data={filteredDoctors}
           renderItem={renderDoctorItem}
           keyExtractor={(item, index) => index.toString()}
-          // keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
         />
       )}
