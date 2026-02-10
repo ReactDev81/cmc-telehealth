@@ -58,8 +58,8 @@ const Schedules = () => {
 
     const { data: scheduleData, isLoading, isError, error } = useGetDoctorSchedule(selectedDate, mode.toLowerCase(), token!);
 
-    console.log("[UI] Schedules token:", token ? "Exists" : "Missing");
-    console.log("📅 Schedule Data for", selectedDate, ":", JSON.stringify(scheduleData, null, 2));
+    // console.log("[UI] Schedules token:", token ? "Exists" : "Missing");
+    // console.log("📅 Schedule Data for", selectedDate, ":", JSON.stringify(scheduleData, null, 2));
 
     const slots: Slot[] = useMemo(() => {
         if (!scheduleData) return [];

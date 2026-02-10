@@ -1,26 +1,25 @@
-import { View, Text } from "react-native"
-import { Calendar, Clock, Hospital, Video } from "lucide-react-native"
+import Badge from "@/components/ui/Badge"
 import { PreviousAppointmentProps } from "@/types/doctor/previous-appointment"
+import { Calendar, Clock, Hospital, Video } from "lucide-react-native"
+import { Text, View } from "react-native"
 
 
-const PreviousAppointment = ({ subject, status, time, date, mode } : PreviousAppointmentProps ) => {
-    return(
-        <View className="border border-black-300 rounded-xl p-4 mt-5">
+const PreviousAppointment = ({ subject, status, time, date, mode }: PreviousAppointmentProps) => {
+    return (
+        <View className="border border-black-300 rounded-xl p-4 mt-5 w-full">
             <View className="flex-row justify-between">
                 <Text className="text-lg font-medium text-black">{subject}</Text>
-                <Text 
-                    className={`text-xs capitalize font-medium w-fit p-2 rounded-md absolute right-0
-                        ${status === 'completed' ? 'text-success bg-success-400' : 'text-danger bg-danger-400'}
-                        `}
-                >
-                    {status}
-                </Text>
+                <Badge
+                    text={status}
+                    variant={status.toLowerCase() === 'completed' ? 'success' : 'danger'}
+                    className="absolute right-0"
+                />
             </View>
             <View className="flex-row items-center gap-x-3 mt-1">
                 <View className="flex-row items-center gap-x-2">
                     <Calendar size={12} className="text-black-400" />
                     <Text className="text-sm text-black-400">{date}</Text>
-                </View> 
+                </View>
                 <View className="flex-row items-center gap-x-2">
                     <Clock size={14} className="text-black-400" />
                     <Text className="text-sm text-black-400">{time}</Text>
@@ -28,10 +27,10 @@ const PreviousAppointment = ({ subject, status, time, date, mode } : PreviousApp
             </View>
             <View className="flex-row items-center gap-x-1 mt-2.5">
                 <View className="flex items-center justify-center w-6 h-6 bg-primary-200 rounded-full">
-                    {   
-                        mode === 'video' ? 
-                            <Video size={12} color="#013220" fill="#013220" /> 
-                        : 
+                    {
+                        mode === 'video' ?
+                            <Video size={12} color="#013220" fill="#013220" />
+                            :
                             <Hospital size={12} color="#013220" />
                     }
                 </View>

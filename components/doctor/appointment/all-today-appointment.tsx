@@ -16,27 +16,28 @@ const AllTodayAppointment = ({ data }: { data?: Appointment[] }) => {
 
     return (
         <ScrollView>
-            {appointments.map((appointement) => {
+            {appointments.map((appointment) => {
                 // Safeguard against missing patient data
-                const patientName = appointement?.patient?.name || "Unknown Patient";
-                const avatar = appointement?.patient?.avatar || appointement?.patient?.image;
+                const patientName = appointment?.patient?.name || "Unknown Patient";
+                const avatar = appointment?.patient?.avatar || appointment?.patient?.image;
                 const imageSource = avatar
                     ? { uri: avatar as string }
                     : { uri: defaultAvatar };
 
                 return (
-                    <View className="mb-5" key={appointement.appointment_id || Math.random()}>
+                    <View className="mb-5" key={appointment.appointment_id || Math.random()}>
                         <TodayAppointmentCard
-                            appointmentId={appointement.appointment_id}
+                            appointmentId={appointment.appointment_id}
                             image={imageSource}
                             name={patientName}
-                            time={appointement.appointment_time_formatted || appointement.appointment_time}
+                            time={appointment.appointment_time_formatted || appointment.appointment_time}
                             mode={
-                                appointement.consultation_type_label?.toLowerCase() ===
+                                appointment.consultation_type_label?.toLowerCase() ===
                                     "video consultation"
                                     ? "Video"
                                     : "In Person"
                             }
+                            callNow={appointment.call_now}
                         />
                     </View>
                 );

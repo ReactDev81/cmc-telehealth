@@ -42,9 +42,8 @@ const PatientDetails = () => {
                         <View className="mt-5" key={report.id}>
                             <ReportsCard
                                 report_name={report.report_name}
-                                report_date={report.report_date}
-                                doctor_name={report.doctor_name}
-                                report_type={report.report_type}
+                                report_date_formatted={report.report_date}
+                                type_label={report.report_type}
                                 handleReport={handleViewReport}
                             />
                         </View>
@@ -67,7 +66,7 @@ const PatientDetails = () => {
                 </View>
             </View>
 
-            {/* previous appointement with this client */}
+            {/* previous appointment with this client */}
             <View className="mt-2">
                 <Title text="Previous appointment with this patients" />
                 {PreviousAppointmentData.slice(0, 2).map((appointment) => (

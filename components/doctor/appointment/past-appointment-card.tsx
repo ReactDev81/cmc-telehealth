@@ -1,3 +1,4 @@
+import Badge from "@/components/ui/Badge";
 import { appointmentProps } from "@/types/doctor/appointment";
 import { Calendar, Clock, Hospital, Video } from "lucide-react-native";
 import { Image, Text, View } from "react-native";
@@ -13,13 +14,11 @@ const PastAppointmentCard = ({ image, name, time, date, mode, status }: appointm
                 />
             </View>
             <View className="flex-1">
-                <Text
-                    className={`text-xs capitalize font-medium w-fit p-2 rounded-md absolute right-0
-                        ${status === "Completed" ? 'text-success bg-success-400' : 'text-danger bg-danger-400'}
-                        `}
-                >
-                    {status}
-                </Text>
+                <Badge
+                    text={status ?? ""}
+                    variant={status === "Completed" ? 'success' : 'danger'}
+                    className="absolute right-0"
+                />
                 <Text className="text-sm font-medium text-black mt-3">{name}</Text>
                 <View className="flex-row items-center gap-x-3 mt-1">
                     <View className="flex-row items-center gap-x-2">

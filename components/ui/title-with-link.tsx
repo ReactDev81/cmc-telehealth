@@ -5,8 +5,8 @@ import Title from "./Title";
 
 interface TitleWithLinkProps {
     title_text: string,
-    link: Href,
-    link_text: string
+    link?: Href,
+    link_text?: string
 }
 
 const TitleWithLink = ({ title_text, link, link_text }: TitleWithLinkProps) => {
@@ -16,17 +16,19 @@ const TitleWithLink = ({ title_text, link, link_text }: TitleWithLinkProps) => {
                 className="max-w-72"
                 text={title_text}
             />
-            <Link
-                href={link}
-            >
-                <View className="flex-row items-center gap-x-1">
-                    <Text className="text-base font-medium text-primary">{link_text}</Text>
-                    <ChevronRight
-                        size={18}
-                        color="#013220"
-                    />
-                </View>
-            </Link>
+            {link && link_text && (
+                <Link
+                    href={link}
+                >
+                    <View className="flex-row items-center gap-x-1">
+                        <Text className="text-base font-medium text-primary">{link_text}</Text>
+                        <ChevronRight
+                            size={18}
+                            color="#013220"
+                        />
+                    </View>
+                </Link>
+            )}
         </View>
     )
 }

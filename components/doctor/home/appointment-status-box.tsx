@@ -1,8 +1,8 @@
-import { AppointementStatusBoxProps } from "@/types/doctor/home"
+import { AppointmentStatusBoxProps } from "@/types/doctor/home"
 import { Text, View } from "react-native"
 
 
-const AppointementStatusBox = ({ status, status_count }: AppointementStatusBoxProps) => {
+const AppointmentStatusBox = ({ status, status_count }: AppointmentStatusBoxProps) => {
     return (
         <View
             className={`px-3 py-4 rounded-xl flex-1 items-center
@@ -15,10 +15,10 @@ const AppointementStatusBox = ({ status, status_count }: AppointementStatusBoxPr
                 {status_count}
             </Text>
             <Text className="text-xs text-black-400 text-center capitalize mt-1">
-                {status} Appointements
+                {status} Appointments
             </Text>
         </View>
     )
 }
 
-export default AppointementStatusBox
+export default AppointmentStatusBox

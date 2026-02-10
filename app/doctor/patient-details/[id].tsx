@@ -9,7 +9,7 @@ import Title from "@/components/ui/Title";
 import TitleWithLink from "@/components/ui/title-with-link";
 import { useAuth } from "@/context/UserContext";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
-import { router, useLocalSearchParams } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { ChevronRight } from "lucide-react-native";
 import { ActivityIndicator, Linking, ScrollView, Text, View } from "react-native";
 
@@ -58,7 +58,7 @@ const PatientDetails = () => {
     }
 
     // console.log("Patient Details:", patient);
-    console.log("medical reports :", patient?.data?.medical_reports?.slice(0, 2));
+    // console.log("medical reports :", patient?.data?.medical_reports?.slice(0, 2));
 
 
 
@@ -78,7 +78,7 @@ const PatientDetails = () => {
                     number={patient?.data?.contact?.phone_formatted}
                     email={patient?.data?.contact?.email}
                 />
-                {/* upcoming appointement details of this patient */}
+                {/* upcoming appointment details of this patient */}
                 {upcomingAppointment && <UpcomingAppointment
                     call_now={upcomingAppointment?.call_now}
                     date={upcomingAppointment?.date || ""}
@@ -152,23 +152,29 @@ const PatientDetails = () => {
                         )}
                     </View>
                 </View>
-                {/* previous appointement with this client */}
                 <View className="mt-2">
                     <TitleWithLink
-                        title_text="Previous appointment with this patients"
-                        link="/"
-                        link_text="See All"
+                        title_text="Previous appointment with this patient"
+                        link={patient.data.previous_appointments.length > 2
+                            ? `/doctor/patient-details/all-previous-appointments/${appointmentId}`
+                            : undefined}
+                        link_text={patient.data.previous_appointments.length > 2 ? "See All" : ""}
                     />
                     {patient?.data?.previous_appointments && patient.data.previous_appointments.length > 0 ? (
                         patient.data.previous_appointments.slice(0, 2).map((appointment: any) => (
-                            <PreviousAppointment
+                            <Link
                                 key={appointment.appointment_id}
-                                subject={appointment.notes?.problem || "No problem specified"}
-                                status={appointment.status}
-                                time={appointment.appointment_time_formatted}
-                                date={appointment.appointment_date_formatted}
-                                mode={appointment.consultation_type_label}
-                            />
+                                href={`/doctor/past-appointment-detail/${appointment.appointment_id}`}
+                                className="mb-5"
+                            >
+                                <PreviousAppointment
+                                    subject={appointment.notes?.problem || "No problem specified"}
+                                    status={appointment.status}
+                                    time={appointment.appointment_time_formatted}
+                                    date={appointment.appointment_date_formatted}
+                                    mode={appointment.consultation_type_label}
+                                />
+                            </Link>
                         ))
                     ) : (
                         <View className="mt-5">

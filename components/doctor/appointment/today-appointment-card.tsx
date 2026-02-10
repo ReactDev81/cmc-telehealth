@@ -1,8 +1,13 @@
+import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import { appointmentProps } from "@/types/doctor/appointment";
 import { router } from "expo-router";
 import { Calendar, Hospital, Video } from "lucide-react-native";
 import { Image, Text, View } from "react-native";
+
+interface Props extends appointmentProps {
+    callNow?: boolean;
+}
 
 const TodayAppointmentCard = ({
     image,
@@ -10,7 +15,8 @@ const TodayAppointmentCard = ({
     time,
     mode,
     appointmentId,
-}: appointmentProps) => {
+    callNow,
+}: Props) => {
     return (
         <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
             <View className="w-24">
@@ -20,9 +26,13 @@ const TodayAppointmentCard = ({
                 />
             </View>
             <View className="flex-1">
-                {/* <Text className={`text-xs text-success bg-success-400 capitalize font-medium w-fit p-2 rounded-md absolute right-0`}>
-                    Join Now
-                </Text> */}
+                {callNow && (
+                    <Badge
+                        text="Join Now"
+                        variant="success"
+                        className="absolute right-0"
+                    />
+                )}
                 <Text className="text-sm font-medium text-black mt-3">{name}</Text>
                 <View className="flex-row items-center gap-x-3 mt-1">
                     <View className="flex-row items-center gap-x-2">

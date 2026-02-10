@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import { useState, ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
+import { Text, TouchableOpacity, View } from 'react-native'
 
 export interface TabItem {
     key: string
@@ -24,13 +24,13 @@ const Tab = ({ tabs, defaultTab, onTabChange }: TabProps) => {
 
     const activeTabContent = tabs.find(tab => tab.key === activeTab)?.content
 
-    return(
+    return (
         <View className='w-full flex-1 pb-24'>
 
             {/* Tab Headers */}
             <View className='flex-row bg-primary-100 rounded-xl p-2'>
                 {tabs.map((tab) => (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         key={tab.key}
                         className={`flex-1 py-3 rounded-xl  ${activeTab === tab.key ? 'bg-primary' : 'bg-transparent'}`}
                         onPress={() => handleTabPress(tab.key)}
@@ -43,7 +43,7 @@ const Tab = ({ tabs, defaultTab, onTabChange }: TabProps) => {
             </View>
 
             {/* Tab Content */}
-            <View className='mt-4'>
+            <View className='flex-1 mt-4'>
                 {activeTabContent}
             </View>
 

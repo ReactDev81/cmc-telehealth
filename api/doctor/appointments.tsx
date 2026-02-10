@@ -16,12 +16,12 @@ export const fetchAppointments = async (
       }
     );
 
-    console.log(`[API] /appointments/my ${filter} keys:`, Object.keys(res.data));
+    // console.log(`[API] /appointments/my ${filter} keys:`, Object.keys(res.data));
     if (res.data.pagination) {
-      console.log(`[API] /appointments/my ${filter} total:`, res.data.pagination.total);
+      // console.log(`[API] /appointments/my ${filter} total:`, res.data.pagination.total);
     }
 
-    console.log(`[API] /appointments/my ${filter} response:`, JSON.stringify(res.data, null, 2));
+    // console.log(`[API] /appointments/my ${filter} response:`, JSON.stringify(res.data, null, 2));
 
     const extract = (obj: any): Appointment[] => {
       if (!obj) return [];

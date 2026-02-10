@@ -33,14 +33,14 @@ export interface AdvertisementProps {
 // Testimonials
 export interface TestimonialProps {
   patient_id: string;
-  doctor_id: string;
+  doctor_id?: string;
   patient_name: string;
   title: string;
   content: string;
   rating: number;
-  is_active: boolean;
-  is_featured: boolean;
-  slug: string;
+  is_active?: boolean;
+  is_featured?: boolean;
+  slug?: string;
   patient_image: string | ImageSourcePropType;
   total_reviews: string;
   patient_age: string;

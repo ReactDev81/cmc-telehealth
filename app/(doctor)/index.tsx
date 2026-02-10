@@ -1,6 +1,6 @@
 import TodayAppointmentCard from "@/components/doctor/appointment/today-appointment-card";
 import UpcomingAppointmentCard from "@/components/doctor/appointment/upcoming-appointment-card";
-import AppointementStatusBox from "@/components/doctor/home/appointement-status-box";
+import AppointmentStatusBox from "@/components/doctor/home/appointment-status-box";
 import DoctorHomeHeader from "@/components/doctor/home/header";
 import Testimonial from "@/components/patient/home/testimonial";
 import Button from "@/components/ui/Button";
@@ -69,20 +69,20 @@ const Home = () => {
             <DoctorHomeHeader insets={insets} />
 
             <ScrollView showsVerticalScrollIndicator={false} className="flex-1 p-5">
-                {/* appointement status */}
+                {/* appointment status */}
                 <View className="flex-row items-center gap-x-3">
-                    {appointmentStatusData.map((AppointementStatus) => {
+                    {appointmentStatusData.map((AppointmentStatus) => {
                         return (
-                            <AppointementStatusBox
-                                key={AppointementStatus.id}
-                                status={AppointementStatus.status}
-                                status_count={AppointementStatus.status_count}
+                            <AppointmentStatusBox
+                                key={AppointmentStatus.id}
+                                status={AppointmentStatus.status}
+                                status_count={AppointmentStatus.status_count}
                             />
                         );
                     })}
                 </View>
 
-                {/* today's appointement */}
+                {/* today's appointment */}
                 <View className="mt-7">
                     <TitleWithLink
                         title_text="Today's Appointments"
@@ -106,7 +106,7 @@ const Home = () => {
                     )}
                 </View>
 
-                {/* today's appointement */}
+                {/* upcoming appointment */}
                 <View className="mt-7">
                     <TitleWithLink
                         title_text="Upcoming Appointments"
@@ -169,11 +169,11 @@ const Home = () => {
                                     patient_id={review.id}
                                     patient_name={review.patient_name}
                                     patient_image={review.patient_image}
-                                    patient_age={review.patient_age ?? ""}
+                                    patient_age={String(review.patient_age ?? "")}
                                     title={review.title}
                                     content={review.content}
                                     rating={review.rating}
-                                    total_reviews={review.total_reviews}
+                                    total_reviews={String(review.total_reviews)}
                                     doctor_name={review.doctor_name}
                                 />
                             ))}

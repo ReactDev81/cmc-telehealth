@@ -18,6 +18,6 @@ export const fetchDoctorSchedule = async ({
         },
         signal,
     });
-    console.log("[API] Schedule raw response:", JSON.stringify(res.data, null, 2));
+    // console.log("[API] Schedule raw response:", JSON.stringify(res.data, null, 2));
     return res.data.data;
 };

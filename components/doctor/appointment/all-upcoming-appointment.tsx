@@ -6,8 +6,6 @@ import UpcomingAppointmentCard from "./upcoming-appointment-card";
 const AllUpcomingAppointment = ({ data }: { data?: Appointment[] }) => {
     const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
     const appointments = data || [];
-    console.log("appointments", appointments)
-    console.log("appointments", appointments[0].appointment_id)
 
     if (appointments.length === 0) {
         return (
@@ -19,31 +17,31 @@ const AllUpcomingAppointment = ({ data }: { data?: Appointment[] }) => {
 
     return (
         <ScrollView>
-            {appointments.map((appointement) => {
+            {appointments.map((appointment) => {
                 // Safeguard against missing patient data
-                const patientName = appointement?.patient?.name || "Unknown Patient";
-                const avatar = appointement?.patient?.avatar || appointement?.patient?.image;
+                const patientName = appointment?.patient?.name || "Unknown Patient";
+                const avatar = appointment?.patient?.avatar || appointment?.patient?.image;
                 const imageSource = avatar
                     ? { uri: avatar as string }
                     : { uri: defaultAvatar };
 
                 return (
                     <Link
-                        href={`/doctor/patient-details/${appointement.appointment_id}`}
+                        href={`/doctor/patient-details/${appointment.appointment_id}`}
                         className="mb-5"
-                        key={appointement.appointment_id || Math.random().toString()}
+                        key={appointment.appointment_id || Math.random().toString()}
                     >
                         <UpcomingAppointmentCard
                             image={imageSource}
                             name={patientName}
-                            time={appointement.appointment_time_formatted || appointement.appointment_time}
-                            date={appointement.appointment_date_formatted || appointement.appointment_date}
+                            time={appointment.appointment_time_formatted || appointment.appointment_time}
+                            date={appointment.appointment_date_formatted || appointment.appointment_date}
                             mode={
-                                (appointement.consultation_type || "").toLowerCase().includes("video")
+                                (appointment.consultation_type || "").toLowerCase().includes("video")
                                     ? "Video"
                                     : "In Person"
                             }
-                            status={appointement.status_label || "Scheduled"}
+                            status={appointment.status_label || "Scheduled"}
                         />
                     </Link>
                 );

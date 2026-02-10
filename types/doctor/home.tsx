@@ -1,4 +1,4 @@
-export interface AppointementStatusBoxProps {
+export interface AppointmentStatusBoxProps {
     id?: number,
     status: string,
     status_count: number
