@@ -240,6 +240,7 @@
 import CancelAppointmentModal from "@/components/patient/appointment/cancel-appointment-modal";
 import RescheduleAttemptModal from "@/components/patient/appointment/reschedule-attempt-modal";
 import Button from "@/components/ui/Button";
+import ErrorState from "@/components/ui/ErrorState";
 import { useCancelAppointment } from "@/mutations/patient/useCancelAppointment";
 import { useUploadReportsAndNotes } from "@/mutations/patient/useUploadReportsAndNotes";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
@@ -249,7 +250,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { SquarePen, Stethoscope } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Alert, Image, Linking, Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Linking, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as z from "zod";
 import UploadReportsNotes from "./upload-reports-notes";
@@ -293,6 +294,25 @@ export default function ManageAppointments() {
             refetch();
         }
     }, [appointmentId, refetch]);
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 items-center justify-center bg-white">
+                <ActivityIndicator size="large" color="#013220" />
+                <Text className="text-black-400 mt-4 font-medium">Loading appointment details...</Text>
+            </View>
+        );
+    }
+
+    if (isError || !data?.data) {
+        return (
+            <ErrorState
+                title="Appointment Not Found"
+                message="We couldn't retrieve the details for this appointment. It may have been removed or there's a connection issue."
+                onRetry={() => refetch()}
+            />
+        );
+    }
 
     const appointment = data?.data;
     const patient = appointment?.patient;
@@ -549,7 +569,7 @@ export default function ManageAppointments() {
     const doctorId =
         data?.data?.doctor?.user_id ||
         data?.data?.doctor?.id ||
-        data?.data?.doctor?.profile?.id ||
+        (data?.data?.doctor as any)?.profile?.id ||
         (data?.data as any)?.doctor_id ||
         appointment?.doctor_id;
     // console.log("Doctor ID :", doctorId);
@@ -595,20 +615,20 @@ export default function ManageAppointments() {
                             </Text>
                         </View>
 
-                        <Detail label="Date" value={schedule?.date_formatted} />
-                        <Detail label="Time" value={schedule?.time_formatted} />
+                        <Detail label="Date" value={schedule?.date_formatted || ""} />
+                        <Detail label="Time" value={schedule?.time_formatted || ""} />
                         <Detail
                             label="Booking Type"
-                            value={schedule?.consultation_type_label}
+                            value={schedule?.consultation_type_label || ""}
                         />
                     </View>
 
                     {/* Patient Details */}
                     <View className="pb-5 mb-5 border-b border-[#EDEDED]">
                         <Text className="text-lg font-medium">Patient Details</Text>
-                        <Detail label="Name" value={patient?.name} />
-                        <Detail label="Age" value={patient?.age_formatted} />
-                        <Detail label="Gender" value={patient?.gender_formatted} />
+                        <Detail label="Name" value={patient?.name || ""} />
+                        <Detail label="Age" value={patient?.age_formatted || ""} />
+                        <Detail label="Gender" value={patient?.gender_formatted || ""} />
                     </View>
 
                     <View>

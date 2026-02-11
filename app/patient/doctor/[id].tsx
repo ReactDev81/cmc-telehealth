@@ -74,6 +74,20 @@ const DoctorDetail = () => {
         fetchData();
     }, []);
 
+    // Preselect appointment type if only one is available
+    useEffect(() => {
+        if (!doctor?.appointment_types || booking_type === "reschedule") return;
+
+        const hasVideo = !!doctor.appointment_types.video;
+        const hasInPerson = !!doctor.appointment_types.in_person;
+
+        if (hasVideo && !hasInPerson) {
+            setAppointmentType("video");
+        } else if (!hasVideo && hasInPerson) {
+            setAppointmentType("in_person");
+        }
+    }, [doctor?.appointment_types, booking_type]);
+
     // If appointment_id supplied (reschedule) fetch appointment and prefill missing values
     const { data: appointmentData } = useAppointmentById(
         typeof appointment_id === "string" ? appointment_id : undefined

@@ -43,6 +43,7 @@ const AppointmentSummary = () => {
   const schedule = appointment?.schedule;
   const doctor = appointment?.doctor;
   const payment = appointment?.payment;
+  // console.log("doctor name :", doctor?.name)
 
   // console.log('doctor', doctor?.user_id)
   // console.log('appointment data', appointment);
@@ -79,7 +80,8 @@ const AppointmentSummary = () => {
   const handlePayment = () => {
 
     const options = {
-      description: "Credits towards consultation",
+      // description: "Credits towards consultation",
+      description: doctor?.name,
       image: require("../../assets/images/app-icon.png"),
       currency: "INR",
       key: appointment?.razorpay_key_id,
