@@ -53,10 +53,11 @@ const AppointementDetails = () => {
             </View>
 
             <View className="p-5 pb-12">
+
                 {/* name & speciality */}
                 <View>
                     <View className="flex-row gap-x-1">
-                        <Stethoscope size={15} color="#2D4095" />
+                        <Stethoscope size={15} color="#013220" />
                         <Text className="text-primary text-sm">{doctor?.department}</Text>
                     </View>
                     <Text className="text-lg font-medium text-black mt-1">
@@ -197,6 +198,7 @@ const AppointementDetails = () => {
                         appointment_id={appointmentId}
                     />
                 </View>
+                
             </View>
         </ScrollView>
     );

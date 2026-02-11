@@ -5,11 +5,14 @@ import Button from "@/components/ui/Button";
 import useApi from "@/hooks/useApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
+import { X } from 'lucide-react-native';
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Image, Text, View } from "react-native";
+import { Image, Modal, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
+import PrivacyPolicy from "../common-screens/profile/privacy-policy";
+import TermAndCondition from "../common-screens/profile/term-condition";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -20,7 +23,8 @@ const schema = z.object({
 });
 
 export default function RegisterSendOtp() {
-  const { data, error, fetchData } = useApi<{
+
+  const { data, error, fetchData } = useApi<{ 
     data: {
       email: string;
       password: string;
@@ -34,6 +38,8 @@ export default function RegisterSendOtp() {
   });
 
   const [submittedForm, setSubmittedForm] = useState<any>(null);
+  const [openPrivacy, setOpenPrivacy] = useState(false);
+  const [openTerm, setOpenTerm] = useState(false);
 
   const { control, handleSubmit, watch } = useForm({
     resolver: zodResolver(schema),
@@ -65,7 +71,7 @@ export default function RegisterSendOtp() {
   };
 
   const onSubmit = async (formData: any) => {
-    console.log("Form Submitted:", formData);
+    // console.log("Form Submitted:", formData);
 
     const register = {
       email: formData.email,
@@ -140,20 +146,33 @@ export default function RegisterSendOtp() {
       />
 
       {/* Terms */}
-      <View className="mt-2 flex-row">
+      <View className="mt-3">
         <Checkbox
           name="agreedToTerms"
           control={control}
-          label={
-            <Text className="text-gray-600 text-sm ml-3 mt-4">
-              By clicking "Continue", you agree to accept our{" "}
-              <Text className="text-primary font-medium">Privacy Policy</Text>{" "}
-              and{" "}
-              <Text className="text-primary font-medium">Terms of Service</Text>
-            </Text>
+          labelComponent={
+            <View className="flex-1">
+              <Text className="text-gray-600 text-sm">
+                By clicking "Continue", you agree to accept our{" "}
+                <Text
+                  className="text-primary font-medium"
+                  onPress={() => setOpenPrivacy(true)}
+                >
+                  Privacy Policy
+                </Text>{" "}
+                and{" "}
+                <Text
+                  className="text-primary font-medium"
+                  onPress={() => setOpenTerm(true)}
+                >
+                  Terms of Service
+                </Text>
+              </Text>
+            </View>
           }
         />
       </View>
+
 
       {/* Continue */}
       <Button onPress={handleSubmit(onSubmit)} className="mt-8">
@@ -168,6 +187,43 @@ export default function RegisterSendOtp() {
           </Link>
         </Text>
       </View>
+
+
+      {/* Privacy Modal */}
+      <Modal
+        visible={openPrivacy}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setOpenPrivacy(false)}
+      >
+        <View className="flex-1 bg-black/40 justify-center items-center">
+            <View className="w-11/12 min-h-80 bg-white relative p-2 rounded">
+                <Pressable className="absolute top-2.5 right-2.5 z-10" onPress={() => setOpenPrivacy(false)}>
+                  <X color="#4D4D4D" />
+                </Pressable>
+                <PrivacyPolicy />
+            </View>
+        </View>
+      </Modal>
+
+
+      {/* Term Modal */}
+      <Modal
+        visible={openTerm}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setOpenTerm(false)}
+      >
+        <View className="flex-1 bg-black/40 justify-center items-center">
+            <View className="w-11/12 min-h-80 bg-white relative p-2 rounded">
+                <Pressable className="absolute top-2.5 right-2.5 z-10" onPress={() => setOpenTerm(false)}>
+                  <X color="#4D4D4D" />
+                </Pressable>
+                <TermAndCondition />
+            </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }

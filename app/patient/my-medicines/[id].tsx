@@ -121,6 +121,7 @@ const MedicinesDetail = () => {
     const pdfUrl = list?.pdf_url;
 
     // console.log("MedicinesData :", MedicinesData);
+    // console.log('appointmentId', appointmentId);
 
     // console.log("Medicine Detail Data:", data);
 

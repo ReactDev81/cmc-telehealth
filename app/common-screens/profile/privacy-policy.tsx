@@ -34,13 +34,7 @@ const PrivacyPolicy = () => {
     };
 
     const privacyPolicyData = data?.privacy_policy;
-    console.log("data: ", privacyPolicyData)
 
-    // const privacyPolicyData = data?.data.privacy_policy;
-    // return (
-    //     <ScrollView className="flex-1 bg-white p-5">
-
-    // const privacyPolicyData = data?.data.privacy_policy;
     return (
         <ScrollView className="flex-1 bg-white p-5">
             {isLoading ? (

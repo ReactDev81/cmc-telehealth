@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react-native';
 import type { ReactNode } from "react";
 import { Control, useController } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
@@ -6,6 +7,7 @@ type CheckboxProps = {
   name: string;
   control: Control<any>;
   label?: ReactNode;
+  labelComponent?: ReactNode;
   className?: string;
 };
 
@@ -13,6 +15,7 @@ export default function Checkbox({
   name,
   control,
   label,
+  labelComponent,
   className = "",
 }: CheckboxProps) {
   const {
@@ -25,24 +28,29 @@ export default function Checkbox({
     <Pressable
       onPress={toggle}
       hitSlop={10}
-      className={`flex-row items-center gap-2 ${className}`}
+      className={`flex-row gap-2 ${className}`}
     >
       {/* Checkbox */}
       <View
-        className={`h-4 w-4 rounded border ${
+        className={`h-5 w-5 mt-1 rounded border items-center justify-center ${
           value ? "bg-primary border-primary" : "border-gray"
         }`}
-      />
+      >
+        {value && <Check size={10} color="white" strokeWidth={5} />}
+      </View> 
 
       {/* Label */}
       {label && (
         <Text
           className="text-primary-400 text-sm"
-          selectable={false}   // 🔑 important
+          selectable={false} 
         >
           {label}
         </Text>
       )}
+
+      {labelComponent && labelComponent}
+      
     </Pressable>
   );
 }

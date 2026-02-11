@@ -34,7 +34,7 @@ const TermAndCondition = () => {
   };
 
   const termsAndConditionsData = data?.term_and_conditions;
-  console.log("data: ", termsAndConditionsData)
+  // console.log("data: ", termsAndConditionsData)
   return (
     <ScrollView className="flex-1 bg-white p-5">
       {isLoading ? (

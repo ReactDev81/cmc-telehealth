@@ -60,7 +60,7 @@ const MedicineAccordian: React.FC<Props> = ({
     const enddate = medicine.end_date || "";
 
     return (
-        <View className="border border-[#EDEDED] rounded-xl overflow-hidden bg-white mb-5">
+        <View className="border border-black-200 rounded-xl overflow-hidden bg-white mb-5">
             <TouchableOpacity
                 activeOpacity={0.85}
                 onPress={toggle}
