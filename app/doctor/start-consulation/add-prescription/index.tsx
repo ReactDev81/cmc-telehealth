@@ -13,6 +13,7 @@ const AddPrescription = () => {
     const { token } = useAuth();
     const { appointment_id } = useLocalSearchParams<{ appointment_id: string }>();
     const { data: patient, isLoading, isError } = usePatientDetail(appointment_id || "", token || "");
+    console.log("patient", JSON.stringify(patient, null, 2))
 
     const [modalVisible, setModalVisible] = useState(false);
     const [conclusionModalVisible, setConclusionModalVisible] = useState(false);

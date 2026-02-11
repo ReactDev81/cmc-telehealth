@@ -62,8 +62,8 @@ const UsageAnalytics = () => {
     return (
         <View className="flex-1 p-5 bg-white">
             {/* Summary */}
-            <View className="flex-row justify-between gap-x-2">
-                <View className="flex-1">
+            <View>
+                <View className="flex-row justify-between gap-x-2 items-center">
                     <Text className="text-lg font-medium text-black">
                         Total Appointment this month
                     </Text>
@@ -75,7 +75,7 @@ const UsageAnalytics = () => {
                     </View>
                 </View>
 
-                <View className="flex-1">
+                <View className="flex-row justify-between gap-x-2 items-center">
                     <Text className="text-lg font-medium text-black text-right">
                         Compare to last month
                     </Text>
@@ -83,8 +83,8 @@ const UsageAnalytics = () => {
                     <View className="flex-row items-center justify-end gap-x-1 mt-2">
                         <Text
                             className={`text-lg font-medium ${summary.compare_to_last_month.is_positive
-                                    ? "text-success"
-                                    : "text-danger"
+                                ? "text-success"
+                                : "text-danger"
                                 }`}
                         >
                             {summary.compare_to_last_month.is_positive ? "+" : "-"}

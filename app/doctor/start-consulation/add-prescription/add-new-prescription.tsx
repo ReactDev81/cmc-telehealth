@@ -39,6 +39,7 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
     const { token } = useAuth();
     const { appointment_id } = useLocalSearchParams<{ appointment_id: string }>();
     const addPrescription = useAddPrescription(appointment_id || "", token!);
+    console.log("Prescription", addPrescription);
 
     const [selectedType, setSelectedType] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
