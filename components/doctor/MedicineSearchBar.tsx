@@ -86,11 +86,12 @@ const MedicineSearchBar = ({
 
                 {/* Dropdown Menu */}
                 {dropdownVisible && (
-                    <View className="absolute right-1 top-12 py-2 w-40 bg-white rounded-lg shadow-lg z-10 border border-gray-200 max-h-48">
+                    <View className="absolute right-1 top-12 py-2 w-48 rounded-lg shadow-lg z-50 border border-gray-200 bg-white max-h-48">
                         <FlatList
                             data={medicineTypes}
                             keyExtractor={(item) => item}
                             scrollEnabled={medicineTypes.length > 5}
+                            keyboardShouldPersistTaps="handled"
                             renderItem={({ item }) => (
                                 <TouchableOpacity
                                     onPress={() => handleSelect(item)}
@@ -106,7 +107,7 @@ const MedicineSearchBar = ({
                                     <Text
                                         className={`text-sm flex-1 ${selectedType === item
                                             ? "text-black font-semibold"
-                                            : "text-gray-600"
+                                            : "text-black"
                                             }`}
                                     >
                                         {item}
@@ -131,11 +132,12 @@ const MedicineSearchBar = ({
 
             {/* Medicines List */}
             {searchQuery.length > 0 && (
-                <View className="border border-gray-200 rounded-lg bg-white overflow-hidden">
+                <View className="border border-gray-200 rounded-lg overflow-hidden bg-white">
                     <FlatList
                         data={filteredMedicines}
                         keyExtractor={(item) => item.id}
                         scrollEnabled={false}
+                        keyboardShouldPersistTaps="handled"
                         ListEmptyComponent={
                             <View className="px-4 py-4">
                                 <Text className="text-gray-500 text-center text-sm">

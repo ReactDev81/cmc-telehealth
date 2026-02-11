@@ -34,7 +34,7 @@ const MAX_BOTTOM_SHEET_HEIGHT = Dimensions.get("window").height * 0.8;
 
 const StartConsulationWithDoctor = () => {
 
-    const { docotor_call_link } = useLocalSearchParams<{ docotor_call_link: string }>();
+    const { docotor_call_link, appointment_id } = useLocalSearchParams<{ docotor_call_link: string, appointment_id: string }>();
     // console.log("Doctor Call Link Param:", docotor_call_link);
 
     const ROOM_URL = React.useMemo(() => {
@@ -368,7 +368,7 @@ const StartConsulationWithDoctor = () => {
                                     <X color="#1F1E1E" size={18} strokeWidth={2.5} />
                                 </TouchableOpacity>
                             </View>
-                            <PatientDetails />
+                            <PatientDetails appointmentId={appointment_id} />
                         </BottomSheetScrollView>
                     </BottomSheet>
                 }
