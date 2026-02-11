@@ -134,10 +134,13 @@ const DoctorDetail = () => {
         }
     }, [consultation_type, consultation_opd_type]);
 
-    // Reset OPD type when appointment type changes
+    // Reset or preselect OPD type when appointment type changes
     useEffect(() => {
         if (appointmentType !== "in_person") {
             setOpdType(null);
+        } else if (appointmentType === "in_person" && !opdType) {
+            // Default to 'general' OPD when in-person is selected (auto or manual)
+            setOpdType("general");
         }
     }, [appointmentType]);
 

@@ -285,8 +285,29 @@ export default function ManageAppointments() {
         typeof appointment_id === "string" ? appointment_id : undefined;
 
     const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
-    // console.log("Appointment Id :", appointmentId);
-    // console.log("Data Response :", data);
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [cancelModalVisible, setCancelModalVisible] = useState(false);
+    const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] =
+        useState(false);
+
+    const { mutate: uploadReports, isPending } =
+        useUploadReportsAndNotes(appointment_id || "");
+
+    const { mutate: cancelAppointment, isPending: isCancelling } =
+        useCancelAppointment();
+
+    const methods = useForm<ManageAppointmentFormData>({
+        resolver: zodResolver(manageAppointmentSchema),
+        defaultValues: {
+            notes: "",
+            reportType: "",
+            reportFile: null,
+            reports: [],
+        },
+    });
+
+    const { handleSubmit, reset } = methods;
 
     // Refetch data when screen first loads or when appointmentId changes
     useEffect(() => {
@@ -324,34 +345,6 @@ export default function ManageAppointments() {
     // Automatically show reports section if data exists
     const hasReportsAndNotes =
         (medicalReports.length > 0) && (notes?.problem || notes?.reason);
-
-    const [modalVisible, setModalVisible] = useState(false);
-    const [cancelModalVisible, setCancelModalVisible] = useState(false);
-    const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] =
-        useState(false);
-
-    // const { mutate: manageAppointment, isPending } = useManageAppointment(
-    //     appointment_id || "",
-    // );
-
-    const { mutate: uploadReports, isPending } =
-        useUploadReportsAndNotes(appointment_id || "");
-
-
-    const { mutate: cancelAppointment, isPending: isCancelling } =
-        useCancelAppointment();
-
-    const methods = useForm<ManageAppointmentFormData>({
-        resolver: zodResolver(manageAppointmentSchema),
-        defaultValues: {
-            notes: "",
-            reportType: "",
-            reportFile: null,
-            reports: [],
-        },
-    });
-
-    const { handleSubmit, reset } = methods;
 
     // const onSubmit = (data: ManageAppointmentFormData) => {
     //     // Validate that we have at least something to submit
