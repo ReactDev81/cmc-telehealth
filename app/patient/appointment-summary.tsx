@@ -9,6 +9,7 @@ import { Stethoscope } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, View } from "react-native";
 import RazorpayCheckout from "react-native-razorpay";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AppointmentSummary = () => {
   const queryClient = useQueryClient();
@@ -146,7 +147,7 @@ const AppointmentSummary = () => {
   };
 
   return (
-    <View className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1">
         <View className="items-center mb-6">
           <Image
@@ -289,7 +290,7 @@ const AppointmentSummary = () => {
       {/* Payment Failed */}
       <PaymentFailedModal visible={paymentModalVisible} onClose={handleTryAgain} />
 
-    </View>
+    </SafeAreaView>
   );
 };
 

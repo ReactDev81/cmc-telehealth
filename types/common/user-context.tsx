@@ -6,6 +6,9 @@ export interface User {
     email: string;
     role: UserRole;
     avatar?: string;
-    patientId?: string;
-    doctorId?: string;
+    patient_id?: string;
+    doctor_id?: string;
+    gender: string,
+    date_of_birth: string,
+    phone: string,
 }

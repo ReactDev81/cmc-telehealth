@@ -1,26 +1,22 @@
 import Button from "@/components/ui/Button";
-import useApi from "@/hooks/useApi";
+import { useRegisterVerifyOtp } from "@/mutations/useRegisterVerifyOtp";
+import { useResendOtp } from "@/mutations/useResendOtp";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Image, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const RegisterVerifyOtp = () => {
-  const { data, fetchData } = useApi<{
-    token: string;
-  }>("post", `${process.env.EXPO_PUBLIC_API_BASE_URL}/verify-otp`, {
-    headers: {
-      Accept: "application/json",
-    },
-  });
+
+  const { mutate: verifyOtp, isPending } = useRegisterVerifyOtp();
+  const { mutate: resendOtp, isPending: resendIsPending } = useResendOtp();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [resendTimer, setResendTimer] = useState(54);
   const inputRefs = useRef<TextInput[]>([]);
 
-  const { email, password } = useLocalSearchParams<{
+  const { email } = useLocalSearchParams<{
     email?: string;
-    password?: string;
   }>();
 
   // Countdown timer
@@ -60,87 +56,69 @@ const RegisterVerifyOtp = () => {
     setError("");
     console.log("OTP entered:", otpString);
 
-    const verifyOTP = {
-      email: email,
-      otp: otpString,
-      context: "register",
-      role: "patient",
-    };
-
-    await fetchData({ data: verifyOTP });
-    // if (data) {
-    //   router.push({
-    //     pathname: "/auth/register-complete-profile",
-    //     params: {
-    //       token: data?.token,
-    //     },
-    //   });
-    // }
-  };
-
-  useEffect(() => {
-    if (data) {
-      router.push({
-        pathname: "/auth/register-complete-profile",
-        params: {
-          token: data.token,
-        },
-      });
-    }
-  }, [data]);
-
-  //   console.log("token", data?.token);
-  const {
-    data: resendData,
-    error: resendError,
-    fetchData: fetchResendData,
-  } = useApi<{
-    data: {
-      email: string;
-      password: string;
-    };
-    message?: string;
-  }>("post", `${process.env.EXPO_PUBLIC_API_BASE_URL}/register`, {
-    headers: {
-      Accept: "application/json",
-    },
-  });
-
-  //   const handleResendOTP = async () => {
-  //     console.log("Resending OTP...");
-  //     const resendPayload = {
-  //       email: email,
-  //       password: password,
-  //     };
-
-  //     await fetchResendData({ data: resendPayload });
-  //     console.log("Resend API Response:", resendData);
-  //     setResendTimer(60);
-  //   };
-
-  const handleResendOTP = async () => {
     const emailStr = typeof email === "string" ? email : "";
-    const passwordStr = typeof password === "string" ? password : "";
-
-    if (!emailStr || !passwordStr) {
-      setError("Missing email or password.");
+    if (!emailStr) {
+      setError("Missing email.");
       return;
     }
 
-    await fetchResendData({
-      data: {
+    verifyOtp(
+      {
         email: emailStr,
-        password: passwordStr,
+        otp: otpString,
+        context: "register",
       },
-    });
+      {
+        onSuccess: (data) => {
+          console.log("OTP verified:", data);
+
+          router.push({
+            pathname: "/auth/register-complete-profile",
+            params: {
+              token: data.token,
+            },
+          });
+
+        },
+        onError: (error) => {
+          console.log("OTP error:", error.response?.data);
+        },
+      }
+    );
+
+  };
+
+  const handleResendOTP = async () => {
+
+    const emailStr = typeof email === "string" ? email : "";
+
+    if (!emailStr) {
+      setError("Email is missing");
+      return;
+    }
+
+    resendOtp(
+      {
+        email: emailStr,
+        process: "registration",
+      },
+      {
+        onSuccess: (data) => {
+          console.log(data.message); // OTP resent
+        },
+        onError: (error) => {
+          console.log(error.response?.data);
+        },
+      }
+    );
+
 
     setResendTimer(60);
   };
 
-  //   console.log("resendError", resendError);
-
   return (
     <SafeAreaView className="flex-1 justify-center bg-white px-6">
+
       {/* Logo and title */}
       <View className="mb-6">
         <Image
@@ -193,8 +171,8 @@ const RegisterVerifyOtp = () => {
       </View>
 
       {/* Verify Button */}
-      <Button onPress={handleVerify} className="mt-8">
-          Continue
+      <Button onPress={handleVerify} className="mt-8" disabled={isPending}>
+          {isPending ? 'loading...' : 'Continue'}
       </Button>
 
       {/* Resend Timer + Back to Login */}
@@ -216,7 +194,7 @@ const RegisterVerifyOtp = () => {
               resendTimer > 0 ? "text-gray-400" : "text-primary"
             }`}
           >
-            Resend OTP
+            {resendIsPending ? 'loading' : 'Resend OTP'}
           </Text>
         </Pressable>
 

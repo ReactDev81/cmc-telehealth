@@ -2,11 +2,11 @@ import Checkbox from "@/components/form/checkbox";
 import Input from "@/components/form/Input";
 import PasswordInput from "@/components/form/password";
 import Button from "@/components/ui/Button";
-import useApi from "@/hooks/useApi";
+import { useRegister } from "@/mutations/useRegister";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { X } from 'lucide-react-native';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Image, Modal, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,20 +24,9 @@ const schema = z.object({
 
 export default function RegisterSendOtp() {
 
-  const { data, error, fetchData } = useApi<{ 
-    data: {
-      email: string;
-      password: string;
-      agreedToTerms: boolean;
-    };
-    message?: string;
-  }>("post", '/register', {
-    headers: {
-      Accept: "application/json",
-    },
-  });
 
-  const [submittedForm, setSubmittedForm] = useState<any>(null);
+  const { mutate: register, isPending } = useRegister();
+
   const [openPrivacy, setOpenPrivacy] = useState(false);
   const [openTerm, setOpenTerm] = useState(false);
 
@@ -71,31 +60,30 @@ export default function RegisterSendOtp() {
   };
 
   const onSubmit = async (formData: any) => {
-    // console.log("Form Submitted:", formData);
 
-    const register = {
-      email: formData.email,
-      password: formData.password,
-      agreedToTerms: formData.agreedToTerms,
-    };
-
-    setSubmittedForm(formData);
-    await fetchData({ data: register });
-  };
-
-  useEffect(() => {
-    if (data && submittedForm) {
-      console.log("API Response:", data);
-
-      router.push({
-        pathname: "/auth/register-verify-otp",
-        params: {
-          email: submittedForm.email,
-          password: submittedForm.password,
+    register(
+      {
+        email: formData.email,
+        password: formData.password,
+        agreedToTerms: formData.agreedToTerms,
+      },
+      {
+        onSuccess: (data) => {
+          console.log("Register success:", data);
+          router.push({
+            pathname: "/auth/register-verify-otp",
+            params: {
+              email: formData.email,
+            },
+          });
         },
-      });
-    }
-  }, [data, submittedForm]);
+        onError: (error) => {
+          console.log("Register error:", error.response?.data);
+        },
+      }
+    );
+
+  };
 
   return (
     <SafeAreaView className="flex-1 justify-center bg-white px-6">
@@ -175,8 +163,8 @@ export default function RegisterSendOtp() {
 
 
       {/* Continue */}
-      <Button onPress={handleSubmit(onSubmit)} className="mt-8">
-        Continue
+      <Button onPress={handleSubmit(onSubmit)} className="mt-8" disabled={isPending}>
+         {isPending ? 'loading...' : 'Continue'}
       </Button>
 
       <View className="mt-10 items-center">

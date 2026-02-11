@@ -12,6 +12,7 @@ import { z } from "zod";
 
 import { useAuth } from "@/context/UserContext";
 import { useLogin } from "@/mutations/useLogin";
+import { User, UserRole } from "@/types/common/user-context";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -37,12 +38,18 @@ export default function LoginScreen() {
   const handleSignIn = (formData: LoginFormValues) => {
     signIn(formData, {
       onSuccess: async (data) => {
-        const userData = {
+        const role: UserRole = data.user.role as UserRole;
+
+        const userData: User = {
           id: data.user.id,
-          name: data.user.name,
+          name: data.user.name ?? "",
           email: data.user.email,
-          role: data.user.role,
-          patientId: (data.user as any).patient_id,
+          role,
+          gender: data.user.gender,
+          date_of_birth: data.user.date_of_birth,
+          phone: data.user.phone,
+          patient_id: data.user.patient_id,
+          doctor_id: data.user.doctor_id,
         };
 
         console.log("Render Login Screen", data);

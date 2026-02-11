@@ -2,10 +2,10 @@ import DateField from "@/components/form/date";
 import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
-import useApi from "@/hooks/useApi";
+import { useCompleteProfile } from "@/mutations/useCompleteProfile";
+import { User, UserRole } from "@/types/common/user-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,58 +20,65 @@ const schema = z.object({
 });
 
 export default function RegisterCompleteProfile() {
+
   const { token } = useLocalSearchParams<{
     token?: string;
   }>();
 
-  const { data, error, fetchData } = useApi<{}>(
-    "post",
-    `${process.env.EXPO_PUBLIC_API_BASE_URL}/complete-profile`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
-    },
-  );
+  const { login } = useAuth();
 
-  const { user } = useAuth();
+  console.log('token', token);
+
+  const { mutate: completeProfile, isPending } = useCompleteProfile();
 
   const { control, handleSubmit } = useForm({
     resolver: zodResolver(schema),
   });
 
-  //   const onSubmit = async (formData: any) => {
-  //     // TODO: API → save profile
+  const onSubmit = (formData: any) => {
 
-  //     await fetchData({ data: formData });
-  //     console.log("Api Response :", data);
-  //     // router.replace("/auth/login");
-  //   };
+    const tokenStr = typeof token === "string" ? token : "";
 
-  const onSubmit = async (formData: any) => {
-    const payload = new FormData();
+    completeProfile(
+      {
+        payload: {
+          date_of_birth: formData.date_of_birth.toISOString().split("T")[0],
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          gender: formData.gender.toLowerCase(),
+          mobile_no: formData.mobile_no,
+        },
+        token: tokenStr,
+      },
+      {
+        onSuccess: async (data) => {
 
-    payload.append("first_name", formData.first_name);
-    payload.append("last_name", formData.last_name);
-    payload.append("mobile_no", formData.mobile_no);
-    payload.append(
-      "date_of_birth",
-      formData.date_of_birth.toISOString().split("T")[0],
+          console.log("Profile completed:", data);  
+
+          const role: UserRole = (data.user.role as UserRole) ?? "patient";
+
+          const userData: User = {
+            id: data.user.id,
+            name: data.user.name,
+            email: data.user.email,
+            gender: data.user.gender,
+            date_of_birth: data.user.date_of_birth,
+            role,
+            phone: data.user.phone,
+            patient_id: data.user.patient_id ?? undefined,
+            doctor_id: data.user.doctor_id ?? undefined,
+          };
+
+          await login(userData, tokenStr);
+          router.replace("/(patient)");
+        },
+        onError: (error) => {
+          console.log(error.response?.data);
+        },
+      }
     );
-    payload.append("gender", formData.gender.toLowerCase());
 
-    await fetchData({ data: payload });
   };
-
-  useEffect(() => {
-    if (data) {
-      console.log("API Response (updated):", data);
-      router.replace("/auth/login");
-    }
-  }, [data]);
-
-  console.log("error", error);
 
   return (
     <SafeAreaView className="flex-1 bg-white px-6">
@@ -155,8 +162,8 @@ export default function RegisterCompleteProfile() {
           )}
         />
 
-        <Button onPress={handleSubmit(onSubmit)} className="mt-8">
-          Continue
+        <Button onPress={handleSubmit(onSubmit)} disabled={isPending} className="mt-8">
+           {isPending ? 'loading' : 'Continue'}
         </Button>
 
         <Text className="text-base text-black-400 text-center mt-5 px-4">

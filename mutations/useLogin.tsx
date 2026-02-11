@@ -14,6 +14,11 @@ interface LoginResponse {
     name: string;
     email: string;
     role: "patient" | "doctor";
+    gender: string;
+    date_of_birth: string;
+    phone: string;
+    patient_id?: string;
+    doctor_id?: string;
   };
 }
 
