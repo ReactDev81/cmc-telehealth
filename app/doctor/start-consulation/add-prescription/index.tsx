@@ -3,9 +3,10 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
 import { useLocalSearchParams } from "expo-router";
-import { Plus } from "lucide-react-native";
+import { FileCheck, Plus, X } from "lucide-react-native";
 import { useState } from "react";
-import { ActivityIndicator, Modal, Text, View } from "react-native";
+import { ActivityIndicator, Modal, Text, TouchableOpacity, View } from "react-native";
+import AddConclusion from "../add-conclusion";
 import AddNewPrescription from "./add-new-prescription";
 
 const AddPrescription = () => {
@@ -14,6 +15,7 @@ const AddPrescription = () => {
     const { data: patient, isLoading, isError } = usePatientDetail(appointment_id || "", token || "");
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [conclusionModalVisible, setConclusionModalVisible] = useState(false);
 
     if (isLoading) {
         return (
@@ -69,6 +71,39 @@ const AddPrescription = () => {
                 >
                     Add New Prescriptions
                 </Button>
+
+                {/* add conclusion button */}
+                <View className="mt-4">
+                    <Button
+                        variant="outline"
+                        icon={<FileCheck color="#013220" size={16} strokeWidth={2.5} />}
+                        onPress={() => setConclusionModalVisible(true)}
+                    >
+                        Add Conclusion
+                    </Button>
+                </View>
+
+                {/* Conclusion Modal */}
+                <Modal
+                    visible={conclusionModalVisible}
+                    animationType="fade"
+                    transparent
+                    onRequestClose={() => setConclusionModalVisible(false)}
+                >
+                    <View className="flex-1 bg-black/40 justify-center items-center">
+                        <View className="w-11/12 bg-white rounded-2xl overflow-hidden">
+                            <View
+                                className='flex-row items-center justify-between p-5 bg-white border-b border-gray-100'
+                            >
+                                <Text className='text-lg font-medium text-black'>Consultation Conclusion</Text>
+                                <TouchableOpacity onPress={() => setConclusionModalVisible(false)}>
+                                    <X color="#1F1E1E" size={18} strokeWidth={2.5} />
+                                </TouchableOpacity>
+                            </View>
+                            <AddConclusion onClose={() => setConclusionModalVisible(false)} />
+                        </View>
+                    </View>
+                </Modal>
 
                 <View className="mt-5">
                     {currentMedications.length > 0 ? (
