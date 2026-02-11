@@ -1,5 +1,7 @@
+import EmptyState from "@/components/ui/EmptyState";
 import { Appointment } from "@/types/doctor/appointment";
-import { ScrollView, Text, View } from "react-native"; // Added Text import
+import { Calendar } from "lucide-react-native";
+import { ScrollView, View } from "react-native";
 import TodayAppointmentCard from "./today-appointment-card";
 
 const AllTodayAppointment = ({ data }: { data?: Appointment[] }) => {
@@ -8,9 +10,12 @@ const AllTodayAppointment = ({ data }: { data?: Appointment[] }) => {
 
     if (appointments.length === 0) {
         return (
-            <View className="flex-1 items-center justify-center py-20">
-                <Text className="text-neutral-500 text-lg font-medium">No appointments today</Text>
-            </View>
+            <EmptyState
+                title="No appointments today"
+                message="You don't have any appointments scheduled for for today."
+                icon={<Calendar size={40} color="#94A3B8" />}
+                className="py-20"
+            />
         );
     }
 

@@ -2,6 +2,7 @@ export interface ContactUsPayload {
     first_name: string;
     last_name: string;
     email: string;
+    subject: string;
     message: string;
     user_id?: string;
 }

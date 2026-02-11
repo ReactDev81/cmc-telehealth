@@ -1,6 +1,8 @@
+import EmptyState from "@/components/ui/EmptyState";
 import { Appointment } from "@/types/doctor/appointment";
 import { Link } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { Clock } from "lucide-react-native";
+import { ScrollView } from "react-native";
 import UpcomingAppointmentCard from "./upcoming-appointment-card";
 
 const AllUpcomingAppointment = ({ data }: { data?: Appointment[] }) => {
@@ -9,9 +11,12 @@ const AllUpcomingAppointment = ({ data }: { data?: Appointment[] }) => {
 
     if (appointments.length === 0) {
         return (
-            <View className="flex-1 items-center justify-center py-20">
-                <Text className="text-neutral-500 text-lg font-medium">No upcoming appointments</Text>
-            </View>
+            <EmptyState
+                title="No upcoming appointments"
+                message="Your schedule is clear. New appointments will appear here."
+                icon={<Clock size={40} color="#94A3B8" />}
+                className="py-20"
+            />
         );
     }
 

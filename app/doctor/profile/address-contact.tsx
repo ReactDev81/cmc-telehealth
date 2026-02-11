@@ -44,7 +44,7 @@ const AddressContactScreen = () => {
             {/* Page Content */}
             <ScrollView className="flex-1 p-5">
 
-                <Button className="max-w-52 ml-auto" onPress={() => setModalVisible(true)}>Edit Address & Contact</Button>
+                <Button className="max-w-52 ml-auto" onPress={() => setModalVisible(true)}>Edit Address Info</Button>
 
                 {isLoading ? (
                     <View className="mt-10">

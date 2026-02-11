@@ -1,23 +1,28 @@
 import MenuItem from "@/components/common/profile/menu-item";
 import DoctorProfileEdit from "@/components/doctor/profile/doctor-profile-edit";
 import Button from "@/components/ui/Button";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { useAuth } from "@/context/UserContext";
 import { DoctorMenuSections } from "@/json-data/doctor/profile";
 import { router } from "expo-router";
+import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 
 const Profile = () => {
-
     const { logout, user } = useAuth();
-    console.log("User: ", user);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+    const handleLogout = async () => {
+        await logout();
+        router.replace("/auth/login");
+    };
 
     return (
         <ScrollView
             showsVerticalScrollIndicator={false}
             className='flex-1 p-5 bg-white'
         >
-
             <DoctorProfileEdit user={user} />
 
             {/* menu items */}
@@ -50,15 +55,21 @@ const Profile = () => {
                 <Text className='text-sm text-black-400 text-center'>CMC - v 1.1 (518)</Text>
                 <Button
                     className='mt-7'
-                    onPress={async () => {
-                        await logout();
-                        router.replace("/auth/login");
-                    }}
+                    onPress={() => setShowLogoutModal(true)}
                 >
                     Logout
                 </Button>
             </View>
 
+            <ConfirmationModal
+                visible={showLogoutModal}
+                title="Logout"
+                message="Are you sure you want to log out of your account?"
+                confirmText="Log Out"
+                onConfirm={handleLogout}
+                onCancel={() => setShowLogoutModal(false)}
+                variant="danger"
+            />
         </ScrollView>
     )
 }

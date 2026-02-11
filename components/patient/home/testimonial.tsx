@@ -1,5 +1,6 @@
+import Avatar from "@/components/ui/Avatar";
 import { TestimonialProps } from "@/types/live/patient/home";
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 interface testimonial extends TestimonialProps {
     className?: string;
@@ -15,6 +16,7 @@ const Testimonial = ({
     content,
     total_reviews,
     doctor_name,
+    rating,
     className = "",
 }: testimonial) => {
     const avatarSource =
@@ -29,18 +31,23 @@ const Testimonial = ({
             <View className="p-4">
                 {/* Header Section */}
                 <View className="flex-row items-center mb-4">
-                    <Image
-                        source={avatarSource}
-                        className="w-11 h-11 rounded-full mr-2.5"
+                    <Avatar
+                        source={patient_image}
+                        name={patient_name}
+                        size={44}
+                        className="mr-2.5"
                     />
                     <View className="flex-1">
                         <View className="flex-row items-center justify-between">
                             <Text className="text-sm font-medium text-black">{patient_name}</Text>
                             <Text className="text-xs text-black/80">{days_ago}</Text>
                         </View>
-                        <Text className="text-sm text-gray-600 mt-0.5">
-                            {patient_age} years{patient_location ? `, ${patient_location}` : ""}
-                        </Text>
+                        <View className="flex-row items-center justify-between mt-0.5">
+                            <Text className="text-sm text-gray-600">
+                                {patient_age} years{patient_location ? `, ${patient_location}` : ""}
+                            </Text>
+                            {/* <StarRating rating={rating || 0} size={14} /> */}
+                        </View>
                     </View>
                 </View>
 
@@ -52,12 +59,16 @@ const Testimonial = ({
             </View>
 
             {/* Footer Section */}
-            <View className="flex-row items-center justify-between rounded-b-xl border-t border-[#EDEDED] bg-primary-100 px-3 py-2">
+            {/* <View className="flex-row items-center justify-between rounded-b-xl border-t border-[#EDEDED] bg-primary-100 px-3 py-2">
                 <Text className="text-[10px] font-bold text-black">
                     {total_reviews} Reviews for {doctor_name}
                 </Text>
-                <Image source={avatarSource} className="w-6 h-6 rounded-full" />
-            </View>
+                <Avatar
+                    source={patient_image}
+                    name={patient_name}
+                    size={24}
+                />
+            </View> */}
         </View >
     );
 };

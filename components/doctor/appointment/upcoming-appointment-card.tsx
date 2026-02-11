@@ -1,7 +1,8 @@
+import Avatar from "@/components/ui/Avatar";
 import Badge from "@/components/ui/Badge";
 import { appointmentProps } from "@/types/doctor/appointment";
 import { Calendar, Clock, Hospital, Video } from "lucide-react-native";
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 const UpcomingAppointmentCard = ({
     image,
@@ -13,12 +14,13 @@ const UpcomingAppointmentCard = ({
 }: appointmentProps) => {
     return (
         <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
-            <View className="w-24">
-                <Image
-                    source={typeof image === 'string' ? { uri: image } : image}
-                    className="w-full h-24 rounded-xl"
-                />
-            </View>
+            <Avatar
+                source={typeof image === 'string' ? image : (image as any)?.uri}
+                name={name}
+                size={96}
+                rounded={false}
+                className="rounded-xl"
+            />
             <View className="flex-1">
                 <Badge
                     text={status ?? ""}

@@ -64,7 +64,7 @@ const DoctorDetail = () => {
     );
     const doctor = data?.data;
 
-    const [appointmentType, setAppointmentType] = useState<"video" | "in_person" | null>(null);
+    const [appointmentType, setAppointmentType] = useState<"video" | "in_person" | null>("video");
     const [opdType, setOpdType] = useState<"general" | "private" | null>(null);
 
     // console.log("Appointments Type Video:", doctor?.appointment_types?.video);

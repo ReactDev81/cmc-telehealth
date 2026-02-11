@@ -308,9 +308,9 @@ const MedicalRecords = () => {
                     }}
                     handleIndicatorStyle={{ width: 0 }}
                 >
-                    <BottomSheetView 
-                        style={{ 
-                            flex: 1 ,
+                    <BottomSheetView
+                        style={{
+                            flex: 1,
                             paddingBottom: insets?.bottom ?? 0,
                         }}
                     >

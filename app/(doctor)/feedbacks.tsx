@@ -1,8 +1,11 @@
 import Testimonial from "@/components/patient/home/testimonial";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorState from "@/components/ui/ErrorState";
+import Skeleton from "@/components/ui/Skeleton";
 import { useAuth } from "@/context/UserContext";
 import { useReviews } from "@/queries/doctor/useReviews";
 import { Review } from "@/types/live/doctor/feedback";
-import { ChevronLeft, ChevronRight } from "lucide-react-native";
+import { ChevronLeft, ChevronRight, MessageSquare } from "lucide-react-native";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 
@@ -10,24 +13,21 @@ const Feedback = () => {
     const [page, setPage] = useState(1);
     const perPage = 5;
     const { token } = useAuth();
-    const { data, isLoading, isError, isFetching } = useReviews(token!, page, perPage);
+    const { data, isLoading, isError, isFetching, refetch } = useReviews(token!, page, perPage);
 
     if (isLoading && !data) return (
-        <View className="flex-1 items-center justify-center bg-white">
-            <ActivityIndicator size="large" color="#013220" />
+        <View className="flex-1 bg-white p-5 gap-y-5">
+            <Skeleton width="100%" height={160} />
+            <Skeleton width="100%" height={160} />
+            <Skeleton width="100%" height={160} />
         </View>
     );
 
     if (isError) return (
-        <View className="flex-1 items-center justify-center bg-white p-5">
-            <Text className="text-red-500 text-center text-lg">Error loading reviews</Text>
-            <TouchableOpacity
-                onPress={() => setPage(1)}
-                className="mt-4 px-6 py-2 bg-primary rounded-lg"
-            >
-                <Text className="text-white font-medium">Retry</Text>
-            </TouchableOpacity>
-        </View>
+        <ErrorState
+            title="Unable to load feedbacks"
+            onRetry={refetch}
+        />
     );
 
     const reviews = data?.data ?? [];
@@ -54,7 +54,6 @@ const Feedback = () => {
                 total_reviews={item.total_reviews.toString()}
                 doctor_name={item.doctor_name}
                 days_ago={item.created_at}
-                // Required props for Testimonial component
                 patient_id={item.id}
                 doctor_id=""
                 rating={item.rating}
@@ -73,6 +72,16 @@ const Feedback = () => {
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ padding: 20 }}
                 showsVerticalScrollIndicator={false}
+                ListEmptyComponent={
+                    !isLoading ? (
+                        <EmptyState
+                            title="No feedbacks found"
+                            message="You haven't received any patient reviews yet."
+                            icon={<MessageSquare size={40} color="#94A3B8" />}
+                            className="mt-20"
+                        />
+                    ) : null
+                }
                 ListFooterComponent={
                     pagination && pagination.last_page > 1 ? (
                         <View className="mt-4 mb-10">
@@ -151,13 +160,6 @@ const Feedback = () => {
                     ) : isFetching ? (
                         <View className="py-10 items-center">
                             <ActivityIndicator color="#013220" />
-                        </View>
-                    ) : null
-                }
-                ListEmptyComponent={
-                    !isLoading ? (
-                        <View className="flex-1 items-center justify-center mt-24">
-                            <Text className="text-gray-400 text-lg">No feedbacks found</Text>
                         </View>
                     ) : null
                 }

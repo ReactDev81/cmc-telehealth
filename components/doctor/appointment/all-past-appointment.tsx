@@ -1,7 +1,9 @@
-import { Appointment } from "@/types/doctor/appointment"
-import { Link } from "expo-router"
-import { ScrollView, Text, View } from "react-native"
-import PastAppointmentCard from "./past-appointment-card"
+import EmptyState from "@/components/ui/EmptyState";
+import { Appointment } from "@/types/doctor/appointment";
+import { Link } from "expo-router";
+import { History } from "lucide-react-native";
+import { ScrollView } from "react-native";
+import PastAppointmentCard from "./past-appointment-card";
 
 const AllPastAppointment = ({ data }: { data?: Appointment[] }) => {
     const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
@@ -9,9 +11,12 @@ const AllPastAppointment = ({ data }: { data?: Appointment[] }) => {
 
     if (appointments.length === 0) {
         return (
-            <View className="flex-1 items-center justify-center py-20">
-                <Text className="text-neutral-500 text-lg font-medium">No past appointments</Text>
-            </View>
+            <EmptyState
+                title="No past appointments"
+                message="You haven't completed any appointments yet."
+                icon={<History size={40} color="#94A3B8" />}
+                className="py-20"
+            />
         );
     }
 

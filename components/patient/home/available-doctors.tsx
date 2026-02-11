@@ -63,7 +63,7 @@ const AvailableDoctors = ({
                   <Video color="#1ABE17" fill="#1ABE17" size={14} />
                   <Text className="text-success text-sm">{consultation_type}</Text>
                 </>
-                
+
               ) :
                 consultation_type === "both" ? (
                   <>
@@ -72,15 +72,15 @@ const AvailableDoctors = ({
                     <Hospital color="#1ABE17" size={14} />
                     <Text className="text-success text-sm">In person</Text>
                   </>
-                  
+
                 )
-               : (
-                <>
-                  <Hospital color="#1ABE17" size={14} />
-                  <Text className="text-success text-sm">{consultation_type}</Text>
-                </>
-              )}
-              
+                  : (
+                    <>
+                      <Hospital color="#1ABE17" size={14} />
+                      <Text className="text-success text-sm">{consultation_type}</Text>
+                    </>
+                  )}
+
             </View>
           </View>
           <View className="w-px h-full bg-primary-200"></View>

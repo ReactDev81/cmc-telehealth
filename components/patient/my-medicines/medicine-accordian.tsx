@@ -1,5 +1,5 @@
 import { MedicineProps } from "@/types/common/my-medicines";
-import { Calendar, Clock, Minus, Plus } from "lucide-react-native";
+import { ClipboardClock, Clock, Minus, Plus } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import {
     LayoutAnimation,
@@ -45,13 +45,13 @@ const MedicineAccordian: React.FC<Props> = ({
     // const medicineTimes = medicine.schedule?.times?.join(", ") ?? "";
     // const timesText = medicineTimes || medicine.times || "";
 
-    const medicineName = medicine.name || "";
+    const medicineName = medicine.medicine_name || "";
     const medicineFrequency = (medicine.frequencylabel && medicine.frequencylabel !== "N/A") ? medicine.frequencylabel : (medicine.frequency || "");
     const medicineDate = medicine.date || "";
     const medicineInstructions = Array.isArray(medicine.instructions)
         ? medicine.instructions.join(", ")
         : (medicine.instructions || "");
-    const medicineStatus = medicine.status || "";
+    const medicineStatus = medicine.duration_text || "";
     const medicineTimes = medicine.times || "";
     const medicineDosage = medicine.dosage || "";
     const number = index !== undefined ? `${index + 1}. ` : "";
@@ -103,7 +103,9 @@ const MedicineAccordian: React.FC<Props> = ({
                     </View>
 
                     <View className="flex-row items-center gap-x-2.5 mt-1">
-                        <Calendar size={14} color="#1F1E1E" />
+                        {/* <Calendar size={14} color="#1F1E1E" /> */}
+                        <ClipboardClock size={14} color="#1F1E1E" />
+                        {/* <Text className="text-sm text-[#6B6B6B]">{medicineStatus}</Text> */}
                         <Text className="text-sm text-[#6B6B6B]">{medicineStatus}</Text>
                     </View>
 

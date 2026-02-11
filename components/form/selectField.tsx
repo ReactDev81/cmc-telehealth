@@ -51,16 +51,15 @@ export default function SelectField({
                 return (
                     <View className={className}>
                         {label && (
-                            <Text className="mb-1 text-sm font-medium text-black-500">
+                            <Text className="mb-1 text-sm">
                                 {label}
                             </Text>
                         )}
 
                         <Pressable
                             onPress={() => setModalVisible(true)}
-                            className={`border rounded-lg py-3 px-4 bg-white ${
-                                error ? "border-red-500" : "border-gray"
-                            }`}
+                            className={`border rounded-lg py-3 px-4 bg-white ${error ? "border-red-500" : "border-gray"
+                                }`}
                         >
                             <View className="flex-row items-center justify-between">
                                 <Text className="text-base text-black">

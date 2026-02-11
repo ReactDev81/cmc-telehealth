@@ -6,35 +6,37 @@ interface BadgeProps {
     text: string;
     variant?: BadgeVariant;
     className?: string;
+    pill?: boolean;
     textClassName?: string;
 }
 
-const Badge = ({ text, variant = 'gray', className = '', textClassName = '' }: BadgeProps) => {
+const Badge = ({ text, variant = 'gray', className = '', pill = false, textClassName = '' }: BadgeProps) => {
     const getVariantStyles = () => {
         switch (variant) {
             case 'success':
-                return { container: 'bg-success-400', text: 'text-success' };
+                return 'bg-success-400 text-success';
             case 'danger':
-                return { container: 'bg-danger-400', text: 'text-danger' };
+                return 'bg-danger-400 text-danger';
             case 'warning':
-                return { container: 'bg-warning-400', text: 'text-warning' };
+                return 'bg-warning-400 text-warning';
             case 'info':
-                return { container: 'bg-info-400', text: 'text-info' };
+                return 'bg-info-400 text-info';
             case 'primary':
-                return { container: 'bg-primary-200', text: 'text-primary' };
+                return 'bg-primary-200 text-primary';
             case 'secondary':
-                return { container: 'bg-secondary-400', text: 'text-secondary' };
+                return 'bg-secondary-400 text-secondary';
             case 'gray':
             default:
-                return { container: 'bg-black-300', text: 'text-black-400' };
+                return 'bg-black-300 text-black-400';
         }
     };
 
-    const styles = getVariantStyles();
+    const variantClass = getVariantStyles();
+    const [bgClass, textClass] = variantClass.split(' ');
 
     return (
-        <View className={`px-2 py-1 rounded-md items-center justify-center ${styles.container} ${className}`}>
-            <Text className={`text-xs font-medium capitalize ${styles.text} ${textClassName}`}>
+        <View className={`px-2.5 py-1 ${pill ? 'rounded-full' : 'rounded-md'} items-center justify-center ${bgClass} ${className}`}>
+            <Text className={`text-[10px] uppercase font-bold tracking-wider ${textClass} ${textClassName}`}>
                 {text}
             </Text>
         </View>

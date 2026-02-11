@@ -4,50 +4,57 @@ import PatientInformation from "@/components/doctor/appointment-detail/patient-i
 import PaymentDetail from "@/components/doctor/appointment-detail/payment-detail";
 import ScheduleAppointment from "@/components/doctor/appointment-detail/schedule-appointment";
 import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
-import Button from "@/components/ui/Button";
+import ErrorState from "@/components/ui/ErrorState";
+import Skeleton from "@/components/ui/Skeleton";
 import Title from "@/components/ui/Title";
 import { useAuth } from "@/context/UserContext";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
 import { router, useLocalSearchParams } from "expo-router";
-import { ActivityIndicator, Linking, ScrollView, Text, View } from "react-native";
+import { Linking, ScrollView, View } from "react-native";
 
 const PastAppointmentDetail = () => {
     const params = useLocalSearchParams();
     const appointmentId = typeof params.id === 'string' ? params.id : (Array.isArray(params.id) ? params.id[0] : undefined);
     const { token } = useAuth();
 
-    const { data: patient, isLoading, isError, error } = usePatientDetail(appointmentId || "", token || "");
+    const { data: patient, isLoading, isError, error, refetch } = usePatientDetail(appointmentId || "", token || "");
 
     if (!appointmentId) {
         return (
-            <View className="flex-1 items-center justify-center p-5">
-                <Text className="text-base text-red-500">No appointment ID provided</Text>
-            </View>
+            <ErrorState
+                title="Invalid Appointment"
+                message="No appointment ID was provided."
+                onRetry={() => router.back()}
+            />
         );
     }
 
     if (isLoading) {
         return (
-            <View className="flex-1 items-center justify-center">
-                <ActivityIndicator size="large" />
-                <Text className="mt-3 text-black-400">Loading appointment details...</Text>
-            </View>
+            <ScrollView className="flex-1 bg-white p-5">
+                <View className="flex-row gap-x-4 mb-8">
+                    <Skeleton width={80} height={80} variant="circle" />
+                    <View className="flex-1 justify-center gap-y-2">
+                        <Skeleton width="60%" height={20} />
+                        <Skeleton width="40%" height={16} />
+                    </View>
+                </View>
+                <View className="gap-y-6">
+                    <Skeleton width="100%" height={100} />
+                    <Skeleton width="100%" height={120} />
+                    <Skeleton width="100%" height={80} />
+                </View>
+            </ScrollView>
         );
     }
 
     if (isError || !patient?.data) {
         return (
-            <View className="flex-1 items-center justify-center p-5">
-                <Text className="text-base text-red-500">Failed to load appointment details</Text>
-                {error && (
-                    <Text className="text-sm text-black-400 mt-2">
-                        {error instanceof Error ? error.message : "Unknown error occurred"}
-                    </Text>
-                )}
-                <Button className="mt-4" onPress={() => router.back()}>
-                    Go Back
-                </Button>
-            </View>
+            <ErrorState
+                title="Failed to load details"
+                message={error instanceof Error ? error.message : "We couldn't retrieve the appointment information."}
+                onRetry={refetch}
+            />
         );
     }
 

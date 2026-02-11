@@ -1,5 +1,6 @@
 import Input from "@/components/form/Input";
 import TextArea from "@/components/form/TextArea";
+import SelectField from "@/components/form/selectField";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useContactUs } from "@/mutations/common/useContactUs";
@@ -25,6 +26,7 @@ const needHelpSchema = z.object({
     .string()
     .min(1, "Email is required")
     .email("Please enter a valid email address"),
+  subject: z.string().min(1, "Subject is required"),
   message: z
     .string()
     .min(1, "Message is required")
@@ -56,6 +58,7 @@ const NeedHelp = () => {
       firstName: "",
       lastName: "",
       email: user?.email ?? "",
+      subject: "",
       message: "",
     },
     mode: "onBlur",
@@ -95,6 +98,7 @@ const NeedHelp = () => {
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: user?.email,
+        subject: formData.subject,
         message: formData.message,
         user_id: userId,
       },
@@ -141,6 +145,18 @@ const NeedHelp = () => {
             containerClassName="mt-5 opacity-40"
           />
         </View>
+        <SelectField
+          name="subject"
+          label="Subject"
+          control={methods.control}
+          placeholder="Select a subject"
+          className="mt-5 !text-sm"
+          options={[
+            { label: "General Inquiry", value: "General Inquiry" },
+            { label: "Technical Support", value: "Technical Support" },
+            { label: "Feedback", value: "Feedback" },
+          ]}
+        />
         <TextArea
           name="message"
           label="Message"

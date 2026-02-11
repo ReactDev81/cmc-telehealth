@@ -329,6 +329,27 @@ export default function RootLayout() {
                                     headerTitle: "Usage Analytics",
                                 }}
                             />
+
+                            <Stack.Screen
+                                name="doctor/profile/address-contact"
+                                options={{
+                                    headerTitle: "Address Information",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="doctor/profile/awards"
+                                options={{
+                                    headerTitle: "Awards",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="doctor/profile/social-media"
+                                options={{
+                                    headerTitle: "Social Media",
+                                }}
+                            />
                         </Stack>
                     </UserProvider>
                 </QueryClientProvider>
