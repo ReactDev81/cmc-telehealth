@@ -1,7 +1,8 @@
+import { useAuth } from '@/context/UserContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
 import * as z from 'zod';
@@ -30,6 +31,7 @@ const personalInfoSchema = z.object({
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
 const EditPersonalInformation = () => {
+    const { user } = useAuth();
 
     const [profileImage, setProfileImage] = useState(require('../../assets/images/edit-profile.png'));
     const [isImageUri, setIsImageUri] = useState(false);
@@ -43,6 +45,38 @@ const EditPersonalInformation = () => {
             gender: 'male',
         }
     });
+
+    useEffect(() => {
+        if (user) {
+            console.log("Patient User data from Auth:", user);
+
+            // Handle name splitting
+            let firstName = "";
+            let lastName = "";
+
+            if (user.name) {
+                const parts = user.name.trim().split(/\s+/);
+                firstName = parts[0] || "";
+                lastName = parts.slice(1).join(" ") || "";
+            }
+
+            const prefillValues = {
+                firstName: firstName,
+                lastName: lastName,
+                phone: (user as any).phone || (user as any).mobile_no || "",
+                gender: (user as any).gender || 'male',
+                dateOfBirth: (user as any).date_of_birth ? new Date((user as any).date_of_birth) : undefined,
+            };
+
+            console.log("Prefilling Patient form with data:", prefillValues);
+            reset(prefillValues as any);
+
+            if (user.avatar) {
+                setProfileImage({ uri: user.avatar });
+                setIsImageUri(true);
+            }
+        }
+    }, [user, reset]);
 
     const dateOfBirth = watch('dateOfBirth');
     const gender = watch('gender');

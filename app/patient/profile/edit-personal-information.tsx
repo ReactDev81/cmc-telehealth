@@ -1,4 +1,3 @@
-import { useUpdatePatientProfile } from "@/queries/patient/useUpdatePatientProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as ImagePicker from "expo-image-picker";
 import { Camera } from "lucide-react-native";

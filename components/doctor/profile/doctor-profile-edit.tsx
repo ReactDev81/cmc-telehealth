@@ -4,17 +4,18 @@ import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 const DoctorProfileEdit = ({ user }: { user: any }) => {
+    console.log("Doctor profile edit: ", user);
     return (
         <View className="bg-primary-100 p-4 flex-row items-start rounded-xl">
             <View className="flex-1 flex-row items-center gap-x-3">
                 <Avatar
                     source={user?.avatar}
-                    name={user?.name}
+                    name={user?.first_name + " " + user?.last_name}
                     size={56}
                 />
                 <View className="flex-1">
                     <Text className="text-base font-medium text-black">
-                        Hi, {user?.name || "Doctor"}
+                        Hi, {user?.first_name + " " + user?.last_name || "Doctor"}
                     </Text>
                     <Text className="text-sm text-black-400 mt-0.5">
                         {user?.email}

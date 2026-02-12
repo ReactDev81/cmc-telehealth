@@ -35,7 +35,7 @@ const EditPersonalInformation = () => {
     const doctorID = user?.id || "";
 
     const { data: doctorProfile } = useDoctorProfile<PersonalInformation>(doctorID, "personal_information");
-    // console.log("Doctor data: ", doctorProfile?.data)
+    console.log("Doctor data: ", doctorProfile)
 
     const { control, handleSubmit, reset } = useForm<PersonalInfoFormData>({
         resolver: zodResolver(personalInfoSchema),
@@ -47,16 +47,42 @@ const EditPersonalInformation = () => {
         }
     });
 
+    // 1. Initial prefill from useAuth (instant)
     useEffect(() => {
-        if (doctorProfile?.data) {
-            reset({
-                name: `${doctorProfile.data.first_name} ${doctorProfile.data.last_name}`,
-                email: doctorProfile.data.email,
-                specialty: doctorProfile.data.department_id,
-                bio: doctorProfile.data.bio,
-            });
-            if (doctorProfile.data.avatar) {
-                setImage(doctorProfile.data.avatar);
+        if (user) {
+            const initialValues = {
+                name: user.name || `${user.first_name || ""} ${user.last_name || ""}`.trim(),
+                email: user.email || "",
+                specialty: (user as any).department_id || "",
+                bio: (user as any).bio || "",
+            };
+            console.log("Initial prefill from Auth:", initialValues);
+            reset(initialValues);
+            if (user.avatar) {
+                setImage(user.avatar);
+            }
+        }
+    }, [user, reset]);
+
+    // 2. Sync with useDoctorProfile for extended data (Bio, Specialty)
+    useEffect(() => {
+        const profileData = (doctorProfile as any)?.data || (doctorProfile as any)?.user;
+
+        if (profileData) {
+            const mergedValues = {
+                name: profileData.name || `${profileData.first_name || ""} ${profileData.last_name || ""}`.trim(),
+                email: profileData.email || "",
+                specialty: profileData.department_id || "",
+                bio: profileData.bio || "",
+            };
+
+            console.log("Merging profile data from API:", mergedValues);
+
+            // Only reset if we actually have new/different data to avoid unnecessary form resets
+            reset(mergedValues);
+
+            if (profileData.avatar) {
+                setImage(profileData.avatar);
             }
         }
     }, [doctorProfile, reset]);
@@ -102,10 +128,16 @@ const EditPersonalInformation = () => {
         const isNewImage = image && !image.startsWith("http") && !image.startsWith("/");
 
         const handleSuccess = (response: any) => {
-            const updatedData = response?.data;
+            const updatedData = response?.data || response?.user;
             if (updatedData) {
+                console.log("Success! Context updated with:", {
+                    first_name: updatedData.first_name,
+                    last_name: updatedData.last_name,
+                    avatar: updatedData.avatar,
+                });
                 updateUser({
-                    name: `${updatedData.first_name} ${updatedData.last_name}`,
+                    first_name: updatedData.first_name,
+                    last_name: updatedData.last_name,
                     avatar: updatedData.avatar,
                 });
             }
