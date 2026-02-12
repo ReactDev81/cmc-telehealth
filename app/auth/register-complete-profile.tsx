@@ -57,9 +57,11 @@ export default function RegisterCompleteProfile() {
 
           const role: UserRole = (data.user.role as UserRole) ?? "patient";
 
-          const userData: User = {
+          const userData: User = {  
             id: data.user.id,
-            name: data.user.name,
+            first_name: data.user.first_name,
+            last_name: data.user.last_name,
+            avatar: data.user.avatar,
             email: data.user.email,
             gender: data.user.gender,
             date_of_birth: data.user.date_of_birth,
@@ -67,6 +69,14 @@ export default function RegisterCompleteProfile() {
             phone: data.user.phone,
             patient_id: data.user.patient_id ?? undefined,
             doctor_id: data.user.doctor_id ?? undefined,
+            address: {
+              address: data.user.address.address,
+              area: data.user.address.area,
+              city: data.user.address.city,
+              landmark: data.user.address.landmark,
+              pincode: data.user.address.pincode,
+              state: data.user.address.state,
+            },
           };
 
           await login(userData, tokenStr);

@@ -20,10 +20,10 @@ const AddCurrentLocation = () => {
     const [place, setPlace] = useState<Location.LocationGeocodedAddress | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const { mutate, isPending } = useSavePatientAddress(user?.id ?? "");  
 
-    // console.log('place ', place)
+    console.log('place ', place)
 
     useEffect(() => {
         const getAddress = async () => {
@@ -73,6 +73,18 @@ const AddCurrentLocation = () => {
               "Success",
               response?.message || "Address updated successfully!"
             );
+
+            updateUser({
+                address: {
+                    address: response.data.address ?? "",
+                    area: response.data.area ?? "",
+                    city: response.data.city,
+                    landmark: response.data.landmark,
+                    pincode: response.data.pincode,
+                    state: response.data.state,
+                },
+            });
+
             router.replace("/patient/profile/manage-address");
           },
           onError: (error: any) => {

@@ -15,7 +15,7 @@ import * as z from "zod";
 const locationSchema = z.object({
   address: z.string().min(1, "House / Floor / Flat Number is required"),
   area: z.string().optional(),
-  // landmark: z.string().optional(),
+  landmark: z.string().optional(),
   pincode: z
     .string()
     .min(5, "Pincode must be at least 5 digits")
@@ -27,6 +27,7 @@ const locationSchema = z.object({
 type LocationFormData = z.infer<typeof locationSchema>;
 
 const ChooseDifferentLocation = () => {
+
   const { latitude, longitude } = useLocalSearchParams();
   const lat = parseFloat(latitude as string);
   const lon = parseFloat(longitude as string);
@@ -34,7 +35,11 @@ const ChooseDifferentLocation = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [district, setDistrict] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+
+  
+  const AreaDetails = user?.address?.area;
+  const LandMark = user?.address?.landmark;
 
   const { mutate, isPending } = useSavePatientAddress(user?.id ?? "");  
 
@@ -48,7 +53,7 @@ const ChooseDifferentLocation = () => {
     defaultValues: {
       address: "",
       area: "",
-      // landmark: "",
+      landmark: "",
       pincode: "",
       city: "",
       state: "",
@@ -71,6 +76,8 @@ const ChooseDifferentLocation = () => {
           setValue("pincode", place.postalCode || "");
           setValue("city", place.city || "");
           setValue("state", place.region || "");
+          setValue("area", AreaDetails || "");
+          setValue("landmark", LandMark || "");
         } else {
           setAddress("Address not found");
         }
@@ -86,12 +93,14 @@ const ChooseDifferentLocation = () => {
   }, [lat, lon]);
 
   const onSubmit = (formData: LocationFormData) => {
+
     const payload = {
       address: formData.address,
       area: formData.area ?? "",
       pincode: formData.pincode,
       city: formData.city,
       state: formData.state,
+      landmark: formData.landmark,
       group: "address" as const,
     };
 
@@ -101,6 +110,18 @@ const ChooseDifferentLocation = () => {
           "Success",
           response?.message || "Address updated successfully!"
         );
+
+        updateUser({
+            address: {
+                address: response.data.address ?? "",
+                area: response.data.area ?? "",
+                city: response.data.city,
+                landmark: response.data.landmark,
+                pincode: response.data.pincode,
+                state: response.data.state,
+            },
+        });
+
         router.replace("/patient/profile/manage-address");
       },
       onError: (error: any) => {
@@ -168,7 +189,7 @@ const ChooseDifferentLocation = () => {
           containerClassName="mt-5"
         />
 
-        {/* <View>
+        <View>
           <Input
             name="landmark"
             control={control}
@@ -179,7 +200,7 @@ const ChooseDifferentLocation = () => {
           <Text className="text-base text-primary mt-2.5">
             196m away from your selected location
           </Text>
-        </View> */}
+        </View>
 
         <View className="flex-row gap-x-2.5">
           <View className="flex-1">

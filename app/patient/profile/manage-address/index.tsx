@@ -1,6 +1,5 @@
 import Button from '@/components/ui/Button';
 import { useAuth } from '@/context/UserContext';
-import { usePatientAddress } from '@/queries/patient/usePatientAddress';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Location from "expo-location";
 import { router } from 'expo-router';
@@ -14,12 +13,10 @@ const ManageAddress = () => {
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = useMemo(() => ['40%'], []);
     const [isOpen, setIsOpen] = useState(false);
-    // const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [loading, setLoading] = useState(false);
     const { user } = useAuth();
-    const { data, isLoading, error } = usePatientAddress(user?.id);
 
-    const adress = data?.data;
+    const adress = user?.address;
 
     const handleAddAddress = () => {
         setIsOpen(true);

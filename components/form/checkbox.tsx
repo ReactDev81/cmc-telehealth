@@ -42,7 +42,7 @@ export default function Checkbox({
       {/* Label */}
       {label && (
         <Text
-          className="text-primary-400 text-sm"
+          className="text-primary-400 text-sm mt-1"
           selectable={false} 
         >
           {label}

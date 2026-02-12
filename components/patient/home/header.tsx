@@ -1,6 +1,4 @@
 import { useAuth } from '@/context/UserContext';
-import { usePatientAddress } from '@/queries/patient/usePatientAddress';
-import { usePatientProfile } from '@/queries/patient/usePatientProfile';
 import { router } from 'expo-router';
 import { Bell, ChevronDown, MapPin } from 'lucide-react-native';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
@@ -11,9 +9,11 @@ interface HeaderProps {
 
 const Header = ({ insets }: HeaderProps) => {
 
-    const { user, token } = useAuth();
-    const { data: profile } = usePatientProfile(user?.id!, token!);
-    const { data: addressData } = usePatientAddress(user?.id);
+    const { user } = useAuth();
+
+    const profileImageSource = user?.avatar
+        ? { uri: user.avatar }
+        : require("../../../assets/images/user.png");
 
     return (
         <View
@@ -27,23 +27,25 @@ const Header = ({ insets }: HeaderProps) => {
             {/* Top Section */}
             <View className="flex-row items-center justify-between mb-4 pt-2">
 
-                <View className="flex-row items-center gap-2">
+                <View className="flex-row items-center gap-x-2">
                     <View>
                         <Image
-                            source={profile?.avatar ? { uri: profile.avatar } : require("../../../assets/images/demo.jpg")}
-                            className="w-11 h-11 rounded-full"
+                            source={profileImageSource}
+                            className="w-11 h-11 object-cover rounded-full"
                         />
                     </View>
                     <View>
                         <Text className="text-white text-base font-medium">
-                            {profile && `${profile.first_name} ${profile.last_name}`}
+                            {`${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim() || ' '}
                         </Text>
                         <TouchableOpacity 
                             className="flex-row items-center gap-1 mt-0.5"
                             onPress={() => router.push('/patient/profile/manage-address')}
                         >
                             <MapPin color="#fff" size={16} />
-                            <Text className="text-white text-sm">{addressData?.data?.address}</Text>
+                            <Text className="text-white text-sm">
+                                {user?.address?.address ? user?.address?.address : 'Add your Address'}
+                            </Text>
                             <ChevronDown size={16} color="#fff" />
                         </TouchableOpacity>
                     </View>

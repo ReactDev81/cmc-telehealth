@@ -14,6 +14,15 @@ interface CompleteProfileVariables {
   token: string;
 }
 
+interface Address {
+  address: string | null;
+  area: string | null;
+  city: string | null;
+  landmark: string | null;
+  pincode: string | null;
+  state: string | null;
+}
+
 interface CompleteProfileResponse {
     success: boolean;
     message: string;
@@ -21,12 +30,15 @@ interface CompleteProfileResponse {
         id: string;
         patient_id: string | null;
         doctor_id: string | null;
-        name: string;
+        first_name: string;
+        last_name: string;
+        avatar: string;
         email: string;
         role: string | null;
         gender: string;
         phone: string;
         date_of_birth: string;
+        address: Address;
     };
 }
   

@@ -7,18 +7,30 @@ interface LoginPayload {
   remember?: boolean;
 }
 
+interface Address {
+  address: string | null;
+  area: string | null;
+  city: string | null;
+  landmark: string | null;
+  pincode: string | null;
+  state: string | null;
+}
+
 interface LoginResponse {
   token: string;
   user: {
     id: string;
-    name: string;
+    first_name: string;
+    last_name: string;
     email: string;
+    avatar: string;
     role: "patient" | "doctor";
     gender: string;
     date_of_birth: string;
     phone: string;
     patient_id?: string;
     doctor_id?: string;
+    address: Address;
   };
 }
 

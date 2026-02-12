@@ -42,7 +42,8 @@ export default function LoginScreen() {
 
         const userData: User = {
           id: data.user.id,
-          name: data.user.name ?? "",
+          first_name: data.user.first_name,
+          last_name: data.user.last_name,
           email: data.user.email,
           role,
           gender: data.user.gender,
@@ -50,6 +51,15 @@ export default function LoginScreen() {
           phone: data.user.phone,
           patient_id: data.user.patient_id,
           doctor_id: data.user.doctor_id,
+          avatar: data.user.avatar,
+          address: {
+            address: data.user.address.address,
+            area: data.user.address.area,
+            city: data.user.address.city,
+            landmark: data.user.address.landmark,
+            pincode: data.user.address.pincode,
+            state: data.user.address.state,
+          },
         };
 
         console.log("Render Login Screen", data);
