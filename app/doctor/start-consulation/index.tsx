@@ -1,7 +1,9 @@
+import { useAuth } from "@/context/UserContext";
+import { useMarkAsCompleted } from "@/queries/doctor/useMarkAsCompleted";
 import BottomSheet, { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import { Camera } from "expo-camera";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
 import { ClosedCaption, FileUser, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff, X } from "lucide-react-native";
 import * as React from "react";
@@ -33,6 +35,9 @@ const CONTROLS: ControlConfig[] = [
 const MAX_BOTTOM_SHEET_HEIGHT = Dimensions.get("window").height * 0.8;
 
 const StartConsulationWithDoctor = () => {
+    const router = useRouter();
+    const { token } = useAuth();
+    const { mutate: markAsCompleted, isPending: isMarkingComplete } = useMarkAsCompleted();
 
     const { docotor_call_link, appointment_id } = useLocalSearchParams<{ docotor_call_link: string, appointment_id: string }>();
     // console.log("Doctor Call Link Param:", docotor_call_link);
@@ -52,7 +57,7 @@ const StartConsulationWithDoctor = () => {
             const finalUrl = `${baseUrl}${separator}bottomToolbar=off`;
             return finalUrl;
         }
-    }, []);
+    }, [docotor_call_link]);
 
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);
@@ -96,13 +101,56 @@ const StartConsulationWithDoctor = () => {
     }, []);
 
     const handleHangup = React.useCallback(() => {
-        if (isLeaving) {
+        if (isLeaving || isMarkingComplete) {
+            Alert.alert("Please wait", isMarkingComplete ? "Completing appointment..." : "Leaving the room...");
             return;
         }
-        setIsLeaving(true);
-        wherebyRoomRef.current?.leaveRoom();
-        setTimeout(() => setIsLeaving(false), 1200);
-    }, [isLeaving]);
+
+        Alert.alert(
+            "End Consultation",
+            "Are you sure you want to end this consultation and mark it as completed?",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Hangup cancelled"),
+                    style: "cancel",
+                },
+                {
+                    text: "End & Complete",
+                    onPress: () => {
+                        if (!appointment_id || !token) {
+                            Alert.alert("Error", "Missing information to complete appointment");
+                            return;
+                        }
+
+                        markAsCompleted(
+                            { appointmentId: appointment_id, token: token },
+                            {
+                                onSuccess: () => {
+                                    setIsLeaving(true);
+                                    wherebyRoomRef.current?.leaveRoom();
+
+                                    // Redirect to my appointments
+                                    router.replace("/(doctor)");
+                                },
+                                onError: (error: any) => {
+                                    const errorData = error.response?.data;
+                                    const devMessage = errorData?.message || error.message;
+                                    const validationErrors = errorData?.errors;
+                                    const fullMessage = validationErrors
+                                        ? `${devMessage}: ${JSON.stringify(validationErrors)}`
+                                        : (errorData ? JSON.stringify(errorData) : devMessage);
+
+                                    Alert.alert("Error", fullMessage || "Failed to mark as completed");
+                                }
+                            }
+                        );
+                    },
+                    style: "destructive",
+                },
+            ]
+        );
+    }, [isLeaving, isMarkingComplete, appointment_id, token, markAsCompleted, router]);
 
     const handleToggleCamera = React.useCallback(() => {
         const next = !isCameraOn;

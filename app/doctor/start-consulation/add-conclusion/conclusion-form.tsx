@@ -1,14 +1,17 @@
 import DateField from "@/components/form/date";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/UserContext";
+import { useUpdateInstructions } from "@/queries/doctor/useUpdateInstructions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLocalSearchParams } from "expo-router";
 import { useForm } from "react-hook-form";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { z } from "zod";
 
 const ConclusionSchema = z.object({
-    conclusion_date: z.date(),
-    notes: z.string().min(1, "Notes are required"),
+    next_visit_date: z.date(),
+    instructions_by_doctor: z.string().min(1, "Instructions are required"),
 });
 
 type ConclusionFormValues = z.infer<typeof ConclusionSchema>;
@@ -18,34 +21,53 @@ interface Props {
 }
 
 const ConclusionForm = ({ onClose }: Props) => {
+    const { token } = useAuth();
+    const { appointment_id } = useLocalSearchParams<{ appointment_id: string }>();
+    const { mutate: updateInstructions, isPending } = useUpdateInstructions();
+
     const { control, handleSubmit, setValue, watch } = useForm<ConclusionFormValues>({
         resolver: zodResolver(ConclusionSchema),
         defaultValues: {
-            conclusion_date: new Date(),
-            notes: "",
+            next_visit_date: new Date(),
+            instructions_by_doctor: "",
         },
     });
 
     const onSubmit = (data: ConclusionFormValues) => {
-        console.log("✅ Conclusion Form Submitted:", data);
+        if (!appointment_id || !token) {
+            Alert.alert("Error", "Missing appointment information or user token");
+            return;
+        }
 
-        // API ready structure
         const payload = {
-            conclusion_date: data.conclusion_date.toISOString().split("T")[0],
-            notes: data.notes,
+            next_visit_date: data.next_visit_date.toISOString().split("T")[0],
+            instructions_by_doctor: data.instructions_by_doctor,
         };
 
-        console.log("🚀 API Ready Payload:", JSON.stringify(payload, null, 2));
-
-        // Since we are not including the actual API call yet:
-        onClose();
+        updateInstructions(
+            {
+                appointmentId: appointment_id,
+                data: payload,
+                token: token,
+            },
+            {
+                onSuccess: () => {
+                    Alert.alert("Success", "Consultation conclusion submitted successfully");
+                    onClose();
+                },
+                onError: (error: any) => {
+                    const errorMessage = error.response?.data?.message || error.message || "Failed to submit conclusion";
+                    Alert.alert("Error", errorMessage);
+                },
+            }
+        );
     };
 
     return (
         <View className="p-5">
             <View>
                 <TextArea
-                    name="notes"
+                    name="instructions_by_doctor"
                     control={control}
                     label="Conclusion Notes"
                     placeholder="Enter your summary or conclusion here..."
@@ -53,14 +75,19 @@ const ConclusionForm = ({ onClose }: Props) => {
             </View>
 
             <DateField
-                label="Conclusion Date"
-                value={watch("conclusion_date")}
-                onChange={(date) => setValue("conclusion_date", date)}
+                label="Next Visit Date"
+                value={watch("next_visit_date") || new Date()}
+                onChange={(date) => {
+                    if (date) setValue("next_visit_date", date);
+                }}
                 className="mt-4"
             />
             <View className="mt-8">
-                <Button onPress={handleSubmit(onSubmit)}>
-                    Submit Conclusion
+                <Button
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={isPending}
+                >
+                    {isPending ? "Submitting..." : "Submit Conclusion"}
                 </Button>
             </View>
         </View>

@@ -66,3 +66,27 @@ export const fetchAppointments = async (
     return [];
   }
 };
+
+export const markAppointmentAsCompleted = async (
+  appointmentId: string,
+  token: string
+): Promise<any> => {
+  // Postman shows: api/v2/appointments/{appointmentID}/mark-as-completed
+  // .env baseURL contains: https://.../api/v2
+  // So the relative path should be: /appointments/{id}/mark-as-completed
+  const response = await api.post(
+    `/appointments/${appointmentId}/mark-as-completed`,
+    {
+      status: "completed",
+      is_complete: true
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};

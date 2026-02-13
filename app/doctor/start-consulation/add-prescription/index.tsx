@@ -1,6 +1,7 @@
 import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
+import { useInstructions } from "@/queries/doctor/useInstructions";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
 import { useLocalSearchParams } from "expo-router";
 import { FileCheck, Plus, X } from "lucide-react-native";
@@ -13,7 +14,7 @@ const AddPrescription = () => {
     const { token } = useAuth();
     const { appointment_id } = useLocalSearchParams<{ appointment_id: string }>();
     const { data: patient, isLoading, isError } = usePatientDetail(appointment_id || "", token || "");
-    console.log("patient", JSON.stringify(patient, null, 2))
+    const { data: instructions } = useInstructions(appointment_id || "", token || "");
 
     const [modalVisible, setModalVisible] = useState(false);
     const [conclusionModalVisible, setConclusionModalVisible] = useState(false);
@@ -37,6 +38,7 @@ const AddPrescription = () => {
 
     const patientData = patient.data;
     const currentMedications = patientData?.current_medications || [];
+    const instructionData = instructions?.data;
 
     return (
         <View>
@@ -120,6 +122,24 @@ const AddPrescription = () => {
                         <Text className="text-black-400 text-sm italic mt-4 text-center">No prescriptions added yet</Text>
                     )}
                 </View>
+
+                {/* Instructions Section */}
+                {instructionData && (
+                    <View className="mt-8 p-4 rounded-xl border border-gray-100">
+                        <View className="flex-row items-center gap-x-2 mb-3">
+                            <Text className="text-base font-semibold text-black">Conclusion Report</Text>
+                        </View>
+
+                        <View className="mb-4">
+                            <Text className="text-sm text-black leading-5">{instructionData.instructions_by_doctor}</Text>
+                        </View>
+
+                        <View className="flex-row items-center">
+                            <Text className="text-sm font-bold text-black">Next Visit: </Text>
+                            <Text className="text-sm text-black">{instructionData.next_visit_date}</Text>
+                        </View>
+                    </View>
+                )}
             </View>
         </View>
     );

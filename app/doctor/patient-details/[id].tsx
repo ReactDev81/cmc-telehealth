@@ -5,6 +5,7 @@ import PreviousAppointment from "@/components/doctor/patient-detail/previous-app
 import UpcomingAppointment from "@/components/doctor/patient-detail/upcoming-appointments";
 import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
 import Button from "@/components/ui/Button";
+import EmptyState from "@/components/ui/EmptyState";
 import Title from "@/components/ui/Title";
 import TitleWithLink from "@/components/ui/title-with-link";
 import { useAuth } from "@/context/UserContext";
@@ -107,24 +108,32 @@ const PatientDetails = () => {
                         className="max-w-72"
                         text="Medical Reports"
                     />
-                    {patient?.data?.medical_reports.map((report: any) => {
-                        const handleViewReport = () => {
-                            const pdfUrl = report.file_url;
-                            if (pdfUrl) {
-                                Linking.openURL(pdfUrl);
-                            }
-                        };
-                        return (
-                            <View className="mt-5" key={report.id}>
-                                <ReportsCard
-                                    report_name={report.report_name}
-                                    report_date_formatted={report.report_date_formatted}
-                                    type_label={report.type_label}
-                                    handleReport={handleViewReport}
-                                />
-                            </View>
-                        );
-                    })}
+                    {patient?.data?.medical_reports && patient.data.medical_reports.length > 0 ? (
+                        patient.data.medical_reports.map((report: any) => {
+                            const handleViewReport = () => {
+                                const pdfUrl = report.file_url;
+                                if (pdfUrl) {
+                                    Linking.openURL(pdfUrl);
+                                }
+                            };
+                            return (
+                                <View className="mt-5" key={report.id}>
+                                    <ReportsCard
+                                        report_name={report.report_name}
+                                        report_date_formatted={report.report_date_formatted}
+                                        type_label={report.type_label}
+                                        handleReport={handleViewReport}
+                                    />
+                                </View>
+                            );
+                        })
+                    ) : (
+                        <EmptyState
+                            title="No Medical Reports"
+                            message="This patient has not uploaded any medical reports yet."
+                            className="mt-5 rounded-2xl border border-gray-100"
+                        />
+                    )}
                 </View>
                 {/* currently running medicine */}
                 <View className="mt-8">
