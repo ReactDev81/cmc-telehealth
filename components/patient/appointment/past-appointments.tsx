@@ -26,7 +26,7 @@ const PastAppointment = ({
 }: appointmentProps) => {
     const id = appointment_id;
     return (
-        <View className="border border-black-300 rounded-xl p-4">
+        <View className="border border-black-300 rounded-xl p-4 mb-5">
             <View className="flex-row items-center gap-x-3">
                 <View>
                     <Image source={{ uri: image }} className="w-14 h-14 rounded-full" />

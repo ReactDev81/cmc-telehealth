@@ -10,6 +10,7 @@ const AddPrescription = ({ onClose }: { onClose: () => void }) => {
 
     return (
         <View>
+            
             {/* Modal */}
             <Modal
                 visible={modalVisible}

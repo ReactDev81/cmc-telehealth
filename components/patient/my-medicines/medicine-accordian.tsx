@@ -42,16 +42,12 @@ const MedicineAccordian: React.FC<Props> = ({
         });
     }, [onToggle]);
 
-    // const medicineTimes = medicine.schedule?.times?.join(", ") ?? "";
-    // const timesText = medicineTimes || medicine.times || "";
-
-    const medicineName = medicine.medicine_name || "";
+    const medicineName = medicine.name || "";
     const medicineFrequency = (medicine.frequencylabel && medicine.frequencylabel !== "N/A") ? medicine.frequencylabel : (medicine.frequency || "");
-    const medicineDate = medicine.date || "";
     const medicineInstructions = Array.isArray(medicine.instructions)
         ? medicine.instructions.join(", ")
         : (medicine.instructions || "");
-    const medicineStatus = medicine.duration_text || "";
+    const medicineStatus = medicine.status || "";
     const medicineTimes = medicine.times || "";
     const medicineDosage = medicine.dosage || "";
     const number = index !== undefined ? `${index + 1}. ` : "";
@@ -73,7 +69,8 @@ const MedicineAccordian: React.FC<Props> = ({
                         {number}
                     </Text>
                     <Text className="text-base font-medium text-black">
-                        {medicineName} ({medicineDosage})
+                        <Text className="capitalize">{medicineName} </Text> 
+                        ({medicineDosage})
                     </Text>
                 </View>
 
@@ -94,7 +91,7 @@ const MedicineAccordian: React.FC<Props> = ({
                         </View>
                         <View className="flex-1">
                             <Text className="text-sm font-medium text-black">
-                                {medicineFrequency}
+                                {medicine.dosage}, {medicineFrequency}
                             </Text>
                             <Text className="text-xs text-[#6B6B6B] mt-1">
                                 {medicineTimes} ({medicineInstructions})
@@ -103,9 +100,7 @@ const MedicineAccordian: React.FC<Props> = ({
                     </View>
 
                     <View className="flex-row items-center gap-x-2.5 mt-1">
-                        {/* <Calendar size={14} color="#1F1E1E" /> */}
                         <ClipboardClock size={14} color="#1F1E1E" />
-                        {/* <Text className="text-sm text-[#6B6B6B]">{medicineStatus}</Text> */}
                         <Text className="text-sm text-[#6B6B6B]">{medicineStatus}</Text>
                     </View>
 

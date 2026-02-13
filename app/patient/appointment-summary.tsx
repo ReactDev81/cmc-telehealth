@@ -147,9 +147,9 @@ const AppointmentSummary = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={['left', 'right', 'bottom']}>
       <ScrollView className="flex-1">
-        <View className="items-center mb-6">
+        <View className="items-center">
           <Image
             source={{
               uri:
@@ -247,7 +247,7 @@ const AppointmentSummary = () => {
           </View>
 
           {/* Payment Detail */}
-          <View className="pb-5 mb-5">
+          <View>
             <Text className="text-lg text-black font-medium">Payment Detail</Text>
             <View className="mt-4">
               <View className="flex-row items-center justify-between">

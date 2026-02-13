@@ -1,6 +1,5 @@
-import { useAuth } from "@/context/UserContext";
-import useAxios from "@/hooks/useApi";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
+import { useBrowseDoctorById } from "@/queries/patient/useBrowseDoctorById";
 import { useLocalSearchParams } from "expo-router";
 import {
     BriefcaseBusiness,
@@ -18,61 +17,41 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
+import doctorDemo from "../../../assets/images/doctor.jpg";
 import DoctorSchedule from "../../../components/patient/doctor-profile/doctor-schedule";
 
-interface DoctorProps {
-    id: string;
-    profile?: {
-        name: string;
-        department: string;
-        years_experience: string;
-        avatar?: string;
-    };
-    about?: {
-        bio: string;
-        description?: string;
-    };
-    education?: {
-        degree: string;
-        institution: string;
-        start_date?: string;
-        end_date?: string;
-    }[];
-    languages?: string | string[];
-    review_summary?: {
-        average_rating: number;
-        total_reviews: number;
-    };
-    appointment_types?: {
-        video?: boolean;
-        in_person?: boolean;
-    };
-}
-
 const DoctorDetail = () => {
-    const { id, consultation_type, booking_type, consultation_opd_type, appointment_id, appointment_date, appointment_time, can_reschedule, appointment_status } = useLocalSearchParams();
-    const { token } = useAuth();
 
-    const { data, loading, error, fetchData } = useAxios<{ data: DoctorProps }>(
-        "get",
-        `/patient/browse-doctor/${id}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
+    const {
+        id,
+        consultation_type,
+        booking_type,
+        consultation_opd_type,
+        appointment_id,
+        appointment_date,
+        appointment_time,
+        can_reschedule,
+        appointment_status,
+    } = useLocalSearchParams<{
+        id: string;
+        consultation_type?: string;
+        booking_type?: string;
+        consultation_opd_type?: string;
+        appointment_id?: string;
+        appointment_date?: string;
+        appointment_time?: string;
+        can_reschedule?: string;
+        appointment_status?: string;
+    }>();
+
+
+
+    const { data, isLoading, isError } = useBrowseDoctorById(id);
+
     const doctor = data?.data;
 
     const [appointmentType, setAppointmentType] = useState<"video" | "in_person" | null>("video");
     const [opdType, setOpdType] = useState<"general" | "private" | null>(null);
-
-    // console.log("Appointments Type Video:", doctor?.appointment_types?.video);
-    // console.log("Appointments Type In Person:", doctor?.appointment_types?.in_person);
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     // Preselect appointment type if only one is available
     useEffect(() => {
@@ -168,11 +147,10 @@ const DoctorDetail = () => {
         }
     }, [appointmentData, booking_type, appointmentType, opdType]);
 
-    if (loading) {
+    if (isLoading) {
         return (
             <View className="flex-1 items-center justify-center">
                 <ActivityIndicator />
-                {/* <Text className="text-gray-600 text-lg">Loading doctor details...</Text> */}
             </View>
         );
     }
@@ -186,16 +164,14 @@ const DoctorDetail = () => {
         );
     }
 
-    // console.log("OPD Type:", opdType);
-
     return (
         <ScrollView className="flex-1 bg-white">
-            <View className="items-center mb-6">
+            <View className="items-center">
                 <Image
                     source={{
                         uri:
                             doctor?.profile?.avatar ||
-                            "https://cdn-icons-png.flaticon.com/512/387/387561.png",
+                            {doctorDemo},
                     }}
                     className="w-full h-60"
                     resizeMode="cover"
@@ -417,7 +393,7 @@ const DoctorDetail = () => {
                 {/* schedules - Only show when appointment type is selected and if in_person, opdType must be selected */}
                 {appointmentType && (appointmentType === "video" || (appointmentType === "in_person" && opdType)) && (
                     <DoctorSchedule
-                        doctorData={data}
+                        doctorData={doctor}
                         appointmentType={appointmentType}
                         opdType={opdType}
                         bookingType={booking_type as string}

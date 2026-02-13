@@ -3,6 +3,7 @@ import AvailableDoctors from "@/components/patient/home/available-doctors";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useBrowseDoctors } from "@/queries/patient/useBrowseDoctors";
+import { useIsFocused } from "@react-navigation/native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, ScrollView, Text, View } from "react-native";
@@ -14,7 +15,7 @@ type ConsultationType = "video" | "in-person" | "both";
 const Doctors = () => {
 
   const { token, initializing } = useAuth();
-  const { data, isLoading, isError, error } = useBrowseDoctors(!!token && !initializing);
+  const { data, isLoading, isError, error, refetch } = useBrowseDoctors(!!token && !initializing);
   const [modalVisible, setModalVisible] = useState(false);
   const params = useLocalSearchParams();
   const [filters, setFilters] = useState<{
@@ -23,6 +24,8 @@ const Doctors = () => {
   }>({});
   const [searchText, setSearchText] = useState("");
   const [selectedType, setSelectedType] = useState<ConsultationType>("both");
+
+  const isFocused = useIsFocused();
 
   const handleSelect = (type: ConsultationType) => {
     setSelectedType(type);
@@ -119,32 +122,6 @@ const Doctors = () => {
     );
   };
 
-  // if (isError) {
-  //     return <Text>Error loading home</Text>;
-  // }
-
-  // useEffect(() => {
-  //   // Only react to the specific param values instead of the whole `params` object
-  //   const filterType = (params as any)?.filter_type;
-  //   const id = (params as any)?.id;
-
-  //   if (!filterType) return;
-
-  //   if (filterType === "department" && id) {
-  //     setFilters((prev) => {
-  //       const departmentId = String(id);
-  //       if (prev.departmentId === departmentId) return prev;
-  //       return { ...prev, departmentId };
-  //     });
-  //   } else if (filterType === "symptom" && id) {
-  //     setFilters((prev) => {
-  //       const symptomDepartmentId = String(id);
-  //       if (prev.symptomDepartmentId === symptomDepartmentId) return prev;
-  //       return { ...prev, symptomDepartmentId };
-  //     });
-  //   }
-  // }, [params?.filter_type, params?.id]);
-
   useEffect(() => {
     const filterType = params?.filter_type as "department" | "symptom" | undefined;
     const id = params?.id;
@@ -177,7 +154,13 @@ const Doctors = () => {
       setSelectedType(consultationType);
     }
   }, [params?.consultation_type]);
-  
+
+
+  useEffect(() => {
+    if (isFocused) {
+      refetch();
+    }
+  }, [isFocused, refetch]);
 
   return (
     <View className="flex-1 bg-white p-5 relative">
@@ -241,6 +224,11 @@ const Doctors = () => {
           renderItem={renderDoctorItem}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View className="flex-1 items-center justify-center py-20">
+                <Text className="text-black-400 text-base">No Doctors Available</Text>
+            </View>
+          }
         />
       )}
 

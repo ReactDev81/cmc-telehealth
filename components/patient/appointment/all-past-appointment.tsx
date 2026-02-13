@@ -46,7 +46,6 @@ const AllPastAppointment = ({
             renderItem={renderDoctorItem}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View className="h-5" />}
             ListEmptyComponent={
                 <View className="flex-1 items-center justify-center py-20">
                     <Text className="text-black-400 text-base">No past appointments</Text>

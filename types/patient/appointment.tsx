@@ -36,6 +36,13 @@ export type Appointment = {
   ratings_count: number;
   average_rating?: number;
 
+  // Optional live-consultation fields
+  call_now?: boolean;
+  join_url?: string;
+  video_consultation?: {
+    join_url: string;
+  };
+
   schedule: {
     date: string;
     date_formatted: string;

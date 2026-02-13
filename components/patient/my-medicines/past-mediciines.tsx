@@ -2,25 +2,33 @@ import { useAuth } from "@/context/UserContext";
 import { usePrescriptions } from "@/queries/patient/usePrescriptions";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect } from "react";
-import { FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import MedicineCard from "./medicine-card";
 
 const PastMedicines = () => {
+    
     const { user } = useAuth();
-    const patient_id = user?.patientId as string;
-
     const isFocused = useIsFocused();
+    const patient_id = user?.patient_id as string;
     const { data, isLoading, error, refetch } = usePrescriptions(patient_id, "past");
 
-    // Refetch prescriptions when component comes into focus
     useEffect(() => {
         if (isFocused) {
-            refetch();
+          refetch();
         }
     }, [isFocused, refetch]);
 
-    if (isLoading) return <Text>Loading...</Text>;
-    if (error) return <Text>Something went wrong</Text>;
+    if (isLoading) return (
+        <SafeAreaView className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="primary" />
+        </SafeAreaView>
+    );
+    if (error) return (
+        <SafeAreaView className="flex-1 items-center justify-center">
+            <Text className="text-black">Something went wrong</Text>
+        </SafeAreaView>
+    );
 
     const renderMedicines = ({ item }: { item: any }) => {
         return (

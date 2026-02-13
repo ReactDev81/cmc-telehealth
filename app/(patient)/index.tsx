@@ -9,6 +9,7 @@ import { htmlToReadableText } from "@/utils/html";
 import { useIsFocused } from "@react-navigation/native";
 import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Button from "../../components/ui/Button";
@@ -22,11 +23,17 @@ const Home = () => {
   const isFocused = useIsFocused();
   const { token } = useAuth();
 
-  const { data, isLoading, isError, error } = usePatientHome(!!token);
+  const { data, isLoading, isError, error, refetch } = usePatientHome(!!token);
 
   const homeData = data?.data;
   const specialities = homeData?.speciality_symptoms || [];
   const availableDoctors = homeData?.available_doctors || [];
+
+  useEffect(() => {
+    if (isFocused) {
+      refetch();
+    }
+  }, [isFocused, refetch]);
 
   if (isLoading) {
     return (

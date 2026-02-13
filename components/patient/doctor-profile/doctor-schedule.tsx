@@ -45,10 +45,8 @@ type DoctorScheduleResponse = {
 
 type DoctorScheduleProps = {
   doctorData?: {
-    data: {
-      id?: string;
-      availability?: AvailabilityDay[];
-    };
+    id?: string;
+    availability?: AvailabilityDay[];
   } | null;
   appointmentType?: "video" | "in_person" | null;
   opdType?: "general" | "private" | null;
@@ -63,7 +61,7 @@ type DoctorScheduleProps = {
 const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, appointmentIdToReschedule, initialSelectedDate, initialSelectedTime, canReschedule, appointmentStatus }: DoctorScheduleProps) => {
 
   const queryClient = useQueryClient();
-  const availability = doctorData?.data?.availability ?? [];
+  const availability = doctorData?.availability ?? [];
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
@@ -74,8 +72,6 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
   const [resultModalMessage, setResultModalMessage] = useState<string | null>(null);
   const [resultModalSuccess, setResultModalSuccess] = useState<boolean | null>(null);
   const [resultRouteParams, setResultRouteParams] = useState<any>(null);
-
-  // console.log('booking', bookingData);
 
   /** Auto-select first available date */
   useEffect(() => {
@@ -104,7 +100,7 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
 
       const booking: BookingData = {
         id: match.id,
-        doctor_id: doctorData?.data?.id ?? "",
+        doctor_id: doctorData?.id ?? "",
         availability_id: match.id,
         appointment_date: match.date || selectedDate || "",
         appointment_time: match.booking_start_time,
@@ -167,7 +163,7 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
     // Prepare booking data
     const booking: BookingData = {
       id: slot.id,
-      doctor_id: doctorData?.data?.id ?? "",
+      doctor_id: doctorData?.id ?? "",
       availability_id: slot.id,
       appointment_date: slot.date || selectedDate || "",
       appointment_time: slot.booking_start_time,

@@ -24,7 +24,7 @@ const UpcomingAppointments = ({
     // console.log("Call Now:", call_now);
 
     return (
-        <View className='border border-black-300 rounded-xl p-4'>
+        <View className='border border-black-300 rounded-xl p-4 mb-5'>
 
             <View className='flex-row items-center gap-x-3'>
                 <View>

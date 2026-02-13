@@ -6,13 +6,15 @@ import { BriefcaseBusiness, Star, Stethoscope } from "lucide-react-native";
 import { Image, Linking, ScrollView, Text, View } from "react-native";
 
 const AppointementDetails = () => {
+
     const { id } = useLocalSearchParams();
-    // console.log("ID from params :", id);
+    console.log("ID from params :", id);
     const appointmentId = typeof id === "string" ? id : undefined;
     // console.log("Appointment ID in details page :", appointmentId);
 
     const { data, isLoading, isError } = useAppointmentById(appointmentId);
-    // console.log("Appointment Details Data :", data);
+    const medicalReports = data?.data?.medical_reports ?? [];
+    console.log("Appointment Details Data :", data?.data?.medical_reports);
 
     const appointment = data?.data;
     const patient = appointment?.patient;
@@ -34,17 +36,9 @@ const AppointementDetails = () => {
 
     const total = calculateAppointmentFee();
 
-    const handleViewReport = () => {
-        const pdfUrl =
-            "https://images.drlogy.com/assets/uploads/lab/pdf/CBC-test-report-format-example-sample-template-Drlogy-lab-report.pdf";
-        if (pdfUrl) {
-            Linking.openURL(pdfUrl);
-        }
-    };
-
     return (
         <ScrollView className="flex-1 bg-white">
-            <View className="items-center mb-6">
+            <View className="items-center">
                 <Image
                     source={{ uri: doctor?.avatar || "" }}
                     className="w-full h-60"
@@ -177,13 +171,20 @@ const AppointementDetails = () => {
                     <Text className="text-lg text-black font-medium mb-3">
                         Medical Reports
                     </Text>
-                    <ReportsCard
-                        report_name="Blood Test Results"
-                        report_date_formatted="Sat, Jun 18"
-                        doctor_name="Dr. John Smith"
-                        type_label="Lab Report"
-                        handleReport={handleViewReport}
-                    />
+                    <View className="gap-y-5">
+                        {
+                            medicalReports.map((report: any) => (
+                                <ReportsCard
+                                    key={report.id}
+                                    report_name={report.title}
+                                    report_date_formatted={report.report_date_formatted}
+                                    type_label={report.type_label}
+                                    handleReport={() => Linking.openURL(report.file_url)}
+                                />
+                            ))
+                        }
+                    </View>
+                    
                 </View>
 
                 {/* Prescription */}

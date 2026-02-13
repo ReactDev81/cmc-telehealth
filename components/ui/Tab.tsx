@@ -25,7 +25,7 @@ const Tab = ({ tabs, defaultTab, onTabChange }: TabProps) => {
     const activeTabContent = tabs.find(tab => tab.key === activeTab)?.content
 
     return (
-        <View className='w-full flex-1 pb-24'>
+        <View className='w-full flex-1'>
 
             {/* Tab Headers */}
             <View className='flex-row bg-primary-100 rounded-xl p-2'>
