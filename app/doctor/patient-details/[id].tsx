@@ -92,7 +92,7 @@ const PatientDetails = () => {
                     className="flex-row-reverse mt-5"
                     onPress={() => router.push({
                         pathname: '/doctor/start-consulation',
-                        params: { docotor_call_link: joinUrl, appointment_id: appointmentId }
+                        params: { doctor_call_link: joinUrl, appointment_id: appointmentId }
                     })}
                 >
                     Start Consultation

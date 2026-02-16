@@ -15,6 +15,8 @@ export const useUpdateInstructions = () => {
         onSuccess: (_, { appointmentId }) => {
             // Invalidate relevant queries to refresh the UI
             queryClient.invalidateQueries({ queryKey: ["patient-detail", appointmentId] });
+            queryClient.invalidateQueries({ queryKey: ["doctor-instructions", appointmentId] });
+            queryClient.invalidateQueries({ queryKey: ["prescriptionDetail", appointmentId] });
             queryClient.invalidateQueries({ queryKey: ["appointments"] });
         },
     });

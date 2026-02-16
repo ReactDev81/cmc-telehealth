@@ -168,11 +168,11 @@ const DoctorDetail = () => {
         <ScrollView className="flex-1 bg-white">
             <View className="items-center">
                 <Image
-                    source={{
-                        uri:
-                            doctor?.profile?.avatar ||
-                            {doctorDemo},
-                    }}
+                    source={
+                        doctor?.profile?.avatar
+                            ? { uri: doctor.profile.avatar }
+                            : doctorDemo
+                    }
                     className="w-full h-60"
                     resizeMode="cover"
                 />
@@ -231,7 +231,7 @@ const DoctorDetail = () => {
                 {/* education */}
                 <View className="mt-6">
                     <Text className="text-lg font-medium text-black">Education</Text>
-                    {doctor?.education?.map((education, index) => {
+                    {doctor?.education?.map((education: any, index: number) => {
                         return (
                             <View
                                 key={index}

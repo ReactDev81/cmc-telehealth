@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { z } from "zod";
 import Checkbox from "../../components/form/checkbox";
 import Input from "../../components/form/Input";
@@ -23,8 +23,8 @@ const step2Schema = z.object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
     dateOfBirth: z.date({
-      required_error: "Date of birth is required",
-      invalid_type_error: "Invalid date format",
+        required_error: "Date of birth is required",
+        invalid_type_error: "Invalid date format",
     }),
     phoneNumber: z.string().min(8, "Enter a valid phone number"),
     gender: z.string().min(1, "Please select gender"),
@@ -90,9 +90,8 @@ export default function RegisterScreen() {
         const bars = Array.from({ length: 4 }, (_, i) => (
             <View
                 key={i}
-                className={`h-1 flex-1 mx-0.5 rounded ${
-                    i < strength / 2 ? "bg-primary" : "bg-gray-200"
-                }`}
+                className={`h-1 flex-1 mx-0.5 rounded ${i < strength / 2 ? "bg-primary" : "bg-gray-200"
+                    }`}
             />
         ));
 
@@ -107,187 +106,192 @@ export default function RegisterScreen() {
     //   STEP 1 VIEW
     if (step === 1) {
         return (
-            <View className="flex-1 justify-center bg-white px-6">
+            <KeyboardAvoidingView className="flex-1" behavior="padding"
+                keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}>
+                <View className="flex-1 justify-center bg-white px-6">
 
-                <View className="mb-6">
-                    <Image
-                        source={require("../../assets/images/cmc-telehealth-logo.png")}
-                        className="w-24 h-24 mx-auto object-contain"
-                    />
-                    <Text className="text-base text-black text-center font-bold mt-1">
-                        CMC Telehealth
-                    </Text>
-                </View>
-
-                <View className="mt-4">
-                    <Text className="text-black text-2xl font-bold text-center">
-                        Create an account
-                    </Text>
-                    <Text className="text-gray-500 mt-2 text-center">
-                        Let's get you started. Please enter your details
-                    </Text>
-                </View>
-
-                {/* Email */}
-                <Input
-                    name="email"
-                    control={controlStep1}
-                    label="Email"
-                    keyboardType="email"
-                    autoCapitalize="none"
-                    placeholder="example@email.com"
-                    containerClassName="mt-8"
-                />
-
-                {/* Password */}
-                <Controller
-                    control={controlStep1}
-                    name="password"
-                    render={() => (
-                        <View className="mt-5">
-                            <PasswordInput
-                                name="password"
-                                control={controlStep1}
-                                placeholder="8 characters minimum"
-                            />
-                                {watchStep1("password") && renderPasswordStrength(watchStep1("password"))}
-                        </View>
-                    )}
-                />
-
-                {/* Terms */}
-                <View className="mt-2 flex-row">
-                    <Checkbox name="agreedToTerms" control={controlStep1} />
-                    <Text className="text-gray-600 text-sm ml-3 mt-4">
-                        By clicking "Continue", you agree to accept our{" "}
-                        <Text className="text-primary font-medium">Privacy Policy</Text> and{" "}
-                        <Text className="text-primary font-medium">Terms of Service</Text>
-                    </Text>
-                    {errorsStep1.agreedToTerms && (
-                        <Text className="text-red-500 text-xs mt-1 ml-6">
-                            {errorsStep1.agreedToTerms.message}
+                    <View className="mb-6">
+                        <Image
+                            source={require("../../assets/images/cmc-telehealth-logo.png")}
+                            className="w-24 h-24 mx-auto object-contain"
+                        />
+                        <Text className="text-base text-black text-center font-bold mt-1">
+                            CMC Telehealth
                         </Text>
-                    )}
-                </View>
+                    </View>
 
-                {/* Continue */}
-                <Button
-                    onPress={handleSubmitStep1(onSubmitStep1)}
-                    className="mt-8"
-                >
-                    Continue
-                </Button>
+                    <View className="mt-4">
+                        <Text className="text-black text-2xl font-bold text-center">
+                            Create an account
+                        </Text>
+                        <Text className="text-gray-500 mt-2 text-center">
+                            Let's get you started. Please enter your details
+                        </Text>
+                    </View>
 
-                <View className="mt-10 items-center">
-                    <Text className="text-gray-500">
-                        Already have an account?{" "}
-                        <Link href="/auth/login">
-                            <Text className="text-primary font-medium">Sign In</Text>
-                        </Link>
-                    </Text>
+                    {/* Email */}
+                    <Input
+                        name="email"
+                        control={controlStep1}
+                        label="Email"
+                        keyboardType="email"
+                        autoCapitalize="none"
+                        placeholder="example@email.com"
+                        containerClassName="mt-8"
+                    />
+
+                    {/* Password */}
+                    <Controller
+                        control={controlStep1}
+                        name="password"
+                        render={() => (
+                            <View className="mt-5">
+                                <PasswordInput
+                                    name="password"
+                                    control={controlStep1}
+                                    placeholder="8 characters minimum"
+                                />
+                                {watchStep1("password") && renderPasswordStrength(watchStep1("password"))}
+                            </View>
+                        )}
+                    />
+
+                    {/* Terms */}
+                    <View className="mt-2 flex-row">
+                        <Checkbox name="agreedToTerms" control={controlStep1} />
+                        <Text className="text-gray-600 text-sm ml-3 mt-4">
+                            By clicking "Continue", you agree to accept our{" "}
+                            <Text className="text-primary font-medium">Privacy Policy</Text> and{" "}
+                            <Text className="text-primary font-medium">Terms of Service</Text>
+                        </Text>
+                        {errorsStep1.agreedToTerms && (
+                            <Text className="text-red-500 text-xs mt-1 ml-6">
+                                {errorsStep1.agreedToTerms.message}
+                            </Text>
+                        )}
+                    </View>
+
+                    {/* Continue */}
+                    <Button
+                        onPress={handleSubmitStep1(onSubmitStep1)}
+                        className="mt-8"
+                    >
+                        Continue
+                    </Button>
+
+                    <View className="mt-10 items-center">
+                        <Text className="text-gray-500">
+                            Already have an account?{" "}
+                            <Link href="/auth/login">
+                                <Text className="text-primary font-medium">Sign In</Text>
+                            </Link>
+                        </Text>
+                    </View>
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         );
     }
 
     // STEP 2 VIEW
     return (
-        <View className="flex-1 bg-white px-6">
-            <ScrollView showsVerticalScrollIndicator={false}>
+        <KeyboardAvoidingView className="flex-1" behavior="padding"
+            keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}>
+            <View className="flex-1 bg-white px-6">
+                <ScrollView showsVerticalScrollIndicator={false}>
 
-                <View className="mt-10 mb-4">
-                    <Text className="text-black text-2xl font-semibold text-center">Basic Information</Text>
-                    <Text className="text-black-400 text-base mt-2 text-center max-w-80 mx-auto">
-                        Please tell us some basic information to complete your profile:
-                    </Text>
-                </View>
+                    <View className="mt-10 mb-4">
+                        <Text className="text-black text-2xl font-semibold text-center">Basic Information</Text>
+                        <Text className="text-black-400 text-base mt-2 text-center max-w-80 mx-auto">
+                            Please tell us some basic information to complete your profile:
+                        </Text>
+                    </View>
 
-                {/* First Name */}
-                <Input
-                    name="firstName"
-                    control={controlStep2}
-                    label="First Name"
-                    placeholder="First Name"
-                    containerClassName="mt-5"
-                />
+                    {/* First Name */}
+                    <Input
+                        name="firstName"
+                        control={controlStep2}
+                        label="First Name"
+                        placeholder="First Name"
+                        containerClassName="mt-5"
+                    />
 
-                {/* Last Name */}
-                <Input
-                    name="lastName"
-                    control={controlStep2}
-                    label="Last Name"
-                    placeholder="Last Name"
-                    containerClassName="mt-5"
-                />
+                    {/* Last Name */}
+                    <Input
+                        name="lastName"
+                        control={controlStep2}
+                        label="Last Name"
+                        placeholder="Last Name"
+                        containerClassName="mt-5"
+                    />
 
-                {/* DOB */}
-                <Controller
-                    control={controlStep2}
-                    name="dateOfBirth"
-                    render={({ field: { onChange, value }, fieldState: { error } }) => (
-                        <DateField
-                            label="Date of Birth"
-                            value={value}
-                            onChange={onChange}
-                            error={error?.message}
-                            className="mt-5"
-                            maximumDate={new Date()} // prevent future DOB
-                        />
+                    {/* DOB */}
+                    <Controller
+                        control={controlStep2}
+                        name="dateOfBirth"
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <DateField
+                                label="Date of Birth"
+                                value={value}
+                                onChange={onChange}
+                                error={error?.message}
+                                className="mt-5"
+                                maximumDate={new Date()} // prevent future DOB
+                            />
+                        )}
+                    />
+
+                    {/* Phone Number */}
+                    <Input
+                        name="phoneNumber"
+                        label="Phone Number"
+                        containerClassName="mt-5"
+                        control={controlStep2}
+                        placeholder="+234 (999) 000-0000"
+                        keyboardType="tel"
+                    />
+
+                    {/* Gender */}
+                    <Text className="text-sm text-black mb-2 mt-5">Gender</Text>
+                    <Controller
+                        control={controlStep2}
+                        name="gender"
+                        render={({ field: { onChange, value } }) => (
+                            <View className="flex-row gap-2">
+                                {["Male", "Female"].map((g) => (
+                                    <Pressable
+                                        key={g}
+                                        onPress={() => onChange(g)}
+                                        className={`flex-1 py-4 px-4 rounded-xl border ${value === g ? "bg-primary border-primary" : "border-primary"
+                                            }`}
+                                    >
+                                        <Text className={`text-center ${value === g ? "text-white" : "text-primary"}`}>
+                                            {g}
+                                        </Text>
+                                    </Pressable>
+                                ))}
+                            </View>
+                        )}
+                    />
+
+                    {errorsStep2.gender && (
+                        <Text className="text-red-500 text-xs mt-1">
+                            {errorsStep2.gender.message}
+                        </Text>
                     )}
-                />
 
-                {/* Phone Number */}
-                <Input
-                    name="phoneNumber"
-                    label="Phone Number"
-                    containerClassName="mt-5"
-                    control={controlStep2}
-                    placeholder="+234 (999) 000-0000"
-                    keyboardType="tel"
-                />
-
-                {/* Gender */}
-                <Text className="text-sm text-black mb-2 mt-5">Gender</Text>
-                <Controller
-                    control={controlStep2}
-                    name="gender"
-                    render={({ field: { onChange, value } }) => (
-                        <View className="flex-row gap-2">
-                            {["Male", "Female"].map((g) => (
-                                <Pressable
-                                    key={g}
-                                    onPress={() => onChange(g)}
-                                    className={`flex-1 py-4 px-4 rounded-xl border ${
-                                        value === g ? "bg-primary border-primary" : "border-primary"
-                                    }`}
-                                >
-                                    <Text className={`text-center ${value === g ? "text-white" : "text-primary"}`}>
-                                        {g}
-                                    </Text>
-                                </Pressable>
-                            ))}
-                        </View>
-                    )}
-                />
-
-                {errorsStep2.gender && (
-                    <Text className="text-red-500 text-xs mt-1">
-                        {errorsStep2.gender.message}
-                    </Text>
-                )}
-
-                <Button
-                    onPress={handleSubmitStep2(onSubmitStep2)}
-                    className="mt-8"
-                >
+                    <Button
+                        onPress={handleSubmitStep2(onSubmitStep2)}
+                        className="mt-8"
+                    >
                         Continue
-                </Button>
+                    </Button>
 
-                <Text className="text-base text-black-400 text-center mt-5 px-4">
-                    By providing your mobile number, you give us permission to contact you via text.
-                </Text>
-                
-            </ScrollView>
-        </View>
+                    <Text className="text-base text-black-400 text-center mt-5 px-4">
+                        By providing your mobile number, you give us permission to contact you via text.
+                    </Text>
+
+                </ScrollView>
+            </View>
+        </KeyboardAvoidingView>
     );
 }

@@ -12,7 +12,7 @@ const AllTodayAppointment = ({ data }: { data?: Appointment[] }) => {
         return (
             <EmptyState
                 title="No appointments today"
-                message="You don't have any appointments scheduled for for today."
+                message="You don't have any appointments scheduled for today."
                 icon={<Calendar size={40} color="#94A3B8" />}
                 className="py-20"
             />

@@ -41,7 +41,7 @@ const DoctorHomeHeader = ({ insets }: HeaderProps) => {
                         </Text>
                         <TouchableOpacity
                             className="flex-row items-center gap-1 mt-0.5"
-                            onPress={() => router.push('/doctor/profile/address-contact')}
+                            onPress={() => router.push('/doctor/profile/manage-address')}
                         >
                             <MapPin color="#fff" size={16} />
                             <Text className="text-white text-sm">

@@ -1,7 +1,7 @@
 import MedicineAccordian from "@/components/patient/my-medicines/medicine-accordian";
 import { usePrescriptionDetail } from "@/queries/patient/usePrescriptionDetail";
-import type { MedicineDetail } from "@/types/live/patient/prescription";
 import type { MedicineProps } from "@/types/common/my-medicines";
+import type { MedicineDetail } from "@/types/live/patient/prescription";
 import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
@@ -9,7 +9,7 @@ import { Linking, ScrollView, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MedicinesDetail = () => {
-    
+
     const { id } = useLocalSearchParams();
     const isFocused = useIsFocused();
     const appointmentId = Array.isArray(id) ? id[0] : id;
@@ -29,7 +29,7 @@ const MedicinesDetail = () => {
 
     useEffect(() => {
         if (isFocused) {
-          refetch();
+            refetch();
         }
     }, [isFocused, refetch]);
 
@@ -60,19 +60,23 @@ const MedicinesDetail = () => {
                     />
                 ))}
 
-                <View>
-                    <Text className="text-base font-medium text-black">
-                        Conclusion Report:
-                    </Text>
-                    <Text className="text-base text-black-400 mt-1.5">
-                        {list?.instructions_by_doctor}
-                    </Text>
-                </View>
+                {list?.instructions_by_doctor && (
+                    <View className="mt-4">
+                        <Text className="text-base font-medium text-black">
+                            Conclusion Report:
+                        </Text>
+                        <Text className="text-base text-black-400 mt-1.5">
+                            {list?.instructions_by_doctor}
+                        </Text>
+                    </View>
+                )}
 
-                <View className="flex-row items-center mt-2.5 mb-5">
-                    <Text className="text-base font-medium text-black">Next Visit: </Text>
-                    <Text className="text-base text-black-400">{list?.next_visit_date}</Text>
-                </View>
+                {list?.next_visit_date && (
+                    <View className="flex-row items-center mt-2.5 mb-5">
+                        <Text className="text-base font-medium text-black">Next Visit: </Text>
+                        <Text className="text-base text-black-400">{list?.next_visit_date}</Text>
+                    </View>
+                )}
 
                 {pdfUrl && (
                     <TouchableOpacity

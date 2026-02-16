@@ -6,9 +6,13 @@ import ConclusionForm from "./conclusion-form";
 
 interface Props {
     onClose: () => void;
+    initialData?: {
+        instructions_by_doctor: string;
+        next_visit_date: string;
+    };
 }
 
-const AddConclusion = ({ onClose }: Props) => {
+const AddConclusion = ({ onClose, initialData }: Props) => {
     const { token } = useAuth();
     const { appointment_id } = useLocalSearchParams<{ appointment_id: string }>();
     const { data: patient, isLoading, isError } = usePatientDetail(appointment_id || "", token || "");
@@ -48,7 +52,7 @@ const AddConclusion = ({ onClose }: Props) => {
                 {/* <View className="h-[1px] bg-gray-100 w-full mt-4" /> */}
             </View>
 
-            <ConclusionForm onClose={onClose} />
+            <ConclusionForm onClose={onClose} initialData={initialData} />
         </View>
     );
 };

@@ -27,7 +27,7 @@ const EditAddressContact = ({
     initialData?: AddressContact,
     onClose: () => void
 }) => {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const doctorID = user?.id || "";
 
     const { mutate: updateProfile, isPending } = useUpdateDoctorProfile(doctorID, "address_contact");
@@ -52,7 +52,20 @@ const EditAddressContact = ({
         };
 
         updateProfile(payload, {
-            onSuccess: () => {
+            onSuccess: (response: any) => {
+                const updatedAddress = response?.data;
+                if (updatedAddress) {
+                    updateUser({
+                        address: {
+                            address: updatedAddress.address_line1,
+                            area: updatedAddress.address_line1,
+                            city: updatedAddress.city,
+                            state: updatedAddress.state,
+                            pincode: updatedAddress.postal_code,
+                            landmark: updatedAddress.address_line2 || null,
+                        }
+                    });
+                }
                 Alert.alert("Success", "Address & contact information updated successfully!");
                 reset();
                 onClose();

@@ -1,10 +1,11 @@
 import Segmented from "@/components/doctor/my-schedule/segmented";
 import SlotCard from "@/components/doctor/my-schedule/slot-card";
+import EmptyState from "@/components/ui/EmptyState";
 import { useAuth } from "@/context/UserContext";
 import { useGetDoctorSchedule } from "@/queries/doctor/useSchedule";
 import { Slot } from "@/types/doctor/schedule";
 import { addDays, addWeeks, eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { CalendarOff, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, TextStyle, TouchableOpacity, View } from "react-native";
 import type { DateData } from "react-native-calendars";
@@ -289,7 +290,11 @@ const Schedules = () => {
                                 />
                                 <Text className="mt-5 mb-2 font-semibold">Slots</Text>
                                 {daySlots.length === 0 ? (
-                                    <Text className="text-neutral-400 mb-6">No slots for this day.</Text>
+                                    <EmptyState
+                                        title="No Slots"
+                                        message="You don't have any slots for this day."
+                                        icon={<CalendarOff size={44} color="#94A3B8" />}
+                                    />
                                 ) : (
                                     daySlots.map((slot, index) => (
                                         <View
@@ -308,7 +313,11 @@ const Schedules = () => {
                             <View className="mt-5">
                                 <Text className="text-black text-base font-semibold mb-3">Slots</Text>
                                 {daySlots.length === 0 ? (
-                                    <Text className="text-black-400 text-base">No slots today.</Text>
+                                    <EmptyState
+                                        title="No Slots"
+                                        message="You don't have any slots for this day."
+                                        icon={<CalendarOff size={44} color="#94A3B8" />}
+                                    />
                                 ) : (
                                     daySlots.map((slot, index) => (
                                         <View

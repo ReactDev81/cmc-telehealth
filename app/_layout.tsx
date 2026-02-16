@@ -216,13 +216,6 @@ export default function RootLayout() {
                             />
 
                             <Stack.Screen
-                                name="patient/profile/manage-address/index"
-                                options={{
-                                    headerTitle: "Manage Address",
-                                }}
-                            />
-
-                            <Stack.Screen
                                 name="patient/profile/manage-address/add-current-location"
                                 options={{
                                     headerTitle: "Add Current Location",
@@ -299,6 +292,13 @@ export default function RootLayout() {
                                 name="doctor/profile/edit-personal-information"
                                 options={{
                                     headerTitle: "Edit Personal Information",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="doctor/profile/manage-address/index"
+                                options={{
+                                    headerTitle: "Manage Address",
                                 }}
                             />
 

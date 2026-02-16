@@ -18,9 +18,13 @@ type ConclusionFormValues = z.infer<typeof ConclusionSchema>;
 
 interface Props {
     onClose: () => void;
+    initialData?: {
+        instructions_by_doctor: string;
+        next_visit_date: string;
+    };
 }
 
-const ConclusionForm = ({ onClose }: Props) => {
+const ConclusionForm = ({ onClose, initialData }: Props) => {
     const { token } = useAuth();
     const { appointment_id } = useLocalSearchParams<{ appointment_id: string }>();
     const { mutate: updateInstructions, isPending } = useUpdateInstructions();
@@ -28,8 +32,8 @@ const ConclusionForm = ({ onClose }: Props) => {
     const { control, handleSubmit, setValue, watch } = useForm<ConclusionFormValues>({
         resolver: zodResolver(ConclusionSchema),
         defaultValues: {
-            next_visit_date: new Date(),
-            instructions_by_doctor: "",
+            next_visit_date: initialData?.next_visit_date ? new Date(initialData.next_visit_date) : new Date(),
+            instructions_by_doctor: initialData?.instructions_by_doctor || "",
         },
     });
 

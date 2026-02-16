@@ -39,11 +39,11 @@ const StartConsulationWithDoctor = () => {
     const { token } = useAuth();
     const { mutate: markAsCompleted, isPending: isMarkingComplete } = useMarkAsCompleted();
 
-    const { docotor_call_link, appointment_id } = useLocalSearchParams<{ docotor_call_link: string, appointment_id: string }>();
-    // console.log("Doctor Call Link Param:", docotor_call_link);
+    const { doctor_call_link, appointment_id } = useLocalSearchParams<{ doctor_call_link: string, appointment_id: string }>();
+    // console.log("Doctor Call Link Param:", doctor_call_link);
 
     const ROOM_URL = React.useMemo(() => {
-        const baseUrl = docotor_call_link?.trim();
+        const baseUrl = doctor_call_link?.trim();
         if (!baseUrl) {
             return "";
         }
@@ -57,7 +57,7 @@ const StartConsulationWithDoctor = () => {
             const finalUrl = `${baseUrl}${separator}bottomToolbar=off`;
             return finalUrl;
         }
-    }, [docotor_call_link]);
+    }, [doctor_call_link]);
 
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);

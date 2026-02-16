@@ -2,37 +2,41 @@ import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 
 export interface DoctorProps {
-    id: string;
-    profile?: {
-      name: string;
-      department: string;
-      years_experience: string;
-      avatar?: string;
-    };
-    about?: {
-      bio: string;
-      description?: string;
-    };
-    education?: {
-      degree: string;
-      institution: string;
-      start_date?: string;
-      end_date?: string;
-    }[];
-    languages?: string | string[];
-    review_summary?: {
-      average_rating: number;
-      total_reviews: number;
-    };
-    appointment_types?: {
-      video?: boolean;
-      in_person?: boolean;
-    };
+  id: string;
+  profile?: {
+    name: string;
+    department: string;
+    years_experience: string;
+    avatar?: string;
+  };
+  about?: {
+    bio: string;
+    description?: string;
+  };
+  education?: {
+    degree: string;
+    institution: string;
+    start_date?: string;
+    end_date?: string;
+  }[];
+  languages?: string | string[];
+  review_summary?: {
+    average_rating: number;
+    total_reviews: number;
+  };
+  appointment_types?: {
+    video?: boolean;
+    in_person?: boolean;
+  };
 }
-  
+export interface DoctorResponse {
+  data: DoctorProps;
+  message?: string;
+  success?: boolean;
+}
 
 export function useBrowseDoctorById(id?: string) {
-  return useQuery<DoctorProps>({
+  return useQuery<DoctorResponse>({
     queryKey: ["browse-doctor", id],
     enabled: !!id, // prevents running without id
     queryFn: async () => {

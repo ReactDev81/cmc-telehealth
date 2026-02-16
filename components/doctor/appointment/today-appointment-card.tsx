@@ -3,7 +3,7 @@ import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import { appointmentProps } from "@/types/doctor/appointment";
 import { router } from "expo-router";
-import { Calendar, Hospital, Video } from "lucide-react-native";
+import { Calendar, Clock, Hospital, Video } from "lucide-react-native";
 import { Text, View } from "react-native";
 
 interface Props extends appointmentProps {
@@ -17,6 +17,7 @@ const TodayAppointmentCard = ({
     mode,
     appointmentId,
     callNow,
+    date,
 }: Props) => {
     return (
         <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
@@ -38,17 +39,23 @@ const TodayAppointmentCard = ({
                 <Text className="text-sm font-medium text-black mt-3">{name}</Text>
                 <View className="flex-row items-center gap-x-3 mt-1">
                     <View className="flex-row items-center gap-x-2">
-                        <Calendar size={12} className="text-black-400" />
+                        <Clock size={12} className="text-black-400" />
                         <Text className="text-sm text-black-400">{time}</Text>
                     </View>
                     <View className="flex-row items-center gap-x-2">
-                        {mode === "video" ? (
+                        <Calendar size={12} className="text-black-400" />
+                        <Text className="text-sm text-black-400">{date}</Text>
+                    </View>
+                </View>
+                <View className="flex-row items-center gap-x-1 mt-2">
+                    <View className="flex items-center justify-center">
+                        {mode?.toLowerCase() === "video" ? (
                             <Video size={14} className="text-black-400" />
                         ) : (
                             <Hospital size={14} className="text-black-400" />
                         )}
-                        <Text className="text-sm text-black-400">{mode}</Text>
                     </View>
+                    <Text className="text-sm text-black-400">{mode}</Text>
                 </View>
                 <Button
                     onPress={() => router.push(`/doctor/patient-details/${appointmentId}`)}

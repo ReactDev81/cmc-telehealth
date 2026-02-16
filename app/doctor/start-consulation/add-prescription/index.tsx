@@ -40,6 +40,8 @@ const AddPrescription = () => {
     const currentMedications = patientData?.current_medications || [];
     const instructionData = instructions?.data;
 
+    console.log("currentMedications", currentMedications);
+
     return (
         <View>
             {/* Modal */}
@@ -103,7 +105,10 @@ const AddPrescription = () => {
                                     <X color="#1F1E1E" size={18} strokeWidth={2.5} />
                                 </TouchableOpacity>
                             </View>
-                            <AddConclusion onClose={() => setConclusionModalVisible(false)} />
+                            <AddConclusion
+                                onClose={() => setConclusionModalVisible(false)}
+                                initialData={instructionData}
+                            />
                         </View>
                     </View>
                 </Modal>
@@ -124,7 +129,7 @@ const AddPrescription = () => {
                 </View>
 
                 {/* Instructions Section */}
-                {instructionData && (
+                {instructionData && instructionData.instructions_by_doctor && (
                     <View className="mt-8 p-4 rounded-xl border border-gray-100">
                         <View className="flex-row items-center gap-x-2 mb-3">
                             <Text className="text-base font-semibold text-black">Conclusion Report</Text>
@@ -134,10 +139,12 @@ const AddPrescription = () => {
                             <Text className="text-sm text-black leading-5">{instructionData.instructions_by_doctor}</Text>
                         </View>
 
-                        <View className="flex-row items-center">
-                            <Text className="text-sm font-bold text-black">Next Visit: </Text>
-                            <Text className="text-sm text-black">{instructionData.next_visit_date}</Text>
-                        </View>
+                        {instructionData.next_visit_date && (
+                            <View className="flex-row items-center">
+                                <Text className="text-sm font-bold text-black">Next Visit: </Text>
+                                <Text className="text-sm text-black">{instructionData.next_visit_date}</Text>
+                            </View>
+                        )}
                     </View>
                 )}
             </View>

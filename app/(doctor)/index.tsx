@@ -4,6 +4,7 @@ import AppointmentStatusBox from "@/components/doctor/home/appointment-status-bo
 import DoctorHomeHeader from "@/components/doctor/home/header";
 import Testimonial from "@/components/patient/home/testimonial";
 import Button from "@/components/ui/Button";
+import EmptyState from "@/components/ui/EmptyState";
 import Title from "@/components/ui/Title";
 import TitleWithLink from "@/components/ui/title-with-link";
 import { useAuth } from "@/context/UserContext";
@@ -11,6 +12,7 @@ import { useDoctorDashboard } from "@/queries/doctor/useDashboard";
 import { useIsFocused } from "@react-navigation/native";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { CalendarClock, CalendarOff, Star } from 'lucide-react-native';
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -47,7 +49,7 @@ const Home = () => {
     const appointmentStatusData = [
         {
             id: 1,
-            status: 'completed' as const,
+            status: 'today' as const,
             status_count: summary.todays_appointments,
         },
         {
@@ -61,6 +63,8 @@ const Home = () => {
             status_count: summary.cancelled_appointments,
         },
     ];
+
+    console.log("appointmentStatusData: ", appointmentStatusData)
 
     return (
         <View className="flex-1 bg-white">
@@ -89,8 +93,12 @@ const Home = () => {
                         link="/appointments"
                         link_text="See All"
                     />
-                    {todays.length === 0 ? (
-                        <Text className="text-center text-gray-500 mt-5">No appointments today</Text>
+                    {todays && todays.length === 0 ? (
+                        <EmptyState
+                            title="No Appointments Today"
+                            message="You don't have any appointments scheduled for today."
+                            icon={<CalendarOff size={44} color="#94A3B8" />}
+                        />
                     ) : (
                         todays.slice(0, 2).map((item) => (
                             <View key={item.id} className="mt-5">
@@ -100,6 +108,7 @@ const Home = () => {
                                     name={item.patient_name}
                                     time={item.time}
                                     mode={item.consultation_type}
+                                    date={item.date}
                                 />
                             </View>
                         ))
@@ -113,18 +122,26 @@ const Home = () => {
                         link="/appointments"
                         link_text="See All"
                     />
-                    {upcoming.slice(0, 2).map((item) => (
-                        <View key={item.id} className="mt-5">
-                            <UpcomingAppointmentCard
-                                image={item.patient_image}
-                                date={item.date!}
-                                time={item.time}
-                                name={item.patient_name}
-                                mode={item.consultation_type}
-                                status="Scheduled"
-                            />
-                        </View>
-                    ))}
+                    {upcoming && upcoming.length === 0 ? (
+                        <EmptyState
+                            title="No Upcoming Appointments"
+                            message="Your schedule is clear. No future appointments found."
+                            icon={<CalendarClock size={44} color="#94A3B8" />}
+                        />
+                    ) : (
+                        upcoming.slice(0, 2).map((item) => (
+                            <View key={item.id} className="mt-5">
+                                <UpcomingAppointmentCard
+                                    image={item.patient_image}
+                                    date={item.date!}
+                                    time={item.time}
+                                    name={item.patient_name}
+                                    mode={item.consultation_type}
+                                    status="Scheduled"
+                                />
+                            </View>
+                        ))
+                    )}
                 </View>
 
                 <View className="px-2 pb-20">
@@ -135,48 +152,37 @@ const Home = () => {
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             className="mt-3"
-                            contentContainerStyle={{ gap: 15, paddingRight: 0 }}
+                            contentContainerStyle={{
+                                gap: 15,
+                                paddingRight: 20,
+                                flexGrow: 1,
+                                justifyContent: reviews && reviews.length === 0 ? 'center' : 'flex-start'
+                            }}
                         >
-                            {/* {TestimonialData.map((testimonial, id) => {
-                                // Parse review_count to extract total_reviews and doctor_name
-                                // Format: "137+ Reviews for Dr. Ananya Sharma"
-                                const reviewMatch = testimonial.review_count.match(/^(\d+\+)\s+Reviews\s+for\s+(.+)$/);
-                                const total_reviews = reviewMatch ? reviewMatch[1] : testimonial.review_count;
-                                const doctor_name = reviewMatch ? reviewMatch[2] : "";
-
-                                return (
-                                    <Testimonial
-                                        key={id}
-                                        patient_id={String(testimonial.id || id)}
-                                        doctor_id=""
-                                        patient_image={testimonial.image}
-                                        patient_name={testimonial.name}
-                                        patient_age={testimonial.age}
-                                        title={testimonial.title}
-                                        content={testimonial.description}
-                                        rating={5}
-                                        is_active={true}
-                                        is_featured={true}
-                                        slug={`testimonial-${testimonial.id || id}`}
-                                        total_reviews={total_reviews}
-                                        doctor_name={doctor_name}
-                                    />
-                                )
-                            })} */}
-                            {reviews.map((review) => (
-                                <Testimonial
-                                    key={review.id}
-                                    patient_id={review.id}
-                                    patient_name={review.patient_name}
-                                    patient_image={review.patient_image}
-                                    patient_age={String(review.patient_age ?? "")}
-                                    title={review.title}
-                                    content={review.content}
-                                    rating={review.rating}
-                                    total_reviews={String(review.total_reviews)}
-                                    doctor_name={review.doctor_name}
+                            {reviews && reviews.length === 0 ? (
+                                <EmptyState
+                                    title="No Feedbacks"
+                                    message="You don't have any feedbacks yet."
+                                    icon={<Star size={44} color="#94A3B8" />}
                                 />
-                            ))}
+                            ) : (
+                                reviews.map((review) => (
+                                    <Testimonial
+                                        key={review.id}
+                                        patient_id={review.id}
+                                        patient_name={review.patient_name}
+                                        patient_image={review.patient_image}
+                                        patient_age={String(review.patient_age ?? "")}
+                                        patient_location={review.patient_location ?? ""}
+                                        days_ago={review.created_at}
+                                        title={review.title}
+                                        content={review.content}
+                                        rating={review.rating}
+                                        total_reviews={String(review.total_reviews)}
+                                        doctor_name={review.doctor_name}
+                                    />
+                                ))
+                            )}
                         </ScrollView>
                         <Button className="mt-5" onPress={() => router.push("/feedbacks")}>
                             View All Feedbacks

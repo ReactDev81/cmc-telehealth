@@ -21,8 +21,8 @@ export const DoctorMenuSections: MenuSection[] = [
                 id: 'address-contact',
                 icon: <MapPin size={20} color="#374151" />,
                 title: 'Address Information',
-                description: 'Update your contact details and address.',
-                route: '/doctor/profile/address-contact'
+                description: 'Update your practice location and address.',
+                route: '/doctor/profile/manage-address'
             },
             {
                 id: 'awards',
