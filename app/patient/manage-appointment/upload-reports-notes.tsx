@@ -1,18 +1,11 @@
 import FileUploadField from "@/components/form/FileUploadField";
+import Input from "@/components/form/Input";
 import SelectField from "@/components/form/selectField";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
 import { Trash2, X } from "lucide-react-native";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import {
-    Alert,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    Pressable,
-    Text,
-    View,
-} from "react-native";
+import { Alert, KeyboardAvoidingView, Modal, Platform, Pressable, Text, View } from "react-native";
 
 interface UploadReportsNotesProps {
     visible: boolean;
@@ -29,6 +22,7 @@ export default function UploadReportsNotes({
     isPending = false,
     insets,
 }: UploadReportsNotesProps) {
+
     const { control, setValue } = useFormContext();
 
     const { fields, append, remove } = useFieldArray({
@@ -38,19 +32,23 @@ export default function UploadReportsNotes({
 
     const reportType = useWatch({ control, name: "reportType" });
     const reportFile = useWatch({ control, name: "reportFile" });
+    const reportName = useWatch({ control, name: "reportName" });
 
     const handleAddReport = () => {
-        if (!reportType || !reportFile) {
-            Alert.alert("Error", "Please select report type and file");
+
+        if (!reportType || !reportFile || !reportName?.trim()) {
+            Alert.alert("Error", "Please enter report title, type and file");
             return;
         }
-
+        
         append({
             type: reportType,
             file: reportFile,
+            name: reportName.trim(),
         });
 
         setValue("reportType", "");
+        setValue("reportName", "");
         setValue("reportFile", null);
     };
 
@@ -77,9 +75,18 @@ export default function UploadReportsNotes({
                         {/* Notes */}
                         <TextArea
                             name="notes"
-                            label="Notes"
+                            label="Write your health problem to Doctor"
                             control={control}
                             placeholder="Describe symptoms or notes..."
+                        />
+
+                        {/* title */}
+                        <Input
+                            name="reportName"
+                            control={control}
+                            label="Report Title"
+                            placeholder="Report Title"
+                            containerClassName="mt-5"
                         />
 
                         {/* Type */}

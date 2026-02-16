@@ -85,6 +85,7 @@ const UpcomingAppointments = ({
                                     pathname: '/patient/start-consulation',
                                     params: {
                                         patient_call_link: join_url,
+                                        appointment_id: appointment_id
                                     },
                                 })}
                             >

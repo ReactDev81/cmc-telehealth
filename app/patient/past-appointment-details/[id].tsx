@@ -1,27 +1,50 @@
 import ReportsCard from "@/components/common/medical-reports/reports-card";
 import MedicineCard from "@/components/patient/my-medicines/medicine-card";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
+import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import { BriefcaseBusiness, Star, Stethoscope } from "lucide-react-native";
+import { useEffect } from "react";
 import { Image, Linking, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppointementDetails = () => {
 
     const { id } = useLocalSearchParams();
-    console.log("ID from params :", id);
+    const isFocused = useIsFocused();
     const appointmentId = typeof id === "string" ? id : undefined;
-    // console.log("Appointment ID in details page :", appointmentId);
 
-    const { data, isLoading, isError } = useAppointmentById(appointmentId);
+    const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
+
+    // Refetch data when screen first loads
+    useEffect(() => {
+        if (isFocused) {
+          refetch();
+        }
+    }, [isFocused, refetch]);
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 items-center justify-center bg-white">
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+
+    if (isError) return (
+        <SafeAreaView className="flex-1 items-center justify-center">
+            <Text className="text-black">Something went wrong</Text>
+        </SafeAreaView>
+    );
+
     const medicalReports = data?.data?.medical_reports ?? [];
-    console.log("Appointment Details Data :", data?.data?.medical_reports);
-
     const appointment = data?.data;
     const patient = appointment?.patient;
     const schedule = appointment?.schedule;
     const doctor = appointment?.doctor;
     const payment = appointment?.payment;
     const notes = appointment?.notes;
+    const prescriptions = appointment?.prescriptions;
 
     const discountedValue = 0;
 
@@ -38,6 +61,7 @@ const AppointementDetails = () => {
 
     return (
         <ScrollView className="flex-1 bg-white">
+
             <View className="items-center">
                 <Image
                     source={{ uri: doctor?.avatar || "" }}
@@ -188,17 +212,19 @@ const AppointementDetails = () => {
                 </View>
 
                 {/* Prescription */}
-                <View className="mb-7">
-                    <Text className="text-lg text-black font-medium mb-3">
-                        Prescription
-                    </Text>
-                    <MedicineCard
-                        patient_symptoms="Depression and Anxiety"
-                        doctor_name="Dr Rajeshwar"
-                        consulated_date="Sat, Feb 18"
-                        appointment_id={appointmentId}
-                    />
-                </View>
+                {prescriptions && (
+                    <View className="mb-7">
+                        <Text className="text-lg text-black font-medium mb-3">
+                            Prescription
+                        </Text>
+                        <MedicineCard
+                            patient_symptoms={prescriptions.notes || ""}
+                            doctor_name={prescriptions.doctor_name || ""}
+                            consulated_date={prescriptions.date || ""}
+                            appointment_id={appointmentId}
+                        />
+                    </View>
+                )}
                 
             </View>
         </ScrollView>

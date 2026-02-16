@@ -13,6 +13,7 @@ interface PatientDetailsProps {
 }
 
 const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
+    
     const { token } = useAuth();
     const { data: patient, isLoading, isError, refetch } = usePatientDetail(appointmentId || "", token || "");
 

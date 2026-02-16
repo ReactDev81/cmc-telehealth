@@ -6,6 +6,7 @@ export interface UploadReportFile {
 
 export interface UploadReportItem {
     type: string;
+    name?: string;
     file: UploadReportFile;
 }
 

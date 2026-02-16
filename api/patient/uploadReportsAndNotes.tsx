@@ -21,7 +21,7 @@ export const uploadReportsAndNotes = async (
     // Reports
     payload.reports?.forEach((report, index) => {
         formData.append(`reports[${index}][type]`, report.type);
-
+        formData.append(`reports[${index}][name]`, report.name ?? "");
         formData.append(`reports[${index}][file]`, {
             uri: report.file.uri,
             name: report.file.name,

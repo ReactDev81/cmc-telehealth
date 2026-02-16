@@ -8,8 +8,8 @@ import * as React from "react";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AddPrescription from "./add-prescription";
 import ControlsButton from "./controls-button";
+import DcotorPrescriptions from "./prescriptions";
 
 
 type ControlKey = "chat" | "camera" | "microphone" | "caption" | "prescription";
@@ -31,28 +31,23 @@ const CONTROLS: ControlConfig[] = [
 
 const StartConsulationWithDoctor = () => {
 
-    const { patient_call_link } = useLocalSearchParams<{
+    const { patient_call_link, appointment_id } = useLocalSearchParams<{
         patient_call_link?: string;
+        appointment_id?: string;
     }>();
 
-    const ROOM_URL = patient_call_link + "&bottomToolbar=off";
-
-    // console.log('ROOM_URL', ROOM_URL);
-
+    const ROOM_URL = patient_call_link + "&bottomToolbar=off&topToolbar=off";
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);
 
     // Add Prescription Bottom Sheet
     const addPrescriptionBottomSheetRef = React.useRef<BottomSheet>(null);
-
     const [hasPermissionForAndroid, setHasPermissionForAndroid] = React.useState<boolean>(false);
-
     const [isCameraOn, setIsCameraOn] = React.useState(true);
     const [isMicrophoneOn, setIsMicrophoneOn] = React.useState(true);
-    const [isAddPrescriptionOpen, setIsAddPrescriptionOpen] = React.useState(false);
+    const [isPrescriptionOpen, setIsPrescriptionOpen] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
     const [isCaptionOn, setIsCaptionOn] = React.useState(false);
-
     const [isLeaving, setIsLeaving] = React.useState(false);
     const [isJoined, setIsJoined] = React.useState(false);
 
@@ -118,14 +113,14 @@ const StartConsulationWithDoctor = () => {
     }, [isCaptionOn]);
 
     const handleTogglePrescription = React.useCallback(() => {
-        setIsAddPrescriptionOpen((prev) => !prev);
+        setIsPrescriptionOpen((prev) => !prev);
     }, []);
 
     const handlePrescriptionSheetChange = React.useCallback((index: number) => {
         if (index === -1) {
-            setIsAddPrescriptionOpen(false);
+            setIsPrescriptionOpen(false);
         } else {
-            setIsAddPrescriptionOpen(true);
+            setIsPrescriptionOpen(true);
         }
     }, []);
 
@@ -151,7 +146,7 @@ const StartConsulationWithDoctor = () => {
         microphone: isMicrophoneOn,
         caption: isCaptionOn,
         chat: isChatOpen,
-        prescription: isAddPrescriptionOpen,
+        prescription: isPrescriptionOpen,
     };
 
     if (Platform.OS === "android" && !hasPermissionForAndroid) {
@@ -199,7 +194,6 @@ const StartConsulationWithDoctor = () => {
                     <View className="h-[85%]">
                         <WherebyEmbed
                             ref={wherebyRoomRef}
-                            style={{ marginTop: isJoined ? -31 : 0 }}
                             room={ROOM_URL ?? ""}
                             skipMediaPermissionPrompt
                             onWherebyMessage={(event) => {
@@ -256,8 +250,7 @@ const StartConsulationWithDoctor = () => {
                 )}
 
                 {/* Add Prescription Bottom Sheet */}
-                {
-                    isAddPrescriptionOpen &&
+                {isPrescriptionOpen && appointment_id && (
                     <BottomSheet
                         ref={addPrescriptionBottomSheetRef}
                         index={1}
@@ -268,10 +261,10 @@ const StartConsulationWithDoctor = () => {
                         handleIndicatorStyle={{ width: 0 }}
                     >
                         <BottomSheetView style={{ flex: 1 }}>
-                            <AddPrescription onClose={() => setIsAddPrescriptionOpen(false)} />
+                            <DcotorPrescriptions AppointmentID={appointment_id} />
                         </BottomSheetView>
                     </BottomSheet>
-                }
+                )}
 
             </View>
             <View

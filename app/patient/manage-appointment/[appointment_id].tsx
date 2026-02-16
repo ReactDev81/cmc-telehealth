@@ -1,242 +1,3 @@
-// import FileUploadField from "@/components/form/FileUploadField";
-// import TextArea from "@/components/form/TextArea";
-// import Button from "@/components/ui/Button";
-// import { useManageAppointment } from "@/mutations/patient/useManageAppointment";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { useLocalSearchParams } from "expo-router";
-// import { Stethoscope } from "lucide-react-native";
-// import { useState } from "react";
-// import { useForm } from "react-hook-form";
-// import { Alert, Image, ScrollView, Text, View } from "react-native";
-// import * as z from "zod";
-// import UploadReportsNotes from "./upload-reports-notes";
-
-// // Validation schema
-// const manageAppointmentSchema = z.object({
-//     notes: z
-//         .string()
-//         .min(1, "Notes are required")
-//         .min(10, "Notes must be at least 10 characters")
-//         .max(1000, "Notes must not exceed 1000 characters"),
-//     upload_file: z
-//         .any()
-//         .optional()
-//         .refine(
-//             (file) => {
-//                 if (!file) return true;
-//                 // Validate file size (e.g., max 10MB)
-//                 const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-//                 return file.size <= maxSize;
-//             },
-//             {
-//                 message: "File size must be less than 10MB",
-//             }
-//         ),
-// });
-
-// type ManageAppointmentFormData = z.infer<typeof manageAppointmentSchema>;
-
-// export default function ManageAppointments() {
-//     const { appointment_id } = useLocalSearchParams<{
-//         appointment_id: string;
-//     }>();
-
-//     const [modalVisible, setModalVisible] = useState(false);
-
-//     const { mutate: manageAppointment, isPending } = useManageAppointment(
-//         appointment_id || ""
-//     );
-
-//     const methods = useForm<ManageAppointmentFormData>({
-//         resolver: zodResolver(manageAppointmentSchema),
-//         defaultValues: {
-//             notes: "",
-//             upload_file: undefined,
-//         },
-//         mode: "onBlur",
-//     });
-
-//     const { control, handleSubmit, reset } = methods;
-
-//     const onSubmit = (formData: ManageAppointmentFormData) => {
-//         const payload = new FormData();
-
-//         payload.append("notes", formData.notes);
-
-//         if (formData.upload_file) {
-//             // @ts-ignore - expo-document-picker file type
-//             payload.append("file", {
-//                 uri: formData.upload_file.uri,
-//                 type: formData.upload_file.mimeType || "application/octet-stream",
-//                 name: formData.upload_file.name,
-//             } as any);
-//         }
-
-//         manageAppointment(payload, {
-//             onSuccess: (data: any) => {
-//                 Alert.alert(
-//                     "Success",
-//                     data?.message || "Appointment updated successfully",
-//                     [
-//                         {
-//                             text: "OK",
-//                             onPress: () => {
-//                                 reset();
-//                                 setModalVisible(false);
-//                             },
-//                         },
-//                     ]
-//                 );
-//             },
-//             onError: (error: any) => {
-//                 Alert.alert(
-//                     "Error",
-//                     error?.response?.data?.message ||
-//                     "Failed to update appointment. Please try again."
-//                 );
-//             },
-//         });
-//     };
-
-//     return (
-//         <ScrollView className="flex-1 bg-white">
-//             {/* <View className="mb-5">
-//                 <Text className="text-lg font-semibold text-black mb-2">Manage Appointment</Text>
-//                 <Text className="text-sm text-gray-600">Appointment ID: {appointment_id}</Text>
-//             </View> */}
-
-//             <View className="items-center mb-6">
-//                 <Image
-//                     source={{
-//                         uri:
-//                             "https://cdn-icons-png.flaticon.com/512/387/387561.png",
-//                     }}
-//                     className="w-full h-60"
-//                     resizeMode="cover"
-//                 />
-//             </View>
-
-//             <View className="p-5 pb-12">
-//                 {/* name & speciality */}
-//                 <View className="pb-5 mb-5 border-b border-[#EDEDED]">
-//                     <View className="flex-row gap-x-1">
-//                         <Stethoscope size={15} color="#013220" />
-//                         <Text className="text-primary text-sm">Cardiology</Text>
-//                     </View>
-//                     <Text className="text-lg font-medium text-black mt-1">
-//                         Dr. John Smith
-//                     </Text>
-//                 </View>
-
-//                 {/* Appointment Details */}
-//                 <View className="pb-5 mb-5 border-b border-[#EDEDED]">
-//                     <Text className="text-lg text-black font-medium">
-//                         Appointment Details
-//                     </Text>
-//                     <View className="mt-4">
-//                         <View className="flex-row items-center justify-between">
-//                             <Text className="text-sm text-black-400">Date</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 Monday, 15 January 2024
-//                             </Text>
-//                         </View>
-//                         <View className="flex-row items-center justify-between mt-3">
-//                             <Text className="text-sm text-black-400">Time</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 10:00 AM - 10:30 AM
-//                             </Text>
-//                         </View>
-//                         <View className="flex-row items-center justify-between mt-3">
-//                             <Text className="text-sm text-black-400">Booking Type</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 Video Consultation
-//                             </Text>
-//                         </View>
-//                     </View>
-//                 </View>
-
-//                 {/* Patient Details */}
-//                 <View className="pb-5 mb-5 border-b border-[#EDEDED]">
-//                     <Text className="text-lg text-black font-medium">Patient Details</Text>
-//                     <View className="mt-4">
-//                         <View className="flex-row items-center justify-between">
-//                             <Text className="text-sm text-black-400">Patient Age</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 35 years
-//                             </Text>
-//                         </View>
-//                         <View className="flex-row items-center justify-between mt-3">
-//                             <Text className="text-sm text-black-400">Gender</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 Male
-//                             </Text>
-//                         </View>
-//                         <View className="flex-row items-center justify-between mt-3">
-//                             <Text className="text-sm text-black-400">Allergies</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 Peanuts, Dust
-//                             </Text>
-//                         </View>
-//                         <View className="flex-row items-center justify-between mt-3">
-//                             <Text className="text-sm text-black-400">Problem</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 Chest pain and shortness of breath
-//                             </Text>
-//                         </View>
-//                         <View className="flex-row justify-between mt-3">
-//                             <View className="basis-2/5">
-//                                 <Text className="text-sm text-black-400">Subject</Text>
-//                             </View>
-//                             <View className="basis-3/5">
-//                                 <Text className="text-sm text-right text-nowrap font-medium text-black-400">
-//                                     I've been neglecting my teeth care lately, and l'm not sure
-//                                 </Text>
-//                             </View>
-//                         </View>
-//                     </View>
-//                 </View>
-
-//                 {/* Payment Detail */}
-//                 <View className="pb-5 mb-5">
-//                     <Text className="text-lg text-black font-medium">Payment Detail</Text>
-//                     <View className="mt-4">
-//                         <View className="flex-row items-center justify-between">
-//                             <Text className="text-sm text-black-400">Consultation Fee</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 ₹500.00
-//                             </Text>
-//                         </View>
-//                         <View className="flex-row items-center justify-between mt-3">
-//                             <Text className="text-sm text-black-400">Additional Discount</Text>
-//                             <Text className="text-sm font-medium text-black-400">
-//                                 -₹50.00
-//                             </Text>
-//                         </View>
-//                         <View className="flex-row items-center justify-between mt-3">
-//                             <Button onPress={() => setModalVisible(true)}>
-//                                 Upload Reports & Notes
-//                             </Button>
-
-//                             <UploadReportsNotes
-//                                 visible={modalVisible}
-//                                 onClose={() => setModalVisible(false)}
-//                                 control={control}
-//                                 onSubmit={handleSubmit(onSubmit)}
-//                                 isPending={isPending}
-//                             /className="mt-5"
-//                     />
-//                         </View> */}
-
-//                         <UploadReportsNotes />
-
-//                         <Button onPress={handleSubmit(onSubmit)} disabled={isPending}>
-//                             {isPending ? "Submitting..." : "Submit"}
-//                         </Button>
-//                     </View>
-//                 </ScrollView>
-//                 );
-// }
-
 import CancelAppointmentModal from "@/components/patient/appointment/cancel-appointment-modal";
 import RescheduleAttemptModal from "@/components/patient/appointment/reschedule-attempt-modal";
 import Button from "@/components/ui/Button";
@@ -258,50 +19,39 @@ import UploadReportsNotes from "./upload-reports-notes";
 /* ---------------------- Validation Schema ---------------------- */
 const manageAppointmentSchema = z.object({
     notes: z.string().optional(),
-
     reportType: z.string().optional(),
     reportFile: z.any().nullable(),
-
-    reports: z
-        .array(
-            z.object({
-                type: z.string(),
-                file: z.any(),
-            }),
-        )
-        .optional(),
+    reportName: z.string().optional(),
+    reports: z.array(
+        z.object({
+          type: z.string().min(1),
+          name: z.string().min(1, "Report title required"),
+          file: z.any(),
+        })
+    ).optional(),
 });
 
 type ManageAppointmentFormData = z.infer<typeof manageAppointmentSchema>;
 
 export default function ManageAppointments() {
+
     const insets = useSafeAreaInsets();
     const queryClient = useQueryClient();
-    const { appointment_id } = useLocalSearchParams<{
-        appointment_id: string;
-    }>();
-
-    const appointmentId =
-        typeof appointment_id === "string" ? appointment_id : undefined;
-
+    const { appointment_id } = useLocalSearchParams<{appointment_id: string;}>();
+    const appointmentId = typeof appointment_id === "string" ? appointment_id : undefined;
     const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
-
     const [modalVisible, setModalVisible] = useState(false);
     const [cancelModalVisible, setCancelModalVisible] = useState(false);
-    const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] =
-        useState(false);
-
-    const { mutate: uploadReports, isPending } =
-        useUploadReportsAndNotes(appointment_id || "");
-
-    const { mutate: cancelAppointment, isPending: isCancelling } =
-        useCancelAppointment();
+    const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] = useState(false);
+    const { mutate: uploadReports, isPending } = useUploadReportsAndNotes(appointment_id || "");
+    const { mutate: cancelAppointment, isPending: isCancelling } = useCancelAppointment();
 
     const methods = useForm<ManageAppointmentFormData>({
         resolver: zodResolver(manageAppointmentSchema),
         defaultValues: {
             notes: "",
             reportType: "",
+            reportName: "",
             reportFile: null,
             reports: [],
         },
@@ -341,140 +91,11 @@ export default function ManageAppointments() {
     const doctor = appointment?.doctor;
     const notes = appointment?.notes;
     const medicalReports = appointment?.medical_reports || [];
-
-    // Automatically show reports section if data exists
-    const hasReportsAndNotes =
-        (medicalReports.length > 0) && (notes?.problem || notes?.reason);
-
-    // const onSubmit = (data: ManageAppointmentFormData) => {
-    //     // Validate that we have at least something to submit
-    //     // if (!data.notes && (!data.reports || data.reports.length === 0)) {
-    //     //     Alert.alert("Error", "Please add notes or upload at least one report");
-    //     //     return;
-    //     // }
-
-    //     // Validate reports have files
-    //     const hasInvalidReports = data.reports?.some(r => !r.file?.uri || !r.type);
-    //     if (data.reports && data.reports.length > 0 && hasInvalidReports) {
-    //         Alert.alert("Error", "All reports must have a file and type selected");
-    //         return;
-    //     }
-
-    //     const formData = new FormData();
-
-    //     // Notes
-    //     if (data.notes?.trim()) {
-    //         formData.append("notes", data.notes.trim());
-    //     }
-
-    //     // Reports - only include valid reports
-    //     // const validReports = data.reports?.filter(r => r.file?.uri && r.type) || [];
-    //     // validReports.forEach((report, index) => {
-    //     //     formData.append(`reports[${index}][type]`, report.type);
-
-    //     //     if (report.file?.uri) {
-    //     //         // React Native FormData requires correct file object structure
-    //     //         const fileObject = {
-    //     //             uri: report.file.uri,
-    //     //             name: report.file.name || `report_${index}`,
-    //     //             type: report.file.mimeType || report.file.type || "application/octet-stream",
-    //     //         };
-
-    //     //         console.log(`📎 Adding file ${index}:`, fileObject);
-    //     //         formData.append(`reports[${index}][file]`, fileObject as any);
-    //     //     }
-    //     // });
-    //     const validReports =
-    //         data.reports?.filter(
-    //             (r) => r?.type && r?.file && r.file.uri
-    //         ) || [];
-
-    //     // validReports.forEach((report, index) => {
-    //     //     formData.append(`reports[${index}][type]`, report.type);
-
-    //     //     formData.append(`reports[${index}][file]`, {
-    //     //         uri: report.file.uri,
-    //     //         name:
-    //     //             report.file.name ||
-    //     //             `report_${index}.${report.file.uri.split(".").pop()}`,
-    //     //         type:
-    //     //             report.file.mimeType ||
-    //     //             report.file.type ||
-    //     //             "application/octet-stream",
-    //     //     } as any);
-    //     // });
-
-    //     if (!data.notes?.trim() && validReports.length === 0) {
-    //         Alert.alert("Error", "Please add notes or at least one report");
-    //         return;
-    //     }
-
-    //     console.log("FormData parts:", (formData as any)._parts);
-
-
-    //     // console.log("📤 Submitting FormData with", validReports.length, "reports");
-
-    //     // Diagnostic: print FormData internal parts (React Native FormData uses _parts)
-    //     try {
-    //         const anyFd: any = formData as any;
-    //         if (anyFd && anyFd._parts) {
-    //             console.log("📋 FormData parts:", anyFd._parts);
-    //         }
-    //     } catch (e) {
-    //         console.log("Could not read FormData parts", e);
-    //     }
-    //     console.log("📝 Notes:", data.notes?.trim());
-    //     console.log("📊 Reports:", validReports);
-
-    //     manageAppointment(formData, {
-    //         onSuccess: (res: any) => {
-    //             console.log("✅ API Response:", res);
-
-    //             // Invalidate and refetch appointment data to show updated info
-    //             queryClient.invalidateQueries({
-    //                 queryKey: ["appointment", appointmentId],
-    //             });
-    //             refetch();
-
-    //             Alert.alert("Success", "Appointment updated successfully", [
-    //                 {
-    //                     text: "OK",
-    //                     onPress: () => {
-    //                         reset();
-    //                         setReportsAndNotes(false);
-    //                     },
-    //                 },
-    //             ]);
-    //         },
-    //         onError: (err: any) => {
-    //             console.log("❌ API Error Status:", err?.response?.status);
-    //             console.log("❌ Full Error Response:", JSON.stringify(err?.response?.data, null, 2));
-    //             console.log("❌ Error Message:", err?.message);
-
-    //             // Extract all validation errors
-    //             const allErrors = err?.response?.data?.errors || {};
-    //             const errorMessages = Object.entries(allErrors)
-    //                 .map(([key, value]: [string, any]) => {
-    //                     if (Array.isArray(value)) {
-    //                         return `${key}: ${value.join(", ")}`;
-    //                     }
-    //                     return `${key}: ${value}`;
-    //                 })
-    //                 .join("\n");
-
-    //             const errorMsg = errorMessages ||
-    //                 err?.response?.data?.message ||
-    //                 "Failed to update appointment";
-
-    //             console.log("❌ All Errors:", errorMsg);
-    //             Alert.alert("Error", errorMsg);
-    //         },
-    //     });
-    // };
+    const hasReportsAndNotes = (medicalReports.length > 0) && notes;
 
     const onSubmit = (data: ManageAppointmentFormData) => {
-        const validReports =
-            data.reports?.filter(r => r?.type && r?.file?.uri) || [];
+        
+        const validReports = data.reports?.filter(r => r?.type && r?.file?.uri) || [];
 
         if (!data.notes?.trim() && validReports.length === 0) {
             Alert.alert("Error", "Please add notes or at least one report");
@@ -486,6 +107,7 @@ export default function ManageAppointments() {
                 notes: data.notes,
                 reports: validReports.map(r => ({
                     type: r.type,
+                    name: r.name,
                     file: {
                         uri: r.file.uri,
                         name:
@@ -603,8 +225,8 @@ export default function ManageAppointments() {
                                 <Text className="text-lg font-medium">Appointment Details</Text>
                                 <Text
                                     className={`text-xs capitalize font-medium w-fit p-2 rounded-md absolute right-0
-                            ${appointment?.status === "confirmed" ? "text-success bg-success-400" : "text-info bg-info-400"}
-                            `}
+                                        ${appointment?.status === "confirmed" ? "text-success bg-success-400" : "text-info bg-info-400"}
+                                    `}
                                 >
                                     {appointment?.status}
                                 </Text>
@@ -612,10 +234,7 @@ export default function ManageAppointments() {
 
                             <Detail label="Date" value={schedule?.date_formatted || ""} />
                             <Detail label="Time" value={schedule?.time_formatted || ""} />
-                            <Detail
-                                label="Booking Type"
-                                value={schedule?.consultation_type_label || ""}
-                            />
+                            <Detail label="Booking Type" value={schedule?.consultation_type_label || ""} />
                         </View>
 
                         {/* Patient Details */}
@@ -627,9 +246,11 @@ export default function ManageAppointments() {
                         </View>
 
                         <View>
+
                             {/* Medical Reports & Notes */}
                             {hasReportsAndNotes ? (
                                 <View className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
+
                                     {/* Header */}
                                     <View className="flex-row justify-between items-center mb-4">
                                         <Text className="text-lg font-medium text-black">
@@ -651,7 +272,7 @@ export default function ManageAppointments() {
                                         >
                                             <View className="flex-1">
                                                 <Text className="text-sm font-medium text-black mb-2">
-                                                    {report.name || `Report ${index + 1}`}
+                                                    {report.title || `Report ${index + 1}`}
                                                 </Text>
                                                 <Text className="text-sm text-black mb-1">
                                                     {report.report_date || "Date not specified"}
@@ -690,9 +311,7 @@ export default function ManageAppointments() {
                                         </Text>
                                         <View className="bg-gray-50 rounded-xl border border-gray-200 p-4">
                                             <Text className="text-sm text-black-400">
-                                                {typeof notes === "object" && notes?.problem
-                                                    ? notes.problem
-                                                    : notes?.reason || "No notes available."}
+                                                {typeof notes === "string" ? notes : "No notes available."}
                                             </Text>
                                         </View>
                                     </View>

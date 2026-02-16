@@ -23,6 +23,7 @@ export interface AppointmentResponse {
       consultation_type: string;
       consultation_type_label: string;
       opd_type?: string;
+      booking_type?: string;
     };
     doctor: {
       id: string;
@@ -32,11 +33,20 @@ export interface AppointmentResponse {
       avatar?: string;
       specialization?: string;
       profile_image?: string;
+      years_experience?: string;
     };
     notes?: {
       problem?: string;
       reason?: string;
     };
+    payment?: {
+      consultation_fee_formatted?: string;
+    };
+    prescriptions?: {
+      notes?: string;
+      doctor_name?: string;
+      date?: string;
+    } | null;
     medical_reports?: Array<{
       id: string;
       name: string;

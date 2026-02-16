@@ -10,6 +10,8 @@ const MedicineCard = ({
     doctor_name,
     consulated_date,
 }: MedicineCardProps) => {
+
+    console.log('doctor_name', doctor_name);
     return (
         <View className="border border-black-300 rounded-xl p-4">
             <View className="flex-row items-center">
