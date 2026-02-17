@@ -7,11 +7,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { Stethoscope } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, Text, View } from "react-native";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
 import RazorpayCheckout from "react-native-razorpay";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AppointmentSummary = () => {
+
   const queryClient = useQueryClient();
   const { bookingId, isRescheduled } = useLocalSearchParams();
 
@@ -79,15 +80,24 @@ const AppointmentSummary = () => {
   const { mutate: verifyPayment } = useVerifyPayment();
 
   const handlePayment = () => {
+    // Validate required Razorpay fields
+    if (!appointment?.razorpay_key_id || !appointment?.razorpay_order_id) {
+      Alert.alert("Error", "Payment information is not available. Please try again.");
+      return;
+    }
+
+    // TypeScript now knows these are strings after the guard check
+    const razorpayKeyId = appointment.razorpay_key_id;
+    const razorpayOrderId = appointment.razorpay_order_id;
 
     const options = {
       // description: "Credits towards consultation",
       description: doctor?.name,
       image: require("../../assets/images/app-icon.png"),
       currency: "INR",
-      key: appointment?.razorpay_key_id,
+      key: razorpayKeyId,
       amount: total, // Amount in paise (5000 paise = ₹50)
-      order_id: appointment?.razorpay_order_id,
+      order_id: razorpayOrderId,
       name: "CMC Telehealth",
       theme: { color: "#013220" },
       // prefill: {
@@ -297,9 +307,9 @@ const AppointmentSummary = () => {
 export default AppointmentSummary;
 
 /* ---------------------- Reusable Row ---------------------- */
-const Detail = ({ label, value }: { label: string; value: string }) => (
+const Detail = ({ label, value }: { label: string; value?: string }) => (
   <View className="flex-row justify-between mt-3">
     <Text className="text-sm text-black-400">{label}</Text>
-    <Text className="text-sm font-medium text-black-400">{value}</Text>
+    <Text className="text-sm font-medium text-black-400">{value ?? ""}</Text>
   </View>
 );

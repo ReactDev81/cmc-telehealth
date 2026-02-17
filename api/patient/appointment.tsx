@@ -3,6 +3,7 @@ import api from "@/lib/axios";
 export interface AppointmentResponse {
   data: {
     id: string;
+    appointment_id?: string;
     doctor_id?: string;
     status: string;
     can_reschedule: boolean;
@@ -10,10 +11,15 @@ export interface AppointmentResponse {
     start_time: string;
     end_time: string;
     consultation_type: string;
+    razorpay_key_id?: string;
+    razorpay_order_id?: string;
     patient?: {
       name: string;
+      age?: number;
       age_formatted: string;
       gender_formatted: string;
+      allergies?: string | null;
+      problem?: string;
     };
     schedule?: {
       date: string;

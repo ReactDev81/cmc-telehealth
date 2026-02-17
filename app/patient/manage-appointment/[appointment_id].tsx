@@ -3,6 +3,7 @@ import RescheduleAttemptModal from "@/components/patient/appointment/reschedule-
 import Button from "@/components/ui/Button";
 import ErrorState from "@/components/ui/ErrorState";
 import { useCancelAppointment } from "@/mutations/patient/useCancelAppointment";
+import { useDeleteMedicalReport } from "@/mutations/patient/useDeleteMedicalReport";
 import { useUploadReportsAndNotes } from "@/mutations/patient/useUploadReportsAndNotes";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +15,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { ActivityIndicator, Alert, Image, Linking, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import * as z from "zod";
+import EditNotesModal from "./edit-notes-modal";
+import EditReportModal from "./edit-report-modal";
 import UploadReportsNotes from "./upload-reports-notes";
+
 
 /* ---------------------- Validation Schema ---------------------- */
 const manageAppointmentSchema = z.object({
@@ -24,6 +28,7 @@ const manageAppointmentSchema = z.object({
     reportName: z.string().optional(),
     reports: z.array(
         z.object({
+          id: z.any().optional(),   // ⭐ IMPORTANT
           type: z.string().min(1),
           name: z.string().min(1, "Report title required"),
           file: z.any(),
@@ -45,6 +50,11 @@ export default function ManageAppointments() {
     const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] = useState(false);
     const { mutate: uploadReports, isPending } = useUploadReportsAndNotes(appointment_id || "");
     const { mutate: cancelAppointment, isPending: isCancelling } = useCancelAppointment();
+    const { mutate: deleteReport } = useDeleteMedicalReport();
+
+    const [editingReport, setEditingReport] = useState<any>(null);
+    const [editingNotes, setEditingNotes] = useState(false);
+
 
     const methods = useForm<ManageAppointmentFormData>({
         resolver: zodResolver(manageAppointmentSchema),
@@ -93,52 +103,95 @@ export default function ManageAppointments() {
     const medicalReports = appointment?.medical_reports || [];
     const hasReportsAndNotes = (medicalReports.length > 0) && notes;
 
-    const onSubmit = (data: ManageAppointmentFormData) => {
-        
-        const validReports = data.reports?.filter(r => r?.type && r?.file?.uri) || [];
+    const handleUpdateReport = (updatedReport) => {
+        uploadReports(
+          {
+            reports: [updatedReport],   // ⭐ only one report
+          },
+          {
+            onSuccess: () => {
+              setEditingReport(null);
+              refetch();
+            },
+          }
+        );
+      };
+      
+      const handleUpdateNotes = (updatedNotes: string) => {
+        uploadReports(
+          { notes: updatedNotes },
+          {
+            onSuccess: () => {
+              setEditingNotes(false);
+              refetch();
+            },
+          }
+        );
+      };
+      
 
-        if (!data.notes?.trim() && validReports.length === 0) {
-            Alert.alert("Error", "Please add notes or at least one report");
+    const onSubmit = (data: ManageAppointmentFormData) => {
+
+        console.log('data', data)
+
+        const validReports =
+            data.reports?.filter(r => r?.type && r?.name) || [];
+    
+        // only upload NEW files
+        const newReports = validReports.filter(
+            r => r.file && !r.file.isExisting
+        );
+    
+        const payload: any = {};
+    
+        // update notes if present
+        if (data.notes?.trim()) {
+            payload.notes = data.notes.trim();
+        }
+    
+        // attach only new files
+        if (newReports.length > 0) {
+            payload.reports = newReports.map(r => ({
+                type: r.type,
+                name: r.name,
+                file: {
+                    uri: r.file.uri,
+                    name:
+                        r.file.name ||
+                        `report.${r.file.uri.split(".").pop()}`,
+                    type:
+                        r.file.mimeType ||
+                        r.file.type ||
+                        "application/octet-stream",
+                },
+            }));
+        }
+    
+        // nothing to update
+        if (!payload.notes && !payload.reports) {
+            Alert.alert("Nothing to update");
             return;
         }
-
-        uploadReports(
-            {
-                notes: data.notes,
-                reports: validReports.map(r => ({
-                    type: r.type,
-                    name: r.name,
-                    file: {
-                        uri: r.file.uri,
-                        name:
-                            r.file.name ||
-                            `report.${r.file.uri.split(".").pop()}`,
-                        type:
-                            r.file.mimeType ||
-                            r.file.type ||
-                            "application/octet-stream",
-                    },
-                })),
+    
+        uploadReports(payload, {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ["appointment", appointmentId],
+                });
+                refetch();
+                reset();
+                setModalVisible(false);
+                Alert.alert("Success", "Appointment updated successfully");
             },
-            {
-                onSuccess: (res) => {
-                    queryClient.invalidateQueries({
-                        queryKey: ["appointment", appointmentId],
-                    });
-                    refetch();
-                    reset();
-                    setModalVisible(false);
-                    Alert.alert("Success", "Appointment updated successfully");
-                },
-                onError: (err: any) => {
-                    Alert.alert(
-                        "Error",
-                        err?.response?.data?.message || "Upload failed"
-                    );
-                },
-            }
-        );
-    };
+            onError: (err: any) => {
+                console.log("UPLOAD ERROR:", err?.response?.data);
+                Alert.alert(
+                    "Error",
+                    err?.response?.data?.message || "Upload failed"
+                );
+            },
+        });
+    };    
 
 
     const handleCancelAppointment = () => {
@@ -256,12 +309,6 @@ export default function ManageAppointments() {
                                         <Text className="text-lg font-medium text-black">
                                             Manage Reports & Notes
                                         </Text>
-                                        <Pressable
-                                            onPress={() => setModalVisible(true)}
-                                            className="p-2"
-                                        >
-                                            <SquarePen size={18} color="#000" />
-                                        </Pressable>
                                     </View>
 
                                     {/* Report Cards - Dynamic List */}
@@ -281,26 +328,61 @@ export default function ManageAppointments() {
                                                     Type: {report.type || "Unknown"}
                                                 </Text>
                                             </View>
-                                            <Button
-                                                className="bg-primary"
-                                                onPress={() => {
-                                                    if (report.file_url) {
-                                                        Linking.openURL(report.file_url).catch(() => {
-                                                            Alert.alert(
-                                                                "Error",
-                                                                "Unable to open report"
-                                                            );
-                                                        });
-                                                    } else {
-                                                        Alert.alert(
-                                                            "Error",
-                                                            "Report URL not available"
-                                                        );
-                                                    }
-                                                }}
-                                            >
-                                                <Text className="text-white font-medium">View</Text>
-                                            </Button>
+                                            <View className="items-end gap-2">
+
+  {/* View */}
+  <Button
+    className="bg-primary"
+    onPress={() => {
+      if (report.file_url) {
+        Linking.openURL(report.file_url);
+      }
+    }}
+  >
+    <Text className="text-white">View</Text>
+  </Button>
+
+  {/* ⭐ EDIT BUTTON */}
+  <Button
+    variant="outline"
+    onPress={() => setEditingReport(report)}
+  >
+    <Text>Edit</Text>
+  </Button>
+
+  {/* Delete */}
+  <Button
+    variant="outline"
+    onPress={() => {
+        console.log("Deleting report ID:", report.id);
+      Alert.alert("Delete Report", "Confirm delete?", [
+        { text: "Cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            deleteReport(report.id, {
+                onSuccess: (res) => {
+                  console.log("Delete success:", res);
+                  refetch();
+                },
+                onError: (err: any) => {
+                  console.log("DELETE ERROR:", err?.response?.data);
+                  Alert.alert("Error", err?.response?.data?.message || "Delete failed");
+                },
+              });
+              
+          },
+        },
+      ]);
+    }}
+  >
+    <Text>Delete</Text>
+  </Button>
+
+</View>
+
+
                                         </View>
                                     ))}
 
@@ -309,12 +391,33 @@ export default function ManageAppointments() {
                                         <Text className="text-base font-semibold text-black mb-2">
                                             Note
                                         </Text>
-                                        <View className="bg-gray-50 rounded-xl border border-gray-200 p-4">
+                                        <View className="flex-row items-center justify-between bg-gray-50 rounded-xl border border-gray-200 p-4">
                                             <Text className="text-sm text-black-400">
                                                 {typeof notes === "string" ? notes : "No notes available."}
                                             </Text>
+                                            <Pressable
+                                                onPress={() => setEditingNotes(true)}
+                                                className="p-2"
+                                            >
+                                                <SquarePen size={18} color="#000" />
+                                            </Pressable>
                                         </View>
                                     </View>
+
+
+                                    <Button
+                                        onPress={() => {
+                                            methods.reset({
+                                                notes: notes || "",
+                                                reports: [],
+                                            });
+                                        
+                                            setModalVisible(true);
+                                        }}
+                                        className="mt-5"
+                                    >
+                                        <Text>Upload New Report</Text>
+                                    </Button>
                                 </View>
                             ) : (
                                 <View className="items-center py-6 px-4">
@@ -388,12 +491,55 @@ export default function ManageAppointments() {
                                 onConfirm={handleCancelAppointment}
                             />
 
+                            <EditReportModal
+                                visible={!!editingReport}
+                                report={editingReport}
+                                onClose={() => setEditingReport(null)}
+                                onSave={handleUpdateReport}
+                            />
+
+                            <EditNotesModal
+                                visible={editingNotes}
+                                notes={notes}
+                                onClose={() => setEditingNotes(false)}
+                                onSave={handleUpdateNotes}
+                            />
+
+
                             <UploadReportsNotes
                                 visible={modalVisible}
-                                onClose={() => setModalVisible(false)}
+                                showNotes={!hasReportsAndNotes}
+                                // onClose={() => setModalVisible(false)}
+                                onClose={() => {
+                                    methods.reset();
+                                    setModalVisible(false);
+                                  }}
                                 onSubmit={handleSubmit(onSubmit)}
                                 isPending={isPending}
                                 insets={insets}
+                                onDeleteExisting={(reportId) => {
+                                    Alert.alert(
+                                      "Delete Report",
+                                      "Delete this report permanently?",
+                                      [
+                                        { text: "Cancel" },
+                                        {
+                                          text: "Delete",
+                                          style: "destructive",
+                                          onPress: () => {
+                                            deleteReport(reportId, {
+                                              onSuccess: () => {
+                                                queryClient.invalidateQueries({
+                                                  queryKey: ["appointment", appointmentId],
+                                                });
+                                                refetch();
+                                              },
+                                            });
+                                          },
+                                        },
+                                      ]
+                                    );
+                                }}
                             />
                         </View>
                     </View>

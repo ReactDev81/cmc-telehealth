@@ -16,18 +16,37 @@ export const uploadReportsAndNotes = async (
     // Notes
     if (payload.notes?.trim()) {
         formData.append("notes", payload.notes.trim());
-    }
+    }   
 
     // Reports
+    // payload.reports?.forEach((report, index) => {
+    //     formData.append(`reports[${index}][type]`, report.type);
+    //     formData.append(`reports[${index}][name]`, report.name ?? "");
+    //     formData.append(`reports[${index}][file]`, {
+    //         uri: report.file.uri,
+    //         name: report.file.name,
+    //         type: report.file.type,
+    //     } as any);
+    // });
+
     payload.reports?.forEach((report, index) => {
+
+        if (report.id) {
+            formData.append(`reports[${index}][id]`, report.id);
+        }
+    
         formData.append(`reports[${index}][type]`, report.type);
         formData.append(`reports[${index}][name]`, report.name ?? "");
-        formData.append(`reports[${index}][file]`, {
-            uri: report.file.uri,
-            name: report.file.name,
-            type: report.file.type,
-        } as any);
+    
+        if (report.file) {
+            formData.append(`reports[${index}][file]`, {
+                uri: report.file.uri,
+                name: report.file.name,
+                type: report.file.type,
+            } as any);
+        }
     });
+    
 
     const { data } = await api.post(
         `/appointments/${appointmentId}/update-information`,

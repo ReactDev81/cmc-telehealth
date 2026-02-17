@@ -31,12 +31,12 @@ const personalInfoSchema = z.object({
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
 const EditPersonalInformation = () => {
-    const { user } = useAuth();
 
+    const { user } = useAuth();
     const [profileImage, setProfileImage] = useState(require('../../assets/images/edit-profile.png'));
     const [isImageUri, setIsImageUri] = useState(false);
 
-    const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<PersonalInfoFormData>({
+    const { control, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<PersonalInfoFormData>({
         resolver: zodResolver(personalInfoSchema),
         defaultValues: {
             firstName: '',
