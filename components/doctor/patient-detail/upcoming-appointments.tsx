@@ -21,7 +21,7 @@ const UpcomingAppointment = ({ time, date, mode, call_now }: props) => {
             </View>
             <View className="flex-row items-center gap-x-3 mt-1">
                 <View className="flex-row items-center gap-x-2">
-                    <Calendar size={12} className="text-black-400" />
+                    <Calendar size={14} className="text-black-400" />
                     <Text className="text-sm text-black-400">{date}</Text>
                 </View>
                 <View className="flex-row items-center gap-x-2">
@@ -30,15 +30,15 @@ const UpcomingAppointment = ({ time, date, mode, call_now }: props) => {
                 </View>
             </View>
             <View className="flex-row items-center gap-x-1 mt-2.5">
-                <View className="flex items-center justify-center w-6 h-6 bg-primary-200 rounded-full">
+                <View className="flex items-center justify-center w-6 h-6">
                     {
                         mode === 'video' ?
-                            <Video size={12} color="#013220" fill="#013220" />
+                            <Video size={14} className="text-black-400" />
                             :
-                            <Hospital size={12} color="#013220" />
+                            <Hospital size={14} className="text-black-400" />
                     }
                 </View>
-                <Text className="text-sm text-black-400 font-medium">
+                <Text className="text-sm text-black-400">
                     {mode === 'video' ? 'Video consultation' : 'Clinic Visit'}
                 </Text>
             </View>
