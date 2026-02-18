@@ -32,8 +32,10 @@ const manageAppointmentSchema = z.object({
           type: z.string().min(1),
           name: z.string().min(1, "Report title required"),
           file: z.any(),
+          isExisting: z.boolean().optional(),
         })
     ).optional(),
+    existingReports: z.array(z.string()).optional(),
 });
 
 type ManageAppointmentFormData = z.infer<typeof manageAppointmentSchema>;
@@ -51,7 +53,6 @@ export default function ManageAppointments() {
     const { mutate: uploadReports, isPending } = useUploadReportsAndNotes(appointment_id || "");
     const { mutate: cancelAppointment, isPending: isCancelling } = useCancelAppointment();
     const { mutate: deleteReport } = useDeleteMedicalReport();
-
     const [editingReport, setEditingReport] = useState<any>(null);
     const [editingNotes, setEditingNotes] = useState(false);
 
@@ -64,6 +65,7 @@ export default function ManageAppointments() {
             reportName: "",
             reportFile: null,
             reports: [],
+            existingReports: [],
         },
     });
 
@@ -130,68 +132,165 @@ export default function ManageAppointments() {
       };
       
 
+    // const onSubmit = (data: ManageAppointmentFormData) => {
+
+    //     console.log('data', data)
+    //     console.log('file', data?.reports)
+
+    //     // const validReports =
+    //     //     data.reports?.filter(r => r?.type && r?.name) || [];
+
+    //     const validReports = data.reports || [];
+
+    //     const normalizedReports = validReports.map(r => ({
+    //     name: r.name,
+    //     type: r.type,
+    //     file: {
+    //         uri: r.file.uri,
+    //         name: r.file.name,
+    //         type:
+    //         r.file.mimeType ||   // custom upload
+    //         r.file.type ||       // existing mapped
+    //         "application/octet-stream",
+    //         // isExisting: r.file.isExisting || false,
+    //     }
+    //     }));
+
+    //     const newReports = normalizedReports;
+    
+    //     // only upload NEW files
+    //     // const newReports = validReports.filter(
+    //     //     r => r.file && !r.file.isExisting
+    //     // );
+    
+    //     const payload: any = {};
+    
+    //     // update notes if present
+    //     if (data.notes?.trim()) {
+    //         payload.notes = data.notes.trim();
+    //     }
+    
+    //     // attach only new files
+    //     if (newReports.length > 0) {
+    //         payload.reports = newReports.map(r => ({
+    //             type: r.type,
+    //             name: r.name,
+    //             file: {
+    //                 uri: r.file.uri,
+    //                 name:
+    //                     r.file.name ||
+    //                     `report.${r.file.uri.split(".").pop()}`,
+    //                 type:
+    //                     r.file.mimeType ||
+    //                     r.file.type ||
+    //                     "application/octet-stream",
+    //             },
+    //         }));
+    //     }
+    
+    //     // nothing to update
+    //     if (!payload.notes && !payload.reports && !payload.report_ids) {
+    //         Alert.alert("Nothing to update");
+    //         return;
+    //     }
+    
+    //     uploadReports(payload, {
+    //         onSuccess: (res) => {
+    //             console.log("✅ Upload success:", res);
+    //             queryClient.invalidateQueries({
+    //                 queryKey: ["appointment", appointmentId],
+    //             });
+    //             refetch();
+    //             reset();
+    //             setModalVisible(false);
+    //             Alert.alert("Success", "Appointment updated successfully");
+    //         },
+    //         onError: (err: any) => {
+    //             console.log("UPLOAD ERROR:", err?.response?.data);
+    //             Alert.alert(
+    //                 "Error",
+    //                 err?.response?.data?.message || "Upload failed"
+    //             );
+    //         },
+    //     });
+    // };    
+
     const onSubmit = (data: ManageAppointmentFormData) => {
-
-        console.log('data', data)
-
-        const validReports =
-            data.reports?.filter(r => r?.type && r?.name) || [];
-    
-        // only upload NEW files
-        const newReports = validReports.filter(
-            r => r.file && !r.file.isExisting
-        );
-    
+        console.log("data", data);
+        console.log("reports", data?.reports);
+      
         const payload: any = {};
-    
-        // update notes if present
+      
+        // ✅ Add notes if present
         if (data.notes?.trim()) {
-            payload.notes = data.notes.trim();
+          payload.notes = data.notes.trim();
         }
-    
-        // attach only new files
-        if (newReports.length > 0) {
-            payload.reports = newReports.map(r => ({
-                type: r.type,
-                name: r.name,
-                file: {
-                    uri: r.file.uri,
-                    name:
-                        r.file.name ||
-                        `report.${r.file.uri.split(".").pop()}`,
-                    type:
-                        r.file.mimeType ||
-                        r.file.type ||
-                        "application/octet-stream",
-                },
-            }));
-        }
-    
-        // nothing to update
-        if (!payload.notes && !payload.reports) {
-            Alert.alert("Nothing to update");
-            return;
-        }
-    
-        uploadReports(payload, {
-            onSuccess: () => {
-                queryClient.invalidateQueries({
-                    queryKey: ["appointment", appointmentId],
-                });
-                refetch();
-                reset();
-                setModalVisible(false);
-                Alert.alert("Success", "Appointment updated successfully");
+      
+        const validReports = data.reports || [];
+      
+        // ✅ Build reports array properly
+        const payloadReports = validReports.map((r: any) => {
+          // ⭐ EXISTING REPORT (selected from My Reports)
+          if (r.isExisting && r.id) {
+            return {
+              id: r.id,
+              type: r.type,
+              name: r.name,
+            };
+          }
+      
+          // ⭐ NEWLY UPLOADED REPORT
+          return {
+            type: r.type,
+            name: r.name,
+            file: {
+              uri: r.file?.uri,
+              name:
+                r.file?.name ||
+                `report.${r.file?.uri?.split(".").pop()}`,
+              type:
+                r.file?.mimeType ||
+                r.file?.type ||
+                "application/octet-stream",
             },
-            onError: (err: any) => {
-                console.log("UPLOAD ERROR:", err?.response?.data);
-                Alert.alert(
-                    "Error",
-                    err?.response?.data?.message || "Upload failed"
-                );
-            },
+          };
         });
-    };    
+      
+        if (payloadReports.length > 0) {
+          payload.reports = payloadReports;
+        }
+      
+        // ✅ Nothing to update
+        if (!payload.notes && !payload.reports) {
+          Alert.alert("Nothing to update");
+          return;
+        }
+      
+        uploadReports(payload, {
+          onSuccess: (res) => {
+            console.log("✅ Upload success:", res);
+      
+            queryClient.invalidateQueries({
+              queryKey: ["appointment", appointmentId],
+            });
+      
+            refetch();
+            reset();
+            setModalVisible(false);
+      
+            Alert.alert("Success", "Appointment updated successfully");
+          },
+          onError: (err: any) => {
+            console.log("UPLOAD ERROR:", err?.response?.data);
+      
+            Alert.alert(
+              "Error",
+              err?.response?.data?.message || "Upload failed"
+            );
+          },
+        });
+      };
+      
 
 
     const handleCancelAppointment = () => {
@@ -410,7 +509,9 @@ export default function ManageAppointments() {
                                             methods.reset({
                                                 notes: notes || "",
                                                 reports: [],
+                                                existingReports: [], // reset selection
                                             });
+                                              
                                         
                                             setModalVisible(true);
                                         }}

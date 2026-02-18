@@ -8,6 +8,10 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { Alert, KeyboardAvoidingView, Modal, Platform, Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
 
+import MultiSelectField from "@/components/form/multi-select-field";
+import { useAuth } from "@/context/UserContext";
+import { useMedicalReports } from "@/queries/patient/useGetMedicalReports";
+
 interface UploadReportsNotesProps {
     visible: boolean;
     onClose: () => void;
@@ -29,6 +33,14 @@ export default function UploadReportsNotes({
 }: UploadReportsNotesProps) {
 
     const { control, setValue } = useFormContext();
+    const { user } = useAuth();
+    const { data } = useMedicalReports(user?.id);
+    const reportsList = data?.data || [];
+    const existingReportOptions =
+        data?.data?.map((r: any) => ({
+            label: r.report_name,
+            value: r.id,
+        })) || [];
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -46,15 +58,18 @@ export default function UploadReportsNotes({
             return;
         }
         
-        append({
-            type: reportType,
-            file: reportFile,
-            name: reportName.trim(),
-        });
+        if (reportType && reportFile && reportName?.trim()) {
 
-        setValue("reportType", "");
-        setValue("reportName", "");
-        setValue("reportFile", null);
+            append({
+              type: reportType,
+              file: reportFile,
+              name: reportName.trim(),
+            });
+          
+            setValue("reportType", "");
+            setValue("reportName", "");
+            setValue("reportFile", null);
+        }
     };
 
     return (
@@ -94,7 +109,17 @@ export default function UploadReportsNotes({
                                 />
                             )}
 
+                            <MultiSelectField
+                                name="existingReports"
+                                control={control}
+                                label="Select from My Reports"
+                                options={existingReportOptions}
+                            />
 
+                            <View className="flex-row justify-center items-center mt-5">
+                                <Text className="text-xl font-medium">Or</Text>
+                            </View>
+                            
                             {/* title */}
                             <Input
                                 name="reportName"
@@ -162,16 +187,21 @@ export default function UploadReportsNotes({
                                 <Button
                                     className="flex-1"
                                     onPress={() => {
+
+                                        const existingSelected =
+                                            control._formValues.existingReports?.length > 0;
+
                                         if (
-                                          !reportType &&
-                                          !reportFile &&
-                                          !reportName &&
-                                          fields.length === 0 &&
-                                          !(showNotes && control._formValues.notes?.trim())
-                                        ) {
-                                          Alert.alert("Nothing to submit");
-                                          return;
-                                        }
+                                            !reportType &&
+                                            !reportFile &&
+                                            !reportName &&
+                                            fields.length === 0 &&
+                                            !existingSelected &&
+                                            !(showNotes && control._formValues.notes?.trim())
+                                          ) {
+                                            Alert.alert("Nothing to submit");
+                                            return;
+                                          }
                                       
                                         // auto append if user forgot Add Report
                                         if (reportType && reportFile && reportName?.trim()) {
@@ -186,7 +216,25 @@ export default function UploadReportsNotes({
                                           setValue("reportFile", null);
                                         }
                                       
+                                        const selectedIds = control._formValues.existingReports || [];
+
+                                        const selectedReports = reportsList
+                                        .filter(r => selectedIds.includes(r.id))
+                                        .map(r => ({
+                                            id: r.id,              // ⭐ IMPORTANT
+                                            name: r.report_name,
+                                            type: r.report_type,
+                                            file: null,            // ⭐ no file upload
+                                            isExisting: true,      // ⭐ flag
+                                        }));
+
+                                      
+
+                                        // append them into reports array
+                                        selectedReports.forEach(r => append(r));
+
                                         onSubmit();
+
                                       }}                                      
                                     disabled={isPending}
                                 >

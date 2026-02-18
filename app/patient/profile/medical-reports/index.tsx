@@ -197,6 +197,7 @@ const MedicalRecords = () => {
 
     const [page, setPage] = useState(1);
     const { data, isLoading, isError, error } = useMedicalReports(user?.id, page);
+
     const reports = data?.data ?? [];
     const meta = data?.meta;
 
