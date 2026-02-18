@@ -5,10 +5,11 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useContactUs } from "@/mutations/common/useContactUs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle, XCircle } from "lucide-react-native";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, View } from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 import * as z from "zod";
-
 
 // Validation schema
 const needHelpSchema = z.object({
@@ -36,27 +37,28 @@ const needHelpSchema = z.object({
 
 type NeedHelpFormData = z.infer<typeof needHelpSchema>;
 
-const NeedHelp = () => {
-  // const { data, error, loading, fetchData } = useApi<{
-  //   data: {};
-  //   message?: string;
-  // }>("post", `${process.env.EXPO_PUBLIC_API_BASE_URL}/contact-us`, {
-  //   headers: {
-  //     Authorization: `Bearer ${process.env.EXPO_PUBLIC_token}`,
-  //     Accept: "application/json",
-  //     "Content-Type": "multipart/form-data",
-  //   },
-  // });
+type FeedbackModal = {
+  visible: boolean;
+  type: "success" | "error";
+  message: string;
+};
 
+const NeedHelp = () => {
   const { mutate: sendMessage, isPending } = useContactUs();
   const { user } = useAuth();
   const userId = user?.id || "";
 
+  const [feedback, setFeedback] = useState<FeedbackModal>({
+    visible: false,
+    type: "success",
+    message: "",
+  });
+
   const methods = useForm<NeedHelpFormData>({
     resolver: zodResolver(needHelpSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      firstName: user?.first_name,
+      lastName: user?.last_name,
       email: user?.email ?? "",
       subject: "",
       message: "",
@@ -65,32 +67,6 @@ const NeedHelp = () => {
   });
 
   const { handleSubmit, reset } = methods;
-
-  // const onSubmit = async (formData: NeedHelpFormData) => {
-  //   try {
-  //     const payload = new FormData();
-
-  //     payload.append("first_name", formData.firstName);
-  //     payload.append("last_name", formData.lastName);
-  //     payload.append("email", formData.email);
-  //     payload.append("message", formData.message);
-
-  //     // Optional
-  //     // payload.append("user_id", userId);
-
-  //     await fetchData({
-  //       data: payload,
-  //     });
-
-  //     Alert.alert("Success", data?.message, [
-  //       { text: "OK", onPress: () => reset() },
-  //     ]);
-  //   } catch (error) {
-  //     Alert.alert("Error", "Failed to send message.");
-  //   }
-
-  //   console.log("API Response:", data);
-  // };
 
   const onSubmit = (formData: NeedHelpFormData) => {
     sendMessage(
@@ -104,37 +80,79 @@ const NeedHelp = () => {
       },
       {
         onSuccess: (res) => {
-          console.log("Response:", res);
-          Alert.alert("Success", res.message);
+          setFeedback({
+            visible: true,
+            type: "success",
+            message: res.message || "Your message has been sent successfully!",
+          });
           reset();
         },
         onError: (res) => {
-          console.log("Response:", res);
-          Alert.alert("Error", "Failed to send message");
+          setFeedback({
+            visible: true,
+            type: "error",
+            message: res?.message || "Something went wrong. Please try again.",
+          });
         },
-      }
+      },
     );
   };
 
+  const isSuccess = feedback.type === "success";
 
   return (
     <View className="flex-1 bg-white p-5">
+      {/* Feedback Modal */}
+      <Modal
+        visible={feedback.visible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setFeedback((f) => ({ ...f, visible: false }))}
+      >
+        <View className="flex-1 items-center justify-center bg-black/50 px-6">
+          <View className="bg-white w-full max-w-sm rounded-2xl p-6 items-center shadow-xl">
+            {isSuccess ? (
+              <CheckCircle size={56} color="#16a34a" strokeWidth={1.5} />
+            ) : (
+              <XCircle size={56} color="#dc2626" strokeWidth={1.5} />
+            )}
+            <Text className="text-xl font-semibold text-black mt-4 text-center">
+              {isSuccess ? "Message Sent!" : "Something Went Wrong"}
+            </Text>
+            <Text className="text-black-400 text-sm mt-2 text-center leading-5">
+              {feedback.message}
+            </Text>
+            <Pressable
+              onPress={() => setFeedback((f) => ({ ...f, visible: false }))}
+              className="mt-6 w-full bg-primary rounded-xl py-3 items-center"
+            >
+              <Text className="text-white font-semibold text-base">OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
       <View className="mb-5">
-        <Input
-          name="firstName"
-          control={methods.control}
-          label="First Name"
-          placeholder="Enter your first name"
-          autoCapitalize="words"
-        />
-        <Input
-          name="lastName"
-          control={methods.control}
-          label="Last Name"
-          placeholder="Enter your last name"
-          autoCapitalize="words"
-          containerClassName="mt-5"
-        />
+        <View pointerEvents="none">
+          <Input
+            name="firstName"
+            control={methods.control}
+            label="First Name"
+            placeholder="Enter your first name"
+            autoCapitalize="words"
+            containerClassName="opacity-40"
+          />
+        </View>
+        <View pointerEvents="none">
+          <Input
+            name="lastName"
+            control={methods.control}
+            label="Last Name"
+            placeholder="Enter your last name"
+            autoCapitalize="words"
+            containerClassName="mt-5 opacity-40"
+          />
+        </View>
         <View pointerEvents="none">
           <Input
             name="email"
@@ -166,7 +184,9 @@ const NeedHelp = () => {
         />
       </View>
 
-      <Button onPress={handleSubmit(onSubmit)}>Send Message</Button>
+      <Button onPress={handleSubmit(onSubmit)} disabled={isPending}>
+        {isPending ? "Sending..." : "Send Message"}
+      </Button>
     </View>
   );
 };

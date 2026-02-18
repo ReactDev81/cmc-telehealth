@@ -30,12 +30,12 @@ const UpcomingAppointmentCard = ({
         <Text className="text-sm font-medium text-black mt-3">{name}</Text>
         <View className="flex-row items-center gap-x-3 mt-1">
           <View className="flex-row items-center gap-x-2">
-            <Clock size={12} className="text-black-400" />
-            <Text className="text-sm text-black-400">{time}</Text>
-          </View>
-          <View className="flex-row items-center gap-x-2">
             <Calendar size={12} className="text-black-400" />
             <Text className="text-sm text-black-400">{date}</Text>
+          </View>
+          <View className="flex-row items-center gap-x-2">
+            <Clock size={12} className="text-black-400" />
+            <Text className="text-sm text-black-400">{time}</Text>
           </View>
         </View>
         <View className="flex-row items-center gap-x-1 mt-2">

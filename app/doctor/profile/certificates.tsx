@@ -13,10 +13,17 @@ const Certificates = () => {
   const { user } = useAuth();
   const doctorID = user?.id || "";
 
-  const { data: profileResponse, isLoading } =
-    useDoctorProfile<CertificationsGroup>(doctorID, "certifications_info");
+  const {
+    data: profileResponse,
+    isLoading,
+    refetch,
+  } = useDoctorProfile<CertificationsGroup>(doctorID, "certifications_info");
 
-  const certificates = profileResponse?.data?.certifications_info || [];
+  const certificates = (
+    profileResponse?.data?.certifications_info || []
+  ).filter(
+    (cert) => cert.name || cert.organization || cert.certification_image,
+  );
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -39,6 +46,10 @@ const Certificates = () => {
             <AddNewCertificates
               existingCertificates={certificates}
               onClose={() => setModalVisible(false)}
+              onSuccess={() => {
+                setModalVisible(false);
+                refetch();
+              }}
             />
           </View>
         </View>

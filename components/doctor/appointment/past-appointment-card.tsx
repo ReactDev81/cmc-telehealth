@@ -4,50 +4,59 @@ import { appointmentProps } from "@/types/doctor/appointment";
 import { Calendar, Clock, Hospital, Video } from "lucide-react-native";
 import { Text, View } from "react-native";
 
-
-const PastAppointmentCard = ({ image, name, time, date, mode, status }: appointmentProps) => {
-    return (
-        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
-            <Avatar
-                source={typeof image === 'string' ? image : (image as any)?.uri}
-                name={name}
-                size={96}
-                rounded={false}
-                className="rounded-xl"
-            />
-            <View className="flex-1">
-                <Badge
-                    text={status ?? ""}
-                    variant={status === "Completed" ? 'success' : 'danger'}
-                    className="absolute right-0"
-                />
-                <Text className="text-sm font-medium text-black mt-3">{name}</Text>
-                <View className="flex-row items-center gap-x-3 mt-1">
-                    <View className="flex-row items-center gap-x-2">
-                        <Calendar size={12} className="text-black-400" />
-                        <Text className="text-sm text-black-400">{date}</Text>
-                    </View>
-                    <View className="flex-row items-center gap-x-2">
-                        <Clock size={14} className="text-black-400" />
-                        <Text className="text-sm text-black-400">{time}</Text>
-                    </View>
-                </View>
-                <View className="flex-row items-center gap-x-1 mt-2">
-                    <View className="flex items-center justify-center w-8 h-8 bg-primary-200 rounded-full">
-                        {
-                            mode === 'Video' ?
-                                <Video size={14} className="text-black-400" />
-                                :
-                                <Hospital size={14} className="text-black-400" />
-                        }
-                    </View>
-                    <Text className="text-sm text-black-400">
-                        {mode}
-                    </Text>
-                </View>
-            </View>
+const PastAppointmentCard = ({
+  image,
+  name,
+  time,
+  date,
+  mode,
+  status,
+}: appointmentProps) => {
+  return (
+    <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
+      <Avatar
+        source={typeof image === "string" ? image : (image as any)?.uri}
+        name={name}
+        size={96}
+        rounded={false}
+        className="rounded-xl"
+      />
+      <View className="flex-1">
+        <Badge
+          text={status ?? ""}
+          variant={
+            status === "Completed"
+              ? "success"
+              : status === "Cancelled"
+                ? "danger"
+                : "info"
+          }
+          className="absolute right-0"
+        />
+        <Text className="text-sm font-medium text-black mt-3">{name}</Text>
+        <View className="flex-row items-center gap-x-3 mt-1">
+          <View className="flex-row items-center gap-x-2">
+            <Calendar size={12} className="text-black-400" />
+            <Text className="text-sm text-black-400">{date}</Text>
+          </View>
+          <View className="flex-row items-center gap-x-2">
+            <Clock size={14} className="text-black-400" />
+            <Text className="text-sm text-black-400">{time}</Text>
+          </View>
         </View>
-    )
-}
+        <View className="flex-row items-center gap-x-1 mt-2">
+          <View className="flex items-center justify-center">
+            {mode?.toLowerCase() === "video" ? (
+              <Video size={14} className="text-black-400" />
+            ) : (
+              <Hospital size={14} className="text-black-400" />
+            )}
+          </View>
+          <Text className="text-sm text-black-400">{mode}</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
 
-export default PastAppointmentCard
+export default PastAppointmentCard;

@@ -8,6 +8,7 @@ import { Text, View } from "react-native";
 
 interface Props extends appointmentProps {
   callNow?: boolean;
+  status?: string;
 }
 
 const TodayAppointmentCard = ({
@@ -18,8 +19,9 @@ const TodayAppointmentCard = ({
   appointmentId,
   callNow,
   date,
+  status,
 }: Props) => {
-  console.log("TodayAppointmentCard - image:", image, "name:", name);
+  // console.log("TodayAppointmentCard - image:", image, "name:", name);
 
   return (
     <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
@@ -31,22 +33,28 @@ const TodayAppointmentCard = ({
         className="rounded-xl"
       />
       <View className="flex-1">
-        {callNow && (
+        {callNow ? (
           <Badge
             text="Join Now"
             variant="success"
+            className="absolute right-0"
+          />
+        ) : (
+          <Badge
+            text={status || "Scheduled"}
+            variant={status === "Cancelled" ? "danger" : "info"}
             className="absolute right-0"
           />
         )}
         <Text className="text-sm font-medium text-black mt-3">{name}</Text>
         <View className="flex-row items-center gap-x-3 mt-1">
           <View className="flex-row items-center gap-x-2">
-            <Clock size={12} className="text-black-400" />
-            <Text className="text-sm text-black-400">{time}</Text>
-          </View>
-          <View className="flex-row items-center gap-x-2">
             <Calendar size={12} className="text-black-400" />
             <Text className="text-sm text-black-400">{date}</Text>
+          </View>
+          <View className="flex-row items-center gap-x-2">
+            <Clock size={12} className="text-black-400" />
+            <Text className="text-sm text-black-400">{time}</Text>
           </View>
         </View>
         <View className="flex-row items-center gap-x-1 mt-2">

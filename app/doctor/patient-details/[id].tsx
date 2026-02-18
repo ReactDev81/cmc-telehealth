@@ -33,7 +33,7 @@ const PatientDetails = () => {
   const { token } = useAuth();
   const isFocused = useIsFocused();
 
-  console.log("appointment Id :", appointmentId);
+  // console.log("appointment Id :", appointmentId);
 
   const {
     data: patient,
@@ -53,7 +53,7 @@ const PatientDetails = () => {
   const upcomingAppointment = patient?.data?.upcoming_appointments;
   const joinUrl = upcomingAppointment?.video_join_link;
 
-  const patientpreviousdata = patient?.data?.previous_appointments;
+  // const patientpreviousdata = patient?.data?.previous_appointments;
   // console.log("Join URL:", joinUrl);
 
   if (!appointmentId) {
@@ -93,6 +93,7 @@ const PatientDetails = () => {
     );
   }
   // console.log("medical reports :", patient?.data?.medical_reports?.slice(0, 2));
+  // console.log("notes :", patient.data.notes);
 
   return (
     <ScrollView className="flex-1 bg-white p-5">
@@ -107,7 +108,7 @@ const PatientDetails = () => {
           name={patient.data.name}
           age={patient.data.age}
           gender={patient.data.gender}
-          {...(patient.data.notes && { problem: patient.data.notes })}
+          problem={patient.data.notes}
         />
         {/* contact information of this patient */}
         <ContactInformation
@@ -146,7 +147,7 @@ const PatientDetails = () => {
           <Title className="max-w-72" text="Medical Reports" />
           {patient?.data?.medical_reports &&
           patient.data.medical_reports.length > 0 ? (
-            patient.data.medical_reports.map((report: any) => {
+            patient.data.medical_reports.map((report: any, index: number) => {
               const handleViewReport = () => {
                 const pdfUrl = report.file_url;
                 if (pdfUrl) {
@@ -154,7 +155,7 @@ const PatientDetails = () => {
                 }
               };
               return (
-                <View className="mt-5" key={report.id}>
+                <View className="mt-5" key={report.id ?? index}>
                   <ReportsCard
                     report_name={report.report_name}
                     report_date_formatted={report.report_date_formatted}
@@ -182,7 +183,7 @@ const PatientDetails = () => {
                 .slice(0, 2)
                 .map((med: any, index: number) => (
                   <MedicineAccordian
-                    key={med.id}
+                    key={med.id ?? index}
                     medicine={med}
                     defaultExpanded={true}
                     index={index}
@@ -213,17 +214,17 @@ const PatientDetails = () => {
           patient.data.previous_appointments.length > 0 ? (
             patient.data.previous_appointments
               .slice(0, 2)
-              .map((appointment: any) => (
+              .map((appointment: any, index: number) => (
                 <Link
-                  key={appointment?.appointment_id}
-                  href={`/doctor/past-appointment-detail/${appointment?.appointment_id}`}
+                  key={appointment?.appointment_id ?? index}
+                  href={`/doctor/past-appointment-detail/${appointmentId}`}
                   className="mb-5"
                 >
                   <PreviousAppointment
                     subject={appointment?.notes || "No problem specified"}
                     status={appointment.status}
-                    time={appointment.appointment_time_formatted}
-                    date={appointment.appointment_date_formatted}
+                    time={appointment.time}
+                    date={appointment.date}
                     mode={appointment.consultation_type_label}
                   />
                 </Link>

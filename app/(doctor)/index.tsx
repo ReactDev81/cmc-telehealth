@@ -105,7 +105,7 @@ const Home = () => {
             const getTabKey = () => {
               if (AppointmentStatus.status === "today") return "today";
               if (AppointmentStatus.status === "upcoming") return "upcoming";
-              if (AppointmentStatus.status === "cancelled") return "past";
+              if (AppointmentStatus.status === "cancelled") return "upcoming";
               return "today";
             };
 
