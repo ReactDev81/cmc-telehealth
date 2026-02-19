@@ -73,6 +73,8 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
   const [resultModalSuccess, setResultModalSuccess] = useState<boolean | null>(null);
   const [resultRouteParams, setResultRouteParams] = useState<any>(null);
 
+  // console.log('appointmentIdToReschedule', appointmentIdToReschedule)
+
   /** Auto-select first available date */
   useEffect(() => {
     if (availability.length > 0) {
@@ -241,6 +243,8 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
               queryKey: ["appointment"],
             });
 
+            console.log('response', response);
+
             // Prepare route params to navigate after user dismisses modal
             const params = {
               pathname: "/patient/appointment-summary",
@@ -266,6 +270,7 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
             setResultModalVisible(true);
           },
           onError: (error: any) => {
+            
             console.log("Reschedule Error (Raw):", error);
             console.log("Reschedule Error Data:", JSON.stringify(error?.response?.data, null, 2));
 

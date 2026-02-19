@@ -105,7 +105,7 @@ export const rescheduleAppointment = async (
     payload: RescheduleAppointmentPayload
 ): Promise<RescheduleAppointmentResponse> => {
     const { data } = await api.post(
-        `/reschedule-appointment`,
+        `/appointments/reschedule`,
         payload
     );
     return data;

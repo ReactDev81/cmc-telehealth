@@ -243,16 +243,6 @@ const AppointmentSummary = () => {
                   </Text>
                 </View>
               )}
-              <View className="flex-row justify-between mt-3">
-                <View className="basis-2/5">
-                  <Text className="text-sm text-black-400">Subject</Text>
-                </View>
-                <View className="basis-3/5">
-                  <Text className="text-sm text-right text-nowrap font-medium text-black-400">
-                    I've been neglecting my teeth care lately, and l'm not sure
-                  </Text>
-                </View>
-              </View>
             </View>
           </View>
 
@@ -290,6 +280,15 @@ const AppointmentSummary = () => {
         <View className="p-5 bg-white border-t border-gray-200">
           <Button onPress={handlePayment}>
             Book Appointment (₹{total})
+          </Button>
+        </View>
+      )}
+
+      {/* Sticky Button Footer - reshcdule */}
+      {isRescheduled == "true" && (
+        <View className="p-5 bg-white border-t border-gray-200">
+          <Button onPress={() => router.replace("/(patient)/appointments")}>
+            Continue
           </Button>
         </View>
       )}

@@ -9,7 +9,7 @@ import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { SquarePen, Stethoscope } from "lucide-react-native";
+import { Eye, MoreVertical, Pencil, SquarePen, Stethoscope, Trash2 } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ActivityIndicator, Alert, Image, Linking, Pressable, ScrollView, Text, View } from "react-native";
@@ -55,6 +55,9 @@ export default function ManageAppointments() {
     const { mutate: deleteReport } = useDeleteMedicalReport();
     const [editingReport, setEditingReport] = useState<any>(null);
     const [editingNotes, setEditingNotes] = useState(false);
+
+    const [menuVisible, setMenuVisible] = useState<string | null>(null);
+
 
 
     const methods = useForm<ManageAppointmentFormData>({
@@ -132,90 +135,8 @@ export default function ManageAppointments() {
       };
       
 
-    // const onSubmit = (data: ManageAppointmentFormData) => {
-
-    //     console.log('data', data)
-    //     console.log('file', data?.reports)
-
-    //     // const validReports =
-    //     //     data.reports?.filter(r => r?.type && r?.name) || [];
-
-    //     const validReports = data.reports || [];
-
-    //     const normalizedReports = validReports.map(r => ({
-    //     name: r.name,
-    //     type: r.type,
-    //     file: {
-    //         uri: r.file.uri,
-    //         name: r.file.name,
-    //         type:
-    //         r.file.mimeType ||   // custom upload
-    //         r.file.type ||       // existing mapped
-    //         "application/octet-stream",
-    //         // isExisting: r.file.isExisting || false,
-    //     }
-    //     }));
-
-    //     const newReports = normalizedReports;
-    
-    //     // only upload NEW files
-    //     // const newReports = validReports.filter(
-    //     //     r => r.file && !r.file.isExisting
-    //     // );
-    
-    //     const payload: any = {};
-    
-    //     // update notes if present
-    //     if (data.notes?.trim()) {
-    //         payload.notes = data.notes.trim();
-    //     }
-    
-    //     // attach only new files
-    //     if (newReports.length > 0) {
-    //         payload.reports = newReports.map(r => ({
-    //             type: r.type,
-    //             name: r.name,
-    //             file: {
-    //                 uri: r.file.uri,
-    //                 name:
-    //                     r.file.name ||
-    //                     `report.${r.file.uri.split(".").pop()}`,
-    //                 type:
-    //                     r.file.mimeType ||
-    //                     r.file.type ||
-    //                     "application/octet-stream",
-    //             },
-    //         }));
-    //     }
-    
-    //     // nothing to update
-    //     if (!payload.notes && !payload.reports && !payload.report_ids) {
-    //         Alert.alert("Nothing to update");
-    //         return;
-    //     }
-    
-    //     uploadReports(payload, {
-    //         onSuccess: (res) => {
-    //             console.log("✅ Upload success:", res);
-    //             queryClient.invalidateQueries({
-    //                 queryKey: ["appointment", appointmentId],
-    //             });
-    //             refetch();
-    //             reset();
-    //             setModalVisible(false);
-    //             Alert.alert("Success", "Appointment updated successfully");
-    //         },
-    //         onError: (err: any) => {
-    //             console.log("UPLOAD ERROR:", err?.response?.data);
-    //             Alert.alert(
-    //                 "Error",
-    //                 err?.response?.data?.message || "Upload failed"
-    //             );
-    //         },
-    //     });
-    // };    
-
     const onSubmit = (data: ManageAppointmentFormData) => {
+
         console.log("data", data);
         console.log("reports", data?.reports);
       
@@ -377,7 +298,9 @@ export default function ManageAppointments() {
                                 <Text className="text-lg font-medium">Appointment Details</Text>
                                 <Text
                                     className={`text-xs capitalize font-medium w-fit p-2 rounded-md absolute right-0
-                                        ${appointment?.status === "confirmed" ? "text-success bg-success-400" : "text-info bg-info-400"}
+                                        ${appointment?.status === "confirmed" ? "text-success bg-success-400" : 
+                                            appointment?.status === "cancelled" ? "text-danger bg-danger-400" :
+                                            "text-info bg-info-400"}
                                     `}
                                 >
                                     {appointment?.status}
@@ -427,60 +350,78 @@ export default function ManageAppointments() {
                                                     Type: {report.type || "Unknown"}
                                                 </Text>
                                             </View>
-                                            <View className="items-end gap-2">
+                                            
+                                            <View className="items-end">
 
-  {/* View */}
-  <Button
-    className="bg-primary"
-    onPress={() => {
-      if (report.file_url) {
-        Linking.openURL(report.file_url);
-      }
-    }}
-  >
-    <Text className="text-white">View</Text>
-  </Button>
+                                                {/* menu trigger */}
+                                                <Pressable
+                                                    onPress={() =>
+                                                        setMenuVisible(menuVisible === report.id ? null : report.id)
+                                                    }
+                                                    className="p-2 border border-primary-400 rounded-md"
+                                                >
+                                                    <MoreVertical size={20} color="#344054" />
+                                                </Pressable>
 
-  {/* ⭐ EDIT BUTTON */}
-  <Button
-    variant="outline"
-    onPress={() => setEditingReport(report)}
-  >
-    <Text>Edit</Text>
-  </Button>
+                                                {/* popup menu */}
+                                                {menuVisible === report.id && (
 
-  {/* Delete */}
-  <Button
-    variant="outline"
-    onPress={() => {
-        console.log("Deleting report ID:", report.id);
-      Alert.alert("Delete Report", "Confirm delete?", [
-        { text: "Cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => {
-            deleteReport(report.id, {
-                onSuccess: (res) => {
-                  console.log("Delete success:", res);
-                  refetch();
-                },
-                onError: (err: any) => {
-                  console.log("DELETE ERROR:", err?.response?.data);
-                  Alert.alert("Error", err?.response?.data?.message || "Delete failed");
-                },
-              });
-              
-          },
-        },
-      ]);
-    }}
-  >
-    <Text>Delete</Text>
-  </Button>
+                                                    <View className="absolute top-8 right-0 bg-white border border-gray-200 rounded-xl shadow-lg w-36 z-50">
 
-</View>
+                                                        {/* VIEW */}
+                                                        <Pressable
+                                                            onPress={() => {
+                                                                setMenuVisible(null);
+                                                                if (report.file_url) {
+                                                                    Linking.openURL(report.file_url);
+                                                                }
+                                                            }}
+                                                            className="flex-row items-center gap-2 px-4 py-3"
+                                                        >
+                                                            <Eye size={16} color="#333" />
+                                                            <Text className="text-black">View</Text>
+                                                        </Pressable>
 
+                                                        {/* EDIT */}
+                                                        <Pressable
+                                                            onPress={() => {
+                                                                setMenuVisible(null);
+                                                                setEditingReport(report);
+                                                            }}
+                                                            className="flex-row items-center gap-2 px-4 py-3 border-t border-gray-100"
+                                                        >
+                                                            <Pencil size={16} color="#333" />
+                                                            <Text>Edit</Text>
+                                                        </Pressable>
+
+                                                        {/* DELETE */}
+                                                        <Pressable
+                                                            onPress={() => {
+                                                                setMenuVisible(null);
+                                                                Alert.alert("Delete Report", "Confirm delete?", [
+                                                                    { text: "Cancel" },
+                                                                    {
+                                                                        text: "Delete",
+                                                                        style: "destructive",
+                                                                        onPress: () => {
+                                                                            deleteReport(report.id, {
+                                                                                onSuccess: () => refetch(),
+                                                                            });
+                                                                        },
+                                                                    },
+                                                                ]);
+
+                                                            }}
+                                                            className="flex-row items-center gap-2 px-4 py-3 border-t border-gray-100"
+                                                        >
+                                                            <Trash2 size={16} color="red" />
+                                                            <Text className="text-red-500">Delete</Text>
+                                                        </Pressable>
+
+                                                    </View>
+                                                )}
+
+                                            </View>
 
                                         </View>
                                     ))}

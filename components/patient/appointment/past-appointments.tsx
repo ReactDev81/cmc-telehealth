@@ -1,14 +1,7 @@
 import Button from "@/components/ui/Button";
 import { appointmentProps } from "@/types/patient/appointment";
 import { router } from "expo-router";
-import {
-    Calendar,
-    ChevronRight,
-    Clock,
-    Hospital,
-    Star,
-    Video,
-} from "lucide-react-native";
+import { Calendar, ChevronRight, Clock, Hospital, Star, Video } from "lucide-react-native";
 import { Image, Text, View } from "react-native";
 
 const PastAppointment = ({

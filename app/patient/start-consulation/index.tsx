@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import { Camera } from "expo-camera";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
 import { ClosedCaption, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff } from "lucide-react-native";
 import * as React from "react";
@@ -207,6 +207,10 @@ const StartConsulationWithDoctor = () => {
                             }}
                             onLeave={({ removed }) => {
                                 setIsJoined(false);
+                                router.push({
+                                    pathname: `/patient/past-appointment-details/${appointment_id}`,
+                                    params: { visible: true },
+                                });
                             }}
                             onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
                             onCameraToggle={({ enabled }) => setIsCameraOn(enabled)}
@@ -273,6 +277,7 @@ const StartConsulationWithDoctor = () => {
                     paddingBottom: Platform.OS === "ios" ? insets.bottom : insets.bottom,
                 }}
             ></View>
+
         </GestureHandlerRootView>
     );
 };

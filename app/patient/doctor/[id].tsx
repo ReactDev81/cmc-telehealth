@@ -44,7 +44,7 @@ const DoctorDetail = () => {
         appointment_status?: string;
     }>();
 
-
+// console.log('appointment_id', appointment_id);
 
     const { data, isLoading, isError } = useBrowseDoctorById(id);
 
