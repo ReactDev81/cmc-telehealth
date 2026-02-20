@@ -59,6 +59,7 @@ export interface AppointmentResponse {
         created_at: string;
       }>;
     };
+    can_add_review?: boolean;
     notes?: {
       problem?: string;
       reason?: string;

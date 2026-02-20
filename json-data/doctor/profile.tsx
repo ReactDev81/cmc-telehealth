@@ -1,16 +1,17 @@
 import { MenuSection } from "@/types/common/profile";
 import {
-    Award,
-    BriefcaseBusiness,
-    FileText,
-    GraduationCap,
-    Handshake,
-    Headphones,
-    HelpCircle,
-    Info,
-    MapPin,
-    ShieldCheck,
-    UserStar
+  Award,
+  BriefcaseBusiness,
+  FileText,
+  GraduationCap,
+  Handshake,
+  Headphones,
+  HelpCircle,
+  Info,
+  MapPin,
+  ShieldCheck,
+  Stethoscope,
+  UserStar
 } from "lucide-react-native";
 
 export const DoctorMenuSections: MenuSection[] = [
@@ -67,6 +68,13 @@ export const DoctorMenuSections: MenuSection[] = [
         title: "Social Media",
         description: "Manage your social media presence.",
         route: "/doctor/profile/social-media",
+      },
+      {
+        id: 'my-reviews',
+        icon: <Stethoscope size={20} color="#374151" />,
+        title: 'My Reviews',
+        description: 'Reviews to the Doctor',
+        route: '/common-screens/my-reviews'
       },
     ],
   },

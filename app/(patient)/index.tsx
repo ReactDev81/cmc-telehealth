@@ -7,12 +7,11 @@ import { useAuth } from "@/context/UserContext";
 import { usePatientHome } from "@/queries/patient/usePatientHome";
 import { htmlToReadableText } from "@/utils/html";
 import { useIsFocused } from "@react-navigation/native";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import Button from "../../components/ui/Button";
 import Title from "../../components/ui/Title";
 import TitleWithLink from "../../components/ui/title-with-link";
 
@@ -197,7 +196,11 @@ const Home = () => {
           </ScrollView>
         </View>
 
-        <View className="px-4 pb-10">
+        <View className="px-4" 
+          style={{
+              paddingBottom: (insets?.bottom ?? 0) + 5,
+          }}
+        >
           {/* Testimonial */}
           <View className="mt-7">
             <Title text="Here's what our satisfied customers are saying..." />
@@ -234,12 +237,6 @@ const Home = () => {
                 </View>
               )}
             </ScrollView>
-            <Button
-              className="mt-5"
-              onPress={() => router.push("/patient/all-testimonials" as any)}
-            >
-              View All Testimonial
-            </Button>
           </View>
         </View>
       </ScrollView>

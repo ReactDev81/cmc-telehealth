@@ -8,6 +8,7 @@ import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Text, View } from "react-native";
 
 const Appointments = () => {
+
   const { token } = useAuth();
   const { tab } = useLocalSearchParams<{ tab?: string }>();
 
@@ -15,11 +16,8 @@ const Appointments = () => {
   const upcomingQuery = useAppointments("upcoming", token!);
   const pastQuery = useAppointments("past", token!);
 
-  const isLoading =
-    todayQuery.isLoading || upcomingQuery.isLoading || pastQuery.isLoading;
-
-  const isError =
-    todayQuery.isError || upcomingQuery.isError || pastQuery.isError;
+  const isLoading = todayQuery.isLoading || upcomingQuery.isLoading || pastQuery.isLoading;
+  const isError = todayQuery.isError || upcomingQuery.isError || pastQuery.isError;
 
   if (isLoading) return <ActivityIndicator className="flex-1" />;
 

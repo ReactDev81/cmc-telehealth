@@ -11,8 +11,6 @@ const AllUpcomingAppointment = ({
 }) => {
 
     const renderDoctorItem = ({ item }: { item: Appointment }) => {
-        // console.log("Appointment Item:", item);
-
         return (
             <UpcomingAppointments
                 // appointment_id={item.id}

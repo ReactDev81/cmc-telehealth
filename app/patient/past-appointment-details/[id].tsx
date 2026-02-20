@@ -12,12 +12,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppointementDetails = () => {
 
-    const { id } = useLocalSearchParams();
+    const { id, visible } = useLocalSearchParams();
     const isFocused = useIsFocused();
-    const [reviewModal, setReviewModal] = useState(false);
+    const [reviewModal, setReviewModal] = useState<boolean>(
+        visible === "true" || (Array.isArray(visible) && visible.includes("true"))
+    );
     const appointmentId = typeof id === "string" ? id : undefined;
 
-    console.log('appointmentId', appointmentId)
+    // console.log('appointmentId', appointmentId)
 
     const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
 
@@ -241,11 +243,12 @@ const AppointementDetails = () => {
                 )}
 
                 {/* Docotr Review */}
-                <View className="mb-7">
-                    <Text className="text-lg text-black font-medium mb-3">
-                        Review to Doctor
-                    </Text>
-                    {doctorReview ?
+                {appointment?.status === "completed" &&
+                    doctorReview ?
+                        <View className="mb-7">
+                            <Text className="text-lg text-black font-medium mb-3">
+                                Review to Doctor
+                            </Text>
                             <View className="bg-white rounded-xl border border-black-300 w-full justify-between p-5">
                                 <View className="flex-row justify-between items-start mb-2">
                                     <View className="flex-row gap-x-2">
@@ -268,16 +271,16 @@ const AppointementDetails = () => {
                                     <Text className="text-xs leading-5 text-black">{doctorReview?.content}</Text>
                                 </View>
                             </View>
-                    :
-                        <EmptyState
-                            title="Docotor Review"
-                            message="You have not provide any review to doctor"
-                            icon={<UserStar size={40} color="#344054" />}
-                            actionLabel="Add Review"
-                            onAction={() => setReviewModal(true)}
-                        />
-                    }
-                </View>
+                            </View>
+                    : appointment?.can_add_review && 
+                    <EmptyState
+                        title="Docotor Review"
+                        message="You have not provide any review to doctor"
+                        icon={<UserStar size={40} color="#344054" />}
+                        actionLabel="Add Review"
+                        onAction={() => setReviewModal(true)}
+                    />
+                }
                 
             </View>
 
