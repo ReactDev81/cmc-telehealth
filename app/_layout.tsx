@@ -106,6 +106,11 @@ export default function RootLayout() {
               />
 
               <Stack.Screen
+                name="patient/doctor/doctor-reviews/[id]"
+                options={{ headerTitle: "Doctor Reviews" }}
+              />
+
+              <Stack.Screen
                 name="patient/find-doctor"
                 options={{ headerTitle: "Find Doctor" }}
               />
