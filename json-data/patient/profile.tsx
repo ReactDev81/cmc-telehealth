@@ -1,18 +1,18 @@
-import { MenuSection } from "../../types/common/profile"
-import { 
-    Calendar, 
-    ClipboardList, 
-    MapPin, 
-    Receipt, 
-    Bell, 
-    Info, 
-    HelpCircle, 
-    Headphones, 
-    ShieldCheck,
+import {
+    Bell,
+    Calendar,
+    ClipboardList,
     Handshake,
-    UserStar,
-    Stethoscope
+    Headphones,
+    HelpCircle,
+    Info,
+    MapPin,
+    Receipt,
+    ShieldCheck,
+    Stethoscope,
+    UserStar
 } from 'lucide-react-native'
+import { MenuSection } from "../../types/common/profile"
 
 export const menuSections: MenuSection[] = [
     {
@@ -32,11 +32,11 @@ export const menuSections: MenuSection[] = [
                 route: '/patient/profile/medical-reports'
             },
             {
-                id: 'write-a-review',
+                id: 'my-reviews',
                 icon: <Stethoscope size={20} color="#374151" />,
-                title: 'Write A Review',
-                description: 'Review to the Doctor',
-                route: '/patient/profile/write-a-review'
+                title: 'My Reviews',
+                description: 'Reviews to the Doctor',
+                route: '/common-screens/my-reviews'
             },
         ]
     },

@@ -106,6 +106,7 @@ export default function UploadReportsNotes({
                                     label="Write your health problem to Doctor"
                                     control={control}
                                     placeholder="Describe symptoms or notes..."
+                                    containerClassName="mb-5"
                                 />
                             )}
 

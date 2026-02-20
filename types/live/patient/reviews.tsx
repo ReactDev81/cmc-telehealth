@@ -1,4 +1,5 @@
 export interface CreateReviewPayload {
+    appointment_id?: string;
     doctor_id: string;
     title: string;
     content: string;

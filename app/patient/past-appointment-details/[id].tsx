@@ -1,10 +1,12 @@
 import ReportsCard from "@/components/common/medical-reports/reports-card";
 import MedicineCard from "@/components/patient/my-medicines/medicine-card";
+import DoctorReviewModal from "@/components/patient/review";
+import EmptyState from "@/components/ui/EmptyState";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
-import { BriefcaseBusiness, Star, Stethoscope } from "lucide-react-native";
-import { useEffect } from "react";
+import { BriefcaseBusiness, ClipboardPlus, Star, Stethoscope, UserStar } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import { Image, Linking, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -12,7 +14,10 @@ const AppointementDetails = () => {
 
     const { id } = useLocalSearchParams();
     const isFocused = useIsFocused();
+    const [reviewModal, setReviewModal] = useState(false);
     const appointmentId = typeof id === "string" ? id : undefined;
+
+    console.log('appointmentId', appointmentId)
 
     const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
 
@@ -37,11 +42,14 @@ const AppointementDetails = () => {
         </SafeAreaView>
     );
 
-    const medicalReports = data?.data?.medical_reports ?? [];
+    
     const appointment = data?.data;
+    // const medicalReports = data?.data?.medical_reports ?? [];
+    const medicalReports = appointment?.medical_reports?.length ? appointment.medical_reports : null;
     const patient = appointment?.patient;
     const schedule = appointment?.schedule;
     const doctor = appointment?.doctor;
+    const doctorReview = doctor?.review && !Array.isArray(doctor.review) ? doctor.review: null;
     const payment = appointment?.payment;
     const notes = appointment?.notes;
     const prescriptions = appointment?.prescriptions;
@@ -196,7 +204,7 @@ const AppointementDetails = () => {
                         Medical Reports
                     </Text>
                     <View className="gap-y-5">
-                        {
+                        {medicalReports ? (
                             medicalReports.map((report: any) => (
                                 <ReportsCard
                                     key={report.id}
@@ -206,7 +214,13 @@ const AppointementDetails = () => {
                                     handleReport={() => Linking.openURL(report.file_url)}
                                 />
                             ))
-                        }
+                        ) : (
+                            <EmptyState
+                                title="Medical Reports"
+                                message="No medical reports available"
+                                icon={<ClipboardPlus size={40} color="#344054" />}
+                            />
+                        )}
                     </View>
                     
                 </View>
@@ -225,8 +239,56 @@ const AppointementDetails = () => {
                         />
                     </View>
                 )}
+
+                {/* Docotr Review */}
+                <View className="mb-7">
+                    <Text className="text-lg text-black font-medium mb-3">
+                        Review to Doctor
+                    </Text>
+                    {doctorReview ?
+                            <View className="bg-white rounded-xl border border-black-300 w-full justify-between p-5">
+                                <View className="flex-row justify-between items-start mb-2">
+                                    <View className="flex-row gap-x-2">
+                                        <View>
+                                            <Image source={{ uri: doctor?.avatar }} className="w-10 h-10 rounded-full" />
+                                        </View>
+                                        <View>
+                                            <Text className="text-sm text-black font-medium">{doctor?.name}</Text>
+                                            <Text className="text-xs text-black mt-1">
+                                                {doctor?.department} ({doctor?.years_experience} Exp)
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1">
+                                        <Star size={12} fill="#013220" />
+                                        <Text className="text-primary text-sm font-medium">{doctorReview?.rating}</Text>
+                                    </View>
+                                </View>
+                                <View>
+                                    <Text className="text-xs leading-5 text-black">{doctorReview?.content}</Text>
+                                </View>
+                            </View>
+                    :
+                        <EmptyState
+                            title="Docotor Review"
+                            message="You have not provide any review to doctor"
+                            icon={<UserStar size={40} color="#344054" />}
+                            actionLabel="Add Review"
+                            onAction={() => setReviewModal(true)}
+                        />
+                    }
+                </View>
                 
             </View>
+
+            <DoctorReviewModal 
+                visible={reviewModal} 
+                onClose={() => setReviewModal(false)}
+                doctorId={doctor?.user_id}
+                doctorName={doctor?.name} 
+                appointmentID={appointmentId}
+            />
+
         </ScrollView>
     );
 };

@@ -40,6 +40,24 @@ export interface AppointmentResponse {
       specialization?: string;
       profile_image?: string;
       years_experience?: string;
+      review?: {
+        rating_stars?: string;
+        rating?: number;
+        title?: string;
+        content?: string;
+      };
+      reviews?: Array<{
+        id: string;
+        slug: string;
+        title: string;
+        content: string;
+        rating: number;
+        doctor_id: string;
+        patient_id: string;
+        patient_name: string;
+        patient_image: string;
+        created_at: string;
+      }>;
     };
     notes?: {
       problem?: string;

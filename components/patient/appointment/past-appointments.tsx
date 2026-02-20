@@ -15,9 +15,11 @@ const PastAppointment = ({
     date,
     time,
     status,
-    appointment_id,
+    appointment_id, 
 }: appointmentProps) => {
+
     const id = appointment_id;
+
     return (
         <View className="border border-black-300 rounded-xl p-4 mb-5">
             <View className="flex-row items-center gap-x-3">
@@ -89,12 +91,12 @@ const PastAppointment = ({
                 <Button
                     className="mt-3 flex-row-reverse"
                     icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
-                    // onPress={() => router.push('/patient/appointment-details')}
                     onPress={() => router.push(`/patient/past-appointment-details/${id}`)}
                 >
                     View Detail
                 </Button>
             </View>
+
         </View>
     );
 };

@@ -22,7 +22,8 @@ const EmptyState = ({
 }: EmptyStateProps) => {
     return (
         <View className={`items-center justify-center p-8 bg-white ${className}`}>
-            <View className="bg-black-100 p-5 rounded-full mb-4">
+            
+            <View className="bg-black-100 p-5 rounded-full">
                 {icon || <Layers size={40} color="#94A3B8" />}
             </View>
 

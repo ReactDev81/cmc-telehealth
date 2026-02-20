@@ -36,6 +36,8 @@ const StartConsulationWithDoctor = () => {
         appointment_id?: string;
     }>();
 
+    const id = appointment_id;
+
     const ROOM_URL = patient_call_link + "&bottomToolbar=off&topToolbar=off";
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);
@@ -208,7 +210,7 @@ const StartConsulationWithDoctor = () => {
                             onLeave={({ removed }) => {
                                 setIsJoined(false);
                                 router.push({
-                                    pathname: `/patient/past-appointment-details/${appointment_id}`,
+                                    pathname: `/patient/past-appointment-details/${id}`,
                                     params: { visible: true },
                                 });
                             }}

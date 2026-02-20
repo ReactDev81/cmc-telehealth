@@ -259,6 +259,13 @@ export default function RootLayout() {
               {/* common profile screens for patient and doctor */}
 
               <Stack.Screen
+                name="common-screens/my-reviews/index"
+                options={{
+                  headerTitle: "My Reviews",
+                }}
+              />
+
+              <Stack.Screen
                 name="common-screens/profile/about-us"
                 options={{
                   headerTitle: "About Us",
