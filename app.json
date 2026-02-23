@@ -17,7 +17,7 @@
       "icon": {
         "dark": "./assets/images/ios-app-icon.png",
         "light": "./assets/images/ios-app-icon.png"
-      },
+      }
     },
     "android": {
       "useNextNotificationsApi": true,
@@ -27,6 +27,7 @@
         "monochromeImage": "./assets/images/android-app-icon.png"
       },
       "edgeToEdgeEnabled": true,
+      "softwareKeyboardLayoutMode": "resize",
       "predictiveBackGestureEnabled": false,
       "package": "com.cmctelehealth.app",
       "googleServicesFile": "./google-services.json",

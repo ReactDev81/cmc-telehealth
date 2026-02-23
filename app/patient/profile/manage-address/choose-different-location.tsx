@@ -1,3 +1,4 @@
+import FormLayout from "@/app/formLayout";
 import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
@@ -8,8 +9,9 @@ import { router, useLocalSearchParams } from "expo-router";
 import { MapPin } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as z from "zod";
 
 const locationSchema = z.object({
@@ -27,7 +29,6 @@ const locationSchema = z.object({
 type LocationFormData = z.infer<typeof locationSchema>;
 
 const ChooseDifferentLocation = () => {
-
   const { latitude, longitude } = useLocalSearchParams();
   const lat = parseFloat(latitude as string);
   const lon = parseFloat(longitude as string);
@@ -37,11 +38,11 @@ const ChooseDifferentLocation = () => {
   const [loading, setLoading] = useState(true);
   const { user, updateUser } = useAuth();
 
-  
   const AreaDetails = user?.address?.area;
   const LandMark = user?.address?.landmark;
+  const insets = useSafeAreaInsets();
 
-  const { mutate, isPending } = useSavePatientAddress(user?.id ?? "");  
+  const { mutate, isPending } = useSavePatientAddress(user?.id ?? "");
 
   const {
     control,
@@ -71,7 +72,7 @@ const ChooseDifferentLocation = () => {
         if (place) {
           const formatted = place.formattedAddress;
           setAddress(formatted);
-          setDistrict(place.district)
+          setDistrict(place.district);
           setValue("address", `${place.name} ${place.district}` || "");
           setValue("pincode", place.postalCode || "");
           setValue("city", place.city || "");
@@ -93,7 +94,6 @@ const ChooseDifferentLocation = () => {
   }, [lat, lon]);
 
   const onSubmit = (formData: LocationFormData) => {
-
     const payload = {
       address: formData.address,
       area: formData.area ?? "",
@@ -108,18 +108,18 @@ const ChooseDifferentLocation = () => {
       onSuccess: (response) => {
         Alert.alert(
           "Success",
-          response?.message || "Address updated successfully!"
+          response?.message || "Address updated successfully!",
         );
 
         updateUser({
-            address: {
-                address: response.data.address ?? "",
-                area: response.data.area ?? "",
-                city: response.data.city,
-                landmark: response.data.landmark,
-                pincode: response.data.pincode,
-                state: response.data.state,
-            },
+          address: {
+            address: response.data.address ?? "",
+            area: response.data.area ?? "",
+            city: response.data.city,
+            landmark: response.data.landmark,
+            pincode: response.data.pincode,
+            state: response.data.state,
+          },
         });
 
         router.replace("/patient/profile/manage-address");
@@ -127,17 +127,14 @@ const ChooseDifferentLocation = () => {
       onError: (error: any) => {
         Alert.alert(
           "Error",
-          error?.response?.data?.message || "Failed to update address"
+          error?.response?.data?.message || "Failed to update address",
         );
       },
     });
-  };  
+  };
 
   return (
-    <ScrollView
-      className="bg-white p-5 mb-14"
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
+    <FormLayout contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}>
       {loading ? (
         <ActivityIndicator
           size="small"
@@ -232,11 +229,15 @@ const ChooseDifferentLocation = () => {
           containerClassName="mt-5"
         />
 
-        <Button className="mt-7" disabled={isPending} onPress={handleSubmit(onSubmit)}>
+        <Button
+          className="mt-7"
+          disabled={isPending}
+          onPress={handleSubmit(onSubmit)}
+        >
           Save & Next
         </Button>
       </View>
-    </ScrollView>
+    </FormLayout>
   );
 };
 

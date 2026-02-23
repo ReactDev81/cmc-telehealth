@@ -1,3 +1,4 @@
+import FormLayout from "@/app/formLayout";
 import AddNewCertificates from "@/components/doctor/profile/add-new-certificates";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
@@ -41,18 +42,20 @@ const Certificates = () => {
         transparent
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className="flex-1 bg-black/40 justify-center items-center">
-          <View className="w-11/12 bg-white rounded-2xl">
-            <AddNewCertificates
-              existingCertificates={certificates}
-              onClose={() => setModalVisible(false)}
-              onSuccess={() => {
-                setModalVisible(false);
-                refetch();
-              }}
-            />
+        <FormLayout transparent>
+          <View className="flex-1 bg-black/40 justify-center items-center">
+            <View className="w-11/12 bg-white rounded-2xl">
+              <AddNewCertificates
+                existingCertificates={certificates}
+                onClose={() => setModalVisible(false)}
+                onSuccess={() => {
+                  setModalVisible(false);
+                  refetch();
+                }}
+              />
+            </View>
           </View>
-        </View>
+        </FormLayout>
       </Modal>
 
       {/* Page Content */}

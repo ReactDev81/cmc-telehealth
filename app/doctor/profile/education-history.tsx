@@ -1,3 +1,4 @@
+import FormLayout from "@/app/formLayout";
 import AddNewEducationHistory from "@/components/doctor/profile/add-education-history";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
@@ -28,14 +29,16 @@ const EducationHistory = () => {
         transparent
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className="flex-1 bg-black/40 justify-center items-center">
-          <View className="w-11/12 bg-white rounded-2xl">
-            <AddNewEducationHistory
-              existingEducation={educationHistory}
-              onClose={() => setModalVisible(false)}
-            />
+        <FormLayout transparent>
+          <View className="flex-1 bg-black/40 justify-center items-center">
+            <View className="w-11/12 bg-white rounded-2xl">
+              <AddNewEducationHistory
+                existingEducation={educationHistory}
+                onClose={() => setModalVisible(false)}
+              />
+            </View>
           </View>
-        </View>
+        </FormLayout>
       </Modal>
 
       {/* Page Content */}

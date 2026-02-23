@@ -4,10 +4,9 @@ import { useResendOtp } from "@/mutations/useResendOtp";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Image, Pressable, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import FormLayout from "../formLayout";
 
 const RegisterVerifyOtp = () => {
-
   const { mutate: verifyOtp, isPending } = useRegisterVerifyOtp();
   const { mutate: resendOtp, isPending: resendIsPending } = useResendOtp();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -78,18 +77,15 @@ const RegisterVerifyOtp = () => {
               token: data.token,
             },
           });
-
         },
         onError: (error) => {
           console.log("OTP error:", error.response?.data);
         },
-      }
+      },
     );
-
   };
 
   const handleResendOTP = async () => {
-
     const emailStr = typeof email === "string" ? email : "";
 
     if (!emailStr) {
@@ -109,16 +105,14 @@ const RegisterVerifyOtp = () => {
         onError: (error) => {
           console.log(error.response?.data);
         },
-      }
+      },
     );
-
 
     setResendTimer(60);
   };
 
   return (
-    <SafeAreaView className="flex-1 justify-center bg-white px-6">
-
+    <FormLayout>
       {/* Logo and title */}
       <View className="mb-6">
         <Image
@@ -172,7 +166,7 @@ const RegisterVerifyOtp = () => {
 
       {/* Verify Button */}
       <Button onPress={handleVerify} className="mt-8" disabled={isPending}>
-          {isPending ? 'loading...' : 'Continue'}
+        {isPending ? "loading..." : "Continue"}
       </Button>
 
       {/* Resend Timer + Back to Login */}
@@ -194,7 +188,7 @@ const RegisterVerifyOtp = () => {
               resendTimer > 0 ? "text-gray-400" : "text-primary"
             }`}
           >
-            {resendIsPending ? 'loading' : 'Resend OTP'}
+            {resendIsPending ? "loading" : "Resend OTP"}
           </Text>
         </Pressable>
 
@@ -202,7 +196,7 @@ const RegisterVerifyOtp = () => {
           <Text className="text-primary font-medium">Back to login</Text>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </FormLayout>
   );
 };
 

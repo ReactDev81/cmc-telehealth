@@ -13,15 +13,7 @@ import { useLocalSearchParams } from "expo-router";
 import { X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { z } from "zod";
 
 const PrescriptionSchema = z.object({
@@ -240,10 +232,7 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="w-full"
-    >
+    <View className="w-full">
       <View className="p-5 bg-white rounded-xl">
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-black text-lg font-semibold">
@@ -405,7 +394,7 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
       </View>
 
       <SuccessModal visible={showSuccess} onClose={handleSuccessClose} />
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 

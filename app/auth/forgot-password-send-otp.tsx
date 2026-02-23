@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { useForm } from "react-hook-form";
 import { Image, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
+import FormLayout from "../formLayout";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -56,7 +56,7 @@ const ForgotPasswordSendOtp = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 justify-center bg-white px-6">
+    <FormLayout>
       <View className="mb-6">
         <Image
           source={require("../../assets/images/cmc-telehealth-logo.png")}
@@ -97,7 +97,7 @@ const ForgotPasswordSendOtp = () => {
           <Text className="text-primary font-medium">Back to login</Text>
         </Link>
       </View>
-    </SafeAreaView>
+    </FormLayout>
   );
 };
 

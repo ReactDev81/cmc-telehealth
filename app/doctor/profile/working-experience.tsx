@@ -1,3 +1,4 @@
+import FormLayout from "@/app/formLayout";
 import AddNewWorkingExperience from "@/components/doctor/profile/add-working-experience";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
@@ -29,14 +30,16 @@ const WorkingExperience = () => {
         transparent
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className="flex-1 bg-black/40 justify-center items-center">
-          <View className="w-11/12 bg-white rounded-2xl">
-            <AddNewWorkingExperience
-              existingExperiences={workingExperience}
-              onClose={() => setModalVisible(false)}
-            />
+        <FormLayout transparent>
+          <View className="flex-1 bg-black/40 justify-center items-center">
+            <View className="w-11/12 bg-white rounded-2xl">
+              <AddNewWorkingExperience
+                existingExperiences={workingExperience}
+                onClose={() => setModalVisible(false)}
+              />
+            </View>
           </View>
-        </View>
+        </FormLayout>
       </Modal>
 
       {/* Page Content */}

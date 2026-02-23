@@ -3,10 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Image, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 import PasswordInput from "../../components/form/password";
 import Button from "../../components/ui/Button";
+import FormLayout from "../formLayout";
 
 const passwordSchema = z
   .object({
@@ -71,7 +71,7 @@ const ForgotPasswordChangePassword = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 justify-center bg-white px-6">
+    <FormLayout>
       {/* Logo */}
       <View className="mb-6">
         <Image
@@ -132,7 +132,7 @@ const ForgotPasswordChangePassword = () => {
       <View className="mt-6">
         <Button onPress={handleSubmit(onSubmit)}>Change Password</Button>
       </View>
-    </SafeAreaView>
+    </FormLayout>
   );
 };
 

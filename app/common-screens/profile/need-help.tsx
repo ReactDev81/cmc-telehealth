@@ -1,3 +1,4 @@
+import FormLayout from "@/app/formLayout";
 import Input from "@/components/form/Input";
 import TextArea from "@/components/form/TextArea";
 import SelectField from "@/components/form/selectField";
@@ -9,6 +10,7 @@ import { CheckCircle, XCircle } from "lucide-react-native";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Modal, Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as z from "zod";
 
 // Validation schema
@@ -98,10 +100,12 @@ const NeedHelp = () => {
     );
   };
 
+  const insets = useSafeAreaInsets();
+
   const isSuccess = feedback.type === "success";
 
   return (
-    <View className="flex-1 bg-white p-5">
+    <FormLayout contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}>
       {/* Feedback Modal */}
       <Modal
         visible={feedback.visible}
@@ -187,7 +191,7 @@ const NeedHelp = () => {
       <Button onPress={handleSubmit(onSubmit)} disabled={isPending}>
         {isPending ? "Sending..." : "Send Message"}
       </Button>
-    </View>
+    </FormLayout>
   );
 };
 

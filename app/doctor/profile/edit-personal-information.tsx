@@ -1,3 +1,4 @@
+import FormLayout from "@/app/formLayout";
 import Input from "@/components/form/Input";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
@@ -10,206 +11,209 @@ import * as ImagePicker from "expo-image-picker";
 import { Camera } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Alert, Image, TouchableOpacity, View } from "react-native";
 import { z } from "zod";
 
 const personalInfoSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters long"),
-    email: z.string().email("Please enter a valid email"),
-    // specialty: z.string().min(2, "Specialty is required"),
-    bio: z.string().optional(),
+  name: z.string().min(2, "Name must be at least 2 characters long"),
+  email: z.string().email("Please enter a valid email"),
+  // specialty: z.string().min(2, "Specialty is required"),
+  bio: z.string().optional(),
 });
 
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
 const EditPersonalInformation = () => {
-    const { user, updateUser } = useAuth();
-    const doctorID = user?.id || "";
+  const { user, updateUser } = useAuth();
+  const doctorID = user?.id || "";
 
-    const { data: doctorProfile } = useDoctorProfile<PersonalInformation>(doctorID, "personal_information");
-    console.log("Doctor data: ", doctorProfile)
+  const { data: doctorProfile } = useDoctorProfile<PersonalInformation>(
+    doctorID,
+    "personal_information",
+  );
+  console.log("Doctor data: ", doctorProfile);
 
-    const { control, handleSubmit, reset } = useForm<PersonalInfoFormData>({
-        resolver: zodResolver(personalInfoSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            specialty: "",
-            bio: "",
-        }
+  const { control, handleSubmit, reset } = useForm<PersonalInfoFormData>({
+    resolver: zodResolver(personalInfoSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      specialty: "",
+      bio: "",
+    },
+  });
+
+  // 1. Initial prefill from useAuth (instant)
+  useEffect(() => {
+    if (user) {
+      const initialValues = {
+        name:
+          user.name ||
+          `${user.first_name || ""} ${user.last_name || ""}`.trim(),
+        email: user.email || "",
+        specialty: (user as any).department_id || "",
+        bio: (user as any).bio || "",
+      };
+      console.log("Initial prefill from Auth:", initialValues);
+      reset(initialValues);
+      if (user.avatar) {
+        setImage(user.avatar);
+      }
+    }
+  }, [user, reset]);
+
+  // 2. Sync with useDoctorProfile for extended data (Bio, Specialty)
+  useEffect(() => {
+    const profileData =
+      (doctorProfile as any)?.data || (doctorProfile as any)?.user;
+
+    if (profileData) {
+      const mergedValues = {
+        name:
+          profileData.name ||
+          `${profileData.first_name || ""} ${profileData.last_name || ""}`.trim(),
+        email: profileData.email || "",
+        specialty: profileData.department_id || "",
+        bio: profileData.bio || "",
+      };
+
+      console.log("Merging profile data from API:", mergedValues);
+
+      // Only reset if we actually have new/different data to avoid unnecessary form resets
+      reset(mergedValues);
+
+      if (profileData.avatar) {
+        setImage(profileData.avatar);
+      }
+    }
+  }, [doctorProfile, reset]);
+
+  const { mutate: updateProfile, isPending } = useUpdateDoctorProfile(
+    doctorID,
+    "personal_information",
+  );
+
+  const [image, setImage] = useState<string | null>(null);
+
+  const pickImage = async () => {
+    // Ask for permission
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    // Pick image
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
     });
 
-    // 1. Initial prefill from useAuth (instant)
-    useEffect(() => {
-        if (user) {
-            const initialValues = {
-                name: user.name || `${user.first_name || ""} ${user.last_name || ""}`.trim(),
-                email: user.email || "",
-                specialty: (user as any).department_id || "",
-                bio: (user as any).bio || "",
-            };
-            console.log("Initial prefill from Auth:", initialValues);
-            reset(initialValues);
-            if (user.avatar) {
-                setImage(user.avatar);
-            }
-        }
-    }, [user, reset]);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
-    // 2. Sync with useDoctorProfile for extended data (Bio, Specialty)
-    useEffect(() => {
-        const profileData = (doctorProfile as any)?.data || (doctorProfile as any)?.user;
+  const onSubmit = (data: PersonalInfoFormData) => {
+    const [first_name, ...lastNames] = data.name.split(" ");
+    const last_name = lastNames.join(" ");
 
-        if (profileData) {
-            const mergedValues = {
-                name: profileData.name || `${profileData.first_name || ""} ${profileData.last_name || ""}`.trim(),
-                email: profileData.email || "",
-                specialty: profileData.department_id || "",
-                bio: profileData.bio || "",
-            };
+    const payload: any = {
+      first_name,
+      last_name,
+      // email: data.email,
+      department_id: data.specialty,
+      bio: data.bio,
+    };
 
-            console.log("Merging profile data from API:", mergedValues);
+    const isNewImage =
+      image && !image.startsWith("http") && !image.startsWith("/");
 
-            // Only reset if we actually have new/different data to avoid unnecessary form resets
-            reset(mergedValues);
-
-            if (profileData.avatar) {
-                setImage(profileData.avatar);
-            }
-        }
-    }, [doctorProfile, reset]);
-
-    const { mutate: updateProfile, isPending } = useUpdateDoctorProfile(doctorID, "personal_information");
-
-    const [image, setImage] = useState<string | null>(null);
-
-    const pickImage = async () => {
-        // Ask for permission
-        const permissionResult =
-            await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permissionResult.granted) {
-            alert("Permission to access camera roll is required!");
-            return;
-        }
-
-        // Pick image
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
+    const handleSuccess = (response: any) => {
+      const updatedData = response?.data || response?.user;
+      if (updatedData) {
+        console.log("Success! Context updated with:", {
+          first_name: updatedData.first_name,
+          last_name: updatedData.last_name,
+          avatar: updatedData.avatar,
         });
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-        }
+        updateUser({
+          first_name: updatedData.first_name,
+          last_name: updatedData.last_name,
+          avatar: updatedData.avatar,
+        });
+      }
+      Alert.alert("Success", "Profile information saved successfully!");
     };
 
-    const onSubmit = (data: PersonalInfoFormData) => {
-        const [first_name, ...lastNames] = data.name.split(" ");
-        const last_name = lastNames.join(" ");
-
-        const payload: any = {
-            first_name,
-            last_name,
-            // email: data.email,
-            department_id: data.specialty,
-            bio: data.bio,
-        };
-
-        const isNewImage = image && !image.startsWith("http") && !image.startsWith("/");
-
-        const handleSuccess = (response: any) => {
-            const updatedData = response?.data || response?.user;
-            if (updatedData) {
-                console.log("Success! Context updated with:", {
-                    first_name: updatedData.first_name,
-                    last_name: updatedData.last_name,
-                    avatar: updatedData.avatar,
-                });
-                updateUser({
-                    first_name: updatedData.first_name,
-                    last_name: updatedData.last_name,
-                    avatar: updatedData.avatar,
-                });
-            }
-            Alert.alert("Success", "Profile information saved successfully!");
-        };
-
-        const handleError = (error: any) => {
-            Alert.alert("Error", error?.response?.data?.message || "Something went wrong");
-        };
-
-        if (isNewImage) {
-            const fd = new FormData();
-            Object.keys(payload).forEach(key => {
-                if (payload[key]) fd.append(key, payload[key]);
-            });
-
-            const uri = image!;
-            const fileName = uri.split("/").pop() || "avatar.jpg";
-            const match = /\.([0-9a-z]+)(?:\?|$)/i.exec(fileName);
-            const fileType = match ? `image/${match[1]}` : "image/jpeg";
-
-            // @ts-ignore
-            fd.append("avatar", { uri, name: fileName, type: fileType });
-
-            updateProfile(fd, {
-                onSuccess: handleSuccess,
-                onError: handleError
-            });
-        } else {
-            updateProfile(payload, {
-                onSuccess: handleSuccess,
-                onError: handleError
-            });
-        }
+    const handleError = (error: any) => {
+      Alert.alert(
+        "Error",
+        error?.response?.data?.message || "Something went wrong",
+      );
     };
 
-    return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            className="flex-1 bg-white"
+    if (isNewImage) {
+      const fd = new FormData();
+      Object.keys(payload).forEach((key) => {
+        if (payload[key]) fd.append(key, payload[key]);
+      });
+
+      const uri = image!;
+      const fileName = uri.split("/").pop() || "avatar.jpg";
+      const match = /\.([0-9a-z]+)(?:\?|$)/i.exec(fileName);
+      const fileType = match ? `image/${match[1]}` : "image/jpeg";
+
+      // @ts-ignore
+      fd.append("avatar", { uri, name: fileName, type: fileType });
+
+      updateProfile(fd, {
+        onSuccess: handleSuccess,
+        onError: handleError,
+      });
+    } else {
+      updateProfile(payload, {
+        onSuccess: handleSuccess,
+        onError: handleError,
+      });
+    }
+  };
+
+  return (
+    <FormLayout>
+      {/* upload image */}
+      <View className="max-w-32 w-full mx-auto items-center justify-center relative">
+        <Image
+          source={
+            image
+              ? { uri: image }
+              : require("../../../assets/images/doctor.jpg")
+          }
+          className="w-32 h-32 rounded-full"
+          resizeMode="cover"
+        />
+        <TouchableOpacity
+          className="w-8 h-8 rounded-full bg-primary-100 absolute bottom-0 right-0 items-center justify-center"
+          activeOpacity={0.7}
+          onPress={pickImage}
         >
-            <ScrollView className="flex-1 p-5">
-                {/* upload image */}
-                <View className="max-w-32 w-full mx-auto items-center justify-center relative">
-                    <Image
-                        source={
-                            image
-                                ? { uri: image }
-                                : require("../../../assets/images/doctor.jpg")
-                        }
-                        className="w-32 h-32 rounded-full"
-                        resizeMode="cover"
-                    />
-                    <TouchableOpacity
-                        className="w-8 h-8 rounded-full bg-primary-100 absolute bottom-0 right-0 items-center justify-center"
-                        activeOpacity={0.7}
-                        onPress={pickImage}
-                    >
-                        <Camera size={16} color="#013220" />
-                    </TouchableOpacity>
-                </View>
+          <Camera size={16} color="#013220" />
+        </TouchableOpacity>
+      </View>
 
-                {/* form fields */}
-                <View className="max-w-[350px] w-full mx-auto bg-white p-5 rounded-xl shadow-custom mt-10">
-                    <View className="mb-5">
-                        <Input
-                            name="name"
-                            label="Name"
-                            placeholder="Enter Name"
-                            control={control}
-                        />
-                        {/* <Input
+      {/* form fields */}
+      <View className="max-w-[350px] w-full mx-auto bg-white p-5 rounded-xl mt-10">
+        <View className="mb-5">
+          <Input
+            name="name"
+            label="Name"
+            placeholder="Enter Name"
+            control={control}
+          />
+          {/* <Input
                         name="email"
                         label="Email"
                         placeholder="Enter Your Email"
@@ -217,42 +221,38 @@ const EditPersonalInformation = () => {
                         keyboardType="email"
                         control={control}
                     /> */}
-                        <View pointerEvents="none">
-                            <Input
-                                name="email"
-                                control={control}
-                                label="Email"
-                                keyboardType="email"
-                                containerClassName="mt-5 opacity-40"
-                            />
-                        </View>
-                        <Input
-                            name="specialty"
-                            label="Speciality"
-                            autoCapitalize="none"
-                            placeholder="clinical-haematology"
-                            containerClassName="mt-5"
-                            control={control}
-                        />
-                        <TextArea
-                            name="bio"
-                            label="Bio"
-                            placeholder="Edit Your Bio"
-                            containerClassName="mt-5"
-                            control={control}
-                        />
-                    </View>
+          <View pointerEvents="none">
+            <Input
+              name="email"
+              control={control}
+              label="Email"
+              keyboardType="email"
+              containerClassName="mt-5 opacity-40"
+            />
+          </View>
+          <Input
+            name="specialty"
+            label="Speciality"
+            autoCapitalize="none"
+            placeholder="clinical-haematology"
+            containerClassName="mt-5"
+            control={control}
+          />
+          <TextArea
+            name="bio"
+            label="Bio"
+            placeholder="Edit Your Bio"
+            containerClassName="mt-5"
+            control={control}
+          />
+        </View>
 
-                    <Button
-                        onPress={handleSubmit(onSubmit)}
-                        disabled={isPending}
-                    >
-                        {isPending ? "Saving..." : "Save"}
-                    </Button>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
-    );
+        <Button onPress={handleSubmit(onSubmit)} disabled={isPending}>
+          {isPending ? "Saving..." : "Save"}
+        </Button>
+      </View>
+    </FormLayout>
+  );
 };
 
 export default EditPersonalInformation;

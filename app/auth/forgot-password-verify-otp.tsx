@@ -3,7 +3,7 @@ import { useVerifyForgotPasswordOtp } from "@/queries/useVerifyForgotPasswordOtp
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Image, Pressable, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import FormLayout from "../formLayout";
 
 const ForgotPasswordVerifyOtp = () => {
   // const { data, fetchData } = useApi<{
@@ -96,7 +96,7 @@ const ForgotPasswordVerifyOtp = () => {
         onError: () => {
           setError(
             (apiError as any)?.response?.data?.message ||
-            "Invalid OTP. Please try again.",
+              "Invalid OTP. Please try again.",
           );
         },
       },
@@ -109,7 +109,8 @@ const ForgotPasswordVerifyOtp = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 justify-center bg-white px-6">
+    // <SafeAreaView className="flex-1 justify-center bg-white px-6">
+    <FormLayout>
       {/* Logo and title */}
       <View className="mb-6">
         <Image
@@ -140,8 +141,9 @@ const ForgotPasswordVerifyOtp = () => {
               ref={(ref) => {
                 if (ref) inputRefs.current[index] = ref;
               }}
-              className={`w-12 h-12 border rounded-lg text-center text-lg leading-5 font-semibold ${error ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`w-12 h-12 border rounded-lg text-center text-lg leading-5 font-semibold ${
+                error ? "border-red-500" : "border-gray-300"
+              }`}
               value={digit}
               onChangeText={(value) => handleOtpChange(value, index)}
               onKeyPress={({ nativeEvent }) =>
@@ -182,8 +184,9 @@ const ForgotPasswordVerifyOtp = () => {
           disabled={resendTimer > 0}
         >
           <Text
-            className={`font-medium ${resendTimer > 0 ? "text-gray-400" : "text-primary"
-              }`}
+            className={`font-medium ${
+              resendTimer > 0 ? "text-gray-400" : "text-primary"
+            }`}
           >
             Resend OTP
           </Text>
@@ -193,7 +196,7 @@ const ForgotPasswordVerifyOtp = () => {
           <Text className="text-primary font-medium">Back to login</Text>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </FormLayout>
   );
 };
 

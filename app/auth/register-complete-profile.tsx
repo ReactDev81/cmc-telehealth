@@ -8,8 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { router, useLocalSearchParams } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
+import FormLayout from "../formLayout";
 
 const schema = z.object({
   first_name: z.string().min(1),
@@ -20,14 +20,13 @@ const schema = z.object({
 });
 
 export default function RegisterCompleteProfile() {
-
   const { token } = useLocalSearchParams<{
     token?: string;
   }>();
 
   const { login } = useAuth();
 
-  console.log('token', token);
+  console.log("token", token);
 
   const { mutate: completeProfile, isPending } = useCompleteProfile();
 
@@ -36,7 +35,6 @@ export default function RegisterCompleteProfile() {
   });
 
   const onSubmit = (formData: any) => {
-
     const tokenStr = typeof token === "string" ? token : "";
 
     completeProfile(
@@ -52,12 +50,11 @@ export default function RegisterCompleteProfile() {
       },
       {
         onSuccess: async (data) => {
-
-          console.log("Profile completed:", data);  
+          console.log("Profile completed:", data);
 
           const role: UserRole = (data.user.role as UserRole) ?? "patient";
 
-          const userData: User = {  
+          const userData: User = {
             id: data.user.id,
             first_name: data.user.first_name,
             last_name: data.user.last_name,
@@ -85,13 +82,12 @@ export default function RegisterCompleteProfile() {
         onError: (error) => {
           console.log(error.response?.data);
         },
-      }
+      },
     );
-
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-6">
+    <FormLayout>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="mt-10 mb-4">
           <Text className="text-black text-2xl font-semibold text-center">
@@ -157,12 +153,14 @@ export default function RegisterCompleteProfile() {
                 <Pressable
                   key={g}
                   onPress={() => onChange(g)}
-                  className={`flex-1 py-4 px-4 rounded-xl border ${value === g ? "bg-primary border-primary" : "border-primary"
-                    }`}
+                  className={`flex-1 py-4 px-4 rounded-xl border ${
+                    value === g ? "bg-primary border-primary" : "border-primary"
+                  }`}
                 >
                   <Text
-                    className={`text-center ${value === g ? "text-white" : "text-primary"
-                      }`}
+                    className={`text-center ${
+                      value === g ? "text-white" : "text-primary"
+                    }`}
                   >
                     {g}
                   </Text>
@@ -172,8 +170,12 @@ export default function RegisterCompleteProfile() {
           )}
         />
 
-        <Button onPress={handleSubmit(onSubmit)} disabled={isPending} className="mt-8">
-           {isPending ? 'loading' : 'Continue'}
+        <Button
+          onPress={handleSubmit(onSubmit)}
+          disabled={isPending}
+          className="mt-8"
+        >
+          {isPending ? "loading" : "Continue"}
         </Button>
 
         <Text className="text-base text-black-400 text-center mt-5 px-4">
@@ -181,6 +183,6 @@ export default function RegisterCompleteProfile() {
           via text.
         </Text>
       </ScrollView>
-    </SafeAreaView>
+    </FormLayout>
   );
 }
