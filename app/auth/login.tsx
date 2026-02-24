@@ -23,6 +23,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
+
   const { login } = useAuth();
   const { mutate: signIn, isPending } = useLogin();
 
@@ -38,27 +39,30 @@ export default function LoginScreen() {
   const handleSignIn = (formData: LoginFormValues) => {
     signIn(formData, {
       onSuccess: async (data) => {
-        const role: UserRole = data.user.role as UserRole;
+
+        const user = data?.data;
+        const role: UserRole = user.role as UserRole;
 
         const userData: User = {
-          id: data.user.id,
-          first_name: data.user.first_name,
-          last_name: data.user.last_name,
-          email: data.user.email,
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          email: user.email,
           role,
-          gender: data.user.gender,
-          date_of_birth: data.user.date_of_birth,
-          phone: data.user.phone,
-          patient_id: data.user.patient_id,
-          doctor_id: data.user.doctor_id,
-          avatar: data.user.avatar,
+          gender: user.gender,
+          date_of_birth: user.date_of_birth,
+          phone: user.phone,
+          patient_id: user.patient_id,
+          doctor_id: user.doctor_id,
+          status: user.status ?? "",
+          avatar: user.avatar,
           address: {
-            address: data.user.address.address,
-            area: data.user.address.area,
-            city: data.user.address.city,
-            landmark: data.user.address.landmark,
-            pincode: data.user.address.pincode,
-            state: data.user.address.state,
+            address: user.address.address,
+            area: user.address.area,
+            city: user.address.city,
+            landmark: user.address.landmark,
+            pincode: user.address.pincode,
+            state: user.address.state,
           },
         };
 
@@ -68,7 +72,7 @@ export default function LoginScreen() {
         await login(userData, data.token);
 
         // ✅ Safe navigation AFTER token is in memory
-        if (data.user.role === "patient") {
+        if (user.role === "patient") {
           router.replace("/(patient)");
         } else {
           router.replace("/(doctor)");

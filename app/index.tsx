@@ -6,6 +6,8 @@ export default function Index() {
 
     const { user, initializing } = useAuth();
 
+    console.log("user", user);
+
     if (initializing) {
         return (
             <View className="flex-1 justify-center items-center bg-white">

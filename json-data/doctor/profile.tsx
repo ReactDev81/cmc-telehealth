@@ -8,6 +8,7 @@ import {
   Headphones,
   HelpCircle,
   Info,
+  KeyRound,
   MapPin,
   ShieldCheck,
   Stethoscope,
@@ -122,6 +123,13 @@ export const DoctorMenuSections: MenuSection[] = [
         title: "Privacy Policy",
         description: "Review how your data is collected",
         route: "/common-screens/profile/privacy-policy",
+      },
+      {
+        id: 'change-password',
+        icon: <KeyRound size={20} color="#374151" />,
+        title: 'Change Password',
+        description: 'You can change your password here',
+        route: '/auth/reset-password'
       },
     ],
   },

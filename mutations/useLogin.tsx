@@ -18,7 +18,7 @@ interface Address {
 
 interface LoginResponse {
   token: string;
-  user: {
+  data: {
     id: string;
     first_name: string;
     last_name: string;
@@ -28,6 +28,7 @@ interface LoginResponse {
     gender: string;
     date_of_birth: string;
     phone: string;
+    status: string;
     patient_id?: string;
     doctor_id?: string;
     address: Address;

@@ -1,14 +1,22 @@
 import { useAuth } from "@/context/UserContext";
 import { router } from "expo-router";
+import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import MenuItem from "../../components/common/profile/menu-item";
 import ProfileEdit from "../../components/common/profile/profile-edit";
 import Button from "../../components/ui/Button";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 import { menuSections } from "../../json-data/patient/profile";
 
 const Profile = () => {
 
     const { logout, user } = useAuth();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    
+    const handleLogout = async () => {
+        await logout();
+        router.replace("/auth/login");
+    };
 
     return (
         <ScrollView
@@ -50,22 +58,22 @@ const Profile = () => {
                 </Text>
                 <Button
                     className="mt-7"
-                    onPress={async () => {
-                        await logout();
-                        router.replace("/auth/login");
-                    }}
+                    onPress={() => setShowLogoutModal(true)}
                 >
                     Logout
                 </Button>
-                <Button
-                    className="mt-7"
-                    onPress={async () => {
-                        router.replace("/auth/reset-password");
-                    }}
-                >
-                    Change Password
-                </Button>
             </View>
+
+            <ConfirmationModal
+                visible={showLogoutModal}
+                title="Logout"
+                message="Are you sure you want to log out of your account?"
+                confirmText="Log Out"
+                onConfirm={handleLogout}
+                onCancel={() => setShowLogoutModal(false)}
+                variant="danger"
+            />
+
         </ScrollView>
     );
 };
