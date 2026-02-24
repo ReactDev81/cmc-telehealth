@@ -1,13 +1,11 @@
-import Checkbox from "@/components/form/checkbox";
 import Input from "@/components/form/Input";
-import PasswordInput from "@/components/form/password";
 import Button from "@/components/ui/Button";
 import { useRegister } from "@/mutations/useRegister";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { X } from "lucide-react-native";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Image, Modal, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
@@ -17,10 +15,10 @@ import FormLayout from "../formLayout";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
-  password: z.string().min(8, "Minimum 8 characters"),
-  agreedToTerms: z.boolean().refine((val) => val === true, {
-    message: "You must accept terms",
-  }),
+  // password: z.string().min(8, "Minimum 8 characters"),
+  // agreedToTerms: z.boolean().refine((val) => val === true, {
+  //   message: "You must accept terms",
+  // }),
 });
 
 export default function RegisterSendOtp() {
@@ -33,37 +31,37 @@ export default function RegisterSendOtp() {
     resolver: zodResolver(schema),
     defaultValues: {
       email: "",
-      password: "",
-      agreedToTerms: false,
+      // password: "",
+      // agreedToTerms: false,
     },
   });
 
   // --- Password Strength ---
-  const renderPasswordStrength = (password: string) => {
-    const strength = password.length;
-    const bars = Array.from({ length: 4 }, (_, i) => (
-      <View
-        key={i}
-        className={`h-1 flex-1 mx-0.5 rounded ${
-          i < strength / 2 ? "bg-primary" : "bg-gray-200"
-        }`}
-      />
-    ));
+  // const renderPasswordStrength = (password: string) => {
+  //   const strength = password.length;
+  //   const bars = Array.from({ length: 4 }, (_, i) => (
+  //     <View
+  //       key={i}
+  //       className={`h-1 flex-1 mx-0.5 rounded ${
+  //         i < strength / 2 ? "bg-primary" : "bg-gray-200"
+  //       }`}
+  //     />
+  //   ));
 
-    return (
-      <View className="mt-2">
-        <Text className="text-xs text-gray-600 mb-1">Password strength:</Text>
-        <View className="flex-row">{bars}</View>
-      </View>
-    );
-  };
+  //   return (
+  //     <View className="mt-2">
+  //       <Text className="text-xs text-gray-600 mb-1">Password strength:</Text>
+  //       <View className="flex-row">{bars}</View>
+  //     </View>
+  //   );
+  // };
 
   const onSubmit = async (formData: any) => {
     register(
       {
         email: formData.email,
-        password: formData.password,
-        agreedToTerms: formData.agreedToTerms,
+        // password: formData.password,
+        // agreedToTerms: formData.agreedToTerms,
       },
       {
         onSuccess: (data) => {
@@ -116,7 +114,7 @@ export default function RegisterSendOtp() {
         />
 
         {/* Password */}
-        <Controller
+        {/* <Controller
           control={control}
           name="password"
           render={() => (
@@ -129,10 +127,10 @@ export default function RegisterSendOtp() {
               {watch("password") && renderPasswordStrength(watch("password"))}
             </View>
           )}
-        />
+        /> */}
 
         {/* Terms */}
-        <View className="mt-3">
+        {/* <View className="mt-3">
           <Checkbox
             name="agreedToTerms"
             control={control}
@@ -157,7 +155,7 @@ export default function RegisterSendOtp() {
               </View>
             }
           />
-        </View>
+        </View> */}
 
         {/* Continue */}
         <Button

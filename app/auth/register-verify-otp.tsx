@@ -74,7 +74,7 @@ const RegisterVerifyOtp = () => {
           router.push({
             pathname: "/auth/register-complete-profile",
             params: {
-              token: data.token,
+              email: emailStr,
             },
           });
         },
@@ -100,7 +100,7 @@ const RegisterVerifyOtp = () => {
       },
       {
         onSuccess: (data) => {
-          console.log(data.message); // OTP resent
+          console.log(data); // OTP resent
         },
         onError: (error) => {
           console.log(error.response?.data);
@@ -168,6 +168,39 @@ const RegisterVerifyOtp = () => {
       <Button onPress={handleVerify} className="mt-8" disabled={isPending}>
         {isPending ? "loading..." : "Continue"}
       </Button>
+
+      {/* Resend Timer + Back to Login */}
+      <View className="mt-6 items-center">
+        <Text className="text-gray-500 text-sm">
+          Resend OTP in{" "}
+          <Text className="text-primary font-medium">
+            00:{resendTimer.toString().padStart(2, "0")}
+          </Text>
+        </Text>
+
+        <Pressable
+          onPress={handleResendOTP}
+          className="mt-2"
+          disabled={resendTimer > 0}
+        >
+          <Text
+            className={`font-medium ${
+              resendTimer > 0 ? "text-gray-400" : "text-primary"
+            }`}
+          >
+            {resendIsPending ? "loading" : "Resend OTP"}
+          </Text>
+        </Pressable>
+
+        <Pressable onPress={() => router.push("/auth/login")} className="mt-3">
+          <Text className="text-primary font-medium">Back to login</Text>
+        </Pressable>
+      </View>
+    </FormLayout>
+  );
+};
+
+export default RegisterVerifyOtp;
 
       {/* Resend Timer + Back to Login */}
       <View className="mt-6 items-center">
