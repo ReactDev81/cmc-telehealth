@@ -7,7 +7,7 @@ import { useAuth } from "@/context/UserContext";
 import { useCompleteProfile } from "@/mutations/useCompleteProfile";
 import { User } from "@/types/common/user-context";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
@@ -61,6 +61,9 @@ export default function RegisterCompleteProfile() {
       },
       {
         onSuccess: async (data) => {
+
+          console.log("data", data);
+
           const user = data.data;
 
           // API returns a single "name" field — split it
@@ -92,8 +95,7 @@ export default function RegisterCompleteProfile() {
           };
 
           await login(userData, data.token);
-          console.log("data", data);
-          //   router.replace("/(patient)");
+          router.replace("/(patient)");
         },
         onError: (error) => {
           console.log(error.response?.data);
