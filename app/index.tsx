@@ -31,7 +31,14 @@ export default function Index() {
     // }
 
     if (user && user?.role === "patient" && user?.status === "verified") {
-        return <Redirect href="/auth/register-complete-profile" />;
+        return(
+            <Redirect
+                href={{
+                    pathname: "/auth/register-complete-profile",
+                    params: { email: user.email },
+                }}
+            />
+        )
     }
 
     if (user && user?.role === "patient" && user?.status === "registered") {
@@ -39,14 +46,7 @@ export default function Index() {
     }
 
     if (user && user?.role === "doctor") {
-        return (
-            <Redirect
-                href={{
-                    pathname: "/(doctor)",
-                    params: { email: user.email },
-                }}
-            />
-        );
+        return <Redirect href="/(doctor)" />
     }
 
     return <Redirect href="/splash" />;
