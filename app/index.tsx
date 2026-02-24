@@ -22,12 +22,31 @@ export default function Index() {
     }
 
     // Logged in → go to role-based home
-    if (user.role === "patient") {
+    // if (user.role === "patient") {
+    //     return <Redirect href="/(patient)" />;
+    // }
+
+    // if (user.role === "doctor") {
+    //     return <Redirect href="/(doctor)" />; 
+    // }
+
+    if (user && user?.role === "patient" && user?.status === "verified") {
+        return <Redirect href="/auth/register-complete-profile" />;
+    }
+
+    if (user && user?.role === "patient" && user?.status === "registered") {
         return <Redirect href="/(patient)" />;
     }
 
-    if (user.role === "doctor") {
-        return <Redirect href="/(doctor)" />; 
+    if (user && user?.role === "doctor") {
+        return (
+            <Redirect
+                href={{
+                    pathname: "/(doctor)",
+                    params: { email: user.email },
+                }}
+            />
+        );
     }
 
     return <Redirect href="/splash" />;

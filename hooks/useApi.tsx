@@ -117,6 +117,7 @@ const useAxios = <T = unknown>(
 
         return response;
       } catch (err) {
+        
         if (axios.isCancel(err)) {
           console.log('Request cancelled');
           return;

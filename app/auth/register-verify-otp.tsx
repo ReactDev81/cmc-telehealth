@@ -310,14 +310,12 @@ const RegisterVerifyOtp = () => {
       },
       {
         onSuccess: async (data) => {
-          console.log(
-            "✅ OTP verify raw response:",
-            JSON.stringify(data, null, 2),
-          );
+
+          console.log("data", data);
+
           const user = data.data;
 
           // API returns a single "name" field — split it
-
           const userData: User = {
             id: user.id ?? "",
             first_name: user.first_name ?? "",
@@ -342,9 +340,6 @@ const RegisterVerifyOtp = () => {
           };
 
           await login(userData, data.token ?? "");
-          console.log("data", data);
-          //   router.replace("/(patient)");
-          //   },
 
           router.push({
             pathname: "/auth/register-complete-profile",
