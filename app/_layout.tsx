@@ -1,12 +1,12 @@
 import { UserProvider } from "@/context/UserContext";
-import { registerForPushNotificationsAsync } from "@/helper/notifications";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
-import { Href, Stack, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as TaskManager from "expo-task-manager";
 import { ChevronLeft } from "lucide-react-native";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import "react-native-reanimated";
@@ -19,18 +19,40 @@ export const unstable_settings = {
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
     shouldShowBanner: true,
     shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
+const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
+
+TaskManager.defineTask(
+  BACKGROUND_NOTIFICATION_TASK,
+  ({ data, error, executionInfo }) => {
+    console.log(
+      "✅ Received a notification in the background!",
+      JSON.stringify(
+        {
+          data,
+          error,
+          executionInfo,
+        },
+        null,
+        2,
+      ),
+    );
+    // Do something with the notification data
+    return Promise.resolve();
+  },
+);
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
+
 export default function RootLayout() {
+  
   const router = useRouter();
-  const notificationListener = useRef<any>(null);
-  const responseListener = useRef<any>(null);
 
   const [queryClient] = useState(
     () =>
@@ -45,48 +67,10 @@ export default function RootLayout() {
       }),
   );
 
-  useEffect(() => {
-    // 🔔 Register device & get token
-    registerForPushNotificationsAsync().then((token) => {
-      if (token) {
-        console.log("Push Token:", token);
-
-        // ✅ send to backend
-        // api.post("/save-device-token", { token });
-      }
-    });
-
-    // 🔔 Notification received while app open
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        console.log("Notification Received:", notification);
-      });
-
-    // 🔔 User tapped notification
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        const data = response.notification.request.content.data;
-
-        console.log("Notification tapped:", data);
-
-        // ✅ navigate dynamically (screen from notification payload is a string path)
-        if (data?.screen && typeof data.screen === "string") {
-          router.push(data.screen as Href);
-        } else {
-          router.push("/common-screens/notifications");
-        }
-      });
-
-    return () => {
-      notificationListener.current?.remove();
-      responseListener.current?.remove();
-    };
-  }, []);
-
   return (
+    <QueryClientProvider client={queryClient}>
     <SafeAreaProvider>
       <ThemeProvider value={DefaultTheme}>
-        <QueryClientProvider client={queryClient}>
           <UserProvider>
             <KeyboardProvider>
               <StatusBar style="dark" />
@@ -451,8 +435,8 @@ export default function RootLayout() {
               </Stack>
             </KeyboardProvider>
           </UserProvider>
-        </QueryClientProvider>
       </ThemeProvider>
     </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

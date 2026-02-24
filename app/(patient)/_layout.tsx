@@ -1,8 +1,8 @@
 import { router, Tabs } from 'expo-router';
-import {  View, Platform, TouchableOpacity } from "react-native";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from "expo-status-bar";
-import { House, Stethoscope, UserRound, CalendarDays, ChevronLeft, Pill } from 'lucide-react-native';
+import { CalendarDays, ChevronLeft, House, Pill, Stethoscope, UserRound } from 'lucide-react-native';
+import { Platform, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
 

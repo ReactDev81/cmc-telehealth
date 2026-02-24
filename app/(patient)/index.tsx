@@ -23,7 +23,6 @@ const Home = () => {
   const { token } = useAuth();
 
   const { data, isLoading, isError, error, refetch } = usePatientHome(!!token);
-
   const homeData = data?.data;
   const specialities = homeData?.speciality_symptoms || [];
   const availableDoctors = homeData?.available_doctors || [];
