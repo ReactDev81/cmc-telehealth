@@ -1,3 +1,4 @@
+import ApiError from "@/components/ui/ApiError";
 import { useResetForgotPassword } from "@/queries/useResetForgotPassword";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -130,7 +131,18 @@ const ForgotPasswordChangePassword = () => {
 
       {/* Submit Button */}
       <View className="mt-6">
-        <Button onPress={handleSubmit(onSubmit)}>Change Password</Button>
+        <ApiError
+          message={
+            isError
+              ? ((error as any)?.response?.data?.message ??
+                (error as any)?.message ??
+                "Failed to change password. Please try again.")
+              : null
+          }
+        />
+        <Button onPress={handleSubmit(onSubmit)} className="mt-4">
+          Change Password
+        </Button>
       </View>
     </FormLayout>
   );

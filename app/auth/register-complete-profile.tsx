@@ -1,13 +1,14 @@
 import DateField from "@/components/form/date";
 import Input from "@/components/form/Input";
 import PasswordInput from "@/components/form/password";
+import ApiError from "@/components/ui/ApiError";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useCompleteProfile } from "@/mutations/useCompleteProfile";
 import { User } from "@/types/common/user-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 import { z } from "zod";
@@ -31,6 +32,7 @@ export default function RegisterCompleteProfile() {
   const { login } = useAuth();
 
   const { mutate: completeProfile, isPending } = useCompleteProfile();
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const { control, handleSubmit, reset } = useForm({
     resolver: zodResolver(schema),
@@ -44,6 +46,7 @@ export default function RegisterCompleteProfile() {
   }, [email]);
 
   const onSubmit = (formData: any) => {
+    setApiError(null);
     completeProfile(
       {
         payload: {
@@ -94,6 +97,11 @@ export default function RegisterCompleteProfile() {
         },
         onError: (error) => {
           console.log(error.response?.data);
+          const message =
+            error.response?.data?.message ??
+            error.message ??
+            "Something went wrong. Please try again.";
+          setApiError(message);
         },
       },
     );
@@ -202,10 +210,12 @@ export default function RegisterCompleteProfile() {
         containerClassName="mt-5"
       />
 
+      <ApiError message={apiError} />
+
       <Button
         onPress={handleSubmit(onSubmit)}
         disabled={isPending}
-        className="mt-8"
+        className="mt-4"
       >
         {isPending ? "loading" : "Continue"}
       </Button>

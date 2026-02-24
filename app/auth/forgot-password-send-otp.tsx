@@ -1,4 +1,5 @@
 import Input from "@/components/form/Input";
+import ApiError from "@/components/ui/ApiError";
 import Button from "@/components/ui/Button";
 import { useSendForgotPasswordOtp } from "@/queries/useSendForgotPasswordOtp";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -88,7 +89,16 @@ const ForgotPasswordSendOtp = () => {
       />
 
       {/* Continue */}
-      <Button onPress={handleSubmit(onSubmit)} className="mt-8">
+      <ApiError
+        message={
+          isError
+            ? ((error as any)?.response?.data?.message ??
+              (error as any)?.message ??
+              "Something went wrong. Please try again.")
+            : null
+        }
+      />
+      <Button onPress={handleSubmit(onSubmit)} className="mt-4">
         Continue
       </Button>
 

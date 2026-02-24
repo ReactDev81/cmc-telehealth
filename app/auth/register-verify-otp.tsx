@@ -236,6 +236,7 @@
 
 // export default RegisterVerifyOtp;
 
+import ApiError from "@/components/ui/ApiError";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useRegisterVerifyOtp } from "@/mutations/useRegisterVerifyOtp";
@@ -252,6 +253,7 @@ const RegisterVerifyOtp = () => {
   const { mutate: resendOtp, isPending: resendIsPending } = useResendOtp();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
+  const [apiError, setApiError] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(54);
   const inputRefs = useRef<TextInput[]>([]);
 
@@ -294,6 +296,7 @@ const RegisterVerifyOtp = () => {
     }
 
     setError("");
+    setApiError(null);
     console.log("OTP entered:", otpString);
 
     const emailStr = typeof email === "string" ? email : "";
@@ -310,7 +313,6 @@ const RegisterVerifyOtp = () => {
       },
       {
         onSuccess: async (data) => {
-
           console.log("data", data);
 
           const user = data.data;
@@ -340,6 +342,9 @@ const RegisterVerifyOtp = () => {
           };
 
           await login(userData, data.token ?? "");
+          console.log("USER DATA", userData);
+          //   router.replace("/(patient)");
+          //   },
 
           router.push({
             pathname: "/auth/register-complete-profile",
@@ -350,6 +355,11 @@ const RegisterVerifyOtp = () => {
         },
         onError: (error) => {
           console.log("OTP error:", error.response?.data);
+          const message =
+            error.response?.data?.message ??
+            error.message ??
+            "Invalid OTP. Please try again.";
+          setApiError(message);
         },
       },
     );
@@ -435,7 +445,8 @@ const RegisterVerifyOtp = () => {
       </View>
 
       {/* Verify Button */}
-      <Button onPress={handleVerify} className="mt-8" disabled={isPending}>
+      <ApiError message={apiError} />
+      <Button onPress={handleVerify} className="mt-4" disabled={isPending}>
         {isPending ? "loading..." : "Continue"}
       </Button>
 

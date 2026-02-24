@@ -1,17 +1,17 @@
 import Checkbox from "@/components/form/checkbox";
 import Input from "@/components/form/Input";
 import PasswordInput from "@/components/form/password";
+import ApiError from "@/components/ui/ApiError";
 import Button from "@/components/ui/Button";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, router } from "expo-router";
-import { useForm } from "react-hook-form";
-import { Image, Pressable, Text, View } from "react-native";
-import { z } from "zod";
-
 import { useAuth } from "@/context/UserContext";
 import { useLogin } from "@/mutations/useLogin";
 import { User, UserRole } from "@/types/common/user-context";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, router } from "expo-router";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Image, Pressable, Text, View } from "react-native";
+import { z } from "zod";
 import FormLayout from "../formLayout";
 
 const loginSchema = z.object({
@@ -23,9 +23,9 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
-
   const { login } = useAuth();
   const { mutate: signIn, isPending } = useLogin();
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const { control, handleSubmit } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -37,9 +37,9 @@ export default function LoginScreen() {
   });
 
   const handleSignIn = (formData: LoginFormValues) => {
+    setApiError(null);
     signIn(formData, {
       onSuccess: async (data) => {
-
         const user = data?.data;
         const role: UserRole = user.role as UserRole;
 
@@ -80,6 +80,11 @@ export default function LoginScreen() {
       },
       onError: (error: any) => {
         console.log("ERROR:", error?.response?.data);
+        const message =
+          error?.response?.data?.message ??
+          error?.message ??
+          "Login failed. Please check your credentials.";
+        setApiError(message);
       },
     });
   };
@@ -142,10 +147,12 @@ export default function LoginScreen() {
 
       {/* Submit */}
       <View className="mt-8">
+        <ApiError message={apiError} />
         <Button
           variant="filled"
           onPress={handleSubmit(handleSignIn)}
           disabled={isPending}
+          className="mt-4"
         >
           {isPending ? "Signing In..." : "Sign In"}
         </Button>

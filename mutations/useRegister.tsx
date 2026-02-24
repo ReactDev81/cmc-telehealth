@@ -3,8 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 
 interface RegisterPayload {
   email: string;
-  password: string;
-  agreedToTerms: boolean;
+  password?: string;
+  agreedToTerms?: boolean;
 }
 
 interface RegisterResponse {

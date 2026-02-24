@@ -3,7 +3,6 @@
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { createContext, useContext, useEffect, useState } from "react";
 
-
 // interface UserContextType {
 //   user: User | null;
 //   token: string | null;
@@ -88,19 +87,16 @@
 //   );
 // }
 
-
 // export const useAuth = () => {
 //   const context = useContext(UserContext);
 //   if (!context) throw new Error("useAuth must be used within a UserProvider");
 //   return context;
 // };
 
-
 import { setAuthToken } from "@/lib/authToken";
 import { User } from "@/types/common/user-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
-
 
 interface UserContextType {
   user: User | null;
@@ -180,12 +176,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, token, initializing, login, logout, updateUser }}>
+    <UserContext.Provider
+      value={{ user, token, initializing, login, logout, updateUser }}
+    >
       {children}
     </UserContext.Provider>
   );
 }
-
 
 export const useAuth = () => {
   const context = useContext(UserContext);

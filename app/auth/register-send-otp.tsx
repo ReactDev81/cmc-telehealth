@@ -1,4 +1,5 @@
 import Input from "@/components/form/Input";
+import ApiError from "@/components/ui/ApiError";
 import Button from "@/components/ui/Button";
 import { useRegister } from "@/mutations/useRegister";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +24,7 @@ const schema = z.object({
 
 export default function RegisterSendOtp() {
   const { mutate: register, isPending } = useRegister();
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const [openPrivacy, setOpenPrivacy] = useState(false);
   const [openTerm, setOpenTerm] = useState(false);
@@ -57,6 +59,7 @@ export default function RegisterSendOtp() {
   // };
 
   const onSubmit = async (formData: any) => {
+    setApiError(null);
     register(
       {
         email: formData.email,
@@ -75,6 +78,11 @@ export default function RegisterSendOtp() {
         },
         onError: (error) => {
           console.log("Register error:", error.response?.data);
+          const message =
+            error.response?.data?.message ??
+            error.message ??
+            "Registration failed. Please try again.";
+          setApiError(message);
         },
       },
     );
@@ -158,9 +166,10 @@ export default function RegisterSendOtp() {
         </View> */}
 
         {/* Continue */}
+        <ApiError message={apiError} />
         <Button
           onPress={handleSubmit(onSubmit)}
-          className="mt-8"
+          className="mt-4"
           disabled={isPending}
         >
           {isPending ? "loading..." : "Continue"}
