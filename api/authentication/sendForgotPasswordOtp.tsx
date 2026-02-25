@@ -12,7 +12,7 @@ export interface SendForgotPasswordOtpResponse {
 export const sendForgotPasswordOtp = async (
     payload: SendForgotPasswordOtpPayload,
 ): Promise<SendForgotPasswordOtpResponse> => {
-    const { data } = await api.post("/forgot-password/send-otp", payload);
+    const { data } = await api.post("/auth/forgot-password/send-otp", payload);
 
     return data;
 };

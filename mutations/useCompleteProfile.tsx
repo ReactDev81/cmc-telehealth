@@ -29,7 +29,8 @@ interface CompleteProfileResponse {
   message: string;
   data: {
     id: string;
-    name: string; // API returns full name, not split
+    first_name: string;
+    last_name: string;
     patient_id: string | null;
     avatar: string;
     email: string;
@@ -42,20 +43,10 @@ interface CompleteProfileResponse {
   token: string;
 }
 
-// export function useCompleteProfile() {
-//   return useMutation<CompleteProfileResponse, any, CompleteProfilePayload>({
-//     mutationFn: async (payload) => {
-//       const { data } = await api.post("/complete-profile", payload);
-//       return data;
-//     },
-//   });
-// }
-
 export function useCompleteProfile() {
   return useMutation<CompleteProfileResponse, any, CompleteProfileVariables>({
     mutationFn: async ({ payload }) => {
       const { data } = await api.post("/auth/complete-profile", payload);
-
       return data;
     },
   });

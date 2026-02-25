@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 
 interface ResendOtpPayload {
   email: string;
-  process: "registration" | "forgot_password";
+  context: "registration" | "forgot_password";
 }
 
 interface ResendOtpResponse {
@@ -14,7 +14,7 @@ interface ResendOtpResponse {
 export function useResendOtp() {
   return useMutation<ResendOtpResponse, any, ResendOtpPayload>({
     mutationFn: async (payload) => {
-      const { data } = await api.post("/resend-otp", payload);
+      const { data } = await api.post("/auth/resend-otp", payload);
       return data;
     },
   });

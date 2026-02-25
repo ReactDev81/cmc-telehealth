@@ -9,7 +9,7 @@ export async function registerForPushNotificationsAsync() {
       name: "default",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
+      lightColor: "#013220",
     });
   }
 
@@ -38,7 +38,7 @@ export async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-      console.log(pushTokenString);
+      // console.log(pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
       throw new Error(`${e}`);

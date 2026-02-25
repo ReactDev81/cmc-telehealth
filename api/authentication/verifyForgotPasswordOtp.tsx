@@ -13,6 +13,6 @@ export interface VerifyForgotPasswordOtpResponse {
 export const verifyForgotPasswordOtp = async (
     payload: VerifyForgotPasswordOtpPayload,
 ): Promise<VerifyForgotPasswordOtpResponse> => {
-    const { data } = await api.post("/verify-otp", payload);
+    const { data } = await api.post("/auth/forgot-password/verify-otp", payload);
     return data;
 };

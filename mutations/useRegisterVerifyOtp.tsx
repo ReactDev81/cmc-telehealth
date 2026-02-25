@@ -11,9 +11,10 @@ interface RegisterVerifyOtpResponse {
   success: boolean;
   message: string;
   token: string;
-  user: {
-    id: string;
-    name: string | null;
+  data: {
+    id: string | null;
+    first_name: string | null;
+    last_name: string | null;
     email: string;
     phone: string | null;
     email_verified_at: string;
@@ -23,6 +24,7 @@ interface RegisterVerifyOtpResponse {
     roles: any[];
     patient: any | null;
     doctor: any | null;
+    status: string | null;
   };
 }
 

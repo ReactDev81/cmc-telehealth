@@ -21,7 +21,7 @@ export default function FormLayout({
   return (
     <SafeAreaView
       className="flex-1"
-      edges={transparent ? [] : ["left", "right", "bottom"]}
+      // edges={transparent ? [] : ["left", "right", "bottom"]}
       style={[{ flex: 1 }, !transparent && { backgroundColor: "white" }, style]}
     >
       <KeyboardAwareScrollView
