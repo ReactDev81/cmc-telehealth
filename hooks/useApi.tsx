@@ -1,72 +1,10 @@
-// import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios';
-// import { useCallback, useState } from 'react';
-
-
-// const axiosInstance = axios.create({
-//     baseURL: process.env.EXPO_PUBLIC_API_BASE_URL, 
-//     // timeout: 60000, 
-// });
-
-
-// const useAxios = <T = unknown>(
-//   method: Method = "get",
-//   initialUrl?: string,
-//   options: AxiosRequestConfig = {}
-// ) => {
-//   const [data, setData] = useState<T | null>(null);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
-//   const [status, setStatus] = useState<number | null>(null);
-
-//   const fetchData = useCallback(
-//     async (requestData: AxiosRequestConfig = {}) => {
-//       setLoading(true);
-//       setError(null);
-
-//       try {
-//         const response = await axiosInstance.request<T>({
-//           method,
-//           url: requestData.url ?? initialUrl,
-//           ...options,
-//           ...requestData,
-//         });
-
-//         setData(response.data);
-//         setStatus(response.status);
-
-//         return response;
-//       } catch (err) {
-//         const axiosError = err as AxiosError<{ message?: string }>;
-
-//         setError(
-//           axiosError.response?.data?.message ??
-//             "Something went wrong. Please try again."
-//         );
-//         setStatus(axiosError.response?.status ?? null);
-
-//         console.error("API Error:", axiosError);
-//       } finally {
-//         setLoading(false);
-//       }
-//     },
-//     [method, initialUrl, options]
-//   );
-
-//   return { data, loading, error, status, fetchData };
-// };
-
-// export default useAxios;
-
-
 import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios';
 import { useCallback, useRef, useState } from 'react';
 
 const axiosInstance = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
-  timeout: 15000, // Reduce to 15 seconds
+  timeout: 15000,
 });
-
-// REMOVE the interceptor - it's not helping
 
 const useAxios = <T = unknown>(
   method: Method = "get",

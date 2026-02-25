@@ -20,9 +20,9 @@ const Home = () => {
 
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
-  const { token } = useAuth();
+  const { token, initializing } = useAuth();
 
-  const { data, isLoading, isError, error, refetch } = usePatientHome(!!token);
+  const { data, isLoading, isError, error, refetch } = usePatientHome(!!initializing && !!token);
   const homeData = data?.data;
   const specialities = homeData?.speciality_symptoms || [];
   const availableDoctors = homeData?.available_doctors || [];
@@ -44,7 +44,13 @@ const Home = () => {
   if (isError) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <Text className="text-black">Error loading home</Text>
+        <Text className="text-black">
+          {
+            ((error as any)?.response?.data?.message ??
+            (error as any)?.message ??
+            "Something went wrong. Please try again.")
+          }
+        </Text>
       </SafeAreaView>
     );
   }
