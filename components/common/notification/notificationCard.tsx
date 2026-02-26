@@ -1,16 +1,17 @@
-import { View, Text, TouchableOpacity } from 'react-native';
 import { Info } from 'lucide-react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 interface NotificationCardProps {
     title: string;
     description: string;
     time: string;
+    read: boolean;
     onPress?: () => void;
 }
 
-export function NotificationCard({ title, description, time, onPress }: NotificationCardProps) {
+export function NotificationCard({ title, description, time, read, onPress }: NotificationCardProps) {
     const Content = (
-        <View className="flex-row gap-x-4 items-start bg-white border-b border-[#EDEDED] pb-6 mt-5">
+        <View className={`flex-row gap-x-4 items-start ${read ? 'bg-white' : 'bg-primary-200'} border-b border-black-200 p-5`}>
 
             {/* Icon Circle */}
             <View className="w-12 h-12 bg-primary-100 rounded-full items-center justify-center">
@@ -18,7 +19,7 @@ export function NotificationCard({ title, description, time, onPress }: Notifica
             </View>
 
             {/* Content */}
-            <View className="flex-1">
+            <View className="flex-1 pr-2">
                 <Text className="text-base font-medium text-black mb-0.5">
                     {title}
                 </Text>

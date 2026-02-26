@@ -8,6 +8,8 @@ export interface appointmentProps {
   consultation_fee?: string;
   name?: string;
   speciality?: string;
+  doctor_name?: string;
+  doctor_id?: string;
   rating?: number;
   experience?: string;
   years_experience?: string;
@@ -61,6 +63,7 @@ export type Appointment = {
     slug: string;
     average_rating?: number;
     years_experience?: string;
+    user_id?: string;
   };
 };
 

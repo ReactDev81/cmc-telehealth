@@ -31,12 +31,12 @@ const CONTROLS: ControlConfig[] = [
 
 const StartConsulationWithDoctor = () => {
 
-    const { patient_call_link, appointment_id } = useLocalSearchParams<{
+    const { patient_call_link, appointment_id, doctor_name, doctor_id } = useLocalSearchParams<{
         patient_call_link?: string;
         appointment_id?: string;
+        doctor_name?: string;
+        doctor_id?: string;
     }>();
-
-    const id = appointment_id;
 
     const ROOM_URL = patient_call_link + "&bottomToolbar=off&topToolbar=off";
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
@@ -52,6 +52,17 @@ const StartConsulationWithDoctor = () => {
     const [isCaptionOn, setIsCaptionOn] = React.useState(false);
     const [isLeaving, setIsLeaving] = React.useState(false);
     const [isJoined, setIsJoined] = React.useState(false);
+
+    const [callDuration, setCallDuration] = React.useState(0);
+    const callStartTimeRef = React.useRef<number | null>(null);
+    const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+    
+        return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    };
 
     const insets = useSafeAreaInsets();
 
@@ -175,8 +186,11 @@ const StartConsulationWithDoctor = () => {
                                 <View className="w-1 h-4 rounded-full bg-primary"></View>
                             </View>
                             <View>
-                                <Text className="text-sm text-black font-medium">Dr. Andrew Miller</Text>
-                                <Text className="text-xs text-black-400 mt-1">25:12 remaining (30 mins visit)</Text>
+                                <Text className="text-sm text-black font-medium">{doctor_name}</Text>
+                                <Text className="text-xs text-black-400 mt-1">
+                                    {/* 25:12 remaining (30 mins visit) */}
+                                    {formatTime(callDuration)}
+                                </Text>
                             </View>
                         </View>
                         <TouchableOpacity
@@ -206,12 +220,38 @@ const StartConsulationWithDoctor = () => {
                             }}
                             onJoin={() => {
                                 setIsJoined(true);
+
+                                callStartTimeRef.current = Date.now();
+
+                                timerRef.current = setInterval(() => {
+                                    if (callStartTimeRef.current) {
+                                        const seconds = Math.floor(
+                                            (Date.now() - callStartTimeRef.current) / 1000
+                                        );
+                                        setCallDuration(seconds);
+                                    }
+                                }, 1000);
                             }}
                             onLeave={({ removed }) => {
                                 setIsJoined(false);
+
+                                if (timerRef.current) {
+                                    clearInterval(timerRef.current);
+                                    timerRef.current = null;
+                                }
+                            
+                                const totalCallTime = callDuration; // seconds
+                                console.log("Call Duration:", totalCallTime, "seconds");
+
+                                if (!appointment_id) {
+                                    return;
+                                }
                                 router.push({
-                                    pathname: `/patient/past-appointment-details/${id}`,
-                                    params: { visible: true },
+                                    pathname: "/patient/past-appointment-details/[id]",
+                                    params: {
+                                        visible: "true",
+                                        id: appointment_id,
+                                    },
                                 });
                             }}
                             onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}

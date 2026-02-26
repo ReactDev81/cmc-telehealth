@@ -40,6 +40,9 @@ export const createReview = async (
 ): Promise<CreateReviewResponse> => {
     const formData = new FormData();
 
+    if (payload.appointment_id) {
+        formData.append("appointment_id", payload.appointment_id);
+    }
     formData.append("doctor_id", payload.doctor_id);
     formData.append("title", payload.title);
     formData.append("content", payload.content);

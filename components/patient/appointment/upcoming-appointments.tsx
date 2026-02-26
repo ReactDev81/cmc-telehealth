@@ -1,7 +1,7 @@
 import Button from "@/components/ui/Button"
 import { appointmentProps } from "@/types/patient/appointment"
 import { router } from "expo-router"
-import { Calendar, Clock, Hospital, Phone, Star, Video } from "lucide-react-native"
+import { Calendar, ChevronRight, Clock, Hospital, Phone, Star, Video } from "lucide-react-native"
 import { Image, Text, View } from "react-native"
 
 const UpcomingAppointments = ({
@@ -9,19 +9,20 @@ const UpcomingAppointments = ({
     image,
     name,
     speciality,
-    rating,
     consultation_type,
     consultation_fee,
     experience,
-    years_experience,
     average_rating,
     date,
     time,
     call_now,
-    join_url
+    join_url,
+    doctor_name,
+    doctor_id,
+    status
 }: appointmentProps) => {
 
-    // console.log("Call Now:", call_now);
+    const id = appointment_id;
 
     return (
         <View className='border border-black-300 rounded-xl p-4 mb-5'>
@@ -50,6 +51,13 @@ const UpcomingAppointments = ({
                         <Star size={12} fill="#013220" />
                         <Text className='text-primary text-sm font-medium'>{average_rating}</Text>
                     </View>
+                    {status === "completed" && (
+                        <View className="py-1 p-1.5 rounded absolute bottom-0 right-0 bg-success-400">
+                            <Text className="text-[10px] font-medium text-success">
+                                {status}
+                            </Text>
+                        </View>
+                    )}
                 </View>
             </View>
 
@@ -71,8 +79,8 @@ const UpcomingAppointments = ({
                     </View>
                     <View className="w-px h-full bg-primary-200"></View>
                     <View>
-                        <Text className='text-right text-sm text-black font-medium'>₹{consultation_fee}</Text>
-                        <Text className='text-right text-sm text-black-400 mt-1'>Consultation Fee</Text>
+                        <Text className='text-right text-sm text-black font-medium'>Consultation Fee</Text>
+                        <Text className='text-right text-sm text-black-400 mt-1'>₹{consultation_fee}</Text>
                     </View>
                 </View>
                 <View className="mt-3 flex-1 flex-row items-center gap-x-2.5">
@@ -85,13 +93,23 @@ const UpcomingAppointments = ({
                                     pathname: '/patient/start-consulation',
                                     params: {
                                         patient_call_link: join_url,
-                                        appointment_id: appointment_id
+                                        appointment_id: appointment_id,
+                                        doctor_name: doctor_name,
+                                        doctor_id: doctor_id
                                     },
                                 })}
                             >
                                 Call Now
                             </Button>
-                            :
+                        : status === "completed" ? (
+                                <Button
+                                    className="flex-row-reverse w-full"
+                                    icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
+                                    onPress={() => router.push(`/patient/past-appointment-details/${id}`)}
+                                >
+                                    View Detail
+                                </Button>
+                        ) :
                             <Button
                                 className="flex-1"
                                 onPress={() => router.push(`/patient/manage-appointment/${appointment_id}`)}

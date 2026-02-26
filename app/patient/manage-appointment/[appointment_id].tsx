@@ -339,7 +339,14 @@ export default function ManageAppointments() {
                                             key={report.id || index}
                                             className="flex-row justify-between items-center mb-5 p-3.5 bg-gray-50 rounded-xl border border-gray-200"
                                         >
-                                            <View className="flex-1">
+                                            <Pressable 
+                                                className="flex-1"
+                                                onPress={() => {
+                                                  if (menuVisible) {
+                                                    setMenuVisible(null); // only close if open
+                                                  }
+                                                }}
+                                            >
                                                 <Text className="text-sm font-medium text-black mb-2">
                                                     {report.title || `Report ${index + 1}`}
                                                 </Text>
@@ -349,7 +356,7 @@ export default function ManageAppointments() {
                                                 <Text className="text-sm text-black mb-3">
                                                     Type: {report.type || "Unknown"}
                                                 </Text>
-                                            </View>
+                                            </Pressable>
                                             
                                             <View className="items-end">
 

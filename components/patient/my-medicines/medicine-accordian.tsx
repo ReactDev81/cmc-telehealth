@@ -42,7 +42,7 @@ const MedicineAccordian: React.FC<Props> = ({
     });
   }, [onToggle]);
 
-  const medicineName = medicine.medicine_name || "";
+  const medicineName = medicine.name || "";
   const medicineFrequency =
     medicine.frequencylabel && medicine.frequencylabel !== "N/A"
       ? medicine.frequencylabel
@@ -50,7 +50,7 @@ const MedicineAccordian: React.FC<Props> = ({
   const medicineInstructions = Array.isArray(medicine.instructions)
     ? medicine.instructions.join(", ")
     : medicine.instructions || "";
-  const medicineStatus = medicine.status || medicine.duration_text || "";
+  const medicineStatus = medicine.status || "";
   const medicineTimes = medicine.times || "";
   const medicineDosage = medicine.dosage || "";
   const number = index !== undefined ? `${index + 1}. ` : "";
@@ -70,8 +70,7 @@ const MedicineAccordian: React.FC<Props> = ({
         <View className="flex-row items-center gap-x-2">
           <Text className="text-base font-medium text-black">{number}</Text>
           <Text className="text-base font-medium text-black">
-            <Text className="capitalize">{medicineName} </Text>({medicineDosage}
-            )
+            <Text className="capitalize">{medicineName} </Text>({medicineDosage})
           </Text>
         </View>
 

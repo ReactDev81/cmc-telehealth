@@ -44,7 +44,7 @@ const Home = () => {
   if (isError) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <Text className="text-black">
+        <Text className="text-danger">
           {
             ((error as any)?.response?.data?.message ??
             (error as any)?.message ??

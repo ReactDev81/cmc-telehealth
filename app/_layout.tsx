@@ -213,7 +213,7 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen
-                      name="common-screens/notifications/notification-details"
+                      name={"common-screens/notifications/[id]"}
                       options={{ headerTitle: "Notifications" }}
                     />
 

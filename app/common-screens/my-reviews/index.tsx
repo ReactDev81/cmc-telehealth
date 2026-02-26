@@ -70,6 +70,7 @@ const MyReviews = () => {
               </View>
             </View>
     
+            <Text className="text-xs leading-5 text-black">{item?.title}</Text>
             <Text className="text-xs leading-5 text-black">{item?.content}</Text>
           </View>
         );

@@ -1,6 +1,9 @@
 import { useAuth } from "@/context/UserContext";
+import { useUnreadNotificationCount } from "@/queries/common/useUnreadNotificationCount";
+import { useIsFocused } from '@react-navigation/native';
 import { router } from "expo-router";
 import { Bell, ChevronDown, MapPin } from "lucide-react-native";
+import { useEffect } from 'react';
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 interface HeaderProps {
@@ -10,13 +13,22 @@ interface HeaderProps {
 const DoctorHomeHeader = ({ insets }: HeaderProps) => {
 
     const { user } = useAuth();
-    // const { data: profile } = useDoctorProfile<PersonalInformation>(user?.id || "", "personal_information");
-    // const { data: addressData } = useDoctorProfile<AddressContact>(user?.id || "", "address_contact");
+    const { data, refetch } = useUnreadNotificationCount();
+    const unreadCount = data?.data.unread_count ?? 0;
+
     const profileImageSource = user?.avatar
         ? { uri: user.avatar }
         : require("../../../assets/images/user.png");
 
     const statusPadding = insets?.top ?? 0;
+
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+          refetch();
+        }
+    }, [isFocused, refetch]);
 
     return (
         <View
@@ -59,7 +71,7 @@ const DoctorHomeHeader = ({ insets }: HeaderProps) => {
                     >
                         <Bell size={24} color="#fff" />
                         <View className="absolute top-1.5 right-1.5 w-4 h-4 bg-white rounded-full items-center justify-center">
-                            <Text className="text-primary text-xs font-bold">2</Text>
+                            <Text className="text-primary text-xs font-bold">{unreadCount}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

@@ -4,6 +4,7 @@ import { X } from "lucide-react-native";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Modal, Pressable, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 interface Props {
   visible: boolean;
@@ -47,6 +48,12 @@ export default function EditNotesModal({
       <View className="flex-1 bg-black/40 justify-end">
         <View className="bg-white rounded-t-3xl p-5">
 
+        <KeyboardAwareScrollView
+            bottomOffset={20}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+        >
+
           {/* Header */}
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-lg font-semibold">Edit Notes</Text>
@@ -83,6 +90,7 @@ export default function EditNotesModal({
             </View>
 
           </FormProvider>
+          </KeyboardAwareScrollView>
         </View>
       </View>
     </Modal>

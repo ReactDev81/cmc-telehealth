@@ -1,6 +1,6 @@
 import ReportsCard from "@/components/common/medical-reports/reports-card";
+import DoctorReviewModal from "@/components/patient/doctor-review-modal";
 import MedicineCard from "@/components/patient/my-medicines/medicine-card";
-import DoctorReviewModal from "@/components/patient/review";
 import EmptyState from "@/components/ui/EmptyState";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { useIsFocused } from "@react-navigation/native";
@@ -18,8 +18,6 @@ const AppointementDetails = () => {
         visible === "true" || (Array.isArray(visible) && visible.includes("true"))
     );
     const appointmentId = typeof id === "string" ? id : undefined;
-
-    // console.log('appointmentId', appointmentId)
 
     const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
 
@@ -268,6 +266,7 @@ const AppointementDetails = () => {
                                     </View>
                                 </View>
                                 <View>
+                                    <Text className="text-xs font-semibold leading-5 text-black">{doctorReview?.title}</Text>
                                     <Text className="text-xs leading-5 text-black">{doctorReview?.content}</Text>
                                 </View>
                             </View>

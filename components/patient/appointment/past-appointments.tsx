@@ -81,10 +81,10 @@ const PastAppointment = ({
                     <View className="w-px h-full bg-primary-200"></View>
                     <View>
                         <Text className="text-right text-sm text-black font-medium">
-                            ₹{consultation_fee}
+                            Consultation Fee
                         </Text>
                         <Text className="text-right text-sm text-black-400 mt-1">
-                            Consultation Fee
+                            ₹{consultation_fee}
                         </Text>
                     </View>
                 </View>

@@ -48,7 +48,7 @@ const DoctorReviewModal = ({ visible, onClose, doctorId, doctorName, appointment
         mode: "onSubmit",
     });
 
-    const { mutate, isPending } = useCreateReview();
+    const { mutate, isPending, error, } = useCreateReview();
 
     const { handleSubmit, control, setValue, watch, reset } = methods;
 
@@ -81,6 +81,8 @@ const DoctorReviewModal = ({ visible, onClose, doctorId, doctorName, appointment
                 },
                 onError: (err: any) => {
                     console.log("Review error message:", err?.message);
+                    console.log("err messaging:", (error as any)?.message);
+                    console.log("err message:", (error as any)?.response?.data?.message);
                 },
             },
         );

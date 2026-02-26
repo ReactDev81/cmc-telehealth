@@ -25,6 +25,9 @@ const AllUpcomingAppointment = ({
                 date={item.appointment_date_formatted}
                 time={item.appointment_time_formatted}
                 call_now={item.call_now}
+                status={item.status}
+                doctor_name={item.doctor?.name}
+                doctor_id={item.doctor?.user_id}
                 join_url={item.video_consultation?.join_url || item.join_url}
             />
         );

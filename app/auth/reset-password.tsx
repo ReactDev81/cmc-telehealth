@@ -12,7 +12,7 @@ import FormLayout from "../formLayout";
 
 const passwordSchema = z
     .object({
-        old_password: z.string().min(1, "Old password is required"),
+        current_password: z.string().min(1, "Old password is required"),
         new_password: z.string().min(8, "Password must be at least 8 characters"),
         new_password_confirmation: z
             .string()
@@ -33,7 +33,7 @@ const ResetPassword = () => {
     const { control, handleSubmit } = useForm<PasswordForm>({
         resolver: zodResolver(passwordSchema),
         defaultValues: {
-            old_password: "",
+            current_password: "",
             new_password: "",
             new_password_confirmation: "",
         },
@@ -82,11 +82,11 @@ const ResetPassword = () => {
                 {/* Old Password */}
                 <Controller
                     control={control}
-                    name="old_password"
+                    name="current_password"
                     render={() => (
                         <View>
                             <PasswordInput
-                                name="old_password"
+                                name="current_password"
                                 control={control}
                                 label="Old Password"
                                 placeholder="Enter Old Password"

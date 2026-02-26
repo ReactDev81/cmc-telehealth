@@ -6,6 +6,7 @@ import { X } from "lucide-react-native";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Modal, Pressable, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 interface Props {
   visible: boolean;
@@ -36,8 +37,6 @@ export default function EditReportModal({
   });
 
   const { reset, handleSubmit, control } = methods;
-
-
   /**
    * Prefill form when modal opens
    */
@@ -105,8 +104,15 @@ export default function EditReportModal({
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
+      
       <View className="flex-1 bg-black/40 justify-end">
+        
         <View className="bg-white rounded-t-3xl p-5">
+        <KeyboardAwareScrollView
+            bottomOffset={20}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+        >
 
           {/* Header */}
           <View className="flex-row justify-between items-center mb-4">
@@ -173,8 +179,11 @@ export default function EditReportModal({
             </View>
 
           </FormProvider>
+          </KeyboardAwareScrollView>
         </View>
+        
       </View>
+      
     </Modal>
   );
 }

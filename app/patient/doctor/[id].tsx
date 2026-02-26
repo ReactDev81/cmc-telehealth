@@ -51,7 +51,6 @@ const DoctorDetail = () => {
   }>();
 
   const { token } = useAuth();
-  console.log("token", token);
 
   const { data: doctorData, isLoading, isError } = useBrowseDoctorById(id);
   const doctorId = doctorData?.data?.id;
@@ -62,7 +61,6 @@ const DoctorDetail = () => {
   );
 
   const doctor = doctorData?.data;
-  console.log("reviewsData", reviewsData);
 
   const [appointmentType, setAppointmentType] = useState<
     "video" | "in_person" | null
