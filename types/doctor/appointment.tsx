@@ -9,6 +9,7 @@ export interface appointmentProps {
   mode: string;
   date?: string;
   time: string;
+  call_now?: boolean;
 }
 
 export interface Patient {

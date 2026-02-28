@@ -15,15 +15,12 @@ import { StatusBar } from "expo-status-bar";
 import { CalendarClock, CalendarOff, Star } from "lucide-react-native";
 import { useEffect } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Home = () => {
+
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
-
   const { token } = useAuth();
   // console.log("token: ", token)
   // console.log("🏥 Doctor Home Token:", token);
@@ -59,17 +56,7 @@ const Home = () => {
   const summary = data.summary;
   const todays = data.todays_appointments;
   const upcoming = data.upcoming_appointments;
-  // console.log("upcomming: ", upcoming)
   const reviews = data.doctor_reviews;
-
-  console.log(
-    "Doctor Dashboard - todays appointments:",
-    JSON.stringify(todays, null, 2),
-  );
-
-  // if (todays.length === 0) {
-  //     return <Text>No appointments today</Text>;
-  // }
 
   const appointmentStatusData = [
     {
@@ -88,8 +75,6 @@ const Home = () => {
       status_count: summary.cancelled_appointments,
     },
   ];
-
-  console.log("appointmentStatusData: ", appointmentStatusData);
 
   return (
     <View className="flex-1 bg-white">
@@ -143,6 +128,7 @@ const Home = () => {
                   time={item.time}
                   mode={item.consultation_type}
                   date={item.date}
+                  call_now={item.call_now}
                 />
               </View>
             ))
@@ -171,7 +157,8 @@ const Home = () => {
                   time={item.time}
                   name={item.patient_name}
                   mode={item.consultation_type}
-                  status="Scheduled"
+                  appointmentId={item.id}
+                  status={item.status}
                 />
               </View>
             ))
@@ -182,46 +169,52 @@ const Home = () => {
           {/* Testimonial */}
           <View className="mt-7">
             <Title text="Here's what our satisfied customers are saying..." />
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mt-3"
-              contentContainerStyle={{
-                gap: 15,
-                paddingRight: 20,
-                flexGrow: 1,
-                justifyContent:
-                  reviews && reviews.length === 0 ? "center" : "flex-start",
-              }}
-            >
-              {reviews && reviews.length === 0 ? (
+            {reviews && reviews.length === 0 ? (
                 <EmptyState
                   title="No Feedbacks"
                   message="You don't have any feedbacks yet."
                   icon={<Star size={44} color="#94A3B8" />}
+                  className="mt-5 rounded-2xl border border-gray-100"
                 />
               ) : (
-                reviews.map((review) => (
-                  <Testimonial
-                    key={review.id}
-                    patient_id={review.id}
-                    patient_name={review.patient_name}
-                    patient_image={review.patient_image}
-                    patient_age={String(review.patient_age ?? "")}
-                    patient_location={review.patient_location ?? ""}
-                    days_ago={review.created_at}
-                    title={review.title}
-                    content={review.content}
-                    rating={review.rating}
-                    total_reviews={String(review.total_reviews)}
-                    doctor_name={review.doctor_name}
-                  />
-                ))
-              )}
-            </ScrollView>
-            <Button className="mt-5" onPress={() => router.push("/feedbacks")}>
-              View All Feedbacks
-            </Button>
+                  <>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        className="mt-3"
+                        contentContainerStyle={{
+                          gap: 15,
+                          paddingRight: 20,
+                          flexGrow: 1,
+                          justifyContent:
+                            reviews && reviews.length === 0 ? "center" : "flex-start",
+                        }}
+                      >
+                    
+                      {reviews.map((review) => (
+                        <Testimonial
+                          key={review.id}
+                          patient_id={review.id}
+                          patient_name={review.patient_name}
+                          patient_image={review.patient_image}
+                          patient_age={String(review.patient_age ?? "")}
+                          patient_location={review.patient_location ?? ""}
+                          days_ago={review.created_at}
+                          title={review.title}
+                          content={review.content}
+                          rating={review.rating}
+                          total_reviews={String(review.total_reviews)}
+                          doctor_name={review.doctor_name}
+                        />
+                      ))}
+                    
+                  </ScrollView>
+                  <Button className="mt-5" onPress={() => router.push("/feedbacks")}>
+                    View All Feedbacks
+                  </Button>
+                </>
+              )
+            }
           </View>
         </View>
       </ScrollView>

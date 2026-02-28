@@ -7,7 +7,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
 import { ClosedCaption, FileUser, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff, X } from "lucide-react-native";
 import * as React from "react";
-import { Alert, Dimensions, Platform, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Platform, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AddPrescription from "./add-prescription";
@@ -40,7 +40,6 @@ const StartConsulationWithDoctor = () => {
     const { mutate: markAsCompleted, isPending: isMarkingComplete } = useMarkAsCompleted();
 
     const { doctor_call_link, appointment_id } = useLocalSearchParams<{ doctor_call_link: string, appointment_id: string }>();
-    // console.log("Doctor Call Link Param:", doctor_call_link);
 
     const ROOM_URL = React.useMemo(() => {
         const baseUrl = doctor_call_link?.trim();
@@ -59,6 +58,9 @@ const StartConsulationWithDoctor = () => {
         }
     }, [doctor_call_link]);
 
+    const { height } = useWindowDimensions();
+    const calcHeight = height - 180;
+
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);
 
@@ -67,16 +69,13 @@ const StartConsulationWithDoctor = () => {
 
     // Patient Details Bottom Sheet
     const patientDetailsBottomSheetRef = React.useRef<BottomSheet>(null);
-
     const [hasPermissionForAndroid, setHasPermissionForAndroid] = React.useState<boolean>(false);
-
     const [isCameraOn, setIsCameraOn] = React.useState(true);
     const [isMicrophoneOn, setIsMicrophoneOn] = React.useState(true);
     const [isAddPrescriptionOpen, setIsAddPrescriptionOpen] = React.useState(false);
     const [isPatientDetailsOpen, setIsPatientDetailsOpen] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
     const [isCaptionOn, setIsCaptionOn] = React.useState(false);
-
     const [isLeaving, setIsLeaving] = React.useState(false);
     const [isJoined, setIsJoined] = React.useState(false);
 
@@ -289,7 +288,12 @@ const StartConsulationWithDoctor = () => {
 
                 {/* Video Container - Middle Section */}
                 <View className="bg-primary flex-1">
-                    <View className="h-[85%]">
+                    <View 
+                        // className="h-[85%]"
+                        style={{
+                            height: calcHeight
+                        }}
+                    >
                         {ROOM_URL ? (
                             <WherebyEmbed
                                 ref={wherebyRoomRef}
@@ -297,10 +301,10 @@ const StartConsulationWithDoctor = () => {
                                 room={ROOM_URL}
                                 skipMediaPermissionPrompt
                                 onWherebyMessage={(event) => {
-                                    console.log("Whereby message:", event);
+                                    // console.log("Whereby message:", event);
                                 }}
                                 onReady={() => {
-                                    console.log("Whereby ready with room URL:", ROOM_URL);
+                                    // console.log("Whereby ready with room URL:", ROOM_URL);
                                 }}
                                 onJoin={() => {
                                     setIsJoined(true);

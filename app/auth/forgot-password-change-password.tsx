@@ -138,7 +138,7 @@ const ForgotPasswordChangePassword = () => {
 
             {/* Submit Button */}
             <View className="mt-6">
-                <Button onPress={handleSubmit(onSubmit)} className="mt-4">
+                <Button onPress={handleSubmit(onSubmit)} className="mt-4" disabled={isPending}>
                     {isPending ? "loading..." : "Change Password"}
                 </Button>
             </View>

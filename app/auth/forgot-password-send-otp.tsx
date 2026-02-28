@@ -28,10 +28,12 @@ const ForgotPasswordSendOtp = () => {
         mutate(
             { email: formData.email },
             {
-                onSuccess: () => {
+                onSuccess: (res) => {
                     router.push({
-                    pathname: "/auth/forgot-password-verify-otp",
-                        params: { email: formData.email },
+                        pathname: "/auth/forgot-password-verify-otp",
+                        params: { 
+                            email: formData.email,
+                        },
                     });
                 },
                 onError: (error) => {

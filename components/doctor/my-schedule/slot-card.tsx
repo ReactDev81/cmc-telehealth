@@ -14,7 +14,7 @@ const SlotCard = ({ slot }: { slot: Slot }) => {
                 <View>
                     <View className={`px-2 py-1 rounded-md ${slot.consultation_type === "in-person" ? "bg-success-400" : "bg-warning-400"}`}>
                         <Text className={`text-xs ${slot.consultation_type === "in-person" ? "text-success" : "text-warning"}`}>
-                            {slot.consultation_type_label}
+                            {`${slot.consultation_type === "in-person" ? "In Clinic" : "Video Consultation"}`}
                         </Text>
                     </View>
                 </View>

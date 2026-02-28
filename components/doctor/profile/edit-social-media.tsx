@@ -25,11 +25,10 @@ const EditSocialMedia = ({
     existingLinks?: SocialLinks,
     onClose: () => void
 }) => {
+
     const { user } = useAuth();
     const doctorID = user?.id || "";
-
     const { mutate: updateProfile, isPending } = useUpdateDoctorProfile(doctorID, "social_media");
-
     const { control, handleSubmit, reset } = useForm<SocialMediaFormData>({
         resolver: zodResolver(SocialMediaSchema),
         defaultValues: {
@@ -41,6 +40,7 @@ const EditSocialMedia = ({
     });
 
     const onSubmit = (data: SocialMediaFormData) => {
+
         const fd = new FormData();
         fd.append("social_links[facebook]", data.facebook || '');
         fd.append("social_links[linkedin]", data.linkedin || '');
@@ -81,7 +81,7 @@ const EditSocialMedia = ({
                     placeholder="https://facebook.com/yourprofile"
                     control={control}
                     autoCapitalize="none"
-                    keyboardType="url"
+                    // keyboardType="url"
                 />
 
                 <Input
@@ -91,7 +91,7 @@ const EditSocialMedia = ({
                     control={control}
                     containerClassName="mt-5"
                     autoCapitalize="none"
-                    keyboardType="url"
+                    // keyboardType="url"
                 />
 
                 <Input
@@ -101,7 +101,7 @@ const EditSocialMedia = ({
                     control={control}
                     containerClassName="mt-5"
                     autoCapitalize="none"
-                    keyboardType="url"
+                    // keyboardType="url"
                 />
 
                 <Input
@@ -111,7 +111,7 @@ const EditSocialMedia = ({
                     control={control}
                     containerClassName="mt-5"
                     autoCapitalize="none"
-                    keyboardType="url"
+                    // keyboardType="url"
                 />
 
                 <Button onPress={handleSubmit(onSubmit)} className="mt-5" disabled={isPending}>

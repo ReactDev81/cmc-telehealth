@@ -3,14 +3,36 @@ import { useInfiniteNotifications } from '@/queries/common/useNotifications';
 import { formatTimeAgo } from "@/utils/timeAgo";
 import { useIsFocused } from "@react-navigation/native";
 import { router } from 'expo-router';
-import { useEffect } from "react";
-import { FlatList, Image, Text, View } from 'react-native';
+import { useEffect, useState } from "react";
+import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+
+const tabs = ["All", "Appointment", "Availability", "Review"];
 
 const Notifications = () =>  {
 
     const { data, fetchNextPage, refetch, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteNotifications(10);
+    const [activeTab, setActiveTab] = useState("All");
     const notifications = data?.pages.flatMap((page) => page.data) ?? [];
+
+    const filteredData = (() => {
+        if (activeTab === "All") return notifications;
+        
+        if (activeTab === "Appointment") {
+            return notifications.filter((t) => t.group === "appointment");
+        }
+
+        if (activeTab === "Availability") {
+            return notifications.filter((t) => t.group === "availability");
+        }
+
+        if (activeTab === "Review") {
+            return notifications.filter((t) => t.group === "review");
+        }
+        
+        return notifications.filter((t) => t.group === "failed");
+    })();
 
     const isFocused = useIsFocused();
 
@@ -22,8 +44,30 @@ const Notifications = () =>  {
 
     return (
         <SafeAreaView edges={["left", "right", "bottom"]}>
+
+            {/* Tabs */}
+            <View className="p-5">
+              <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 12 }}
+              >
+                  {tabs.map((tab) => (
+                      <TouchableOpacity
+                          key={tab}
+                          className={`px-5 py-2.5 max-h-11 rounded-lg ${activeTab === tab ? "bg-primary" : "border border-gray"}`}
+                          onPress={() => setActiveTab(tab)}
+                      >
+                          <Text className={`text-sm font-medium ${activeTab === tab ? "text-white" : "text-gray-600"}`}>
+                              {tab}
+                          </Text>
+                      </TouchableOpacity>
+                  ))}
+              </ScrollView>
+            </View>
+
             <FlatList
-                data={notifications}
+                data={filteredData}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <NotificationCard

@@ -51,10 +51,15 @@ const AvailableDoctors = ({
                             {doctor_speciality ? doctor_speciality : 'no department'}
                             {experience}
                         </Text>
-                        <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1 absolute top-0 right-0">
-                            <Star size={12} fill="#013220" />
-                            <Text className="text-primary text-sm font-medium">{rating}</Text>
-                        </View>
+                        {rating > 0 &&
+                            (
+                                <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1 absolute top-0 right-0">
+                                    <Star size={12} fill="#013220" />
+                                    <Text className="text-primary text-sm font-medium">{rating}</Text>
+                                </View>
+                            )
+                        }
+                        
                     </View>
                 </View> 
             </Link> 

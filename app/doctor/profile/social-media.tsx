@@ -4,11 +4,13 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useDoctorProfile } from "@/queries/doctor/useDoctorProfile";
 import { SocialMediaGroup } from "@/types/live/doctor/profile";
+import { Link } from "expo-router";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react-native";
 import { useState } from "react";
 import { ActivityIndicator, Modal, ScrollView, Text, View } from "react-native";
 
 const SocialMedia = () => {
+
   const { user } = useAuth();
   const doctorID = user?.id || "";
 
@@ -21,6 +23,7 @@ const SocialMedia = () => {
 
   return (
     <View className="flex-1 bg-white">
+
       {/* Modal */}
       <Modal
         visible={modalVisible}
@@ -63,9 +66,18 @@ const SocialMedia = () => {
                 <Text className="text-base text-black font-semibold">
                   Facebook
                 </Text>
-                <Text className="text-black-400 text-sm mt-0.5">
-                  {socialLinks.facebook || "Not added yet"}
-                </Text>
+
+                {socialLinks.facebook ?
+                  <Link href={socialLinks.facebook as any}>
+                    <Text className="text-primary text-sm mt-0.5">
+                      {socialLinks.facebook}
+                    </Text>
+                  </Link>
+                  :
+                  <Text className="text-black-400 text-sm mt-0.5">
+                    Not added yet
+                  </Text>
+                }
               </View>
             </View>
 
@@ -77,9 +89,18 @@ const SocialMedia = () => {
                 <Text className="text-base text-black font-semibold">
                   LinkedIn
                 </Text>
-                <Text className="text-black-400 text-sm mt-0.5">
-                  {socialLinks.linkedin || "Not added yet"}
-                </Text>
+
+                {socialLinks.linkedin ?
+                  <Link href={socialLinks.linkedin as any}>
+                    <Text className="text-primary text-sm mt-0.5">
+                      {socialLinks.linkedin}
+                    </Text>
+                  </Link>
+                  :
+                  <Text className="text-black-400 text-sm mt-0.5">
+                    Not added yet
+                  </Text>
+                }
               </View>
             </View>
 
@@ -91,9 +112,17 @@ const SocialMedia = () => {
                 <Text className="text-base text-black font-semibold">
                   Instagram
                 </Text>
-                <Text className="text-black-400 text-sm mt-0.5">
-                  {socialLinks.instagram || "Not added yet"}
-                </Text>
+                {socialLinks.instagram ?
+                  <Link href={socialLinks.instagram as any}>
+                    <Text className="text-primary text-sm mt-0.5">
+                      {socialLinks.instagram}
+                    </Text>
+                  </Link>
+                  :
+                  <Text className="text-black-400 text-sm mt-0.5">
+                    Not added yet
+                  </Text>
+                }
               </View>
             </View>
 
@@ -105,9 +134,17 @@ const SocialMedia = () => {
                 <Text className="text-base text-black font-semibold">
                   Twitter (X)
                 </Text>
-                <Text className="text-black-400 text-sm mt-0.5">
-                  {socialLinks.twitter || "Not added yet"}
-                </Text>
+                {socialLinks.twitter ?
+                  <Link href={socialLinks.twitter as any}>
+                    <Text className="text-primary text-sm mt-0.5">
+                      {socialLinks.twitter}
+                    </Text> 
+                  </Link>
+                  :
+                  <Text className="text-black-400 text-sm mt-0.5">
+                    Not added yet
+                  </Text>
+                }
               </View>
             </View>
           </View>

@@ -9,7 +9,7 @@ import FormLayout from "../formLayout";
 
 const ForgotPasswordVerifyOtp = () => {
 
-    const { mutate, isPending, isError, error: apiError } = useVerifyForgotPasswordOtp();
+    const { mutate, isPending, error: apiError } = useVerifyForgotPasswordOtp();
     const { mutate: resendOtp, isPending: resendIsPending } = useResendOtp();
 
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -72,10 +72,9 @@ const ForgotPasswordVerifyOtp = () => {
             },
             {
                 onSuccess: (res) => {
-                    console.log("forgot verify otp :", res);
                     router.push({
                         pathname: "/auth/forgot-password-change-password",
-                        params: { email: emailStr, reset_token: res.token },
+                        params: { email: emailStr, reset_token: res.data?.reset_token },
                     });
                 },
                 onError: () => {
@@ -174,9 +173,9 @@ const ForgotPasswordVerifyOtp = () => {
             <ApiError message={error} />
 
             {/* Verify Button */}
-            <Button onPress={handleVerify} className="mt-8">
+            <Button onPress={handleVerify} className="mt-8" disabled={isPending}>
                 <Text className="text-white text-center text-base font-semibold">
-                    Continue
+                    {isPending ? "loading..." : "Continue"}
                 </Text>
             </Button>
 

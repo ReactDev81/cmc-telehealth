@@ -23,6 +23,7 @@ import {
 } from "react-native";
 
 const PatientDetails = () => {
+
   const params = useLocalSearchParams();
   const appointmentId =
     typeof params.id === "string"
@@ -32,8 +33,6 @@ const PatientDetails = () => {
         : undefined;
   const { token } = useAuth();
   const isFocused = useIsFocused();
-
-  // console.log("appointment Id :", appointmentId);
 
   const {
     data: patient,
@@ -51,7 +50,6 @@ const PatientDetails = () => {
   }, [isFocused]);
 
   const upcomingAppointment = patient?.data?.upcoming_appointments;
-  const joinUrl = upcomingAppointment?.video_join_link;
 
   // const patientpreviousdata = patient?.data?.previous_appointments;
   // console.log("Join URL:", joinUrl);
@@ -125,7 +123,7 @@ const PatientDetails = () => {
           />
         )}
         {/* click here to start consulation */}
-        {joinUrl && (
+        {upcomingAppointment.call_now && (
           <Button
             icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
             className="flex-row-reverse mt-5"
@@ -133,7 +131,7 @@ const PatientDetails = () => {
               router.push({
                 pathname: "/doctor/start-consulation",
                 params: {
-                  doctor_call_link: joinUrl,
+                  doctor_call_link: upcomingAppointment?.video_join_link,
                   appointment_id: appointmentId,
                 },
               })

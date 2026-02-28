@@ -11,8 +11,6 @@ const Testimonial = ({
   patient_image,
   patient_name,
   patient_age,
-  patient_location,
-  days_ago,
   title,
   content,
   total_reviews,
@@ -20,8 +18,6 @@ const Testimonial = ({
   rating,
   className = "",
 }: testimonial) => {
-  const avatarSource =
-    typeof patient_image === "string" ? { uri: patient_image } : patient_image;
 
   return (
     <View
@@ -41,7 +37,6 @@ const Testimonial = ({
               <Text className="text-sm font-medium text-black">
                 {patient_name}
               </Text>
-              {/* <Text className="text-xs text-black/80">{days_ago}</Text> */}
               <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1 absolute top-0 right-0">
                 <Star size={12} fill="#013220" />
                 <Text className="text-primary text-sm font-medium">
@@ -52,9 +47,7 @@ const Testimonial = ({
             <View className="flex-row items-center justify-between mt-0.5">
               <Text className="text-sm text-gray-600">
                 {patient_age}
-                {/* {patient_location ? `, ${patient_location}` : ""} */}
               </Text>
-              {/* <StarRating rating={rating || 0} size={14} /> */}
             </View>
           </View>
         </View>
@@ -63,7 +56,7 @@ const Testimonial = ({
         <Text className="text-sm font-semibold text-black mb-1.5">{title}</Text>
 
         {/* Description */}
-        <Text className="text-xs leading-6 text-black">{content}</Text>
+        <Text className="text-xs leading-5 text-black">{content}</Text>
       </View>
 
       {/* Footer Section */}

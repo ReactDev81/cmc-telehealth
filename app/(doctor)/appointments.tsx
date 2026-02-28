@@ -9,56 +9,50 @@ import { ActivityIndicator, Text, View } from "react-native";
 
 const Appointments = () => {
 
-  const { token } = useAuth();
-  const { tab } = useLocalSearchParams<{ tab?: string }>();
+    const { token } = useAuth();
+    const { tab } = useLocalSearchParams<{ tab?: string }>();
+    const todayQuery = useAppointments("today", token!);
+    const upcomingQuery = useAppointments("upcoming", token!);
+    const pastQuery = useAppointments("past", token!);
+    const isLoading = todayQuery.isLoading || upcomingQuery.isLoading || pastQuery.isLoading;
+    const isError = todayQuery.isError || upcomingQuery.isError || pastQuery.isError;
 
-  const todayQuery = useAppointments("today", token!);
-  const upcomingQuery = useAppointments("upcoming", token!);
-  const pastQuery = useAppointments("past", token!);
+    if (isLoading) return <ActivityIndicator className="flex-1" />;
 
-  const isLoading = todayQuery.isLoading || upcomingQuery.isLoading || pastQuery.isLoading;
-  const isError = todayQuery.isError || upcomingQuery.isError || pastQuery.isError;
+    if (isError) {
+        return (
+            <View className="flex-1 items-center justify-center">
+            <Text className="text-red-500">Failed to load appointments</Text>
+            </View>
+        );
+    }
 
-  if (isLoading) return <ActivityIndicator className="flex-1" />;
+    const appointmentTabs: TabItem[] = [
+        {
+            key: "today",
+            label: "Today",
+            content: <AllTodayAppointment data={todayQuery.data || []} />,
+        },
+        {
+            key: "upcoming",
+            label: "Upcoming",
+            content: <AllUpcomingAppointment data={upcomingQuery.data || []} />,
+        },
+        {
+            key: "past",
+            label: "Past",
+            content: <AllPastAppointment data={pastQuery.data || []} />,
+        },
+    ];
 
-  if (isError) {
+    // Use the tab from query params if available, otherwise default to "today"
+    const defaultTab = tab && ["today", "upcoming", "past"].includes(tab) ? tab : "today";
+
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-red-500">Failed to load appointments</Text>
-      </View>
+        <View className="flex-1 bg-white p-5 pb-0">
+            <Tab tabs={appointmentTabs} defaultTab={defaultTab} />
+        </View>
     );
-  }
-  // console.log("upcomingQuery", upcomingQuery.data);
-  // console.log("pastQuery", pastQuery.data);
-  // console.log("todayQuery", todayQuery.data);
-
-  const appointmentTabs: TabItem[] = [
-    {
-      key: "today",
-      label: "Today",
-      content: <AllTodayAppointment data={todayQuery.data || []} />,
-    },
-    {
-      key: "upcoming",
-      label: "Upcoming",
-      content: <AllUpcomingAppointment data={upcomingQuery.data || []} />,
-    },
-    {
-      key: "past",
-      label: "Past",
-      content: <AllPastAppointment data={pastQuery.data || []} />,
-    },
-  ];
-
-  // Use the tab from query params if available, otherwise default to "today"
-  const defaultTab =
-    tab && ["today", "upcoming", "past"].includes(tab) ? tab : "today";
-
-  return (
-    <View className="flex-1 bg-white p-5 pb-0">
-      <Tab tabs={appointmentTabs} defaultTab={defaultTab} />
-    </View>
-  );
 };
 
 export default Appointments;

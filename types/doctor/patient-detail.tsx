@@ -85,5 +85,3 @@ export interface Medication {
     start_date: string;
     duration?: string;
 }
-duration: string;
-}

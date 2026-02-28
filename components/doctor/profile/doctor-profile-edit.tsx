@@ -4,7 +4,6 @@ import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 const DoctorProfileEdit = ({ user }: { user: any }) => {
-    console.log("Doctor profile edit: ", user);
     return (
         <View className="bg-primary-100 p-4 flex-row items-start rounded-xl">
             <View className="flex-1 flex-row items-center gap-x-3">

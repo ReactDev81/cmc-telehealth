@@ -7,7 +7,10 @@ export interface VerifyForgotPasswordOtpPayload {
 }
 
 export interface VerifyForgotPasswordOtpResponse {
-    token: string;
+    data: {
+        email: string;
+        reset_token: string;
+    }
 }
 
 export const verifyForgotPasswordOtp = async (

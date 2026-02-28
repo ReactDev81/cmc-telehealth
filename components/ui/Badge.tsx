@@ -36,7 +36,7 @@ const Badge = ({ text, variant = 'gray', className = '', pill = false, textClass
 
     return (
         <View className={`px-2.5 py-1 ${pill ? 'rounded-full' : 'rounded-md'} items-center justify-center ${bgClass} ${className}`}>
-            <Text className={`text-[10px] uppercase font-bold tracking-wider ${textClass} ${textClassName}`}>
+            <Text className={`text-[10px] capitalize font-bold tracking-wider ${textClass} ${textClassName}`}>
                 {text}
             </Text>
         </View>

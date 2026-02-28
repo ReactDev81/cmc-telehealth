@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
 import { ClosedCaption, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff } from "lucide-react-native";
 import * as React from "react";
-import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ControlsButton from "./controls-button";
@@ -37,6 +37,9 @@ const StartConsulationWithDoctor = () => {
         doctor_name?: string;
         doctor_id?: string;
     }>();
+
+    const { height } = useWindowDimensions();
+    const calcHeight = height - 180;
 
     const ROOM_URL = patient_call_link + "&bottomToolbar=off&topToolbar=off";
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
@@ -203,14 +206,20 @@ const StartConsulationWithDoctor = () => {
                             </View>
                         </TouchableOpacity>
                     </View>
-                )}
+                )} 
 
                 {/* Video Container - Middle Section */}
                 <View className="bg-primary flex-1">
-                    <View className="h-[85%]">
+                    <View 
+                        // className="h-[85%]"
+                        style={{
+                            height: calcHeight
+                        }}
+                    >
                         <WherebyEmbed
                             ref={wherebyRoomRef}
                             room={ROOM_URL ?? ""}
+                            style={{ marginTop: isJoined ? -35 : 0 }}
                             skipMediaPermissionPrompt
                             onWherebyMessage={(event) => {
                                 // console.log(event);
@@ -295,7 +304,7 @@ const StartConsulationWithDoctor = () => {
                     </BottomSheet>
                 )}
 
-                {/* Add Prescription Bottom Sheet */}
+                {/* Prescription Bottom Sheet */}
                 {isPrescriptionOpen && appointment_id && (
                     <BottomSheet
                         ref={addPrescriptionBottomSheetRef}

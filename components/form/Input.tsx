@@ -51,6 +51,7 @@ const Input = ({
         secureTextEntry={secureTextEntry}
         multiline={multiline}
         editable={editable}
+        underlineColorAndroid="transparent"
       />
 
       {error && (

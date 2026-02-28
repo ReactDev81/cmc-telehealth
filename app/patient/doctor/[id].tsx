@@ -1,34 +1,18 @@
 import Testimonial from "@/components/patient/home/testimonial";
 import TitleWithLink from "@/components/ui/title-with-link";
-import { useAuth } from "@/context/UserContext";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { useBrowseDoctorById } from "@/queries/patient/useBrowseDoctorById";
 import { useDoctorReviews } from "@/queries/patient/useTestimonials";
 import { htmlToReadableText } from "@/utils/html";
 import { useLocalSearchParams } from "expo-router";
-import {
-  BriefcaseBusiness,
-  Hospital,
-  Star,
-  Stethoscope,
-  Video,
-} from "lucide-react-native";
+import { BriefcaseBusiness, Hospital, Star, Stethoscope, Video } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import doctorDemo from "../../../assets/images/doctor.jpg";
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import DoctorSchedule from "../../../components/patient/doctor-profile/doctor-schedule";
 
 const DoctorDetail = () => {
   const {
     id,
-    doctor_id,
     consultation_type,
     booking_type,
     consultation_opd_type,
@@ -50,9 +34,7 @@ const DoctorDetail = () => {
     appointment_status?: string;
   }>();
 
-  const { token } = useAuth();
-
-  const { data: doctorData, isLoading, isError } = useBrowseDoctorById(id);
+  const { data: doctorData, isLoading } = useBrowseDoctorById(id);
   const doctorId = doctorData?.data?.id;
   const { data: reviewsData, isLoading: isReviewsLoading } = useDoctorReviews(
     doctorId as string,
@@ -61,10 +43,7 @@ const DoctorDetail = () => {
   );
 
   const doctor = doctorData?.data;
-
-  const [appointmentType, setAppointmentType] = useState<
-    "video" | "in_person" | null
-  >("video");
+  const [appointmentType, setAppointmentType] = useState<"video" | "in_person" | null>("video");
   const [opdType, setOpdType] = useState<"general" | "private" | null>(null);
 
   // Preselect appointment type if only one is available
@@ -192,7 +171,7 @@ const DoctorDetail = () => {
           source={
             doctor?.profile?.avatar
               ? { uri: doctor.profile.avatar }
-              : doctorDemo
+              : require("../../../assets/images/doctor.jpg")
           }
           className="w-full h-60"
           resizeMode="cover"
@@ -322,39 +301,40 @@ const DoctorDetail = () => {
             horizontal
             showsHorizontalScrollIndicator={false}
             className="mt-3 w-full"
-            contentContainerStyle={{
-              gap: 15,
-              paddingRight: 10,
-            }}
+            contentContainerStyle={{ paddingRight: 10 }}
           >
             {isReviewsLoading ? (
               <View className="py-4 px-2">
                 <ActivityIndicator />
               </View>
             ) : reviewsData?.data && reviewsData.data.length > 0 ? (
-              reviewsData.data
-                .slice(0, 4)
-                .map((review: any) => (
-                  <Testimonial
+                reviewsData.data.slice(0, 4).map((review: any, index: number) => (
+                  <View
                     key={review.id}
-                    patient_image={{ uri: review.patient_image }}
-                    patient_name={review.patient_name}
-                    patient_age={review.patient_age?.toString()}
-                    patient_location={review.patient_location}
-                    days_ago={review.created_at}
-                    title={review.title}
-                    content={htmlToReadableText(review.content)}
-                    total_reviews={review.total_reviews?.toString()}
-                    doctor_name={review.doctor_name}
-                    rating={review.rating}
-                    patient_id={review.id}
-                    doctor_id={typeof id === "string" ? id : ""}
-                    is_active={true}
-                    is_featured={false}
-                    slug={review.slug}
-                    className="w-72"
-                  />
-                ))
+                    style={{ marginRight: index === reviewsData.data.length - 1 ? 0 : 15 }}
+                    className="flex-row"
+                  >
+                    <Testimonial
+                      key={review.id}
+                      patient_image={{ uri: review.patient_image }}
+                      patient_name={review.patient_name}
+                      patient_age={review.patient_age?.toString()}
+                      patient_location={review.patient_location}
+                      days_ago={review.created_at}
+                      title={review.title}
+                      content={htmlToReadableText(review.content)}
+                      total_reviews={review.total_reviews?.toString()}
+                      doctor_name={review.doctor_name}
+                      rating={review.rating}
+                      patient_id={review.id}
+                      doctor_id={typeof id === "string" ? id : ""}
+                      is_active={true}
+                      is_featured={false}
+                      slug={review.slug}
+                      className="min-w-80"
+                    />
+                    </View>
+                  ))
             ) : (
               <View className="py-4">
                 <Text className="text-gray-400 text-sm">

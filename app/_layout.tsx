@@ -226,13 +226,6 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen
-                      name="doctor/appointment-detail"
-                      options={{
-                        headerTitle: "Appointment Detail",
-                      }}
-                    />
-
-                    <Stack.Screen
                       name="doctor/start-consulation/index"
                       options={{ headerShown: false }}
                     />
@@ -264,13 +257,6 @@ export default function RootLayout() {
                       name="patient/profile/medical-reports/upload-your-report"
                       options={{
                         headerTitle: "Upload Your Report",
-                      }}
-                    />
-
-                    <Stack.Screen
-                      name="patient/profile/write-a-review"
-                      options={{
-                        headerTitle: "Write A Review",
                       }}
                     />
 
