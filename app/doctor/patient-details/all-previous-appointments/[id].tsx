@@ -7,6 +7,7 @@ import { Link, router, useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
 const AllPreviousAppointments = () => {
+    
     const params = useLocalSearchParams();
     const appointmentId = typeof params.id === 'string' ? params.id : (Array.isArray(params.id) ? params.id[0] : undefined);
     const { token } = useAuth();
@@ -53,20 +54,16 @@ const AllPreviousAppointments = () => {
 
                 {previousAppointments.length > 0 ? (
                     previousAppointments.map((appointment: any) => (
-                        // <Link
-                        //     key={appointment.appointment_id}
-                        //     href={`/doctor/patient-details/${appointment.appointment_id}`}
-                        // >
                         <Link
                             key={appointment.appointment_id}
-                            href={`/doctor/past-appointment-detail/${appointment.appointment_id}`}
+                            href={`/doctor/appointment-detail/${appointment.id}`}
                             className="mb-5"
                         >
                             <PreviousAppointment
-                                subject={appointment.notes?.problem || "No problem specified"}
+                                subject={appointment.notes || "No problem specified"}
                                 status={appointment.status}
-                                time={appointment.appointment_time_formatted}
-                                date={appointment.appointment_date_formatted}
+                                time={appointment.time}
+                                date={appointment.date}
                                 mode={appointment.consultation_type_label}
                             />
                         </Link>

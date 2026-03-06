@@ -18,9 +18,8 @@ interface UploadReportsNotesProps {
     onClose: () => void;
     onSubmit: () => void;
     isPending?: boolean;
-    insets?: { bottom?: number };
+    insets?: { top?: number; bottom?: number };
     showNotes?: boolean;
-    // onDeleteExisting?: (reportId: string) => void;
 }
 
 export default function UploadReportsNotes({
@@ -30,7 +29,6 @@ export default function UploadReportsNotes({
     isPending = false,
     insets,
     showNotes = true,
-    // onDeleteExisting,
 }: UploadReportsNotesProps) {
 
     const { control, setValue } = useFormContext();
@@ -62,9 +60,9 @@ export default function UploadReportsNotes({
         if (reportType && reportFile && reportName?.trim()) {
 
             append({
-              type: reportType,
-              file: reportFile,
-              name: reportName.trim(),
+                type: reportType,
+                file: reportFile,
+                name: reportName.trim(),
             });
           
             setValue("reportType", "");
@@ -79,7 +77,7 @@ export default function UploadReportsNotes({
                 <ScrollView
                     className="flex-1 bg-black/50 pt-10"
                     style={{
-                        marginTop: insets?.top + 50,
+                        marginTop: (insets?.top ?? 0) + 50,
                     }}
                     contentContainerStyle={{ flexGrow: 1, justifyContent: "flex-end" }}
                 >
@@ -121,6 +119,7 @@ export default function UploadReportsNotes({
                                     control={control}
                                     label="Select from My Reports"
                                     options={existingReportOptions}
+                                    emptyMessage="You don't have any uploaded reports yet"
                                 />
 
                                 <View className="flex-row justify-center items-center mt-5">
@@ -168,22 +167,27 @@ export default function UploadReportsNotes({
 
 
                                 {/* List */}
-                                {fields.map((item, index) => (
-                                    <View
-                                        key={item.id}
-                                        className="flex-row justify-between items-center mt-3 p-3 border rounded-lg"
-                                    >
-                                        <View>
-                                            <Text className="text-sm font-medium">{item.name}</Text>
-                                            <Text className="text-xs text-gray-500">{item.type}</Text>
+                                {(fields as Array<{ id: string; name?: string; type?: string }>).map(
+                                    (item, index) => (
+                                        <View
+                                            key={item.id}
+                                            className="flex-row justify-between items-center mt-3 p-3 border rounded-lg"
+                                        >
+                                            <View>
+                                                <Text className="text-sm font-medium">
+                                                    {item.name}
+                                                </Text>
+                                                <Text className="text-xs text-gray-500">
+                                                    {item.type}
+                                                </Text>
+                                            </View>
+
+                                            <Pressable onPress={() => remove(index)}>
+                                                <Trash2 size={18} color="red" />
+                                            </Pressable>
                                         </View>
-
-                                        <Pressable onPress={() => remove(index)}>
-                                            <Trash2 size={18} color="red" />
-                                        </Pressable>
-
-                                    </View>
-                                ))}
+                                    ),
+                                )}
 
 
                                 {/* Footer */}
@@ -212,30 +216,28 @@ export default function UploadReportsNotes({
                                         
                                             // auto append if user forgot Add Report
                                             if (reportType && reportFile && reportName?.trim()) {
-                                            append({
-                                                type: reportType,
-                                                file: reportFile,
-                                                name: reportName.trim(),
-                                            });
-                                        
-                                            setValue("reportType", "");
-                                            setValue("reportName", "");
-                                            setValue("reportFile", null);
+                                                append({
+                                                    type: reportType,
+                                                    file: reportFile,
+                                                    name: reportName.trim(),
+                                                });
+                                            
+                                                setValue("reportType", "");
+                                                setValue("reportName", "");
+                                                setValue("reportFile", null);
                                             }
                                         
                                             const selectedIds = control._formValues.existingReports || [];
 
                                             const selectedReports = reportsList
-                                            .filter(r => selectedIds.includes(r.id))
-                                            .map(r => ({
-                                                id: r.id,              // ⭐ IMPORTANT
-                                                name: r.report_name,
-                                                type: r.report_type,
-                                                file: null,            // ⭐ no file upload
-                                                isExisting: true,      // ⭐ flag
-                                            }));
-
-                                        
+                                                .filter((r) => selectedIds.includes(r.id))
+                                                .map((r) => ({
+                                                    id: r.id, // ⭐ IMPORTANT
+                                                    name: r.report_name,
+                                                    type: r.type_label,
+                                                    file: null, // ⭐ no file upload
+                                                    isExisting: true, // ⭐ flag
+                                                }));
 
                                             // append them into reports array
                                             selectedReports.forEach(r => append(r));

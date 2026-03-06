@@ -15,6 +15,7 @@ export interface AppointmentResponse {
     razorpay_order_id?: string;
     patient?: {
       name: string;
+      avatar?: string;
       age?: number;
       age_formatted: string;
       gender_formatted: string;

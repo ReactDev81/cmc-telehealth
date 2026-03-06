@@ -1,8 +1,16 @@
 import api from "@/lib/axios";
 
-export const deleteMedicalReport = async (reportId: string) => {
+export type DeleteMedicalReportVariables = {
+  appointmentId: string;
+  reportId: string;
+};
+
+export const deleteMedicalReport = async ({
+  appointmentId,
+  reportId,
+}: DeleteMedicalReportVariables) => {
   const { data } = await api.delete(
-    `/patient/medical-reports/${reportId}`
+    `/patient/medical-reports/${appointmentId}/${reportId}`,
   );
   return data;
 };

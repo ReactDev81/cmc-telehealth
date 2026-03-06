@@ -8,7 +8,7 @@ export interface Appointment {
     status: string;
     ready_to_join?: boolean;
     video_consultation?: any;
-    call_now: string;
+    call_now: boolean;
   }
   
   export interface Summary {

@@ -1,7 +1,7 @@
 import api from "@/lib/axios";
 
-export interface PatientAddressPayload {
-    address: string;
+export interface DoctorAddressPayload {
+    address_line1: string;
     area: string;
     pincode: string;
     city: string;
@@ -9,9 +9,9 @@ export interface PatientAddressPayload {
     group: "address";
 }
 
-export const savePatientAddress = async ( patientId: string, payload: PatientAddressPayload ) => {
+export const saveDoctorAddress = async ( doctorUsertID: string, payload: DoctorAddressPayload ) => {
     const { data } = await api.post(
-        `/patient/${patientId}`,
+        `/doctor/${doctorUsertID}`,
         payload
     );
     return data;

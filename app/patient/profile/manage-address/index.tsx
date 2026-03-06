@@ -141,7 +141,7 @@ const ManageAddress = () => {
                 </View>
 
 
-                {adress?.address == null ? '' :
+                {adress?.address == null || adress?.address == '' ? '' :
                     <View className='border border-gray rounded-xl mt-5 px-5 py-4'>
 
                         <View className='flex-row items-center justify-between'>

@@ -55,9 +55,7 @@ export default function ManageAppointments() {
     const { mutate: deleteReport } = useDeleteMedicalReport();
     const [editingReport, setEditingReport] = useState<any>(null);
     const [editingNotes, setEditingNotes] = useState(false);
-
     const [menuVisible, setMenuVisible] = useState<string | null>(null);
-
 
 
     const methods = useForm<ManageAppointmentFormData>({
@@ -106,33 +104,34 @@ export default function ManageAppointments() {
     const doctor = appointment?.doctor;
     const notes = appointment?.notes;
     const medicalReports = appointment?.medical_reports || [];
-    const hasReportsAndNotes = (medicalReports.length > 0) && notes;
+    const hasmedicalNotes = (medicalReports.length > 0);
 
-    const handleUpdateReport = (updatedReport) => {
+    const handleUpdateReport = (updatedReport: any) => {
+
         uploadReports(
-          {
-            reports: [updatedReport],   // ⭐ only one report
-          },
-          {
-            onSuccess: () => {
-              setEditingReport(null);
-              refetch();
+            {
+                reports: [updatedReport],
             },
-          }
+            {
+                onSuccess: () => {
+                    setEditingReport(null);
+                    refetch();
+                },
+            }
         );
-      };
+    };
       
-      const handleUpdateNotes = (updatedNotes: string) => {
+    const handleUpdateNotes = (updatedNotes: string) => {
         uploadReports(
-          { notes: updatedNotes },
-          {
-            onSuccess: () => {
-              setEditingNotes(false);
-              refetch();
-            },
-          }
+            { notes: updatedNotes },
+            {
+                onSuccess: () => {
+                    setEditingNotes(false);
+                    refetch();
+                },
+            }
         );
-      };
+    };
       
 
     const onSubmit = (data: ManageAppointmentFormData) => {
@@ -151,75 +150,71 @@ export default function ManageAppointments() {
       
         // ✅ Build reports array properly
         const payloadReports = validReports.map((r: any) => {
-          // ⭐ EXISTING REPORT (selected from My Reports)
-          if (r.isExisting && r.id) {
-            return {
-              id: r.id,
-              type: r.type,
-              name: r.name,
-            };
-          }
+
+            // ⭐ EXISTING REPORT (selected from My Reports)
+            if (r.isExisting && r.id) {
+                return {
+                    id: r.id,
+                    type: r.type,
+                    name: r.name,
+                };
+            }
       
-          // ⭐ NEWLY UPLOADED REPORT
-          return {
-            type: r.type,
-            name: r.name,
-            file: {
-              uri: r.file?.uri,
-              name:
-                r.file?.name ||
-                `report.${r.file?.uri?.split(".").pop()}`,
-              type:
-                r.file?.mimeType ||
-                r.file?.type ||
-                "application/octet-stream",
-            },
-          };
+            // ⭐ NEWLY UPLOADED REPORT
+            return {
+                type: r.type,
+                name: r.name,
+                file: { 
+                    uri: r.file?.uri,
+                    name: r.file?.name || `report.${r.file?.uri?.split(".").pop()}`,
+                    type: r.file?.mimeType || r.file?.type || "application/octet-stream",
+                },
+            };
         });
       
         if (payloadReports.length > 0) {
-          payload.reports = payloadReports;
+            payload.reports = payloadReports;
         }
       
         // ✅ Nothing to update
         if (!payload.notes && !payload.reports) {
-          Alert.alert("Nothing to update");
-          return;
+            Alert.alert("Nothing to update");
+            return;
         }
       
         uploadReports(payload, {
-          onSuccess: (res) => {
-            console.log("✅ Upload success:", res);
-      
-            queryClient.invalidateQueries({
-              queryKey: ["appointment", appointmentId],
-            });
-      
-            refetch();
-            reset();
-            setModalVisible(false);
-      
-            Alert.alert("Success", "Appointment updated successfully");
-          },
-          onError: (err: any) => {
-            console.log("UPLOAD ERROR:", err?.response?.data);
-      
-            Alert.alert(
-              "Error",
-              err?.response?.data?.message || "Upload failed"
-            );
-          },
+            onSuccess: (res) => {
+
+                console.log("✅ Upload success:", res);
+            
+                queryClient.invalidateQueries({
+                    queryKey: ["appointment", appointmentId],
+                });
+            
+                refetch();
+                reset();
+                setModalVisible(false);
+        
+                Alert.alert("Success", "Appointment updated successfully");
+            },
+            onError: (err: any) => {
+                console.log("UPLOAD ERROR:", err?.response?.data);
+            
+                Alert.alert(
+                    "Error",
+                    err?.response?.data?.message || "Upload failed"
+                );
+            },
         });
-      };
-      
+    };
 
 
     const handleCancelAppointment = () => {
+
         if (!appointmentId) return;
 
         cancelAppointment(appointmentId, {
             onSuccess: (res) => {
-                // console.log("✅ Appointment cancelled:", res?.status);
 
                 // Invalidate appointment query to clear cache
                 queryClient.invalidateQueries({
@@ -243,8 +238,6 @@ export default function ManageAppointments() {
                 setCancelModalVisible(false);
             },
             onError: (err: any) => {
-                // console.log("❌ Cancel error:", err);
-
                 Alert.alert(
                     "Error",
                     err?.response?.data?.message || "Failed to cancel appointment",
@@ -260,16 +253,12 @@ export default function ManageAppointments() {
         (data?.data?.doctor as any)?.profile?.id ||
         (data?.data as any)?.doctor_id ||
         appointment?.doctor_id;
-    // console.log("Doctor ID :", doctorId);
-
-    // console.log("schedule:", schedule?.opd_type);
-    // console.log("appointment:", appointment);
-
 
     return (
         <FormProvider {...methods}>
             <SafeAreaView className="flex-1 bg-white" edges={['left', 'right', 'bottom']}>
                 <ScrollView className="flex-1 bg-white">
+
                     {/* Banner */}
                     <Image
                         source={{
@@ -322,8 +311,10 @@ export default function ManageAppointments() {
 
                         <View>
 
+                            
+
                             {/* Medical Reports & Notes */}
-                            {hasReportsAndNotes ? (
+                            {hasmedicalNotes || notes ? (
                                 <View className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
 
                                     {/* Header */}
@@ -342,9 +333,9 @@ export default function ManageAppointments() {
                                             <Pressable 
                                                 className="flex-1"
                                                 onPress={() => {
-                                                  if (menuVisible) {
-                                                    setMenuVisible(null); // only close if open
-                                                  }
+                                                    if (menuVisible) {
+                                                        setMenuVisible(null); // only close if open
+                                                    }
                                                 }}
                                             >
                                                 <Text className="text-sm font-medium text-black mb-2">
@@ -411,9 +402,16 @@ export default function ManageAppointments() {
                                                                         text: "Delete",
                                                                         style: "destructive",
                                                                         onPress: () => {
-                                                                            deleteReport(report.id, {
-                                                                                onSuccess: () => refetch(),
-                                                                            });
+                                                                            if (!appointmentId) return;
+                                                                            deleteReport(
+                                                                                {
+                                                                                    appointmentId,
+                                                                                    reportId: report.id,
+                                                                                },
+                                                                                {
+                                                                                    onSuccess: () => refetch(),
+                                                                                },
+                                                                            );
                                                                         },
                                                                     },
                                                                 ]);
@@ -434,50 +432,54 @@ export default function ManageAppointments() {
                                     ))}
 
                                     {/* Note Section */}
-                                    <View>
-                                        <Text className="text-base font-semibold text-black mb-2">
-                                            Note
-                                        </Text>
-                                        <View className="flex-row items-center justify-between bg-gray-50 rounded-xl border border-gray-200 p-4">
-                                            <Text className="text-sm text-black-400">
-                                                {typeof notes === "string" ? notes : "No notes available."}
+                                    {notes && 
+                                        <View>
+                                            <Text className="text-base font-semibold text-black mb-2">
+                                                Note
                                             </Text>
-                                            <Pressable
-                                                onPress={() => setEditingNotes(true)}
-                                                className="p-2"
-                                            >
-                                                <SquarePen size={18} color="#000" />
-                                            </Pressable>
+                                            <View className="flex-row items-center justify-between bg-gray-50 rounded-xl border border-gray-200 py-2 px-3">
+                                                <Text className="text-sm text-black-400">
+                                                    {typeof notes === "string" ? notes : "No notes available."}
+                                                </Text>
+                                                <Pressable
+                                                    onPress={() => setEditingNotes(true)}
+                                                    className="p-2"
+                                                >
+                                                    <SquarePen size={18} color="#000" />
+                                                </Pressable>
+                                            </View>
                                         </View>
-                                    </View>
+                                    }
 
-
-                                    <Button
-                                        onPress={() => {
-                                            methods.reset({
-                                                notes: notes || "",
-                                                reports: [],
-                                                existingReports: [], // reset selection
-                                            });
-                                              
-                                        
-                                            setModalVisible(true);
-                                        }}
-                                        className="mt-5"
-                                    >
-                                        <Text>Upload New Report</Text>
-                                    </Button>
+                                    {
+                                        !hasmedicalNotes && 
+                                        <Button
+                                            onPress={() => {
+                                                methods.reset({
+                                                    notes: typeof notes === "string" ? notes : notes?.problem ?? notes?.reason ?? "",
+                                                    reports: [],
+                                                    existingReports: [],
+                                                });
+                                                setModalVisible(true);
+                                            }}
+                                            className="mt-5"
+                                        >
+                                            <Text>Upload New Report</Text>
+                                        </Button>
+                                    }
+                                   
                                 </View>
                             ) : (
                                 <View className="items-center py-6 px-4">
                                     <Text className="text-sm text-black-400 text-center">
-                                        You have not added any medical reports or notes. If you'd like
-                                        to share them with your doctor,
-                                        <Pressable onPress={() => setModalVisible(true)}>
-                                            <Text className="text-primary font-medium underline">
+                                        You have not added any medical reports {!notes && 'or notes'}. If you'd like
+                                        to share them with your doctor, {' '}
+                                            <Text 
+                                                onPress={() => setModalVisible(true)} 
+                                                className="text-primary font-medium underline"
+                                            >
                                                 click here to upload.
                                             </Text>
-                                        </Pressable>
                                     </Text>
                                 </View>
                             )}
@@ -549,7 +551,7 @@ export default function ManageAppointments() {
 
                             <EditNotesModal
                                 visible={editingNotes}
-                                notes={notes}
+                                notes={typeof notes === "string" ? notes : notes?.problem ?? notes?.reason ?? ""}
                                 onClose={() => setEditingNotes(false)}
                                 onSave={handleUpdateNotes}
                             />
@@ -557,38 +559,14 @@ export default function ManageAppointments() {
 
                             <UploadReportsNotes
                                 visible={modalVisible}
-                                showNotes={!hasReportsAndNotes}
-                                // onClose={() => setModalVisible(false)}
+                                showNotes={!notes}
                                 onClose={() => {
                                     methods.reset();
                                     setModalVisible(false);
-                                  }}
+                                }}
                                 onSubmit={handleSubmit(onSubmit)}
                                 isPending={isPending}
                                 insets={insets}
-                                onDeleteExisting={(reportId) => {
-                                    Alert.alert(
-                                      "Delete Report",
-                                      "Delete this report permanently?",
-                                      [
-                                        { text: "Cancel" },
-                                        {
-                                          text: "Delete",
-                                          style: "destructive",
-                                          onPress: () => {
-                                            deleteReport(reportId, {
-                                              onSuccess: () => {
-                                                queryClient.invalidateQueries({
-                                                  queryKey: ["appointment", appointmentId],
-                                                });
-                                                refetch();
-                                              },
-                                            });
-                                          },
-                                        },
-                                      ]
-                                    );
-                                }}
                             />
                         </View>
                     </View>

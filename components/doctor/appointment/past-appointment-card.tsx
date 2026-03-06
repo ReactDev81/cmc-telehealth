@@ -65,7 +65,7 @@ const PastAppointmentCard = ({
 
                 <Button
                     onPress={() =>
-                        router.push(`/doctor/past-appointment-detail/${appointmentId}`)
+                        router.push(`/doctor/appointment-detail/${appointmentId}`)
                     }
                     className="[&]:py-2 max-w-32 mt-2"
                 >

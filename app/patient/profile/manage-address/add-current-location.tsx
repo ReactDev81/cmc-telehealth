@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { MapPin } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Text, View } from "react-native";
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 
 const AddCurrentLocation = () => {
@@ -14,7 +14,6 @@ const AddCurrentLocation = () => {
     const { latitude, longitude } = useLocalSearchParams();
     const lat = parseFloat(latitude as string);
     const lon = parseFloat(longitude as string);
-
     const [address, setAddress] = useState<string | null>(null);
     const [district, setDistrict] = useState<string | null>(null);
     const [place, setPlace] = useState<Location.LocationGeocodedAddress | null>(null);
@@ -22,8 +21,6 @@ const AddCurrentLocation = () => {
 
     const { user, updateUser } = useAuth();
     const { mutate, isPending } = useSavePatientAddress(user?.id ?? "");  
-
-    console.log('place ', place)
 
     useEffect(() => {
         const getAddress = async () => {
@@ -37,12 +34,10 @@ const AddCurrentLocation = () => {
                     setAddress(place.formattedAddress);
                     setDistrict(place.district);
                     setPlace(place);
-                    // console.log('place', place);
                 } else {
                     setAddress('Address not found');
                 }
             } catch (error) {
-                // console.error('Reverse geocoding failed', error);
                 setAddress('Unable to fetch address');
             } finally {
                 setLoading(false);
@@ -54,52 +49,54 @@ const AddCurrentLocation = () => {
 
     const onSubmit = () => {
         if (!place) {
-          Alert.alert("Error", "Location details are not available yet.");
-          return;
+            Alert.alert("Error", "Location details are not available yet.");
+            return;
         }
 
         const payload = {
-          address: (place.name ?? "") + " " + (place.district ?? ""),
-          area: place.district ?? "",
-          pincode: place.postalCode ?? "",
-          city: place.city ?? "",
-          state: place.region ?? "",
-          group: "address" as const,
+            address: (place.name ?? "") + " " + (place.district ?? ""),
+            area: place.district ?? "",
+            pincode: place.postalCode ?? "",
+            city: place.city ?? "",
+            state: place.region ?? "",
+            group: "address" as const,
         };
     
         mutate(payload, {
-          onSuccess: (response) => {
-            Alert.alert(
-              "Success",
-              response?.message || "Address updated successfully!"
-            );
+            onSuccess: (response) => {
 
-            updateUser({
-                address: {
-                    address: response.data.address ?? "",
-                    area: response.data.area ?? "",
-                    city: response.data.city,
-                    landmark: response.data.landmark,
-                    pincode: response.data.pincode,
-                    state: response.data.state,
-                },
-            });
+                Alert.alert(
+                    "Success",
+                    response?.message || "Address updated successfully!"
+                );
 
-            router.replace("/patient/profile/manage-address");
-          },
-          onError: (error: any) => {
-            Alert.alert(
-              "Error",
-              error?.response?.data?.message || "Failed to update address"
-            );
-          },
+                updateUser({
+                    address: {
+                        address: response.data.address ?? "",
+                        area: response.data.area ?? "",
+                        city: response.data.city,
+                        landmark: response.data.landmark,
+                        pincode: response.data.pincode,
+                        state: response.data.state,
+                    },
+                });
+
+                router.replace("/patient/profile/manage-address");
+            },
+            onError: (error: any) => {
+                Alert.alert(
+                    "Error",
+                    error?.response?.data?.message || "Failed to update address"
+                );
+            },
         });
-      }; 
+    }; 
 
     return (
         <View className='flex-1 relative'>
 
             <MapView
+                provider={PROVIDER_GOOGLE}
                 style={{ flex: 1 }}
                 initialRegion={{
                     latitude: lat,
@@ -131,10 +128,7 @@ const AddCurrentLocation = () => {
                     )}
                 </View>
 
-                <Button 
-                    disabled={isPending} onPress={onSubmit}
-                // onPress={() => router.replace('/patient/profile/manage-address')}
-                >
+                <Button disabled={isPending} onPress={onSubmit}>
                     Proceed
                 </Button>
 

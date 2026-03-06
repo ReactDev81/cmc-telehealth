@@ -39,42 +39,38 @@ const MyReviews = () => {
     }
 
     const renderItem = ({ item }: any) => {
-        
         const image = userRole === "patient" ? item?.doctor_avatar : item?.patient_image;
         const name = userRole === "patient" ? item?.doctor_name : item?.patient_name;
-    
         return (
-          <View className="bg-white rounded-xl border border-black-300 w-full justify-between p-5">
-            <View className="flex-row justify-between items-start mb-2">
-              <View className="flex-row gap-x-2">
-                <Image
-                  source={{ uri: image }}
-                  className="w-10 h-10 rounded-full"
-                />
-    
-                <View>
-                  <Text className="text-sm text-black font-medium">{name}</Text>
-                  <Text className="text-xs text-black mt-1">
-                    {userRole === "patient"
-                      ? `${item?.doctor_departments} (${item?.doctor_experience} Exp)`
-                      : item?.patient_age}
-                  </Text>
+            <View className="bg-white rounded-xl border border-black-300 w-full justify-between p-5">
+                <View className="flex-row justify-between items-start mb-2">
+                    <View className="flex-row gap-x-2">
+                        <Image
+                            source={{ uri: image }}
+                            className="w-10 h-10 rounded-full"
+                        />
+                        <View>
+                            <Text className="text-sm text-black font-medium">{name}</Text>
+                            <Text className="text-xs text-black mt-1">
+                                {userRole === "patient"
+                                    ? `${item?.doctor_departments} (${item?.doctor_experience} Exp)`
+                                    : item?.patient_age}
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1">
+                        <Star size={12} fill="#013220" />
+                        <Text className="text-primary text-sm font-medium">
+                            {item?.rating}
+                        </Text>
+                    </View>
                 </View>
-              </View>
-    
-              <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1">
-                <Star size={12} fill="#013220" />
-                <Text className="text-primary text-sm font-medium">
-                  {item?.rating}
-                </Text>
-              </View>
+                <Text className="text-xs leading-5 text-black">{item?.title}</Text>
+                <Text className="text-xs leading-5 text-black">{item?.content}</Text>
             </View>
-    
-            <Text className="text-xs leading-5 text-black">{item?.title}</Text>
-            <Text className="text-xs leading-5 text-black">{item?.content}</Text>
-          </View>
         );
-      };
+    };
 
     return(
         <View className="flex-1 bg-white">

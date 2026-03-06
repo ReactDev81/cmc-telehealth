@@ -231,10 +231,17 @@ export default function RootLayout() {
                     />
 
                     <Stack.Screen
-                      name="doctor/past-appointment-detail/[id]"
+                      name="doctor/appointment-detail/[id]"
                       options={{
                         headerShown: true,
-                        title: "Past Appointment Details",
+                        title: "Appointment Details",
+                      }}
+                    />
+
+                    <Stack.Screen
+                      name="doctor/patient-details/all-previous-appointments/[id]"
+                      options={{
+                        headerTitle: "Previous Appointments",
                       }}
                     />
 
