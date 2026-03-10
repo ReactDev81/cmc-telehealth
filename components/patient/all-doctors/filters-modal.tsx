@@ -2,7 +2,7 @@ import { useFindDoctorData } from "@/queries/patient/useFindDoctorData";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import FilterOptionCard from "./filter-option-card";
 
 interface FiltersModalProps {
@@ -20,13 +20,9 @@ interface FiltersModalProps {
 
 const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalProps) => {
 
-    const insets = useSafeAreaInsets();
     const { data, isLoading, isError, error } = useFindDoctorData();
     const [activeTab, setActiveTab] = useState<"speciality" | "symptoms">("speciality");
-    // const items = Array.isArray(data) ? data : [];
-
     const items = Array.isArray(data?.data) ? data.data : [];
-
 
     const symptoms = items.flatMap((item) =>
         Array.isArray(item.symptoms)
@@ -37,8 +33,6 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
           : []
     );      
 
-    // console.log('data', data);
-
     return (
         <Modal
             visible={visible}
@@ -48,7 +42,6 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
         >
             <SafeAreaView className="absolute top-0 left-0 w-full h-full justify-between bg-white"
                 style={{
-                    // paddingTop: insets?.top,
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: 0.25,
@@ -59,24 +52,20 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                 {/* header */}
                 <View className="flex-row item-center justify-between p-5">
                     <View>
-                        <Text>Filters</Text>
+                        <Text>Filter By</Text>
                     </View>
                     <View>
-                    {/* <Pressable onPress={() => setFilters({})}>
-                        <Text className="text-danger font-medium">Clear All</Text>
-                    </Pressable> */}
-                    <Pressable
-                        onPress={() => {
-                            setFilters({});
-                            router.setParams({
-                                filter_type: undefined,
-                                id: undefined,
-                            });
-                        }}
-                    >
-                        <Text className="text-danger font-medium">Clear All</Text>
-                    </Pressable>
-
+                        <Pressable
+                            onPress={() => {
+                                setFilters({});
+                                router.setParams({
+                                    filter_type: undefined,
+                                    id: undefined,
+                                });
+                            }}
+                        >
+                            <Text className="text-danger font-medium">Clear All</Text>
+                        </Pressable>
                     </View>
                 </View>
 
@@ -85,6 +74,7 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
 
                     {/* LEFT TABS */}
                     <View className="w-2/6 bg-gray-50 border-r border-gray-200">
+
                         <Pressable
                             onPress={() => setActiveTab("speciality")}
                             className={`px-4 py-4 ${
@@ -141,36 +131,36 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                         )}
 
 
-{activeTab === "symptoms" && (
-  symptoms.length === 0 ? (
-    <Text className="text-gray-400 text-center">
-      No symptoms available
-    </Text>
-  ) : (
-    <View className="flex-row flex-wrap justify-between gap-4">
-      {symptoms.map((symptom, index) => (
-        <FilterOptionCard
-        key={`${symptom.name}-${index}`}
-        id={String(symptom.departmentId)} // ✅ USE departmentId
-        label={symptom.name}
-        icon={symptom.icon}
-        selected={
-          filters.symptomDepartmentId ===
-          String(symptom.departmentId)
-        }
-        onPress={(id) =>
-          setFilters((prev) => ({
-            ...prev,
-            symptomDepartmentId:
-              prev.symptomDepartmentId === id ? undefined : id,
-            departmentId: undefined, // reset speciality
-          }))
-        }
-      />      
-      ))}
-    </View>
-  )
-)}
+                        {activeTab === "symptoms" && (
+                            symptoms.length === 0 ? (
+                                <Text className="text-gray-400 text-center">
+                                    No symptoms available
+                                </Text>
+                            ) : (
+                                <View className="flex-row flex-wrap justify-between gap-4">
+                                    {symptoms.map((symptom, index) => (
+                                        <FilterOptionCard
+                                            key={`${symptom.name}-${index}`}
+                                            id={String(symptom.departmentId)} // ✅ USE departmentId
+                                            label={symptom.name}
+                                            icon={symptom.icon}
+                                            selected={
+                                                filters.symptomDepartmentId ===
+                                                String(symptom.departmentId)
+                                            }
+                                            onPress={(id) =>
+                                                setFilters((prev) => ({
+                                                    ...prev,
+                                                    symptomDepartmentId:
+                                                    prev.symptomDepartmentId === id ? undefined : id,
+                                                    departmentId: undefined, // reset speciality
+                                                }))
+                                            }
+                                        />      
+                                    ))}
+                                </View>
+                            )
+                        )}
 
                     </View>
 

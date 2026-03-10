@@ -10,6 +10,7 @@ import { useState } from "react";
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 
 const Feedback = () => {
+    
     const [page, setPage] = useState(1);
     const perPage = 5;
     const { token } = useAuth();

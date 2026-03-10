@@ -4,7 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Bell, ChevronDown, MapPin } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
 
 interface HeaderProps {
     insets?: { top?: number };
@@ -42,10 +42,12 @@ const Header = ({ insets }: HeaderProps) => {
 
                 <View className="flex-row items-center gap-x-2">
                     <View>
-                        <Image
-                            source={profileImageSource}
-                            className="w-11 h-11 object-cover rounded-full"
-                        />
+                        <Pressable onPress={() => router.push('/(patient)/profile')}>
+                            <Image
+                                source={profileImageSource}
+                                className="w-11 h-11 object-cover rounded-full"
+                            />
+                        </Pressable>
                     </View>
                     <View>
                         <Text className="text-white text-base font-medium">

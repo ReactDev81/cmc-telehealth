@@ -18,8 +18,18 @@ import FormLayout from "../formLayout";
 const schema = z.object({
     first_name: z.string().min(1),
     last_name: z.string().min(1),
-    date_of_birth: z.date(),
-    mobile_no: z.string().min(8),
+    date_of_birth: z
+        .date()
+        .refine((date) => {
+            const today = new Date();
+            const age = today.getFullYear() - date.getFullYear();
+            return age <= 100;
+        }, {
+            message: "Age cannot be more than 100 years",
+        }),
+    mobile_no: z
+        .string()
+        .regex(/^\d{10,}$/, "Phone number must be at least 10 digits"),
     gender: z.string(),
     email: z.string().email(),
     password: z.string().min(8),
@@ -31,7 +41,7 @@ export default function RegisterCompleteProfile() {
         email?: string;
     }>();
 
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const { mutate: completeProfile, isPending, isError, error } = useCompleteProfile();
     const { deviceInfo } = useNotification();
 
@@ -41,10 +51,9 @@ export default function RegisterCompleteProfile() {
 
     // Prefill email once the route param is available
     useEffect(() => {
-        if (email) {
-            reset({ email: typeof email === "string" ? email : "" });
-        }
-    }, [email]);
+        const finalEmail = typeof email === "string" ? email : user?.email ?? "";
+        reset({ email: finalEmail });
+      }, [email, user?.email]);
 
     const onSubmit = (formData: any) => {
 

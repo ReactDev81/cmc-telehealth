@@ -83,8 +83,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "b2cde25c-7864-44c1-936d-d4077c1e6e32"
+        "projectId": "b2e6fed1-3a6e-43f4-8f42-173de5901ead"
       }
-    }
+    },
+    "owner": "cmc-telehealth"
   }
 }

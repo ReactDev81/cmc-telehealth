@@ -16,7 +16,7 @@ const RegisterVerifyOtp = () => {
     const { mutate: resendOtp, isPending: resendIsPending } = useResendOtp();
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [error, setError] = useState("");
-    const [resendTimer, setResendTimer] = useState(30);
+    const [resendTimer, setResendTimer] = useState(60);
     const inputRefs = useRef<TextInput[]>([]);
 
     const { email } = useLocalSearchParams<{
@@ -76,8 +76,6 @@ const RegisterVerifyOtp = () => {
             },
             {
                 onSuccess: async (data) => {
-
-                    console.log("data", data);
                     
                     const user = data.data;
 
@@ -87,7 +85,7 @@ const RegisterVerifyOtp = () => {
                         first_name: "",
                         last_name: "",
                         avatar: "",
-                        email: "",
+                        email: emailStr,
                         gender: "",
                         date_of_birth: "",
                         role: "patient", 
@@ -115,8 +113,7 @@ const RegisterVerifyOtp = () => {
                     });
                 },
                 onError: (error) => {
-                    console.log("OTP error:", error.response?.data);
-                    const message = error.response?.data?.message ?? error.message ??
+                    const message = error.response?.data?.errors?.message ?? error.message ??
                         "Invalid OTP. Please try again.";
                     setError(message);
                 },
@@ -143,7 +140,6 @@ const RegisterVerifyOtp = () => {
                     console.log(data); // OTP resent
                 },
                 onError: (error) => {
-                    console.log(error.response?.data);
                     const message = error.response?.data?.message ?? error.message ??
                         "Something went wrong. Please try again.";
                     setError(message);
@@ -151,7 +147,7 @@ const RegisterVerifyOtp = () => {
             },
         );
 
-        setResendTimer(30);
+        setResendTimer(60);
     };
 
     return (
@@ -220,7 +216,7 @@ const RegisterVerifyOtp = () => {
                     Resend OTP in{" "}
                     {resendTimer > 0 && (
                             <Text className="text-gray-500 text-sm">
-                                Resend OTP in 
+                                Resend OTP in {' '}
                             <Text className="text-primary font-medium">
                                 00:{resendTimer.toString().padStart(2, "0")}
                             </Text>

@@ -4,6 +4,7 @@ import { useMyReviews } from "@/queries/common/useMyReviews";
 import { Star } from 'lucide-react-native';
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const MyReviews = () => {
 
@@ -15,6 +16,9 @@ const MyReviews = () => {
 
     const myReviews = data?.data || [];
     const pagination = data?.pagination;
+
+    const PaginationLength = myReviews.length;
+    const PaginationTotal = pagination?.total ?? 0;
 
     if (isLoading && !data) {
         return (
@@ -73,7 +77,7 @@ const MyReviews = () => {
     };
 
     return(
-        <View className="flex-1 bg-white">
+        <SafeAreaView edges={["left", "right", "bottom"]} className="flex-1 bg-white">
             <FlatList
                 data={myReviews}
                 keyExtractor={(item) => item.id}
@@ -93,6 +97,9 @@ const MyReviews = () => {
                                 currentPage={page}
                                 lastPage={pagination.last_page}
                                 onPageChange={(p) => setPage(p)}
+                                paginationLength={PaginationLength}
+                                paginationTotal={PaginationTotal}
+                                paginationLabel="Reviews"
                             />
                         )}
                     </>
@@ -105,7 +112,7 @@ const MyReviews = () => {
                     ) : null
                 }
             />
-        </View>
+        </SafeAreaView>
     )
 }
 

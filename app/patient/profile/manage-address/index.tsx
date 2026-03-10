@@ -188,7 +188,7 @@ const ManageAddress = () => {
                                 boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25)'
                             }}
                         >
-                            <Text className='text-lg font-medium text-black'>Deliver to</Text>
+                            <Text className='text-lg font-medium text-black'>Add Address</Text>
                             <TouchableOpacity onPress={handleCloseModal}>
                                 <X color="#1F1E1E" size={18} strokeWidth={2.5} />
                             </TouchableOpacity>

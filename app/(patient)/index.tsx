@@ -220,7 +220,7 @@ const Home = () => {
                                             marginRight:
                                                 index === ((homeData?.patient_reviews?.length ?? 1) - 1)
                                                     ? 0
-                                                    : 15,
+                                                    : 5,
                                         }}
                                         className="flex-row"
                                     >

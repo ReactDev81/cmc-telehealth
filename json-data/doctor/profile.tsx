@@ -11,7 +11,7 @@ import {
   KeyRound,
   MapPin,
   ShieldCheck,
-  Stethoscope,
+  Star,
   UserStar
 } from "lucide-react-native";
 
@@ -72,7 +72,7 @@ export const DoctorMenuSections: MenuSection[] = [
       },
       {
         id: 'my-reviews',
-        icon: <Stethoscope size={20} color="#374151" />,
+        icon: <Star size={20} color="#374151" />,
         title: 'My Reviews',
         description: 'Reviews to the Doctor',
         route: '/common-screens/my-reviews'
@@ -86,49 +86,49 @@ export const DoctorMenuSections: MenuSection[] = [
         id: "about",
         icon: <Info size={20} color="#374151" />,
         title: "About CMC",
-        description: "Learn more about the company",
+        description: "Learn more about CMC Telehealth and our services.",
         route: "/common-screens/profile/about-us",
       },
       {
         id: "faq",
         icon: <HelpCircle size={20} color="#374151" />,
         title: "Frequently Asked Questions",
-        description: "Check Faq's",
+        description: "Find quick answers to common questions.",
         route: "/common-screens/profile/faq",
       },
       {
         id: "need_help",
         icon: <Headphones size={20} color="#374151" />,
         title: "Need Help",
-        description: "Access Support",
+        description: "Get support and contact our help center anytime.",
         route: "/common-screens/profile/need-help",
       },
       {
         id: "rate_us",
         icon: <UserStar size={20} color="#374151" />,
         title: "Rate Us",
-        description: "Share your feedback to help us",
+        description: "Share your experience and rate our app.",
         route: "/common-screens/profile/rate-us",
       },
       {
         id: "term_condition",
         icon: <Handshake size={20} color="#374151" />,
         title: "Terms & Conditions",
-        description: "Understand the rules and guidelines",
+        description: "Read the rules and terms for using our services.",
         route: "/common-screens/profile/term-condition",
       },
       {
         id: "privacy",
         icon: <ShieldCheck size={20} color="#374151" />,
         title: "Privacy Policy",
-        description: "Review how your data is collected",
+        description: "Learn how we collect, use, and protect your data.",
         route: "/common-screens/profile/privacy-policy",
       },
       {
         id: 'change-password',
         icon: <KeyRound size={20} color="#374151" />,
         title: 'Change Password',
-        description: 'You can change your password here',
+        description: 'Update your account password to keep it secure.',
         route: '/auth/reset-password'
       },
     ],

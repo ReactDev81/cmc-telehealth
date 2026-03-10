@@ -282,7 +282,7 @@ export default function ManageAppointments() {
                         </View>
 
                         {/* Appointment Details */}
-                        <View className="pb-5 mb-5 border-b border-black-200">
+                        <View className="pb-5 mb-5">
                             <View>
                                 <Text className="text-lg font-medium">Appointment Details</Text>
                                 <Text
@@ -302,7 +302,7 @@ export default function ManageAppointments() {
                         </View>
 
                         {/* Patient Details */}
-                        <View className="pb-5 mb-5 border-b border-black-200">
+                        <View className="pb-5 mb-5">
                             <Text className="text-lg font-medium">Patient Details</Text>
                             <Detail label="Name" value={patient?.name || ""} />
                             <Detail label="Age" value={patient?.age_formatted || ""} />

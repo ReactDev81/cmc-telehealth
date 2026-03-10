@@ -41,7 +41,7 @@ const AvailableDoctors = ({
                     params: { booking_type: "new appointment" },
                 }}
             >
-                <View className="flex-row items-center gap-x-3">
+                <View className="flex-row items-center gap-x-2">
                     <View>
                         <Image source={imageSource} className="w-14 h-14 rounded-full" />
                     </View>
@@ -49,6 +49,7 @@ const AvailableDoctors = ({
                         <Text className="text-sm text-black font-medium">{name}</Text>
                         <Text className="text-xs text-black mt-1.5">
                             {doctor_speciality ? doctor_speciality : 'no department'}
+                            {' '}
                             {experience}
                         </Text>
                         {rating > 0 &&

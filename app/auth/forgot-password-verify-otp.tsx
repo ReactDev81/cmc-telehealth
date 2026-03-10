@@ -14,7 +14,7 @@ const ForgotPasswordVerifyOtp = () => {
 
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [error, setError] = useState("");
-    const [resendTimer, setResendTimer] = useState(30);
+    const [resendTimer, setResendTimer] = useState(60);
     const inputRefs = useRef<TextInput[]>([]);
 
     const { email } = useLocalSearchParams<{
@@ -77,11 +77,10 @@ const ForgotPasswordVerifyOtp = () => {
                         params: { email: emailStr, reset_token: res.data?.reset_token },
                     });
                 },
-                onError: () => {
-                    setError(
-                        (apiError as any)?.response?.data?.message ||
-                        "Invalid OTP. Please try again.",
-                    );
+                onError: (error: any) => {
+                    const message = error.response?.data?.errors?.message ?? error.message ??
+                        "Invalid OTP. Please try again.";
+                    setError(message);
                 },
             },
         );
@@ -116,7 +115,7 @@ const ForgotPasswordVerifyOtp = () => {
             },
         );
 
-        setResendTimer(30);
+        setResendTimer(60);
     };
 
     return (
