@@ -4,9 +4,10 @@ import { Pressable, TextInput, TextInputProps, View } from 'react-native';
 interface SearchBarProps extends TextInputProps {
     variant?: 'primary' | 'secondary';
     onPress?: () => void;
+    filterIcon?: Boolean;
 }
 
-const SearchBar = ({ variant = 'primary', placeholder, onPress, ...props }: SearchBarProps) => {
+const SearchBar = ({ variant = 'primary', placeholder, filterIcon = true, onPress, ...props }: SearchBarProps) => {
 
     const isPrimary = variant === 'primary';
     
@@ -32,12 +33,14 @@ const SearchBar = ({ variant = 'primary', placeholder, onPress, ...props }: Sear
             />
 
             {/* filter icon */}
-            <Pressable onPress={onPress}>
-                <SlidersHorizontal 
-                    size={20} 
-                    color={isPrimary ? '#fff' : '#929292'} 
-                />
-            </Pressable>
+            {filterIcon &&
+                <Pressable onPress={onPress}>
+                    <SlidersHorizontal 
+                        size={20} 
+                        color={isPrimary ? '#fff' : '#929292'} 
+                    />
+                </Pressable>
+            }
 
         </View>
     );
