@@ -52,11 +52,6 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
         );
     }, [search, symptoms]);
 
-    const selectedCount = [
-        filters.departmentId,
-        filters.symptomDepartmentId,
-    ].filter(Boolean).length;
-
     return (
         <Modal visible={visible} animationType="slide">
             <SafeAreaView className="flex-1 bg-white">
@@ -150,7 +145,7 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                 </View>
 
                 {/* LIST */}
-                <FlatList
+                <FlatList<any>
                     data={
                         activeTab === "speciality"
                         ? filteredSpecialities
@@ -162,7 +157,7 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                         : `${item.name}-${index}`
                     }
                     contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
-                    renderItem={({ item }) => {
+                    renderItem={({ item }: { item: any }) => {
                         const isSpeciality = activeTab === "speciality";
 
                         const label = isSpeciality
@@ -171,7 +166,7 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
 
                         const id = isSpeciality
                         ? String(item.id)
-                        : String(item.departmentId);
+                        : String((item as any).departmentId);
 
                         const selected = isSpeciality
                         ? filters.departmentId === id
