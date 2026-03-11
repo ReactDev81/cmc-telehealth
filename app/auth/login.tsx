@@ -9,8 +9,9 @@ import { useLogin } from "@/mutations/useLogin";
 import { User, UserRole } from "@/types/common/user-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { z } from "zod";
 import FormLayout from "../formLayout";
 
@@ -27,6 +28,7 @@ const LoginScreen = () => {
     const { login } = useAuth();
     const { mutate: signIn, isPending, isError, error } = useLogin();
     const { deviceInfo } = useNotification();
+    const [emailverified, setEmailverified] = useState(false);
 
     const { control, handleSubmit } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -88,6 +90,9 @@ const LoginScreen = () => {
             },
             onError: (error: any) => {
                 console.log("ERROR:", error?.response?.data);
+                if(error.response?.data?.errors?.status === "verified") {
+                    setEmailverified(true);
+                }
             },
         }); 
     };
@@ -143,7 +148,7 @@ const LoginScreen = () => {
                 />
                 <Link
                     href="/auth/forgot-password-send-otp"
-                    className="text-[#D70015] text-sm font-semibold"
+                    className="text-danger text-sm font-semibold"
                 >
                     Forgot Password?
                 </Link>
@@ -161,30 +166,31 @@ const LoginScreen = () => {
             />
 
             {/* Submit */}
-            <View className="mt-8">
-                <Button
-                    variant="filled"
-                    onPress={handleSubmit(handleSignIn)}
-                    disabled={isPending}
-                    className="mt-4"
-                >
-                    {isPending ? "Signing In..." : "Sign In"}
-                </Button>
-
-                <View className="flex-row items-center mt-7">
-                    <View className="flex-1 h-px bg-primary-200" />
-                    <Text className="mx-3 text-black-400 text-base">or Sign In with</Text>
-                    <View className="flex-1 h-px bg-primary-200" />
-                </View>
-
-                <Pressable className="mt-7 border border-[#D0D5DD] py-3.5 rounded-xl flex-row justify-center items-center gap-x-4">
-                    <Image source={require("../../assets/images/google.png")} />
-                    <Text className="text-black-400">Sign in with Google</Text>
-                </Pressable>
+            <View className="mt-5">
+                {
+                    emailverified ? (
+                        <Button
+                            onPress={() => router.replace("/auth/register-complete-profile")}
+                            className="mt-4"
+                            disabled={isPending}
+                        >
+                            Complete Your Profile
+                        </Button>
+                    ) :(
+                        <Button
+                            variant="filled"
+                            onPress={handleSubmit(handleSignIn)}
+                            disabled={isPending}
+                            className="mt-4"
+                        >
+                            {isPending ? "Signing In..." : "Sign In"}
+                        </Button>
+                    )
+                }
             </View>
 
             {/* Signup */}
-            <View className="mt-10 items-center">
+            <View className="mt-5 items-center">
                 <Text className="text-black-400">
                     Don't have an account?
                     <Link href="/auth/register-send-otp">

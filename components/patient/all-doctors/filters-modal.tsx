@@ -59,7 +59,7 @@ const FiltersModal = ({ visible, onClose, filters, setFilters }: FiltersModalPro
                 {/* HEADER */}
                 <View className="flex-row items-center justify-between px-5 py-4 border-b border-gray-200">
                     <Pressable onPress={onClose}>
-                        <Text className="text-lg">✕</Text>
+                        <Text className="text-base">Close</Text>
                     </Pressable>
 
                     <View className="items-center">

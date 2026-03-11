@@ -1,11 +1,12 @@
 import Input from "@/components/form/Input";
 import ApiError from "@/components/ui/ApiError";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/UserContext";
 import { useRegister } from "@/mutations/useRegister";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { X } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Image, Modal, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,9 +21,11 @@ const schema = z.object({
 
 export default function RegisterSendOtp() {
 
+    const { user } = useAuth();
     const { mutate: register, isPending, isError, error } = useRegister();
     const [openPrivacy, setOpenPrivacy] = useState(false);
     const [openTerm, setOpenTerm] = useState(false);
+    const [emailverified, setEmailverified] = useState(false);
 
     const { control, handleSubmit } = useForm({
         resolver: zodResolver(schema),
@@ -47,10 +50,20 @@ export default function RegisterSendOtp() {
                 },
                 onError: (error) => {
                     console.log("Register error:", error.response?.data);
+                    if(error.response?.data?.errors?.status === "verified") {
+                        setEmailverified(true);
+                    }
                 },
             },
         );
     };
+
+
+    useEffect(() => {
+        if (user?.role === "patient" && user?.status === "verified") {
+            router.replace("/auth/register-complete-profile");
+        }
+    }, [user]);
 
     return (
         <FormLayout>
@@ -97,14 +110,25 @@ export default function RegisterSendOtp() {
                     }
                 />
 
-                {/* Continue */}
-                <Button
-                    onPress={handleSubmit(onSubmit)}
-                    className="mt-4"
-                    disabled={isPending}
-                >
-                    {isPending ? "loading..." : "Continue"}
-                </Button>
+                {
+                    emailverified ? (
+                        <Button
+                            onPress={() => router.replace("/auth/register-complete-profile")}
+                            className="mt-4"
+                            disabled={isPending}
+                        >
+                            Complete Your Profile
+                        </Button>
+                    ) :(
+                        <Button
+                            onPress={handleSubmit(onSubmit)}
+                            className="mt-4"
+                            disabled={isPending}
+                        >
+                            {isPending ? "loading..." : "Continue"}
+                        </Button>
+                    )
+                }
 
                 <View className="mt-10 items-center">
                     <Text className="text-gray-500">

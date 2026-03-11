@@ -59,7 +59,6 @@ const RegisterVerifyOtp = () => {
         }
 
         setError("");
-        console.log("OTP entered:", otpString);
 
         const emailStr = typeof email === "string" ? email : "";
 
@@ -105,7 +104,7 @@ const RegisterVerifyOtp = () => {
 
                     await login(userData, data.token ?? "");
 
-                    router.push({
+                    router.replace({
                         pathname: "/auth/register-complete-profile",
                         params: {
                             email: emailStr,
