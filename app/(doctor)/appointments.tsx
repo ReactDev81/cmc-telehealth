@@ -16,13 +16,14 @@ const Appointments = () => {
     const pastQuery = useAppointments("past", token!);
     const isLoading = todayQuery.isLoading || upcomingQuery.isLoading || pastQuery.isLoading;
     const isError = todayQuery.isError || upcomingQuery.isError || pastQuery.isError;
+    
 
     if (isLoading) return <ActivityIndicator className="flex-1" />;
 
     if (isError) {
         return (
             <View className="flex-1 items-center justify-center">
-            <Text className="text-red-500">Failed to load appointments</Text>
+                <Text className="text-red-500">Failed to load appointments</Text>
             </View>
         );
     }

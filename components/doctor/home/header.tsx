@@ -16,10 +16,6 @@ const DoctorHomeHeader = ({ insets }: HeaderProps) => {
     const { data, refetch } = useUnreadNotificationCount();
     const unreadCount = data?.data.unread_count ?? 0;
 
-    const profileImageSource = user?.avatar
-        ? { uri: user.avatar }
-        : require("../../../assets/images/user.png");
-
     const statusPadding = insets?.top ?? 0;
 
     const isFocused = useIsFocused();
@@ -44,7 +40,7 @@ const DoctorHomeHeader = ({ insets }: HeaderProps) => {
                     <View>
                         <Pressable onPress={() => router.push('/(doctor)/profile')}>
                             <Image
-                                source={profileImageSource}
+                                source={{ uri: user?.avatar }}
                                 className="w-11 h-11 rounded-full"
                             />
                         </Pressable>

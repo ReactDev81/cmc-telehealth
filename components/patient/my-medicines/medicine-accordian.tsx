@@ -17,9 +17,14 @@ type Props = {
     index?: number;
 };
 
-const MedicineAccordian: React.FC<Props> = ({ medicine, defaultExpanded = true, onToggle, index }) => {
+function formatLabel(text: unknown) {
+    if (text === null || text === undefined) return "";
+    return String(text)
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
-    // console.log("medicine", medicine);
+const MedicineAccordian: React.FC<Props> = ({ medicine, defaultExpanded = true, onToggle, index }) => {
 
     const [expanded, setExpanded] = useState<boolean>(defaultExpanded);
 
@@ -33,10 +38,8 @@ const MedicineAccordian: React.FC<Props> = ({ medicine, defaultExpanded = true, 
     }, [onToggle]);
 
     const medicineName = medicine.name || medicine.medicine_name || "";
-    const medicineFrequency =
-        medicine.frequencylabel && medicine.frequencylabel !== "N/A"
-            ? medicine.frequencylabel
-            : medicine.frequency || "";
+    const meal = formatLabel(medicine.meal);
+    const  medicineFrequency = medicine.frequency_display || medicine.frequencylabel || medicine.frequency || "";
     const medicineInstructions = Array.isArray(medicine.instructions)
         ? medicine.instructions.join(", ")
         : medicine.instructions || "";
@@ -83,12 +86,13 @@ const MedicineAccordian: React.FC<Props> = ({ medicine, defaultExpanded = true, 
                         </View>
                         <View className="flex-1">
                             <Text className="text-sm font-medium text-black">
-                                {medicine.dosage}, {medicineFrequency}
+                                {medicine.dosage}, {medicineFrequency} {meal}
                             </Text>
                             {(medicineTimes || medicineInstructions) && (
                                 <Text className="text-xs text-[#6B6B6B] mt-1">
                                     {medicineTimes && `${medicineTimes} `}
                                     {medicineInstructions && `(${medicineInstructions})`}
+                                    
                                 </Text>
                             )}
                         </View>

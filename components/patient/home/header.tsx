@@ -15,11 +15,6 @@ const Header = ({ insets }: HeaderProps) => {
     const { user } = useAuth();
     const { data, refetch } = useUnreadNotificationCount();
     const unreadCount = data?.data.unread_count ?? 0;
-
-    const profileImageSource = user?.avatar
-        ? { uri: user.avatar }
-        : require("../../../assets/images/user.png");
-
     const isFocused = useIsFocused();
 
     useEffect(() => {
@@ -44,7 +39,7 @@ const Header = ({ insets }: HeaderProps) => {
                     <View>
                         <Pressable onPress={() => router.push('/(patient)/profile')}>
                             <Image
-                                source={profileImageSource}
+                                source={{ uri: user?.avatar }}
                                 className="w-11 h-11 object-cover rounded-full"
                             />
                         </Pressable>

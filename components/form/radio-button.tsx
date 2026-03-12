@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 type RadioOption = {
     value: string;
@@ -49,7 +49,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
                                 <View className="w-2 h-2 bg-primary rounded-full" />
                             )}
                         </View>
-                        <Text className={`ml-1.5 text-sm ${ value === option.value ? 'text-primary' : 'text-gray'}`}>{option.label}</Text>
+                        <Text className={`ml-1.5 text-sm ${ value === option.value ? 'text-primary' : 'text-primary-400'}`}>{option.label}</Text>
                     </TouchableOpacity>
                 ))}
             </View>

@@ -200,7 +200,7 @@ const Home = () => {
 
                 <View className="px-4" 
                     style={{
-                        paddingBottom: (insets?.bottom ?? 0) + 5,
+                        paddingBottom: (insets?.bottom ?? 0) + 20,
                     }}
                 >
                     {/* Testimonial */}

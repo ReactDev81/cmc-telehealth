@@ -7,7 +7,6 @@ import Title from "@/components/ui/Title";
 import { useAuth } from "@/context/UserContext";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
 import { ActivityIndicator, Linking, Text, TouchableOpacity, View } from "react-native";
-const DefaultUser = require("../../../../assets/images/user.png");
 
 interface PatientDetailsProps {
     appointmentId?: string;
@@ -48,7 +47,7 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
 
             {/* patient info headet */}
             <PatientInfoHeader
-                image={patientData.avatar ? { uri: patientData.avatar } : DefaultUser}
+                image={{ uri: patientData.avatar }}
                 name={patientData.name}
                 age={patientData.age}
                 gender={patientData.gender}
@@ -65,7 +64,7 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
             <View className="mt-8">
                 <Title text="Medical Reports" />
                 {medicalReports.length > 0 ? (
-                    medicalReports.slice(0, 2).map((report: any, index: number) => {
+                    medicalReports.map((report: any, index: number) => {
                         const handleViewReport = () => {
                             const pdfUrl = report.file_url;
                             if (pdfUrl) {
@@ -99,7 +98,7 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
                 <Title text="Current Medication" />
                 <View className="mt-2">
                     {currentMedications.length > 0 ? (
-                        currentMedications.slice(0, 2).map((med: any, index: number) => (
+                        currentMedications.map((med: any, index: number) => (
                             <MedicineAccordian
                                 key={med.id}
                                 medicine={med}

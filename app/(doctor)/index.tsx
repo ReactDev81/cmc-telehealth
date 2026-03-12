@@ -55,7 +55,6 @@ const Home = () => {
         );
     }
         
-
     const summary = data.summary;
     const todays = data.todays_appointments;
     const upcoming = data.upcoming_appointments;
@@ -109,7 +108,7 @@ const Home = () => {
                 </View>
 
                 {/* today's appointment */}
-                <View className="mt-7">
+                <View className="mt-8">
                     <TitleWithLink
                         title_text="Today's Appointments"
                         link="/appointments?tab=today"
@@ -122,8 +121,11 @@ const Home = () => {
                             icon={<CalendarOff size={44} color="#94A3B8" />}
                         />
                     ) : (
-                        todays.slice(0, 2).map((item) => (
-                            <View key={item.id} className="mt-5">
+                        todays.slice(0, 2).map((item, index) => (
+                            <View key={item.id} 
+                                className="mt-5"
+                                style={{marginTop : index === 0 ? 5 : 20}}
+                            >
                                 <TodayAppointmentCard
                                     appointmentId={item.id}
                                     image={item.patient_image}
@@ -139,7 +141,7 @@ const Home = () => {
                 </View>
 
                 {/* upcoming appointment */}
-                <View className="mt-7">
+                <View className="mt-8">
                     <TitleWithLink
                         title_text="Upcoming Appointments"
                         link="/appointments?tab=upcoming"
@@ -152,8 +154,10 @@ const Home = () => {
                             icon={<CalendarClock size={44} color="#94A3B8" />}
                         />
                     ) : (
-                        upcoming.slice(0, 2).map((item) => (
-                            <View key={item.id} className="mt-5">
+                        upcoming.slice(0, 2).map((item, index) => (
+                            <View key={item.id} 
+                                style={{marginTop : index === 0 ? 5 : 20}}
+                            >
                                 <UpcomingAppointmentCard
                                     image={item.patient_image}
                                     date={item.date!}
@@ -170,8 +174,12 @@ const Home = () => {
 
 
                 {/* Testimonial */}
-                <View className="px-2 pb-20">
-                    <View className="mt-7">
+                <View className="px-2"
+                    style={{
+                        paddingBottom: (insets?.bottom ?? 0) + 20,
+                    }}
+                >
+                    <View className="mt-8">
                         <Title text="Here's what our satisfied customers are saying..." />
 
                         {reviews && reviews.length === 0 ? (
@@ -193,7 +201,7 @@ const Home = () => {
                                         className="mt-3 w-full"
                                         contentContainerStyle={{ paddingRight: 10 }}
                                     >
-                                        {reviews.slice(0, 4).map((review: any, index: number) => (
+                                        {reviews.map((review: any, index: number) => (
                                             <View
                                                 key={review.id}
                                                 style={{ marginRight: index === reviews.length - 1 ? 0 : 15 }}

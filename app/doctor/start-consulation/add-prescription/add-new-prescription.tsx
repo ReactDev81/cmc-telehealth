@@ -2,6 +2,7 @@ import MedicineSearchBar from "@/components/doctor/MedicineSearchBar";
 import SuccessModal from "@/components/doctor/prescription/SuccessModal";
 import Checkbox from "@/components/form/checkbox";
 import DateField from "@/components/form/date";
+import RadioButton from "@/components/form/radio-button";
 import SelectField from "@/components/form/selectField";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
@@ -26,8 +27,9 @@ const PrescriptionSchema = z.object({
     timing_afternoon: z.boolean().optional(),
     timing_evening: z.boolean().optional(),
     timing_night: z.boolean().optional(),
-    before_food: z.boolean().optional(),
-    after_food: z.boolean().optional(),
+    meal: z.enum(["before_meal", "after_meal"], {
+        required_error: "Please select a option",
+    }),
     // is_ongoing: z.boolean().optional(),
     instructions: z.string().optional(),
     stamp_preference: z.string().min(1, "Stamp preference required"),
@@ -77,13 +79,14 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
             timing_afternoon: false,
             timing_evening: false,
             timing_night: false,
-            before_food: false,
-            after_food: false,
+            meal: undefined,
             // is_ongoing: false,
             instructions: "",
             stamp_preference: "only_global",
         },
     });
+
+    const meal = watch("meal");
 
     const [showSuccess, setShowSuccess] = useState(false);
 
@@ -181,8 +184,7 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
                     dosage: data.dosage,
                     frequency: data.frequency,
                     timings,
-                    before_food: data.before_food,
-                    after_food: data.after_food,
+                    meal: data.meal,
                     start_date: startDate?.toISOString().split("T")[0],
                     end_date: endDate?.toISOString().split("T")[0],
                     // is_ongoing: data.is_ongoing,
@@ -295,7 +297,7 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
                         label={`Dosage* ${medicationType ? `(${medicationType})` : ""}`}
                         control={control}
                         options={dosageOptions}
-                        className="mt-4"
+                        className="mt-2"
                     />
 
                     <SelectField
@@ -303,11 +305,11 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
                         label="Frequency*"
                         control={control}
                         options={frequencyOptions}
-                        className="mt-4"
+                        className="mt-5"
                     />
 
                     {/* Timings */}
-                    <View className="mt-4">
+                    <View className="mt-5">
                         <Text className="text-sm font-medium text-black mb-2">Timings</Text>
                         <View className="flex-row flex-wrap gap-x-3 gap-y-2">
                             <Checkbox
@@ -330,24 +332,26 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
                     </View>
 
                     {/* Meal Instructions */}
-                    <View className="mt-4">
+                    <View className="mt-5">
                         <Text className="text-sm font-medium text-black mb-2">Meal</Text>
-                        <View className="flex-row gap-x-3">
-                            <Checkbox
-                                name="before_food"
-                                label="Before Meal"
-                                control={control}
-                            />
-                            <Checkbox
-                                name="after_food"
-                                label="After Meal"
-                                control={control}
-                            />
-                        </View>
+                        <RadioButton
+                            name="meal"
+                            value={meal}
+                            options={[
+                                { value: "before_meal", label: "Before Meal" },
+                                { value: "after_meal", label: "After Meal" },
+                            ]}
+                            onChange={(value) =>
+                                setValue("meal", value as "before_meal" | "after_meal", {
+                                    shouldValidate: true,
+                                })
+                            }
+                            direction="horizontal"
+                        />
                     </View>
 
                     {/* Duration */}
-                    <View className="mt-4">
+                    <View className="mt-5">
                         {/* <View className="flex-row items-center justify-between mb-2">
                             <Text className="text-sm font-medium text-black">Duration</Text>
                             <Checkbox name="is_ongoing" label="Ongoing" control={control} />
@@ -378,7 +382,7 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
                         label="Stamp Preference*"
                         control={control}
                         options={stampOptions}
-                        className="mt-4"
+                        className="mt-5"
                     />
 
                     {/* Notes */}
@@ -386,7 +390,7 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
                         name="instructions"
                         label="Notes"
                         control={control}
-                        containerClassName="mt-4"
+                        containerClassName="mt-5"
                     />
 
                     <Button

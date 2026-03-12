@@ -15,7 +15,6 @@ import { Link, router, useLocalSearchParams } from "expo-router";
 import { ChevronRight } from "lucide-react-native";
 import { useEffect } from "react";
 import { ActivityIndicator, Linking, ScrollView, Text, View } from "react-native";
-const DefaultUser = require("../../../assets/images/user.png");
 
 const PatientDetails = () => {
 
@@ -76,6 +75,7 @@ const PatientDetails = () => {
         );
     }
 
+    // console.log('current_medications', patient?.data?.current_medications)
 
     return (
         <ScrollView className="flex-1 bg-white p-5">
@@ -83,7 +83,7 @@ const PatientDetails = () => {
 
                 {/* headet */}
                 <PatientInfoHeader
-                    image={patient.data.avatar ? { uri: patient.data.avatar } : DefaultUser}
+                    image={{ uri: patient.data.avatar }}
                     name={patient.data.name}
                     age={patient.data.age}
                     gender={patient.data.gender}
@@ -169,7 +169,7 @@ const PatientDetails = () => {
                     {patient?.data?.current_medications &&
                         patient.data.current_medications.length > 0 ? (
                         patient.data.current_medications
-                            .slice(0, 2)
+                            // .slice(0, 2)
                             .map((med: any, index: number) => (
                                 <MedicineAccordian
                                     key={med.id ?? index}
