@@ -7,6 +7,7 @@ import Title from "@/components/ui/Title";
 import { useAuth } from "@/context/UserContext";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
 import { ActivityIndicator, Linking, Text, TouchableOpacity, View } from "react-native";
+const DefaultUser = require("../../../../assets/images/user.png");
 
 interface PatientDetailsProps {
     appointmentId?: string;
@@ -44,13 +45,14 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
 
     return (
         <View className="pt-5 px-5 pb-16">
+
             {/* patient info headet */}
             <PatientInfoHeader
-                image={{ uri: patientData.avatar || "https://cdn-icons-png.flaticon.com/512/387/387561.png" }}
+                image={patientData.avatar ? { uri: patientData.avatar } : DefaultUser}
                 name={patientData.name}
                 age={patientData.age}
                 gender={patientData.gender}
-                problem={patientData.problem}
+                problem={patientData.notes}
             />
 
             {/* contact information of this patient */}
@@ -63,7 +65,7 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
             <View className="mt-8">
                 <Title text="Medical Reports" />
                 {medicalReports.length > 0 ? (
-                    medicalReports.slice(0, 2).map((report: any) => {
+                    medicalReports.slice(0, 2).map((report: any, index: number) => {
                         const handleViewReport = () => {
                             const pdfUrl = report.file_url;
                             if (pdfUrl) {
@@ -71,8 +73,13 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
                             }
                         };
 
+                        var margin_top = index === 0 ? 8 : 20
+
                         return (
-                            <View className="mt-5" key={report.id}>
+                            <View  
+                                key={report.id}
+                                style={{marginTop : margin_top}}
+                            >
                                 <ReportsCard
                                     report_name={report.report_name}
                                     report_date_formatted={report.report_date_formatted}
@@ -83,14 +90,14 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
                         );
                     })
                 ) : (
-                    <Text className="text-black-400 text-sm italic mt-4">No medical reports available</Text>
+                    <Text className="text-black-400 text-sm italic mt-2">No medical reports available</Text>
                 )}
             </View>
 
             {/* currently running medicine */}
             <View className="mt-8">
                 <Title text="Current Medication" />
-                <View className="mt-5">
+                <View className="mt-2">
                     {currentMedications.length > 0 ? (
                         currentMedications.slice(0, 2).map((med: any, index: number) => (
                             <MedicineAccordian
@@ -121,7 +128,7 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
                         />
                     ))
                 ) : (
-                    <Text className="text-black-400 text-sm italic mt-4">No past appointments</Text>
+                    <Text className="text-black-400 text-sm italic mt-2">No past appointments</Text>
                 )}
             </View>
         </View>

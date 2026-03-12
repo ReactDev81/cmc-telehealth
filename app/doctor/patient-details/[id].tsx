@@ -15,6 +15,7 @@ import { Link, router, useLocalSearchParams } from "expo-router";
 import { ChevronRight } from "lucide-react-native";
 import { useEffect } from "react";
 import { ActivityIndicator, Linking, ScrollView, Text, View } from "react-native";
+const DefaultUser = require("../../../assets/images/user.png");
 
 const PatientDetails = () => {
 
@@ -82,11 +83,7 @@ const PatientDetails = () => {
 
                 {/* headet */}
                 <PatientInfoHeader
-                    image={{
-                        uri:
-                        patient.data.avatar ||
-                        "https://cdn-icons-png.flaticon.com/512/387/387561.png",
-                    }}
+                    image={patient.data.avatar ? { uri: patient.data.avatar } : DefaultUser}
                     name={patient.data.name}
                     age={patient.data.age}
                     gender={patient.data.gender}
@@ -140,8 +137,14 @@ const PatientDetails = () => {
                                         Linking.openURL(pdfUrl);
                                     }
                                 };
+
+                                var margin_top = index === 0 ? 8 : 20
+
                                 return (
-                                    <View className="mt-5" key={report.id ?? index}>
+                                    <View 
+                                        style={{marginTop : margin_top}}
+                                        key={report.id ?? index}
+                                    >
                                         <ReportsCard
                                             report_name={report.report_name}
                                             report_date_formatted={report.report_date_formatted}
@@ -162,7 +165,7 @@ const PatientDetails = () => {
 
                 {/* currently running medicine */}
                 <View className="mt-5">
-                    <Title className="max-w-72" text="Current Medication" />
+                    <Title className="max-w-72 mb-2" text="Current Medication" />
                     {patient?.data?.current_medications &&
                         patient.data.current_medications.length > 0 ? (
                         patient.data.current_medications
@@ -179,7 +182,7 @@ const PatientDetails = () => {
                         <EmptyState
                             title="No Current Medication"
                             message="This patient is not taking any medication."
-                            className="mt-5 rounded-2xl border border-gray-100"
+                            className="mt-3 rounded-2xl border border-gray-100"
                         />
                     )}
                 </View>
@@ -219,7 +222,7 @@ const PatientDetails = () => {
                         <EmptyState
                             title="No Past Appointments"
                             message="This patient has no previous appointments."
-                            className="mt-5 rounded-2xl border border-gray-100"
+                            className="rounded-2xl border border-gray-100"
                         />
                     )}
                 </View>

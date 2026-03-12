@@ -29,7 +29,7 @@ const schema = z.object({
         }),
     mobile_no: z
         .string()
-        .regex(/^\d{10,}$/, "Phone number must be at least 10 digits"),
+        .regex(/^\d{10}$/, "Phone number must contain exactly 10 digits"),
     gender: z.string(),
     email: z.string().email(),
     password: z.string().min(8),

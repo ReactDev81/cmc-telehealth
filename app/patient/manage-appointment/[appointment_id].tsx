@@ -437,16 +437,20 @@ export default function ManageAppointments() {
                                             <Text className="text-base font-semibold text-black mb-2">
                                                 Note
                                             </Text>
-                                            <View className="flex-row items-center justify-between bg-gray-50 rounded-xl border border-gray-200 py-2 px-3">
-                                                <Text className="text-sm text-black-400">
-                                                    {typeof notes === "string" ? notes : "No notes available."}
-                                                </Text>
-                                                <Pressable
-                                                    onPress={() => setEditingNotes(true)}
-                                                    className="p-2"
-                                                >
-                                                    <SquarePen size={18} color="#000" />
-                                                </Pressable>
+                                            <View className="flex-row justify-between bg-gray-50 rounded-xl border border-gray-200 py-2 px-3">
+                                                <View className="flex-1">
+                                                    <Text className="text-sm text-black-400">
+                                                        {typeof notes === "string" ? notes : "No notes available."}
+                                                    </Text>
+                                                </View>
+                                                <View>
+                                                    <Pressable
+                                                        onPress={() => setEditingNotes(true)}
+                                                        className="p-2"
+                                                    >
+                                                        <SquarePen size={18} color="#000" />
+                                                    </Pressable>
+                                                </View>
                                             </View>
                                         </View>
                                     }
