@@ -12,9 +12,10 @@ import { useAuth } from "@/context/UserContext";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
 import { useIsFocused } from "@react-navigation/native";
 import { Link, router, useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { ChevronRight } from "lucide-react-native";
 import { useEffect } from "react";
-import { ActivityIndicator, Linking, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
 const PatientDetails = () => {
 
@@ -37,6 +38,10 @@ const PatientDetails = () => {
     }, [isFocused]);
 
     const upcomingAppointment = patient?.data?.upcoming_appointments;
+
+    const openReport = async (url: string) => {
+        await WebBrowser.openBrowserAsync(url);
+    };
 
     if (!appointmentId) {
         return (
@@ -131,13 +136,7 @@ const PatientDetails = () => {
                     {patient?.data?.medical_reports &&
                         patient.data.medical_reports.length > 0 ? (
                             patient.data.medical_reports.map((report: any, index: number) => {
-                                const handleViewReport = () => {
-                                    const pdfUrl = report.file_url;
-                                    if (pdfUrl) {
-                                        Linking.openURL(pdfUrl);
-                                    }
-                                };
-
+                                
                                 var margin_top = index === 0 ? 8 : 20
 
                                 return (
@@ -149,7 +148,7 @@ const PatientDetails = () => {
                                             report_name={report.report_name}
                                             report_date_formatted={report.report_date_formatted}
                                             type_label={report.type_label}
-                                            handleReport={handleViewReport}
+                                            handleReport={() => openReport(report.file_url)}
                                         />
                                     </View>
                                 );

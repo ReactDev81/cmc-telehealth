@@ -9,10 +9,11 @@ import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { Eye, MoreVertical, Pencil, SquarePen, Stethoscope, Trash2 } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { ActivityIndicator, Alert, Image, Linking, Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import * as z from "zod";
 import EditNotesModal from "./edit-notes-modal";
@@ -254,6 +255,10 @@ export default function ManageAppointments() {
         (data?.data as any)?.doctor_id ||
         appointment?.doctor_id;
 
+    const openReport = async (url: string) => {
+        await WebBrowser.openBrowserAsync(url);
+    };
+
     return (
         <FormProvider {...methods}>
             <SafeAreaView className="flex-1 bg-white" edges={['left', 'right', 'bottom']}>
@@ -310,8 +315,6 @@ export default function ManageAppointments() {
                         </View>
 
                         <View>
-
-                            
 
                             {/* Medical Reports & Notes */}
                             {hasmedicalNotes || notes ? (
@@ -371,7 +374,7 @@ export default function ManageAppointments() {
                                                             onPress={() => {
                                                                 setMenuVisible(null);
                                                                 if (report.file_url) {
-                                                                    Linking.openURL(report.file_url);
+                                                                    openReport(report.file_url);
                                                                 }
                                                             }}
                                                             className="flex-row items-center gap-2 px-4 py-3"

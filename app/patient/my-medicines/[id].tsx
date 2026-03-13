@@ -4,8 +4,9 @@ import type { MedicineProps } from "@/types/common/my-medicines";
 import type { MedicineDetail } from "@/types/live/patient/prescription";
 import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
-import { Linking, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MedicinesDetail = () => {
@@ -26,6 +27,10 @@ const MedicinesDetail = () => {
         }),
     );
     const pdfUrl = list?.pdf_url;
+
+    const openReport = async (url: string) => {
+        await WebBrowser.openBrowserAsync(url);
+    };
 
     useEffect(() => {
         if (isFocused) {
@@ -80,7 +85,7 @@ const MedicinesDetail = () => {
 
                 {pdfUrl && (
                     <TouchableOpacity
-                        onPress={() => Linking.openURL(pdfUrl)}
+                        onPress={() => openReport(pdfUrl)}
                         className="flex-row items-center gap-x-2 mb-5"
                     >
                         <Text className="text-base font-medium text-black">Prescription:</Text>

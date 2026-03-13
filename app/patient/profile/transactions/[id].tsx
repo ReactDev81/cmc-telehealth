@@ -1,7 +1,9 @@
 import { useTransactionDetails } from "@/queries/patient/useTransactionDetails";
+import * as Print from "expo-print";
 import { useLocalSearchParams } from "expo-router";
+import * as Sharing from "expo-sharing";
 import { ArrowDownToLine, Check, Clock, FileText, X } from 'lucide-react-native';
-import { ActivityIndicator, Linking, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const TransactionDetails = () => {
 
@@ -52,7 +54,59 @@ const TransactionDetails = () => {
             </View>
         ),
     };
-      
+
+    const downloadReceipt = async () => {
+        try {
+            const html = `
+            <html>
+              <body style="font-family: Arial; padding: 20px;">
+                <h2 style="text-align:center;">Transaction Receipt</h2>
+                <h3 style="text-align:center;">₹${transaction.amount}</h3>
+                <p style="text-align:center; color:green; font-weight:bold;">
+                  ${statusText[transaction.status]}
+                </p>
+                <p style="text-align:center;">${transaction.date}</p>
+                <hr/>
+                <table style="width:100%; font-size:14px;">
+                  <tr><td><b>Transaction ID</b></td><td>${transaction.transaction_id}</td></tr>
+                  <tr><td><b>Order ID</b></td><td>${transaction.order_id}</td></tr>
+                  <tr>
+                    <td><b>Paid To</b></td>
+                    <td>${
+                      transaction.payment_type === "UPI Payment"
+                        ? transaction.upi_id
+                        : transaction.bank_name + " Bank"
+                    }</td>
+                  </tr>
+                  <tr><td><b>Payment Type</b></td><td>${transaction.payment_type}</td></tr>
+                  <tr><td><b>Payment Method</b></td><td>${transaction.payment_method}</td></tr>
+                </table>
+                <hr/>
+                <p style="text-align:center; margin-top:30px;">Thank you for your payment</p>
+              </body>
+            </html>
+            `;
+    
+            // Generate PDF - uri from printToFileAsync is always a file:// path
+            const { uri } = await Print.printToFileAsync({ html });
+            
+            console.log("Generated PDF uri:", uri); // Check what uri looks like
+    
+            Alert.alert("Receipt Ready", "Receipt downloaded successfully.");
+    
+            if (await Sharing.isAvailableAsync()) {
+                // Share directly from the print uri without moving
+                await Sharing.shareAsync(uri, {
+                    mimeType: "application/pdf",
+                    dialogTitle: "Share Receipt",
+                    UTI: "com.adobe.pdf",
+                });
+            }
+        } catch (error) {
+            console.log("Download error:", error);
+            Alert.alert("Error", "Failed to generate receipt.");
+        }
+    };
 
     if (!transaction) {
         return null;
@@ -166,7 +220,7 @@ const TransactionDetails = () => {
                 <Text className="text-base font-medium text-black">Attachments</Text>
                 <TouchableOpacity 
                     className="border border-black-300 rounded-xl p-4 mt-5 flex-row items-center justify-between gap-x-2.5"
-                    onPress={() => Linking.openURL(transaction.receipt_url)}
+                    onPress={downloadReceipt}
                 >
                     
                     <View className="flex-row items-center justify-between gap-x-2.5">

@@ -10,12 +10,13 @@ const MedicineCard = ({
     doctor_name,
     consulated_date,
 }: MedicineCardProps) => {
-
     return (
         <View className="border border-black-300 rounded-xl p-4">
             <View className="flex-row items-center">
-                <Text className="text-base font-medium">Symptoms: </Text>
-                <Text className="text-black text-sm">{patient_symptoms}</Text>
+                <Text className="text-base font-medium">
+                    Symptoms: 
+                    <Text className="text-black-400 text-sm"> {patient_symptoms}</Text>
+                </Text>
             </View>
             <View className="flex-row items-end justify-between">
                 <View>

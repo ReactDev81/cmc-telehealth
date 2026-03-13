@@ -5,9 +5,10 @@ import EmptyState from "@/components/ui/EmptyState";
 import { useAppointmentById } from "@/queries/patient/useAppointmentById";
 import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { BriefcaseBusiness, ClipboardPlus, Star, Stethoscope, UserStar } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Image, Linking, ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppointementDetails = () => {
@@ -66,6 +67,10 @@ const AppointementDetails = () => {
     };
 
     const total = calculateAppointmentFee();
+
+    const openReport = async (url: string) => {
+        await WebBrowser.openBrowserAsync(url);
+    };
 
     return (
         <ScrollView className="flex-1 bg-white">
@@ -211,7 +216,7 @@ const AppointementDetails = () => {
                                     report_name={report.title}
                                     report_date_formatted={report.report_date_formatted}
                                     type_label={report.type_label}
-                                    handleReport={() => Linking.openURL(report.file_url)}
+                                    handleReport={() => openReport(report.file_url)}
                                 />
                             ))
                         ) : (
