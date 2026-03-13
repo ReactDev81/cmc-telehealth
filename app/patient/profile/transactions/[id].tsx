@@ -29,6 +29,10 @@ const TransactionDetails = () => {
     }
       
     const transaction = data?.data;
+    
+    if (!transaction) {
+        return null;
+    }
 
     const statusText = {
         paid: "Transaction Successful",
@@ -57,60 +61,110 @@ const TransactionDetails = () => {
 
     const downloadReceipt = async () => {
         try {
+      
+            const paidTo =
+            transaction.payment_type === "UPI Payment"
+                ? transaction.upi_id
+                : transaction.payment_type === "Card"
+                ? `${transaction.bank_name} Bank`
+                : transaction.payment_type === "Net Banking"
+                ? `${transaction.bank_name} Bank`
+                : "";
+      
+            const paymentType =
+            transaction.payment_type === "UPI Payment"
+                ? transaction.payment_type
+                : transaction.payment_type === "Card"
+                ? `${transaction.card_type} Card`
+                : transaction.payment_type === "Net Banking"
+                ? transaction.payment_type
+                : "";
+      
+            const accountDetails =
+            transaction.payment_type === "Card"
+                ? `${transaction.bank_name} Bank<br/>${transaction.payment_method}${transaction.payment_type} ****${transaction.card_last4}`
+                : transaction.payment_type === "UPI Payment"
+                ? transaction.upi_id
+                : transaction.payment_type === "Net Banking"
+                ? `${transaction.bank_name} Bank<br/>${transaction.payment_type}`
+                : "";
+      
             const html = `
-            <html>
-              <body style="font-family: Arial; padding: 20px;">
-                <h2 style="text-align:center;">Transaction Receipt</h2>
-                <h3 style="text-align:center;">₹${transaction.amount}</h3>
-                <p style="text-align:center; color:green; font-weight:bold;">
-                  ${statusText[transaction.status]}
-                </p>
-                <p style="text-align:center;">${transaction.date}</p>
-                <hr/>
-                <table style="width:100%; font-size:14px;">
-                  <tr><td><b>Transaction ID</b></td><td>${transaction.transaction_id}</td></tr>
-                  <tr><td><b>Order ID</b></td><td>${transaction.order_id}</td></tr>
-                  <tr>
-                    <td><b>Paid To</b></td>
-                    <td>${
-                      transaction.payment_type === "UPI Payment"
-                        ? transaction.upi_id
-                        : transaction.bank_name + " Bank"
-                    }</td>
-                  </tr>
-                  <tr><td><b>Payment Type</b></td><td>${transaction.payment_type}</td></tr>
-                  <tr><td><b>Payment Method</b></td><td>${transaction.payment_method}</td></tr>
-                </table>
-                <hr/>
-                <p style="text-align:center; margin-top:30px;">Thank you for your payment</p>
-              </body>
-            </html>
-            `;
-    
-            // Generate PDF - uri from printToFileAsync is always a file:// path
-            const { uri } = await Print.printToFileAsync({ html });
+                <html>
+                    <body style="font-family: Arial; padding: 20px;">
+
+                        <h2 style="text-align:center;">Transaction Receipt</h2>
             
-            console.log("Generated PDF uri:", uri); // Check what uri looks like
-    
-            Alert.alert("Receipt Ready", "Receipt downloaded successfully.");
-    
+                        <h1 style="text-align:center;">₹${transaction.amount}</h1>
+                
+                        <p style="text-align:center; color:green; font-weight:bold;">
+                            ${statusText[transaction.status]}
+                        </p>
+                
+                        <p style="text-align:center;">${transaction.date}</p>
+            
+                        <hr/>
+            
+                        <table style="width:100%; font-size:14px; border-collapse: collapse;">
+                            <tr>
+                                <td><b>Transaction ID</b></td>
+                                <td>${transaction.transaction_id}</td>
+                            </tr>
+                
+                            <tr>
+                                <td><b>Order ID</b></td>
+                                <td>${transaction.order_id}</td>
+                            </tr>
+                
+                            <tr>
+                                <td><b>Paid To</b></td>
+                                <td>${paidTo}</td>
+                            </tr>
+                
+                            <tr>
+                                <td><b>Payment Type</b></td>
+                                <td>${paymentType}</td>
+                            </tr>
+                
+                            <tr>
+                                <td><b>Payment Method</b></td>
+                                <td>${transaction.payment_method}</td>
+                            </tr>
+                
+                            <tr>
+                                <td><b>Account Details</b></td>
+                                <td>${accountDetails}</td>
+                            </tr>
+                
+                        </table>
+            
+                        <hr/>
+            
+                        <p style="text-align:center; margin-top:30px;">
+                            Thank you for your payment
+                        </p>
+            
+                    </body>
+                </html>
+            `;
+      
+            const { uri } = await Print.printToFileAsync({ html });
+      
             if (await Sharing.isAvailableAsync()) {
-                // Share directly from the print uri without moving
                 await Sharing.shareAsync(uri, {
                     mimeType: "application/pdf",
                     dialogTitle: "Share Receipt",
                     UTI: "com.adobe.pdf",
                 });
+            } else {
+                Alert.alert("Success", "Receipt downloaded successfully.");
             }
+        
         } catch (error) {
             console.log("Download error:", error);
             Alert.alert("Error", "Failed to generate receipt.");
         }
     };
-
-    if (!transaction) {
-        return null;
-    }
 
     return (
         <ScrollView className="flex-1 p-5 bg-white">
@@ -180,36 +234,36 @@ const TransactionDetails = () => {
                     <View>
                         {
                             transaction.payment_type === "Card" ? 
+                            (
+                                <>
+                                    <Text className="text-sm text-black-400 font-medium text-right">
+                                        {transaction.bank_name} Bank
+                                    </Text>
+                                    <Text className="text-sm text-black-400">
+                                        {transaction.payment_method}{transaction.payment_type}****{transaction.card_last4}
+                                    </Text>
+                                </>
+                            )
+                                    
+                                
+                            // `${transaction.payment_method}${transaction.payment_type}****${transaction.card_last4}`
+                            : transaction.payment_type === "UPI Payment" ? 
+                                (
+                                    <Text className="text-sm text-black-400">{transaction.upi_id}</Text>
+                                )
+                            : 
+                            transaction.payment_type === "Net Banking" ? 
                                 (
                                     <>
                                         <Text className="text-sm text-black-400 font-medium text-right">
                                             {transaction.bank_name} Bank
                                         </Text>
                                         <Text className="text-sm text-black-400">
-                                            {transaction.payment_method}{transaction.payment_type}****{transaction.card_last4}
+                                            {transaction.payment_type}
                                         </Text>
                                     </>
                                 )
-                                    
-                                
-                                // `${transaction.payment_method}${transaction.payment_type}****${transaction.card_last4}`
-                                : transaction.payment_type === "UPI Payment" ? 
-                                    (
-                                        <Text className="text-sm text-black-400">{transaction.upi_id}</Text>
-                                    )
-                                : 
-                                transaction.payment_type === "Net Banking" ? 
-                                    (
-                                        <>
-                                            <Text className="text-sm text-black-400 font-medium text-right">
-                                                {transaction.bank_name} Bank
-                                            </Text>
-                                            <Text className="text-sm text-black-400">
-                                                {transaction.payment_type}
-                                            </Text>
-                                        </>
-                                    )
-                                : null
+                            : null
                         }
                     </View>
                 </View>
