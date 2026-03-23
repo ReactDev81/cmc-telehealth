@@ -21,6 +21,9 @@ export interface AppointmentResponse {
       gender_formatted: string;
       allergies?: string | null;
       problem?: string;
+      email?: string;
+      contact?: string;
+      phone?: string;
     };
     schedule?: {
       date: string;

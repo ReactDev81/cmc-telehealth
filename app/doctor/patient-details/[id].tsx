@@ -22,10 +22,10 @@ const PatientDetails = () => {
     const params = useLocalSearchParams();
     const appointmentId =
         typeof params.id === "string"
-        ? params.id
-        : Array.isArray(params.id)
-        ? params.id[0]
-        : undefined;
+            ? params.id
+            : Array.isArray(params.id)
+                ? params.id[0]
+                : undefined;
     const { token } = useAuth();
     const isFocused = useIsFocused();
     const { data: patient, isLoading, isError, error, refetch } = usePatientDetail(appointmentId || "", token || "");
@@ -68,7 +68,7 @@ const PatientDetails = () => {
                 <Text className="text-base text-red-500">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Failed to load patient details")}
+                        "Failed to load patient details")}
                 </Text>
                 <Button className="mt-4" onPress={() => router.back()}>
                     Go Back
@@ -117,6 +117,7 @@ const PatientDetails = () => {
                                 params: {
                                     doctor_call_link: upcomingAppointment?.video_join_link,
                                     appointment_id: appointmentId,
+                                    patient_name: patient.data.name,
                                 },
                             })
                         }
@@ -130,25 +131,25 @@ const PatientDetails = () => {
                     <Title className="max-w-72" text="Medical Reports" />
                     {patient?.data?.medical_reports &&
                         patient.data.medical_reports.length > 0 ? (
-                            patient.data.medical_reports.map((report: any, index: number) => {
-                                
-                                var margin_top = index === 0 ? 8 : 20
+                        patient.data.medical_reports.map((report: any, index: number) => {
 
-                                return (
-                                    <View 
-                                        style={{marginTop : margin_top}}
-                                        key={report.id ?? index}
-                                    >
-                                        <ReportsCard
-                                            report_name={report.report_name}
-                                            report_date_formatted={report.report_date_formatted}
-                                            type_label={report.type_label}
-                                            handleReport={() => openReport(report.file_url)}
-                                        />
-                                    </View>
-                                );
-                            })
-                        ) : (
+                            var margin_top = index === 0 ? 8 : 20
+
+                            return (
+                                <View
+                                    style={{ marginTop: margin_top }}
+                                    key={report.id ?? index}
+                                >
+                                    <ReportsCard
+                                        report_name={report.report_name}
+                                        report_date_formatted={report.report_date_formatted}
+                                        type_label={report.type_label}
+                                        handleReport={() => openReport(report.file_url)}
+                                    />
+                                </View>
+                            );
+                        })
+                    ) : (
                         <EmptyState
                             title="No Medical Reports"
                             message="This patient has not uploaded any medical reports yet."
@@ -172,7 +173,7 @@ const PatientDetails = () => {
                                     index={index}
                                 />
                             ))
-                        ) : (
+                    ) : (
                         <EmptyState
                             title="No Current Medication"
                             message="This patient is not taking any medication."
@@ -186,8 +187,8 @@ const PatientDetails = () => {
                         title_text="Previous appointment with this patient"
                         link={
                             patient.data.previous_appointments.length > 2
-                            ? `/doctor/patient-details/all-previous-appointments/${appointmentId}`
-                            : undefined
+                                ? `/doctor/patient-details/all-previous-appointments/${appointmentId}`
+                                : undefined
                         }
                         link_text={
                             patient.data.previous_appointments.length > 2 ? "See All" : ""
@@ -195,7 +196,7 @@ const PatientDetails = () => {
                     />
                     {patient?.data?.previous_appointments &&
                         patient.data.previous_appointments.length > 0 ? (
-                            patient.data.previous_appointments
+                        patient.data.previous_appointments
                             .slice(0, 2)
                             .map((appointment: any, index: number) => (
                                 <Link
@@ -212,7 +213,7 @@ const PatientDetails = () => {
                                     />
                                 </Link>
                             ))
-                        ) : (
+                    ) : (
                         <EmptyState
                             title="No Past Appointments"
                             message="This patient has no previous appointments."

@@ -35,12 +35,16 @@ const CONTROLS: ControlConfig[] = [
 const MAX_BOTTOM_SHEET_HEIGHT = Dimensions.get("window").height * 0.8;
 
 const StartConsulationWithDoctor = () => {
-    
+
     const router = useRouter();
     const { token } = useAuth();
     const { mutate: markAsCompleted, isPending: isMarkingComplete } = useMarkAsCompleted();
 
-    const { doctor_call_link, appointment_id } = useLocalSearchParams<{ doctor_call_link: string, appointment_id: string }>();
+    const { doctor_call_link, appointment_id, patient_name } = useLocalSearchParams<{
+        doctor_call_link: string,
+        appointment_id: string,
+        patient_name?: string;
+    }>();
 
     const ROOM_URL = React.useMemo(() => {
         const baseUrl = doctor_call_link?.trim();
@@ -271,7 +275,7 @@ const StartConsulationWithDoctor = () => {
                                 <View className="w-1 h-4 rounded-full bg-primary"></View>
                             </View>
                             <View>
-                                <Text className="text-sm text-black font-medium">Dr. Andrew Miller</Text>
+                                <Text className="text-sm text-black font-medium">{patient_name}</Text>
                                 <Text className="text-xs text-black-400 mt-1">25:12 remaining (30 mins visit)</Text>
                             </View>
                         </View>
@@ -289,7 +293,7 @@ const StartConsulationWithDoctor = () => {
 
                 {/* Video Container - Middle Section */}
                 <View className="bg-primary flex-1">
-                    <View 
+                    <View
                         // className="h-[85%]"
                         style={{
                             height: calcHeight

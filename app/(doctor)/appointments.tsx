@@ -6,6 +6,7 @@ import { useAuth } from "@/context/UserContext";
 import { useAppointments } from "@/queries/doctor/useAppointments";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Appointments = () => {
 
@@ -50,9 +51,9 @@ const Appointments = () => {
     const defaultTab = tab && ["today", "upcoming", "past"].includes(tab) ? tab : "today";
 
     return (
-        <View className="flex-1 bg-white p-5 pb-0">
+        <SafeAreaView edges={["left", "right", "bottom"]} className="flex-1 bg-white p-5 pb-0">
             <Tab tabs={appointmentTabs} defaultTab={defaultTab} />
-        </View>
+        </SafeAreaView>
     );
 };
 

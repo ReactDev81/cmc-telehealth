@@ -20,11 +20,33 @@ const AppointmentSummary = () => {
     const appointmentId = typeof bookingId === "string" ? bookingId : undefined;
     const { data, isLoading, error, isError, refetch } = useAppointmentById(appointmentId);
 
+    const [verifyData, setVerifyData] = useState<any[]>([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+    const { mutate: verifyPayment } = useVerifyPayment();
+
     useEffect(() => {
         if (isFocused) {
             refetch();
         }
     }, [isFocused, refetch]);
+
+    // Refetch appointment data if coming from reschedule flow
+    useEffect(() => {
+        if (isRescheduled === "true" && appointmentId) {
+            queryClient.invalidateQueries({
+                queryKey: ["appointment", appointmentId],
+            });
+            refetch();
+        }
+    }, [isRescheduled, appointmentId, queryClient, refetch]);
+
+    // Also refetch on initial load when appointmentId is set
+    useEffect(() => {
+        if (appointmentId) {
+            refetch();
+        }
+    }, [appointmentId]);
 
     if (isLoading) {
         return (
@@ -40,30 +62,12 @@ const AppointmentSummary = () => {
                 <Text className="text-danger">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Something went wrong. Please try again.")}
+                        "Something went wrong. Please try again.")}
                 </Text>
             </SafeAreaView>
         );
-    } 
+    }
 
-    // Refetch appointment data if coming from reschedule flow
-    useEffect(() => {
-        if (isRescheduled === "true" && appointmentId) {
-                queryClient.invalidateQueries({
-                queryKey: ["appointment", appointmentId],
-            });
-            refetch();
-        }
-    }, [isRescheduled, appointmentId, queryClient, refetch]);
-
-    // Also refetch on initial load when appointmentId is set
-    useEffect(() => {
-        if (appointmentId) {
-            refetch();
-        }
-    }, [appointmentId]);
-
-    const [verifyData, setVerifyData] = useState([])
     const appointment = data?.data;
     const patient = appointment?.patient;
     const schedule = appointment?.schedule;
@@ -81,8 +85,6 @@ const AppointmentSummary = () => {
     };
 
     const total = calculateAppointmentFee();
-    const [modalVisible, setModalVisible] = useState(false);
-    const [paymentModalVisible, setPaymentModalVisible] = useState(false);
 
     const handleDone = () => {
         setModalVisible(false);
@@ -93,8 +95,6 @@ const AppointmentSummary = () => {
         setPaymentModalVisible(false);
         router.push(`/patient/doctor/${doctor?.user_id}`);
     };
-
-    const { mutate: verifyPayment } = useVerifyPayment();
 
     const handlePayment = () => {
 
@@ -109,59 +109,59 @@ const AppointmentSummary = () => {
         const razorpayOrderId = appointment.razorpay_order_id;
 
         const options = {
-        // description: "Credits towards consultation",
-        description: doctor?.name,
-        image: require("../../assets/images/app-icon.png"),
-        currency: "INR",
-        key: razorpayKeyId,
-        amount: total, // Amount in paise (5000 paise = ₹50)
-        order_id: razorpayOrderId,
-        name: "CMC Telehealth",
-        theme: { color: "#013220" },
-        // prefill: {
-        //   email: 'user@example.com',
-        //   contact: '9999999999',
-        //   name: 'John Doe'
-        // }
+            // description: "Credits towards consultation",
+            description: doctor?.name,
+            image: require("../../assets/images/app-icon.png"),
+            currency: "INR",
+            key: razorpayKeyId,
+            amount: total, // Amount in paise (5000 paise = ₹50)
+            order_id: razorpayOrderId,
+            name: "CMC Telehealth",
+            theme: { color: "#013220" },
+            prefill: {
+                email: patient?.email,
+                contact: patient?.phone,
+                name: patient?.name
+            }
         };
 
         RazorpayCheckout.open(options)
-        .then((data) => {
+            .then((data) => {
 
-            if (!data?.razorpay_order_id || !data?.razorpay_payment_id || !appointment?.appointment_id || !data?.razorpay_signature) {
-                return;
-            }
-
-            verifyPayment(
-                {
-                    razorpay_order_id: data.razorpay_order_id,
-                    razorpay_payment_id: data.razorpay_payment_id,
-                    appointment_id: appointment?.appointment_id,
-                    razorpay_signature: data.razorpay_signature
-                },
-                {
-                    onSuccess: (res) => {
-                    // Invalidate and refetch appointment to get updated data after payment
-                    queryClient.invalidateQueries({
-                        queryKey: ["appointment", appointmentId],
-                    });
-                    refetch();
-
-                    setModalVisible(true);
-                    setVerifyData(res?.data)
-                    // console.log("Verify Success Data:", res);
-                    },
-                    onError: (error: any) => {
-                        // console.log("Verify Failed Status:", error?.response?.status);
-                        // console.log("Verify Failed Data:", error?.response?.data);
-                    },
+                if (!data?.razorpay_order_id || !data?.razorpay_payment_id || !appointment?.appointment_id || !data?.razorpay_signature) {
+                    return;
                 }
-            );
 
-        })
-        .catch((error) => {
-            setPaymentModalVisible(true);
-        });
+                verifyPayment(
+                    {
+                        razorpay_order_id: data.razorpay_order_id,
+                        razorpay_payment_id: data.razorpay_payment_id,
+                        appointment_id: appointment?.appointment_id,
+                        razorpay_signature: data.razorpay_signature
+                    },
+                    {
+                        onSuccess: (res) => {
+                            // Invalidate and refetch appointment to get updated data after payment
+                            queryClient.invalidateQueries({
+                                queryKey: ["appointment", appointmentId],
+                            });
+                            refetch();
+
+                            setModalVisible(true);
+                            setVerifyData(res?.data)
+                            // console.log("Verify Success Data:", res);
+                        },
+                        onError: (error: any) => {
+                            // console.log("Verify Failed Status:", error?.response?.status);
+                            // console.log("Verify Failed Data:", error?.response?.data);
+                        },
+                    }
+                );
+
+            })
+            .catch((error) => {
+                setPaymentModalVisible(true);
+            });
     };
 
     return (

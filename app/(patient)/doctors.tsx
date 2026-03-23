@@ -133,7 +133,7 @@ const Doctors = () => {
                 departmentId: undefined,
             });
         }
-    }, [params?.filter_type, params?.id]);  
+    }, [params?.filter_type, params?.id]);
 
 
     useEffect(() => {
@@ -205,7 +205,11 @@ const Doctors = () => {
 
             {!isLoading && error && (
                 <View className="mt-6 p-4 rounded-lg bg-red-100">
-                    <Text className="text-red-600 text-sm">{error?.message ?? 'An error occurred'}</Text>
+                    <Text className="text-danger">
+                        {((error as any)?.response?.data?.errors?.message ??
+                            (error as any)?.message ??
+                            "Something went wrong")}
+                    </Text>
                 </View>
             )}
 

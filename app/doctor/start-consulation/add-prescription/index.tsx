@@ -41,7 +41,7 @@ const AddPrescription = () => {
                 <Text className="text-red-500 text-center font-medium">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Failed to load medications")}
+                        "Failed to load medications")}
                 </Text>
             </View>
         );
@@ -156,7 +156,7 @@ const AddPrescription = () => {
                 {/* Instructions Section */}
                 {instructionData && instructionData.instructions_by_doctor && (
                     <View className="mt-8 p-4 rounded-xl border border-gray-100">
-                        <View className="flex-row items-center gap-x-2 mb-3">
+                        <View className="flex-row items-center gap-x-2 mb-1">
                             <Text className="text-base font-semibold text-black">
                                 Conclusion Report
                             </Text>
