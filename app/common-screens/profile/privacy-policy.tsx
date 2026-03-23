@@ -46,7 +46,9 @@ const PrivacyPolicy = () => {
                 <ActivityIndicator size="large" color="#013220" />
             ) : error ? (
                 <Text className="text-red-500">
-                    {error.message || "Error loading content"}
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Error loading content")}
                 </Text>
             ) : privacyPolicyData ? (
                 <View className="mb-14">
@@ -59,7 +61,9 @@ const PrivacyPolicy = () => {
             ) : (
                 <EmptyState
                     title="No Content Available"
-                    message="Privacy policy is not available at the moment. Please check back later."
+                    message= {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Privacy policy is not available at the moment. Please check back later.")}
                     icon={<ShieldCheck size={48} color="#94A3B8" />}
                     className="mt-20"
                 />

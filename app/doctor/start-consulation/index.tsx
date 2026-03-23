@@ -35,6 +35,7 @@ const CONTROLS: ControlConfig[] = [
 const MAX_BOTTOM_SHEET_HEIGHT = Dimensions.get("window").height * 0.8;
 
 const StartConsulationWithDoctor = () => {
+    
     const router = useRouter();
     const { token } = useAuth();
     const { mutate: markAsCompleted, isPending: isMarkingComplete } = useMarkAsCompleted();

@@ -34,7 +34,11 @@ const AllPreviousAppointments = () => {
     if (isError || !patient?.data) {
         return (
             <View className="flex-1 items-center justify-center p-5">
-                <Text className="text-base text-red-500">Failed to load appointments</Text>
+                <Text className="text-base text-red-500">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Failed to load appointments")}
+                </Text>
                 <Button className="mt-4" onPress={() => router.back()}>
                     Go Back
                 </Button>

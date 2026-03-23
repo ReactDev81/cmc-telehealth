@@ -46,7 +46,9 @@ const TermAndCondition = () => {
                 <ActivityIndicator size="large" color="#013220" />
             ) : error ? (
                 <Text className="text-red-500">
-                    {error.message || "Error loading content"}
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Error loading content")}
                 </Text>
             ) : termsAndConditionsData ? (
                 <View className="mb-14">
@@ -59,7 +61,9 @@ const TermAndCondition = () => {
             ) : (
                 <EmptyState
                     title="No Content Available"
-                    message="Terms and conditions are not available at the moment. Please check back later."
+                    message= {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Terms and conditions are not available at the moment. Please check back later.")}
                     icon={<Handshake size={48} color="#94A3B8" />}
                     className="mt-20"
                 />

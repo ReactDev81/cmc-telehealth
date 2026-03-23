@@ -58,7 +58,7 @@ const StartConsulationWithDoctor = () => {
 
     const [callDuration, setCallDuration] = React.useState(0);
     const callStartTimeRef = React.useRef<number | null>(null);
-    const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+    const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);

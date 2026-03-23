@@ -72,37 +72,38 @@ export default function RegisterCompleteProfile() {
             {
                 onSuccess: async (data) => {
 
-                const user = data.data;
+                    const user = data.data;
 
-                const userData: User = {
-                    id: user.id,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    avatar: user.avatar,
-                    email: user.email,
-                    gender: user.gender,
-                    date_of_birth: user.date_of_birth,
-                    role: "patient",
-                    phone: user.phone,
-                    patient_id: user.patient_id ?? undefined,
-                    doctor_id: undefined,
-                    status: user.status,
-                    address: {
-                        address: user.address?.address ?? null,
-                        area: user.address?.area ?? null,
-                        city: user.address?.city ?? null,
-                        landmark: user.address?.landmark ?? null,
-                        pincode: user.address?.pincode ?? null,
-                        state: user.address?.state ?? null,
-                    },
-                };
+                    const userData: User = {
+                        id: user.id,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        avatar: user.avatar,
+                        email: user.email,
+                        gender: user.gender,
+                        date_of_birth: user.date_of_birth,
+                        role: "patient",
+                        phone: user.phone,
+                        patient_id: user.patient_id ?? undefined,
+                        doctor_id: undefined,
+                        status: user.status,
+                        address: {
+                            address: user.address?.address ?? null,
+                            area: user.address?.area ?? null,
+                            city: user.address?.city ?? null,
+                            landmark: user.address?.landmark ?? null,
+                            pincode: user.address?.pincode ?? null,
+                            state: user.address?.state ?? null,
+                        },
+                    };
 
-                await login(userData, data.token);
-                router.replace("/(patient)");
+                    await login(userData, data.token);
+                    router.replace("/(patient)");
 
                 },
                 onError: (error) => {
-                    console.log(error.response?.data);
+                    const err = (error as any)?.response?.data?.errors?.message;
+                    console.log('err', err);
                 },
             },
         );
@@ -218,7 +219,7 @@ export default function RegisterCompleteProfile() {
                 <ApiError
                     message={
                         isError
-                        ? ((error as any)?.response?.data?.message ??
+                        ? ((error as any)?.response?.data?.errors?.message ??
                             (error as any)?.message ??
                             "Something went wrong. Please try again.")
                         : null

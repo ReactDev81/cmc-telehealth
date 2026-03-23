@@ -47,7 +47,7 @@ export default function ManageAppointments() {
     const queryClient = useQueryClient();
     const { appointment_id } = useLocalSearchParams<{appointment_id: string;}>();
     const appointmentId = typeof appointment_id === "string" ? appointment_id : undefined;
-    const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
+    const { data, isLoading, isError, error, refetch } = useAppointmentById(appointmentId);
     const [modalVisible, setModalVisible] = useState(false);
     const [cancelModalVisible, setCancelModalVisible] = useState(false);
     const [rescheduleAttemptModalVisible, setRescheduleAttemptModalVisible] = useState(false);
@@ -93,7 +93,9 @@ export default function ManageAppointments() {
         return (
             <ErrorState
                 title="Appointment Not Found"
-                message="We couldn't retrieve the details for this appointment. It may have been removed or there's a connection issue."
+                message={((error as any)?.response?.data?.errors?.message ??
+                    (error as any)?.message ??
+                "We couldn't retrieve the details for this appointment. It may have been removed or there's a connection issue.")}
                 onRetry={() => refetch()}
             />
         );

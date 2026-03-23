@@ -44,7 +44,7 @@ const Home = () => {
         return (
             <SafeAreaView className="flex-1 items-center justify-center bg-white">
                 <Text className="text-danger">
-                    {((error as any)?.response?.data?.message ??
+                    {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
                     "Something went wrong. Please try again.")}
                 </Text>
@@ -200,7 +200,7 @@ const Home = () => {
 
                 <View className="px-4" 
                     style={{
-                        paddingBottom: (insets?.bottom ?? 0) + 20,
+                        paddingBottom: (insets?.bottom ?? 0) + 5,
                     }}
                 >
                     {/* Testimonial */}

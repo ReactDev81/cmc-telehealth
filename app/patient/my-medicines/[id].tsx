@@ -15,7 +15,7 @@ const MedicinesDetail = () => {
     const isFocused = useIsFocused();
     const appointmentId = Array.isArray(id) ? id[0] : id;
 
-    const { data, isLoading, error, refetch } = usePrescriptionDetail(appointmentId);
+    const { data, isLoading, isError, error, refetch } = usePrescriptionDetail(appointmentId);
 
     const list = data?.data as any;
     const MedicinesData: MedicineDetail[] =
@@ -46,11 +46,17 @@ const MedicinesDetail = () => {
         );
     }
 
-    if (error) return (
-        <SafeAreaView className="flex-1 items-center justify-center">
-            <Text className="text-black">Something went wrong</Text>
-        </SafeAreaView>
-    );
+    if (isError) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <Text className="text-danger">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong. Please try again.")}
+                </Text>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-white">

@@ -27,7 +27,8 @@ const AppointmentDetail = () => {
         return (
             <ErrorState
                 title="Invalid Appointment"
-                message="No appointment ID was provided."
+                message= {((error as any)?.response?.data?.errors?.message ??
+                    (error as any)?.message ?? "Something went wrong.")}
                 onRetry={() => router.back()}
             />
         );

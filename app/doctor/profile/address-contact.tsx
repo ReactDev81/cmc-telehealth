@@ -12,7 +12,7 @@ const AddressContactScreen = () => {
     const { user } = useAuth();
     const doctorID = user?.id || "";
 
-    const { data: profileResponse, isLoading } = useDoctorProfile<AddressContact>(
+    const { data: profileResponse, isLoading, isError, error } = useDoctorProfile<AddressContact>(
         doctorID,
         "address_contact"
     );
@@ -20,6 +20,18 @@ const AddressContactScreen = () => {
     const addressData = profileResponse?.data;
 
     const [modalVisible, setModalVisible] = useState(false);
+
+    if (isError) {
+        return (
+            <View className="flex-1 items-center justify-center p-5">
+                <Text className="text-base text-red-500">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Failed to load address")}
+                </Text>
+            </View>
+        );
+    }
 
     return (
         <View className="flex-1 bg-white">

@@ -89,7 +89,8 @@ const LoginScreen = () => {
                 }
             },
             onError: (error: any) => {
-                console.log("ERROR:", error?.response?.data);
+                const err = (error as any)?.response?.data?.errors?.message;
+                console.log('err', err);
                 if(error.response?.data?.errors?.status === "verified") {
                     setEmailverified(true);
                 }
@@ -158,7 +159,7 @@ const LoginScreen = () => {
             <ApiError
                 message={
                     isError
-                    ? ((error as any)?.response?.data?.message ??
+                    ? ((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
                         "Login failed. Please check your credentials.")
                     : null

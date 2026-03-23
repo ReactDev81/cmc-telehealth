@@ -80,9 +80,11 @@ const DoctorReviewModal = ({ visible, onClose, doctorId, doctorName, appointment
                     reset();
                 },
                 onError: (err: any) => {
-                    console.log("Review error message:", err?.message);
-                    console.log("err messaging:", (error as any)?.message);
-                    console.log("err message:", (error as any)?.response?.data?.message);
+                    console.log("Review error message:", 
+                        ((err as any)?.response?.data?.errors?.message ??
+                            (err as any)?.message ??
+                        "Something went wrong")
+                    )
                 },
             },
         );

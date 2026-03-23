@@ -139,7 +139,7 @@ const RegisterVerifyOtp = () => {
                     console.log(data); // OTP resent
                 },
                 onError: (error) => {
-                    const message = error.response?.data?.message ?? error.message ??
+                    const message = error.response?.data?.errors?.message ?? error.message ??
                         "Something went wrong. Please try again.";
                     setError(message);
                 },

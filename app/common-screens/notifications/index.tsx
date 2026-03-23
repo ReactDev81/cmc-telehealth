@@ -12,9 +12,10 @@ const tabs = ["All", "Appointment", "Availability", "Review"];
 
 const Notifications = () =>  {
 
-    const { data, fetchNextPage, refetch, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteNotifications(10);
+    const { data, fetchNextPage, isError, error, refetch, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteNotifications(10);
     const [activeTab, setActiveTab] = useState("All");
     const notifications = data?.pages.flatMap((page) => page.data) ?? [];
+    const isFocused = useIsFocused();
 
     const filteredData = (() => {
         if (activeTab === "All") return notifications;
@@ -34,36 +35,46 @@ const Notifications = () =>  {
         return notifications.filter((t) => t.group === "failed");
     })();
 
-    const isFocused = useIsFocused();
-
     useEffect(() => {
         if (isFocused) {
           refetch();
         }
     }, [isFocused, refetch]);
 
+    if (isError) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <Text className="text-danger">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong. Please try again.")}
+                </Text>
+            </SafeAreaView>
+        );
+    }
+    
     return (
         <SafeAreaView edges={["left", "right", "bottom"]}>
 
             {/* Tabs */}
             <View className="p-5">
-              <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 12 }}
-              >
-                  {tabs.map((tab) => (
-                      <TouchableOpacity
-                          key={tab}
-                          className={`px-5 py-2.5 max-h-11 rounded-lg ${activeTab === tab ? "bg-primary" : "border border-gray"}`}
-                          onPress={() => setActiveTab(tab)}
-                      >
-                          <Text className={`text-sm font-medium ${activeTab === tab ? "text-white" : "text-gray-600"}`}>
-                              {tab}
-                          </Text>
-                      </TouchableOpacity>
-                  ))}
-              </ScrollView>
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ gap: 12 }}
+                >
+                    {tabs.map((tab) => (
+                        <TouchableOpacity
+                            key={tab}
+                            className={`px-5 py-2.5 max-h-11 rounded-lg ${activeTab === tab ? "bg-primary" : "border border-gray"}`}
+                            onPress={() => setActiveTab(tab)}
+                        >
+                            <Text className={`text-sm font-medium ${activeTab === tab ? "text-white" : "text-gray-600"}`}>
+                                {tab}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
             </View>
 
             <FlatList

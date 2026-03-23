@@ -15,11 +15,7 @@ const Certificates = () => {
 
     const { user } = useAuth();
     const doctorID = user?.id || "";
-    const {
-        data: profileResponse,
-        isLoading,
-        refetch,
-    } = useDoctorProfile<CertificationsGroup>(doctorID, "certifications_info");
+    const {data: profileResponse, isLoading, refetch, error } = useDoctorProfile<CertificationsGroup>(doctorID, "certifications_info");
 
     const certificates = (
         profileResponse?.data?.certifications_info || []
@@ -113,7 +109,9 @@ const Certificates = () => {
                 ) : (
                     <EmptyState
                         title="No Certificates"
-                        message="You haven't added any professional certificates yet. Add your certifications to build credibility."
+                        message={((error as any)?.response?.data?.errors?.message ??
+                            (error as any)?.message ??
+                        "You haven't added any professional certificates yet. Add your certifications to build credibility.")}
                         icon={<FileText size={48} color="#94A3B8" />}
                         className="mt-10"
                     />

@@ -94,7 +94,7 @@ const NeedHelp = () => {
                     setFeedback({
                         visible: true,
                         type: "error",
-                        message: res?.message || "Something went wrong. Please try again.",
+                        message: (res as any)?.response?.data?.errors?.message || "Something went wrong. Please try again.",
                     });
                 },
             },

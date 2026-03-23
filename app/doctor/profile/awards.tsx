@@ -16,7 +16,7 @@ const AwardsScreen = () => {
     const { user } = useAuth();
     const doctorID = user?.id || "";
     const isFocused = useIsFocused();
-    const { data: profileResponse, isLoading, refetch } = useDoctorProfile<AwardsGroup>(doctorID, "awards_info");
+    const { data: profileResponse, isLoading, error, refetch } = useDoctorProfile<AwardsGroup>(doctorID, "awards_info");
     const awards = profileResponse?.data?.awards_info || [];
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -108,7 +108,9 @@ const AwardsScreen = () => {
                 ) : (
                     <EmptyState
                         title="No Awards"
-                        message="You haven't added any awards yet."
+                        message={((error as any)?.response?.data?.errors?.message ??
+                            (error as any)?.message ??
+                        "You haven't added any awards yet.")}
                         icon={<Award size={48} color="#94A3B8" />}
                     />
                 )}

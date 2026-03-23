@@ -13,11 +13,9 @@ interface HeaderProps {
 const DoctorHomeHeader = ({ insets }: HeaderProps) => {
 
     const { user } = useAuth();
-    const { data, refetch } = useUnreadNotificationCount();
+    const { data, refetch, isError, error } = useUnreadNotificationCount();
     const unreadCount = data?.data.unread_count ?? 0;
-
     const statusPadding = insets?.top ?? 0;
-
     const isFocused = useIsFocused();
 
     useEffect(() => {
@@ -25,6 +23,18 @@ const DoctorHomeHeader = ({ insets }: HeaderProps) => {
           refetch();
         }
     }, [isFocused, refetch]);
+
+    if (isError) {
+        return (
+            <View className="py-20 items-center justify-center px-5">
+                <Text className="text-red-500 text-center font-medium">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Failed to load notifications")}
+                </Text>
+            </View>
+        );
+    }
 
     return (
         <View

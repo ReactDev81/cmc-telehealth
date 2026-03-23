@@ -85,7 +85,7 @@ const AddCurrentLocation = () => {
             onError: (error: any) => {
                 Alert.alert(
                     "Error",
-                    error?.response?.data?.message || "Failed to update address"
+                    error?.response?.data?.errors?.message || "Failed to update address"
                 );
             },
         });

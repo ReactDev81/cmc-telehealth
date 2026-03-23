@@ -50,7 +50,9 @@ const AboutUs = () => {
             ) : error ? (
                 <ErrorState
                     title="Unable to Load Content"
-                    message="We couldn't load the about us information. Please try again."
+                    message= {((error as any)?.response?.data?.errors?.message ??
+                                (error as any)?.message ??
+                            "We couldn't load the about us information. Please try again.")}
                     onRetry={refetch}
                 />
             ) : aboutUsData ? (

@@ -59,7 +59,7 @@ const AddNewWorkingExperience = ({ existingExperiences = [], onClose }: {
                 console.log(error);
                 Alert.alert(
                     "Error",
-                    error?.response?.data?.message ||
+                    error?.response?.data?.errors?.message ||
                     "Something went wrong while saving experience",
                 );
             },

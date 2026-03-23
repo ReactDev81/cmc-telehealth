@@ -10,19 +10,15 @@ const Faq = () => {
 
     const { token } = useAuth();
     const { data, isLoading, error } = useAppProfileScreens(token || undefined);
-
-    // singleOpen behavior: only one item open at a time
     const singleOpen = true;
     const defaultOpenId: string | null = "Medical Records";
-
-    // screen-level state for which item is open
     const [openId, setOpenId] = useState<string | number | null>(defaultOpenId);
 
     const handleToggle = useCallback(
         (id: string | number) => (nextExpanded: boolean) => {
             if (!singleOpen) {
                 setOpenId((current) =>
-                nextExpanded ? id : current === id ? null : current,
+                    nextExpanded ? id : current === id ? null : current,
                 );
                 return;
             }
@@ -45,7 +41,9 @@ const Faq = () => {
                     <ActivityIndicator size="large" color="#013220" />
                 ) : error ? (
                     <Text className="text-red-500">
-                        {error.message || "Error loading FAQs"}
+                        {((error as any)?.response?.data?.errors?.message ??
+                            (error as any)?.message ??
+                        "Error loading FAQs")}
                     </Text>
                 ) : faqData && faqData.length > 0 ? (
                     faqData.map((item) => (

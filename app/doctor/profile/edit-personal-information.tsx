@@ -152,7 +152,7 @@ const EditPersonalInformation = () => {
     const handleError = (error: any) => {
       Alert.alert(
         "Error",
-        error?.response?.data?.message || "Something went wrong",
+        error?.response?.data?.errors?.message || "Something went wrong",
       );
     };
 

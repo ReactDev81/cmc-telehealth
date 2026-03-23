@@ -56,7 +56,7 @@ const EditSocialMedia = ({
             },
             onError: (error: any) => {
                 console.log(error);
-                Alert.alert("Error", error?.response?.data?.message || "Something went wrong while saving social links");
+                Alert.alert("Error", error?.response?.data?.errors?.message || "Something went wrong while saving social links");
             }
         });
     }

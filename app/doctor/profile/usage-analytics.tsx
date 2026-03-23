@@ -49,10 +49,21 @@ import { useUsageAnalytics } from "@/queries/doctor/useUsageAnalytics";
 import { Text, View } from "react-native";
 
 const UsageAnalytics = () => {
-    const { data, isLoading, isError } = useUsageAnalytics();
+    const { data, isLoading, isError, error } = useUsageAnalytics();
 
     if (isLoading) return <Text>Loading...</Text>;
-    if (isError) return <Text>Error loading analytics</Text>;
+
+    if (isError) {
+        return (
+            <View className="flex-1 items-center justify-center p-5">
+                <Text className="text-base text-red-500">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Error loading analytics")}
+                </Text>
+            </View>
+        );
+    }
 
     const summary = data.summary;
     const chart = data.chart_data;

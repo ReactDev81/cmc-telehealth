@@ -205,24 +205,13 @@ const AddNewPrescription = ({ onClose }: { onClose: () => void }) => {
             },
             onError: (error: any) => {
 
-                console.log("Prescription Error Data:",error?.response?.data?.errors?.message);
+                console.log("Prescription Error Data:", error?.response?.data?.errors?.message);
 
-                const errorData = error?.response?.data;
-                let errorMsg = "Failed to add prescription. Please try again.";
-
-                if (errorData?.errors) {
-                    const firstKey = Object.keys(errorData.errors)[0];
-                    const firstError = errorData.errors[firstKey];
-                    errorMsg = Array.isArray(firstError)
-                        ? firstError[0]
-                        : typeof firstError === "string"
-                        ? firstError
-                        : errorMsg;
-                } else if (errorData?.message) {
-                    errorMsg = errorData.message;
-                }
-
-                Alert.alert("Error", errorMsg);
+                Alert.alert("Error", 
+                    ((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Failed to add prescription. Please try again.")
+                );
             },
         });
     };

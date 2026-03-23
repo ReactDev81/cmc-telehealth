@@ -66,21 +66,16 @@ const PatientDetails = () => {
         return (
             <View className="flex-1 items-center justify-center p-5">
                 <Text className="text-base text-red-500">
-                    Failed to load patient details
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Failed to load patient details")}
                 </Text>
-                {error && (
-                    <Text className="text-sm text-black-400 mt-2">
-                        {error instanceof Error ? error.message : "Unknown error occurred"}
-                    </Text>
-                )}
                 <Button className="mt-4" onPress={() => router.back()}>
                     Go Back
                 </Button>
             </View>
         );
     }
-
-    // console.log('current_medications', patient?.data?.current_medications)
 
     return (
         <ScrollView className="flex-1 bg-white p-5">

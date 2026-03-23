@@ -6,9 +6,10 @@ import { useState } from "react";
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 
 const AllTestimonials = () => {
+    
     const [page, setPage] = useState(1);
     const perPage = 5;
-    const { data, isLoading, isError, isFetching } = useTestimonials(page, perPage);
+    const { data, isLoading, error, isError, isFetching } = useTestimonials(page, perPage);
 
     const testimonials = data?.data || [];
     const pagination = data?.pagination;
@@ -24,7 +25,11 @@ const AllTestimonials = () => {
     if (isError) {
         return (
             <View className="flex-1 items-center justify-center bg-white">
-                <Text className="text-red-500 text-lg">Error loading testimonials</Text>
+                <Text className="text-danger">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong. Please try again.")}
+                </Text>
                 <TouchableOpacity
                     onPress={() => setPage(1)}
                     className="mt-4 px-6 py-2 bg-primary rounded-lg"
@@ -61,7 +66,6 @@ const AllTestimonials = () => {
                         content={htmlToReadableText(item.content)}
                         total_reviews={item.total_reviews.toString()}
                         doctor_name={item.doctor_name}
-                        // Required fields by TestimonialProps that are not used in UI but must be passed
                         patient_id={item.id}
                         doctor_id=""
                         rating={item.rating}
@@ -74,6 +78,7 @@ const AllTestimonials = () => {
                 ListFooterComponent={
                     pagination && pagination.last_page > 1 ? (
                         <View className="mt-4 mb-10">
+
                             {/* Results Count Label */}
                             <View className="items-center mb-6">
                                 <View className="bg-gray-100 px-4 py-1.5 rounded-full">
@@ -85,6 +90,7 @@ const AllTestimonials = () => {
 
                             {/* Pagination Controls */}
                             <View className="flex-row items-center justify-between bg-primary-100 rounded-2xl p-3 border border-[#EDEDED]">
+                                
                                 {/* Prev Button */}
                                 <TouchableOpacity
                                     onPress={handlePrev}

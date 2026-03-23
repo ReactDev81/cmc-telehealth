@@ -9,7 +9,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { CircleCheck } from "lucide-react-native";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Modal, Text, View } from "react-native";
+import { Alert, Modal, Text, View } from "react-native";
 import { z } from "zod";
 
 const uploadSchema = z.object({
@@ -72,13 +72,11 @@ const UploadYourReport = () => {
 
         if (mime && !allowedMimes.includes(mime)) {
             setError('file', { type: 'manual', message: `Invalid file type (${mime}). Allowed: pdf, jpg, jpeg, png, webp` });
-            // console.log('Upload blocked: invalid mime', mime);
             return;
         }
 
         if (sizeKB !== undefined && sizeKB > maxSizeKB) {
             setError('file', { type: 'manual', message: `File too large (${sizeKB} KB). Max ${maxSizeKB} KB` });
-            // console.log('Upload blocked: file too large', sizeKB);
             return;
         }
 
@@ -86,25 +84,11 @@ const UploadYourReport = () => {
 
         // normal fields
         formData.append("name", data.name);
-        // formData.append(
-        //     "report_date",
-        //     data.report_date.toISOString().split("T")[0]
-        // );
-        // send selected report type (single value). If you need to send multiple types,
-        // change this to append an array field like `types[]`.
         formData.append("type", reportType ?? "");
         formData.append("is_public", "0");
 
         // file - React Native FormData requires specific structure
         const mimeType = file.mimeType || file.type || "application/octet-stream";
-        // console.log(`[upload] file details:`, {
-        //     uri: file.uri,
-        //     name: file.name,
-        //     mimeType,
-        //     size: file.size,
-        //     "file.mimeType": file.mimeType,
-        //     "file.type": file.type,
-        // });
 
         // React Native FormData file structure
         formData.append("file", {
@@ -112,8 +96,6 @@ const UploadYourReport = () => {
             name: file.name,
             type: mimeType,
         } as any);
-
-        // console.log(`[upload] formData ready, calling mutate for patient ${user.id}`);
 
         mutate(
             {
@@ -123,14 +105,15 @@ const UploadYourReport = () => {
             {
                 onSuccess: (res) => {
                     queryClient.invalidateQueries({ queryKey: ["medical-reports"] });
-                    console.log('data submitted successfully', res);
                     setShowSuccessModal(true);
                     reset();
                 },
                 onError: (error: any) => {
-                    console.log("Upload error:", error.response?.data || error.message);
-                    // console.log("Upload error:", error.response?.data || error.message);
-                    // console.log("Upload error message:", error.message);
+                    console.log("Upload error:", error.response?.data.errors?.message || error.message);
+                    Alert.alert(
+                        "Error",
+                        error?.response?.data?.errors?.message || error.message || "Something went wrong"
+                    );
                 },
             }
         );
@@ -145,16 +128,6 @@ const UploadYourReport = () => {
                 control={control}
                 placeholder="Enter your name"
             />
-
-            {/* <DateField
-                label="Document Date"
-                value={documentDate}
-                onChange={(date) => setValue('report_date', date as Date, { shouldValidate: true })}
-                placeholder="DD/MM/YYYY"
-                maximumDate={new Date()}
-                error={errors.report_date?.message}
-                className="mt-5"
-            /> */}
 
             <FileUploadField
                 name="file"
@@ -174,17 +147,6 @@ const UploadYourReport = () => {
             <Text className="text-sm text-gray-600 mt-4">
                 Upload your medical documents or images (up to 10 files/photos)
             </Text>
-
-            {/* <FileViewer
-                visible={viewerVisible}
-                fileUri={viewerFile.uri}
-                fileName={viewerFile.name}
-                mimeType={viewerFile.mimeType}
-                onClose={() => {
-                    setViewerVisible(false);
-                    router.back();
-                }}
-            /> */}
 
             {/* Success Modal */}
             <Modal

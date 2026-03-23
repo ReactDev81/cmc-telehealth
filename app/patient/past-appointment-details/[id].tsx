@@ -20,7 +20,7 @@ const AppointementDetails = () => {
     );
     const appointmentId = typeof id === "string" ? id : undefined;
 
-    const { data, isLoading, isError, refetch } = useAppointmentById(appointmentId);
+    const { data, isLoading, isError, error, refetch } = useAppointmentById(appointmentId);
 
     // Refetch data when screen first loads
     useEffect(() => {
@@ -37,11 +37,17 @@ const AppointementDetails = () => {
         );
     }
 
-    if (isError) return (
-        <SafeAreaView className="flex-1 items-center justify-center">
-            <Text className="text-black">Something went wrong</Text>
-        </SafeAreaView>
-    );
+    if (isError) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <Text className="text-danger">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong. Please try again.")}
+                </Text>
+            </SafeAreaView>
+        );
+    }
 
     
     const appointment = data?.data;

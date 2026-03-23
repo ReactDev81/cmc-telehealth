@@ -4,17 +4,45 @@ import PaymentDetail from "@/components/doctor/appointment-detail/payment-detail
 import ScheduleAppointment from "@/components/doctor/appointment-detail/schedule-appointment";
 import { useAuth } from "@/context/UserContext";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
+import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const PastAppointmentDetail = () => {
+
     const { id } = useLocalSearchParams();
     const { token } = useAuth();
     const appointmentId = typeof id === 'string' ? id : "";
+    const { data: appointment, isLoading, refetch, isError, error } = usePatientDetail(appointmentId, token || "");
+    const isFocused = useIsFocused();
 
-    const { data: appointment, isLoading } = usePatientDetail(appointmentId, token || "");
+    useEffect(() => {
+        if (isFocused) {
+          refetch();
+        }
+    }, [isFocused, refetch]);
 
-    if (isLoading) return <ActivityIndicator size="large" className="flex-1" />;
+    if (isLoading) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <ActivityIndicator size="large" color="#000000" />
+            </SafeAreaView>
+        );
+    }
+
+    if (isError) {
+        return (
+            <View className="py-20 items-center justify-center px-5">
+                <Text className="text-red-500 text-center font-medium">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong")}
+                </Text>
+            </View>
+        );
+    }
 
     const data = appointment?.data;
     if (!data) return <Text>Appointment not found</Text>;

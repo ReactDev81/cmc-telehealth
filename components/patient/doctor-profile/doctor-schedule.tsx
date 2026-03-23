@@ -270,29 +270,8 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
             setResultModalVisible(true);
           },
           onError: (error: any) => {
-            
-            console.log("Reschedule Error (Raw):", error);
-            console.log("Reschedule Error Data:", JSON.stringify(error?.response?.data, null, 2));
 
-            const errorData = error?.response?.data;
-            let errorMsg = "Failed to reschedule appointment. Please try again.";
-
-            if (errorData) {
-              if (errorData.errors) {
-                // Extracts the first validation error from any field (e.g., appointment_date)
-                const firstKey = Object.keys(errorData.errors)[0];
-                const firstError = errorData.errors[firstKey];
-                if (Array.isArray(firstError)) {
-                  errorMsg = firstError[0];
-                } else if (typeof firstError === "string") {
-                  errorMsg = firstError;
-                }
-              } else if (errorData.message) {
-                errorMsg = errorData.message;
-              }
-            } else if (error.message) {
-              errorMsg = error.message;
-            }
+            const errorMsg = error?.response?.data?.errors?.message || "Failed to reschedule appointment. Please try again."
 
             setRescheduleError(errorMsg);
             setResultModalMessage(errorMsg);
@@ -306,8 +285,6 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
 
       submitBooking(payload, {
         onSuccess: (response) => {
-          // console.log("Booking Success:", response);
-          // console.log("bookingId:", response?.data?.appointment?.id);
 
           // Invalidate appointment queries to refresh data
           queryClient.invalidateQueries({
@@ -322,28 +299,8 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
           });
         },
         onError: (error: any) => {
-          console.log("Booking Error (Raw):", error);
-          console.log("Booking Error Data:", JSON.stringify(error?.response?.data, null, 2));
 
-          const errorData = error?.response?.data;
-          let errorMsg = "Failed to book appointment. Please try again.";
-
-          if (errorData) {
-            if (errorData.errors) {
-              // Extracts the first validation error from any field (e.g., appointment_date)
-              const firstKey = Object.keys(errorData.errors)[0];
-              const firstError = errorData.errors[firstKey];
-              if (Array.isArray(firstError)) {
-                errorMsg = firstError[0];
-              } else if (typeof firstError === "string") {
-                errorMsg = firstError;
-              }
-            } else if (errorData.message) {
-              errorMsg = errorData.message;
-            }
-          } else if (error.message) {
-            errorMsg = error.message;
-          }
+          const errorMsg = error?.response?.data?.errors?.message || "Failed to book appointment. Please try again."
 
           setResultModalMessage(errorMsg);
           setResultModalSuccess(false);

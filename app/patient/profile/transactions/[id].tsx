@@ -22,7 +22,9 @@ const TransactionDetails = () => {
         return (
             <View className="flex-1 items-center justify-center bg-white">
                 <Text className="text-red-500">
-                    {error instanceof Error ? error.message : "Failed to load transaction"}
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Failed to load transaction")}
                 </Text>
             </View>
         );

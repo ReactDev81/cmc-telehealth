@@ -13,9 +13,10 @@ interface Props {
 }
 
 const AddConclusion = ({ onClose, initialData }: Props) => {
+
     const { token } = useAuth();
     const { appointment_id } = useLocalSearchParams<{ appointment_id: string }>();
-    const { data: patient, isLoading, isError } = usePatientDetail(appointment_id || "", token || "");
+    const { data: patient, isLoading, isError, error } = usePatientDetail(appointment_id || "", token || "");
 
     if (isLoading) {
         return (
@@ -29,7 +30,11 @@ const AddConclusion = ({ onClose, initialData }: Props) => {
     if (isError || !patient) {
         return (
             <View className="py-10 items-center justify-center px-5">
-                <Text className="text-red-500 text-center font-medium">Failed to load patient context</Text>
+                <Text className="text-red-500 text-center font-medium">
+                    {((error as any)?.response?.data?.errors?.message ??
+                            (error as any)?.message ??
+                        "Failed to load patient context")}
+                </Text>
             </View>
         );
     }

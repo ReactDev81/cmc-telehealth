@@ -1,19 +1,47 @@
 import FindDoctorSearchBar from "@/components/patient/find-doctor/find-doctor-search-bar";
 import SpecialityCard from "@/components/patient/home/speciality-card";
 import EmptyState from "@/components/ui/EmptyState";
-import ErrorState from "@/components/ui/ErrorState";
 import Skeleton from "@/components/ui/Skeleton";
 import { useFindDoctorData } from "@/queries/patient/useFindDoctorData";
+import { useIsFocused } from "@react-navigation/native";
 import { Search } from "lucide-react-native";
-import { useMemo, useState } from "react";
-import { FlatList, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { SpecialityByDoctorProps, SymptomsByDoctorProps } from "../../types/patient/find-doctor";
 
 const FindDoctor = () => {
 
     const [selectedFilter, setSelectedFilter] = useState<"Speciality" | "Symptoms">("Speciality");
     const [searchQuery, setSearchQuery] = useState("");
+    const isFocused = useIsFocused();
     const { data, isLoading, isError, error, refetch } = useFindDoctorData();
+
+    useEffect(() => {
+        if (isFocused) {
+            refetch();
+        }
+    }, [isFocused, refetch]);
+
+    if (isLoading) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <ActivityIndicator size="large" color="#000000" />
+            </SafeAreaView>
+        );
+    }
+
+    if (isError) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <Text className="text-danger">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong. Please try again.")}
+                </Text>
+            </SafeAreaView>
+        );
+    }
 
     const specialities: SpecialityByDoctorProps[] = useMemo(
         () =>
@@ -67,6 +95,7 @@ const FindDoctor = () => {
 
     return (
         <View className="flex-1 p-5 bg-white">
+
             <FindDoctorSearchBar
                 selectedFilter={selectedFilter}
                 setSelectedFilter={setSelectedFilter}
@@ -87,13 +116,6 @@ const FindDoctor = () => {
                         <Skeleton width="30%" height={80} />
                     </View>
                 </View>
-            )}
-
-            {isError && (
-                <ErrorState
-                    title="Failed to load categories"
-                    onRetry={() => refetch()}
-                />
             )}
 
             {!isLoading && !isError && (

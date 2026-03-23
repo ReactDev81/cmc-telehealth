@@ -25,6 +25,7 @@ interface Props {
 }
 
 const ConclusionForm = ({ onClose, initialData }: Props) => {
+
     const { token } = useAuth();
     const { appointment_id } = useLocalSearchParams<{ appointment_id: string }>();
     const { mutate: updateInstructions, isPending } = useUpdateInstructions();
@@ -60,7 +61,7 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
                     onClose();
                 },
                 onError: (error: any) => {
-                    const errorMessage = error.response?.data?.message || error.message || "Failed to submit conclusion";
+                    const errorMessage = error.response?.data?.errors?.message || error.message || "Failed to submit conclusion";
                     Alert.alert("Error", errorMessage);
                 },
             }

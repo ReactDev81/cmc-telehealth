@@ -14,7 +14,7 @@ const Feedback = () => {
     const [page, setPage] = useState(1);
     const perPage = 5;
     const { token } = useAuth();
-    const { data, isLoading, isError, isFetching, refetch } = useReviews(token!, page, perPage);
+    const { data, isLoading, error, isError, isFetching, refetch } = useReviews(token!, page, perPage);
 
     if (isLoading && !data) return (
         <View className="flex-1 bg-white p-5 gap-y-5">
@@ -26,7 +26,9 @@ const Feedback = () => {
 
     if (isError) return (
         <ErrorState
-            title="Unable to load feedbacks"
+            title={((error as any)?.response?.data?.errors?.message ??
+                (error as any)?.message ??
+            "Unable to load feedbacks")}
             onRetry={refetch}
         />
     );

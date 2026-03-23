@@ -37,8 +37,8 @@ const ForgotPasswordSendOtp = () => {
                     });
                 },
                 onError: (error) => {
-                    const err = error as any;
-                    console.log(err?.response?.data);
+                    const err = (error as any)?.response?.data?.errors?.message;
+                    console.log('err', err);
                 },
             },
         );
@@ -81,7 +81,7 @@ const ForgotPasswordSendOtp = () => {
             <ApiError
                 message={
                     isError
-                    ? ((error as any)?.response?.data?.message ??
+                    ? ((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
                         "Failed to change password. Please try again.")
                     : null

@@ -86,11 +86,12 @@ const MedicalRecords = () => {
                 {isError && (
                     <View className="mt-6 p-4 bg-red-100 rounded-lg">
                         <Text className="text-red-600">
-                            {error instanceof Error ? error.message : "Failed to load reports"}
+                            {((error as any)?.response?.data?.errors?.message ??
+                                (error as any)?.message ??
+                                "Failed to load reports")}
                         </Text>
                     </View>
                 )}
-
 
                 <View className="flex-1">
                     <FlatList

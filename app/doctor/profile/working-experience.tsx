@@ -13,8 +13,7 @@ const WorkingExperience = () => {
 
     const { user } = useAuth();
     const doctorID = user?.id || "";
-    const { data: profileResponse, isLoading } =
-    useDoctorProfile<WorkingExperienceGroup>(doctorID, "working_experience");
+    const { data: profileResponse, isLoading, error } = useDoctorProfile<WorkingExperienceGroup>(doctorID, "working_experience");
     const workingExperience = profileResponse?.data?.professional_experience_info || [];
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -84,7 +83,9 @@ const WorkingExperience = () => {
                 ) : (
                     <EmptyState
                         title="No Work Experience"
-                        message="You haven't added any work experience yet. Add your experience."
+                        message={((error as any)?.response?.data?.errors?.message ??
+                            (error as any)?.message ??
+                        "You haven't added any work experience yet. Add your experience.")}
                         icon={<BriefcaseBusiness size={48} color="#94A3B8" />}
                         className="mt-10"
                     />

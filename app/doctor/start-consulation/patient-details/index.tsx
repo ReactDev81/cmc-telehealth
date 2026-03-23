@@ -15,7 +15,7 @@ interface PatientDetailsProps {
 const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
     
     const { token } = useAuth();
-    const { data: patient, isLoading, isError, refetch } = usePatientDetail(appointmentId || "", token || "");
+    const { data: patient, isLoading, isError, error, refetch } = usePatientDetail(appointmentId || "", token || "");
 
     if (isLoading) {
         return (
@@ -29,7 +29,11 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
     if (isError || !patient) {
         return (
             <View className="py-20 items-center justify-center px-5">
-                <Text className="text-red-500 text-center font-medium">Failed to load patient details</Text>
+                <Text className="text-red-500 text-center font-medium">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Failed to load patient details")}
+                </Text>
                 <TouchableOpacity onPress={() => refetch()} className="mt-4 bg-primary px-6 py-2 rounded-lg">
                     <Text className="text-white font-medium">Try Again</Text>
                 </TouchableOpacity>

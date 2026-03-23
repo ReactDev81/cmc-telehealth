@@ -1,18 +1,45 @@
 import { useMyTransactions } from "@/queries/patient/useMyTransactions";
+import { useIsFocused } from "@react-navigation/native";
 import { router } from "expo-router";
 import { Check, Clock, RotateCcw, X } from "lucide-react-native";
-import { useState } from "react";
-import { FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const tabs = ["All", "Completed", "Pending", "Cancelled", "Refunded"];
 
 const Transaction = () => {
     
+    const isFocused = useIsFocused();
     const { data, isLoading, isError, error, refetch } = useMyTransactions();
     const [activeTab, setActiveTab] = useState("All");
-
     const transactions = data?.data ?? [];
+
+    useEffect(() => {
+        if (isFocused) {
+            refetch();
+        }
+    }, [isFocused, refetch]);
+
+    if (isLoading) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <ActivityIndicator size="large" color="#000000" />
+            </SafeAreaView>
+        );
+    }
+
+    if (isError) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <Text className="text-danger">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong. Please try again.")}
+                </Text>
+            </SafeAreaView>
+        );
+    }
 
     const filteredData = (() => {
         if (activeTab === "All") return transactions;
@@ -54,87 +81,82 @@ const Transaction = () => {
             </View>
         ),
     };
-      
 
     return(
         <SafeAreaView className='flex-1 bg-white p-5 pt-0'>
 
             {/* Tabs */}
             <View className="mb-3">
-              <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 12 }}
-              >
-                  {tabs.map((tab) => (
-                      <TouchableOpacity
-                          key={tab}
-                          className={`px-5 py-2.5 max-h-11 rounded-lg ${activeTab === tab ? "bg-primary" : "border border-gray"}`}
-                          onPress={() => setActiveTab(tab)}
-                      >
-                          <Text className={`text-sm font-medium ${activeTab === tab ? "text-white" : "text-gray-600"}`}>
-                              {tab}
-                          </Text>
-                      </TouchableOpacity>
-                  ))}
-              </ScrollView>
-            </View>
-            
-
-
-          {/* Transactions List */}
-          {!isLoading && !isError && (
-            <FlatList
-              data={filteredData}
-              keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-              onRefresh={refetch}
-              refreshing={isLoading}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push(`/patient/profile/transactions/${item.id}`)
-                  }
-                  className="flex-row items-center justify-between border-b border-black-200 py-5"
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ gap: 12 }}
                 >
-                  <View className="flex-row items-center gap-x-3">
+                    {tabs.map((tab) => (
+                        <TouchableOpacity
+                            key={tab}
+                            className={`px-5 py-2.5 max-h-11 rounded-lg ${activeTab === tab ? "bg-primary" : "border border-gray"}`}
+                            onPress={() => setActiveTab(tab)}
+                        >
+                            <Text className={`text-sm font-medium ${activeTab === tab ? "text-white" : "text-gray-600"}`}>
+                                {tab}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
 
-                  {statusIcon[item.status] || null}
+            {/* Transactions List */}
+            {!isLoading && !isError && (
+                <FlatList
+                    data={filteredData}
+                    keyExtractor={(item) => item.id}
+                    showsVerticalScrollIndicator={false}
+                    onRefresh={refetch}
+                    refreshing={isLoading}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            onPress={() =>
+                                router.push(`/patient/profile/transactions/${item.id}`)
+                            }
+                            className="flex-row items-center justify-between border-b border-black-200 py-5"
+                        >
+                            <View className="flex-row items-center gap-x-3">
+                                {statusIcon[item.status] || null}
+                                <View>
+                                    <Text className="text-base font-medium text-black">
+                                        {item.patient_name}
+                                    </Text>
+                                    <Text className="text-black-400 text-sm mt-1.5">
+                                        {item.payment_type === "Card"
+                                        ? `${item.payment_method}${item.payment_type}****${item.card_last4}`
+                                        : item.payment_type === "UPI"
+                                        ? item.upi_id
+                                        : item.payment_type === "Net Banking" 
+                                        ? item.payment_method + ' ' + item.payment_type
+                                        : null}
+                                    </Text>
+                                </View>
+                            </View>
 
-                    <View>
-                      <Text className="text-base font-medium text-black">
-                        {item.patient_name}
-                      </Text>
-                      <Text className="text-black-400 text-sm mt-1.5">
-                        {item.payment_type === "Card"
-                          ? `${item.payment_method}${item.payment_type}****${item.card_last4}`
-                          : item.payment_type === "UPI"
-                          ? item.upi_id
-                          : item.payment_type === "Net Banking" 
-                          ? item.payment_method + ' ' + item.payment_type
-                          : null}
-                      </Text>
-                    </View>
-                  </View>
+                            <View className="items-end">
+                                <Text className="text-base text-black-400">
+                                    ₹ {item.amount}
+                                </Text>
+                                <Text className="text-black-400 text-sm mt-1">
+                                    {item.date}
+                                </Text>
+                            </View>
 
-                  <View className="items-end">
-                    <Text className="text-base text-black-400">
-                      ₹ {item.amount}
-                    </Text>
-                    <Text className="text-black-400 text-sm mt-1">
-                    {item.date}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-              ListEmptyComponent={() => (
-                <View className="mt-20 items-center">
-                  <Text className="text-gray-400">No transactions found</Text>
-                </View>
-              )}
-            />
-          )}
-
+                        </TouchableOpacity>
+                    )}
+                    ListEmptyComponent={() => (
+                        <View className="mt-20 items-center">
+                            <Text className="text-gray-400">No transactions found</Text>
+                        </View>
+                    )}
+                />
+            )}
         </SafeAreaView>
     )
 }

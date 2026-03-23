@@ -49,7 +49,8 @@ export default function RegisterSendOtp() {
                     });
                 },
                 onError: (error) => {
-                    console.log("Register error:", error.response?.data);
+                    const err = (error as any)?.response?.data?.errors?.message;
+                    console.log('Register error:', err);
                     if(error.response?.data?.errors?.status === "verified") {
                         setEmailverified(true);
                     }
@@ -103,7 +104,7 @@ export default function RegisterSendOtp() {
                 <ApiError
                     message={
                         isError
-                        ? ((error as any)?.response?.data?.message ??
+                        ? ((error as any)?.response?.data?.errors?.message ??
                             (error as any)?.message ??
                             "Registration failed. Please try again.")
                         : null

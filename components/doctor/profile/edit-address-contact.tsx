@@ -72,7 +72,7 @@ const EditAddressContact = ({
             },
             onError: (error: any) => {
                 console.log(error);
-                Alert.alert("Error", error?.response?.data?.message || "Something went wrong while saving address");
+                Alert.alert("Error", error?.response?.data?.errors?.message || "Something went wrong while saving address");
             }
         });
     }

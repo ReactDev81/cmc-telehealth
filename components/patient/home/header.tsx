@@ -4,7 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Bell, ChevronDown, MapPin } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
 
 interface HeaderProps {
     insets?: { top?: number };
@@ -13,7 +13,7 @@ interface HeaderProps {
 const Header = ({ insets }: HeaderProps) => {
 
     const { user } = useAuth();
-    const { data, refetch } = useUnreadNotificationCount();
+    const { data, refetch, isLoading, isError, error } = useUnreadNotificationCount();
     const unreadCount = data?.data.unread_count ?? 0;
     const isFocused = useIsFocused();
 
@@ -22,6 +22,27 @@ const Header = ({ insets }: HeaderProps) => {
           refetch();
         }
     }, [isFocused, refetch]);
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 items-center justify-center">
+                <ActivityIndicator size="large" />
+                <Text className="mt-3 text-black-400">Loading ...</Text>
+            </View>
+        );
+    }
+
+    if (isError) {
+        return (
+            <View className="flex-1 items-center justify-center p-5">
+                <Text className="text-base text-red-500">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong")}
+                </Text>
+            </View>
+        );
+    }
 
     return (
         <View

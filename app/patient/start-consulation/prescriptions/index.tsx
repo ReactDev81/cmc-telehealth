@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const DcotorPrescriptions = ({ AppointmentID }: { AppointmentID: string }) => {
 
     const isFocused = useIsFocused();
-    const { data, isLoading, error, refetch } = usePrescriptionDetail(AppointmentID);
+    const { data, isLoading, isError, error, refetch } = usePrescriptionDetail(AppointmentID);
 
     const list = data?.data as any;
     const MedicinesData: MedicineDetail[] =
@@ -37,11 +37,17 @@ const DcotorPrescriptions = ({ AppointmentID }: { AppointmentID: string }) => {
         );
     }
 
-    if (error) return (
-        <SafeAreaView className="flex-1 items-center justify-center">
-            <Text className="text-black">Something went wrong</Text>
-        </SafeAreaView>
-    );
+    if (isError) {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <Text className="text-danger">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong. Please try again.")}
+                </Text>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <ScrollView className="flex-1 bg-white px-5">

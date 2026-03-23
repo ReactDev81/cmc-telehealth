@@ -11,7 +11,7 @@ const CurrentMedicines = () => {
     const { user } = useAuth(); 
     const isFocused = useIsFocused();
     const patient_id = user?.patient_id as string;
-    const { data, isLoading, error, refetch } = usePrescriptions(patient_id, "current");
+    const { data, isLoading, isError, error, refetch } = usePrescriptions(patient_id, "current");
 
     useEffect(() => {
         if (isFocused) {
@@ -24,11 +24,18 @@ const CurrentMedicines = () => {
             <ActivityIndicator size="large" color="primary" />
         </SafeAreaView>
     );
-    if (error) return (
-        <SafeAreaView className="flex-1 items-center justify-center">
-            <Text className="text-black">Something went wrong</Text>
-        </SafeAreaView>
-    );
+
+    if (isError) {
+        return (
+            <View className="flex-1 items-center justify-center p-5">
+                <Text className="text-base text-red-500">
+                    {((error as any)?.response?.data?.errors?.message ??
+                        (error as any)?.message ??
+                    "Something went wrong")}
+                </Text>
+            </View>
+        );
+    }
 
     const renderMedicines = ({ item }: { item: any }) => {
         return (
