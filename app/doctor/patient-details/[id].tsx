@@ -107,7 +107,7 @@ const PatientDetails = () => {
                 )}
 
                 {/* click here to start consulation */}
-                {upcomingAppointment.call_now && (
+                {upcomingAppointment?.call_now && (
                     <Button
                         icon={<ChevronRight color="#fff" size={16} strokeWidth={3} />}
                         className="flex-row-reverse mt-5"
@@ -186,12 +186,12 @@ const PatientDetails = () => {
                     <TitleWithLink
                         title_text="Previous appointment with this patient"
                         link={
-                            patient.data.previous_appointments.length > 2
+                            patient.data?.previous_appointments?.length > 2
                                 ? `/doctor/patient-details/all-previous-appointments/${appointmentId}`
                                 : undefined
                         }
                         link_text={
-                            patient.data.previous_appointments.length > 2 ? "See All" : ""
+                            patient.data?.previous_appointments?.length > 2 ? "See All" : ""
                         }
                     />
                     {patient?.data?.previous_appointments &&

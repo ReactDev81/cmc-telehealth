@@ -6,6 +6,6 @@ export function useInfiniteNotifications(perPage = 10) {
         queryKey: ["notifications"],
         initialPageParam: undefined as string | undefined,
         queryFn: ({ pageParam }) => getNotifications(perPage, pageParam),
-        getNextPageParam: (lastPage) => lastPage.meta.next_cursor ?? undefined,
+        getNextPageParam: (lastPage) => lastPage?.meta?.next_cursor ?? undefined,
     });
 }

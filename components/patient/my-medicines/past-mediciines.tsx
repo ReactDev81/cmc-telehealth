@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MedicineCard from "./medicine-card";
 
 const PastMedicines = () => {
-    
+
     const { user } = useAuth();
     const isFocused = useIsFocused();
     const patient_id = user?.patient_id as string;
@@ -15,7 +15,7 @@ const PastMedicines = () => {
 
     useEffect(() => {
         if (isFocused) {
-          refetch();
+            refetch();
         }
     }, [isFocused, refetch]);
 
@@ -31,7 +31,7 @@ const PastMedicines = () => {
                 <Text className="text-base text-red-500">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Something went wrong")}
+                        "Something went wrong")}
                 </Text>
             </View>
         );
@@ -43,7 +43,7 @@ const PastMedicines = () => {
                 appointment_id={item.appointment_id}
                 patient_symptoms={item.problem}
                 doctor_name={item.doctor_name}
-                consulated_date={item.medician_timings}
+                consulated_date={item.timing}
             />
         );
     };

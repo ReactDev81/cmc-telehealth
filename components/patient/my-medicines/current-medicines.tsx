@@ -8,14 +8,14 @@ import MedicineCard from "./medicine-card";
 
 const CurrentMedicines = () => {
 
-    const { user } = useAuth(); 
+    const { user } = useAuth();
     const isFocused = useIsFocused();
     const patient_id = user?.patient_id as string;
     const { data, isLoading, isError, error, refetch } = usePrescriptions(patient_id, "current");
 
     useEffect(() => {
         if (isFocused) {
-          refetch();
+            refetch();
         }
     }, [isFocused, refetch]);
 
@@ -31,7 +31,7 @@ const CurrentMedicines = () => {
                 <Text className="text-base text-red-500">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Something went wrong")}
+                        "Something went wrong")}
                 </Text>
             </View>
         );
@@ -43,7 +43,7 @@ const CurrentMedicines = () => {
                 appointment_id={item.appointment_id}
                 patient_symptoms={item.problem}
                 doctor_name={item.doctor_name}
-                consulated_date={item.medician_timings}
+                consulated_date={item.timing}
             />
         );
     };

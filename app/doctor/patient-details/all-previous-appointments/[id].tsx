@@ -57,9 +57,9 @@ const AllPreviousAppointments = () => {
                 />
 
                 {previousAppointments.length > 0 ? (
-                    previousAppointments.map((appointment: any) => (
+                    previousAppointments.map((appointment: any, index: number) => (
                         <Link
-                            key={appointment.appointment_id}
+                            key={appointment.id ?? index}
                             href={`/doctor/appointment-detail/${appointment.id}`}
                             className="mb-5"
                         >

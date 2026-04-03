@@ -8,7 +8,7 @@ import { useAuth } from "@/context/UserContext";
 import { useCompleteProfile } from "@/mutations/useCompleteProfile";
 import { User } from "@/types/common/user-context";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { router, useLocalSearchParams } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
@@ -53,7 +53,7 @@ export default function RegisterCompleteProfile() {
     useEffect(() => {
         const finalEmail = typeof email === "string" ? email : user?.email ?? "";
         reset({ email: finalEmail });
-      }, [email, user?.email]);
+    }, [email, user?.email]);
 
     const onSubmit = (formData: any) => {
 
@@ -179,14 +179,12 @@ export default function RegisterCompleteProfile() {
                                     <Pressable
                                         key={g}
                                         onPress={() => onChange(g)}
-                                        className={`flex-1 py-4 px-4 rounded-xl border ${
-                                            value === g ? "bg-primary border-primary" : "border-primary"
-                                        }`}
+                                        className={`flex-1 py-4 px-4 rounded-xl border ${value === g ? "bg-primary border-primary" : "border-primary"
+                                            }`}
                                     >
                                         <Text
-                                            className={`text-center ${
-                                                value === g ? "text-white" : "text-primary"
-                                            }`}
+                                            className={`text-center ${value === g ? "text-white" : "text-primary"
+                                                }`}
                                         >
                                             {g}
                                         </Text>
@@ -219,10 +217,10 @@ export default function RegisterCompleteProfile() {
                 <ApiError
                     message={
                         isError
-                        ? ((error as any)?.response?.data?.errors?.message ??
-                            (error as any)?.message ??
-                            "Something went wrong. Please try again.")
-                        : null
+                            ? ((error as any)?.response?.data?.errors?.message ??
+                                (error as any)?.message ??
+                                "Something went wrong. Please try again.")
+                            : null
                     }
                 />
 
@@ -236,10 +234,10 @@ export default function RegisterCompleteProfile() {
 
                 <Text className="text-base text-black-400 text-center mt-5 px-4">
                     By providing your mobile number, you give us permission to contact you
-                    via text. 
-                        {/* <Link href="/auth/login">
-                            <Text className="text-primary font-medium">Sign In</Text>
-                        </Link> */}
+                    via text.
+                    <Link href="/auth/login">
+                        <Text className="text-primary font-medium">Sign In</Text>
+                    </Link>
                 </Text>
 
             </View>
