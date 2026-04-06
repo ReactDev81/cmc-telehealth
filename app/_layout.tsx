@@ -39,20 +39,20 @@ TaskManager.defineTask(
 Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
 export default function RootLayout() {
-  
+
     const router = useRouter();
 
     const [queryClient] = useState(
         () =>
-        new QueryClient({
-            defaultOptions: {
-                queries: {
-                    retry: 1,
-                    staleTime: 60 * 1000,
-                    refetchOnWindowFocus: false,
+            new QueryClient({
+                defaultOptions: {
+                    queries: {
+                        retry: 1,
+                        staleTime: 60 * 1000,
+                        refetchOnWindowFocus: false,
+                    },
                 },
-            },
-        }),
+            }),
     );
 
     return (
@@ -87,9 +87,9 @@ export default function RootLayout() {
                                     }}
                                 >
                                     {/* Auth & Splash - No Headers */}
-                                    <Stack.Screen 
-                                        name="splash" 
-                                        options={{ headerShown: false }} 
+                                    <Stack.Screen
+                                        name="splash"
+                                        options={{ headerShown: false }}
                                     />
 
                                     <Stack.Screen
@@ -142,9 +142,9 @@ export default function RootLayout() {
                                         options={{ headerShown: false }}
                                     />
 
-                                    <Stack.Screen 
-                                        name="index" 
-                                        options={{ headerShown: false }} 
+                                    <Stack.Screen
+                                        name="index"
+                                        options={{ headerShown: false }}
                                     />
 
                                     <Stack.Screen
@@ -243,6 +243,14 @@ export default function RootLayout() {
                                         name="doctor/patient-details/all-previous-appointments/[id]"
                                         options={{
                                             headerTitle: "Previous Appointments",
+                                        }}
+                                    />
+
+                                    <Stack.Screen
+                                        name="doctor/profile/my-leaves"
+                                        options={{
+                                            headerShown: true,
+                                            title: "My Leaves",
                                         }}
                                     />
 
@@ -429,7 +437,7 @@ export default function RootLayout() {
                                             headerTitle: "Social Media",
                                         }}
                                     />
-                                    
+
                                 </Stack>
                             </KeyboardProvider>
                         </UserProvider>

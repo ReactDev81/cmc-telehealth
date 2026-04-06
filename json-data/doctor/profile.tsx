@@ -9,6 +9,7 @@ import {
   HelpCircle,
   Info,
   KeyRound,
+  Leaf,
   MapPin,
   ShieldCheck,
   Star,
@@ -76,6 +77,13 @@ export const DoctorMenuSections: MenuSection[] = [
         title: 'My Reviews',
         description: 'Reviews to the Doctor',
         route: '/common-screens/my-reviews'
+      },
+      {
+        id: 'my-leaves',
+        icon: <Leaf size={20} color="#374151" />,
+        title: 'My Leaves',
+        description: 'Manage your leaves',
+        route: '/doctor/profile/my-leaves'
       },
     ],
   },
