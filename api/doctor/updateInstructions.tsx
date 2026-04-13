@@ -6,12 +6,28 @@ export const updateInstructions = async (
     data: UpdateInstructionsRequest,
     token: string
 ): Promise<UpdateInstructionsResponse> => {
+    const formData = new FormData();
+    formData.append("instructions_by_doctor", data.instructions_by_doctor);
+    formData.append("next_visit_date", data.next_visit_date);
+
+    if (data.files && data.files.length > 0) {
+        data.files.forEach((file) => {
+            // @ts-ignore
+            formData.append("files[]", {
+                uri: file.uri,
+                name: file.name,
+                type: file.mimeType || file.type || "application/octet-stream",
+            });
+        });
+    }
+
     const response = await api.post<UpdateInstructionsResponse>(
         `/appointments/doctor-instructions/${appointmentId}`,
-        data,
+        formData,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
             },
         }
     );

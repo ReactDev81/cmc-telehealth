@@ -26,6 +26,7 @@ export default function RegisterSendOtp() {
     const [openPrivacy, setOpenPrivacy] = useState(false);
     const [openTerm, setOpenTerm] = useState(false);
     const [emailverified, setEmailverified] = useState(false);
+    const [email, setEmail] = useState("");
 
     const { control, handleSubmit } = useForm({
         resolver: zodResolver(schema),
@@ -51,8 +52,9 @@ export default function RegisterSendOtp() {
                 onError: (error) => {
                     const err = (error as any)?.response?.data?.errors?.message;
                     console.log('Register error:', err);
-                    if(error.response?.data?.errors?.status === "verified") {
+                    if (error.response?.data?.errors?.status === "verified") {
                         setEmailverified(true);
+                        setEmail(error.response?.data?.errors?.email);
                     }
                 },
             },
@@ -104,23 +106,30 @@ export default function RegisterSendOtp() {
                 <ApiError
                     message={
                         isError
-                        ? ((error as any)?.response?.data?.errors?.message ??
-                            (error as any)?.message ??
-                            "Registration failed. Please try again.")
-                        : null
+                            ? ((error as any)?.response?.data?.errors?.message ??
+                                (error as any)?.message ??
+                                "Registration failed. Please try again.")
+                            : null
                     }
                 />
 
                 {
                     emailverified ? (
                         <Button
-                            onPress={() => router.replace("/auth/register-complete-profile")}
+                            onPress={() =>
+                                router.replace({
+                                    pathname: "/auth/register-complete-profile",
+                                    params: {
+                                        email: email,
+                                    },
+                                })
+                            }
                             className="mt-4"
                             disabled={isPending}
                         >
                             Complete Your Profile
                         </Button>
-                    ) :(
+                    ) : (
                         <Button
                             onPress={handleSubmit(onSubmit)}
                             className="mt-4"

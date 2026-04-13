@@ -1,4 +1,5 @@
 import DateField from "@/components/form/date";
+import FileUploadField from "@/components/form/FileUploadField";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
@@ -12,6 +13,7 @@ import { z } from "zod";
 const ConclusionSchema = z.object({
     next_visit_date: z.date(),
     instructions_by_doctor: z.string().min(1, "Instructions are required"),
+    files: z.array(z.any()).optional(),
 });
 
 type ConclusionFormValues = z.infer<typeof ConclusionSchema>;
@@ -35,6 +37,7 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
         defaultValues: {
             next_visit_date: initialData?.next_visit_date ? new Date(initialData.next_visit_date) : new Date(),
             instructions_by_doctor: initialData?.instructions_by_doctor || "",
+            files: [],
         },
     });
 
@@ -47,6 +50,7 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
         const payload = {
             next_visit_date: data.next_visit_date.toISOString().split("T")[0],
             instructions_by_doctor: data.instructions_by_doctor,
+            files: data.files,
         };
 
         updateInstructions(
@@ -87,6 +91,15 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
                 }}
                 className="mt-4"
             />
+
+            <FileUploadField
+                name="files"
+                control={control}
+                label="Add Reports (optional)"
+                className="mt-4"
+                multiple={true}
+            />
+
             <View className="mt-8">
                 <Button
                     onPress={handleSubmit(onSubmit)}

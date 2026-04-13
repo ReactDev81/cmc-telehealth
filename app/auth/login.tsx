@@ -29,6 +29,7 @@ const LoginScreen = () => {
     const { mutate: signIn, isPending, isError, error } = useLogin();
     const { deviceInfo } = useNotification();
     const [emailverified, setEmailverified] = useState(false);
+    const [email, setEmail] = useState("");
 
     const { control, handleSubmit } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -90,12 +91,13 @@ const LoginScreen = () => {
             },
             onError: (error: any) => {
                 const err = (error as any)?.response?.data?.errors?.message;
-                console.log('err', err);
-                if(error.response?.data?.errors?.status === "verified") {
+                // console.log('err data', err);
+                if (error.response?.data?.errors?.status === "verified") {
                     setEmailverified(true);
+                    setEmail(error.response?.data?.errors?.email);
                 }
             },
-        }); 
+        });
     };
 
     return (
@@ -159,10 +161,10 @@ const LoginScreen = () => {
             <ApiError
                 message={
                     isError
-                    ? ((error as any)?.response?.data?.errors?.message ??
-                        (error as any)?.message ??
-                        "Login failed. Please check your credentials.")
-                    : null
+                        ? ((error as any)?.response?.data?.errors?.message ??
+                            (error as any)?.message ??
+                            "Login failed. Please check your credentials.")
+                        : null
                 }
             />
 
@@ -171,13 +173,20 @@ const LoginScreen = () => {
                 {
                     emailverified ? (
                         <Button
-                            onPress={() => router.replace("/auth/register-complete-profile")}
+                            onPress={() =>
+                                router.replace({
+                                    pathname: "/auth/register-complete-profile",
+                                    params: {
+                                        email: email,
+                                    },
+                                })
+                            }
                             className="mt-4"
                             disabled={isPending}
                         >
                             Complete Your Profile
                         </Button>
-                    ) :(
+                    ) : (
                         <Button
                             variant="filled"
                             onPress={handleSubmit(handleSignIn)}
