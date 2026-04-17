@@ -4,10 +4,11 @@ import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useInstructions } from "@/queries/doctor/useInstructions";
 import { usePatientDetail } from "@/queries/doctor/usePatientDetail";
+import { ConclusionReportFile } from "@/types/doctor/instructions";
 import { useLocalSearchParams } from "expo-router";
-import { FileCheck, Plus, X } from "lucide-react-native";
+import { ExternalLink, FileCheck, FileText, Plus, X } from "lucide-react-native";
 import { useState } from "react";
-import { ActivityIndicator, Modal, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Linking, Modal, Text, TouchableOpacity, View } from "react-native";
 import AddConclusion from "../add-conclusion";
 import AddNewPrescription from "./add-new-prescription";
 
@@ -50,6 +51,10 @@ const AddPrescription = () => {
     const patientData = patient.data;
     const currentMedications = patientData?.current_medications || [];
     const instructionData = instructions?.data;
+    const reportType = instructionData?.conclusion_report_files?.map((file: ConclusionReportFile) => file.type);
+    const fileURL = instructionData?.conclusion_report_files?.map((file: ConclusionReportFile) => file.file_url);
+    console.log("reportType", reportType);
+    console.log("fileURL", fileURL);
 
     return (
         <View>
@@ -180,6 +185,62 @@ const AddPrescription = () => {
                         )}
                     </View>
                 )}
+
+                {/* Uploads by doctor */}
+                {instructionData?.conclusion_report_files &&
+                    instructionData.conclusion_report_files.length > 0 && (
+                        <View className="mt-8 p-4 rounded-xl border border-gray-100">
+                            <Text className="text-base font-semibold text-black mb-4">
+                                Uploaded by Doctor
+                            </Text>
+                            {instructionData.conclusion_report_files
+                                .filter((file: ConclusionReportFile) => file.type === "other")
+                                .map((file: ConclusionReportFile, index: number) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        className="flex-row items-center justify-between p-3 mb-2 border border-gray-200 rounded-lg bg-white"
+                                        onPress={async () => {
+                                            const fileUrl = file.file_url;
+                                            console.log("Opening file:", fileUrl);
+                                            
+                                            if (!fileUrl) {
+                                                Alert.alert("Error", "File URL is not available");
+                                                return;
+                                            }
+                                            
+                                            try {
+                                                // Check if the URL can be opened
+                                                const supported = await Linking.canOpenURL(fileUrl);
+                                                
+                                                if (supported) {
+                                                    // Open the URL in the browser
+                                                    await Linking.openURL(fileUrl);
+                                                } else {
+                                                    Alert.alert(
+                                                        "Error",
+                                                        "Cannot open this file. The URL is not supported."
+                                                    );
+                                                }
+                                            } catch (error) {
+                                                console.error("Error opening file:", error);
+                                                Alert.alert(
+                                                    "Error",
+                                                    "Failed to open the file. Please try again."
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <View className="flex-row items-center gap-x-3">
+                                            <FileText color="#013220" size={18} />
+                                            <Text className="text-sm text-black">
+                                                File {index + 1}
+                                            </Text>
+                                        </View>
+                                        <ExternalLink color="#6B7280" size={16} />
+                                    </TouchableOpacity>
+                                ))}
+                        </View>
+                    )}
             </View>
         </View>
     );

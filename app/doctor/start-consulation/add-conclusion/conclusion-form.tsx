@@ -1,5 +1,6 @@
 import DateField from "@/components/form/date";
 import FileUploadField from "@/components/form/FileUploadField";
+import SelectField from "@/components/form/selectField";
 import TextArea from "@/components/form/TextArea";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
@@ -13,6 +14,9 @@ import { z } from "zod";
 const ConclusionSchema = z.object({
     next_visit_date: z.date(),
     instructions_by_doctor: z.string().min(1, "Instructions are required"),
+    report_type: z.string().optional(),
+    other_details: z.string().optional(),
+    medical_record_details: z.string().optional(),
     files: z.array(z.any()).optional(),
 });
 
@@ -37,6 +41,9 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
         defaultValues: {
             next_visit_date: initialData?.next_visit_date ? new Date(initialData.next_visit_date) : new Date(),
             instructions_by_doctor: initialData?.instructions_by_doctor || "",
+            report_type: "",
+            other_details: "",
+            medical_record_details: "",
             files: [],
         },
     });
@@ -50,9 +57,10 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
         const payload = {
             next_visit_date: data.next_visit_date.toISOString().split("T")[0],
             instructions_by_doctor: data.instructions_by_doctor,
+            report_type: data.report_type,
             files: data.files,
         };
-
+        console.log("payload", payload);
         updateInstructions(
             {
                 appointmentId: appointment_id,
@@ -92,13 +100,27 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
                 className="mt-4"
             />
 
-            <FileUploadField
-                name="files"
+            <SelectField
+                name="report_type"
                 control={control}
-                label="Add Reports (optional)"
+                label="Report Type"
                 className="mt-4"
-                multiple={true}
+                options={[
+                    { label: "Other", value: "other" },
+                    { label: "Medical Record", value: "medical-record" }
+                ]}
+                placeholder="Select report type"
             />
+
+            {watch("report_type") && (
+                <FileUploadField
+                    name="files"
+                    control={control}
+                    label="Add Reports (optional)"
+                    className="mt-4"
+                    multiple={true}
+                />
+            )}
 
             <View className="mt-8">
                 <Button
