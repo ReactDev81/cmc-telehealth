@@ -13,7 +13,7 @@ interface PatientDetailsProps {
 }
 
 const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
-    
+
     const { token } = useAuth();
     const { data: patient, isLoading, isError, error, refetch } = usePatientDetail(appointmentId || "", token || "");
 
@@ -32,7 +32,7 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
                 <Text className="text-red-500 text-center font-medium">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Failed to load patient details")}
+                        "Failed to load patient details")}
                 </Text>
                 <TouchableOpacity onPress={() => refetch()} className="mt-4 bg-primary px-6 py-2 rounded-lg">
                     <Text className="text-white font-medium">Try Again</Text>
@@ -45,6 +45,22 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
     const medicalReports = patientData?.medical_reports || [];
     const currentMedications = patientData?.current_medications || [];
     const previousAppointments = patientData?.previous_appointments || [];
+
+    // Filter reports: show all except doctor-uploaded "other" type
+    const filteredReports = medicalReports?.filter((report: any) => {
+        return (
+            report.uploader_type === "Patient" ||
+            (report.uploader_type === "Doctor" &&
+                report.report_type !== "other")
+        );
+    });
+
+    const filteredReportsByDoctor = medicalReports?.filter((report: any) => {
+        return (
+            report.uploader_type === "Doctor" &&
+            report.report_type === "other"
+        );
+    });
 
     return (
         <View className="pt-5 px-5 pb-16">
@@ -67,8 +83,8 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
             {/* mdeical reports */}
             <View className="mt-8">
                 <Title text="Medical Reports" />
-                {medicalReports.length > 0 ? (
-                    medicalReports.map((report: any, index: number) => {
+                {filteredReports.length > 0 ? (
+                    filteredReports.map((report: any, index: number) => {
                         const handleViewReport = () => {
                             const pdfUrl = report.file_url;
                             if (pdfUrl) {
@@ -79,9 +95,41 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
                         var margin_top = index === 0 ? 8 : 20
 
                         return (
-                            <View  
+                            <View
                                 key={report.id}
-                                style={{marginTop : margin_top}}
+                                style={{ marginTop: margin_top }}
+                            >
+                                <ReportsCard
+                                    report_name={report.report_name}
+                                    report_date_formatted={report.report_date_formatted}
+                                    type_label={report.type_label}
+                                    handleReport={handleViewReport}
+                                />
+                            </View>
+                        );
+                    })
+                ) : (
+                    <Text className="text-black-400 text-sm italic mt-2">No medical reports available</Text>
+                )}
+            </View>
+            {/* Doctor uploaded reports */}
+            <View className="mt-8">
+                <Title text="Medical Reports Uploaded by Doctor" />
+                {filteredReportsByDoctor.length > 0 ? (
+                    filteredReportsByDoctor.map((report: any, index: number) => {
+                        const handleViewReport = () => {
+                            const pdfUrl = report.file_url;
+                            if (pdfUrl) {
+                                Linking.openURL(pdfUrl);
+                            }
+                        };
+
+                        var margin_top = index === 0 ? 8 : 20
+
+                        return (
+                            <View
+                                key={report.id}
+                                style={{ marginTop: margin_top }}
                             >
                                 <ReportsCard
                                     report_name={report.report_name}

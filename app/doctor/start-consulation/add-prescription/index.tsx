@@ -53,8 +53,10 @@ const AddPrescription = () => {
     const instructionData = instructions?.data;
     const reportType = instructionData?.conclusion_report_files?.map((file: ConclusionReportFile) => file.type);
     const fileURL = instructionData?.conclusion_report_files?.map((file: ConclusionReportFile) => file.file_url);
-    console.log("reportType", reportType);
-    console.log("fileURL", fileURL);
+    // console.log("reportType", reportType);
+    // console.log("fileURL", fileURL);
+
+    // console.log("conclusion report files", instructionData);
 
     return (
         <View>
@@ -194,14 +196,13 @@ const AddPrescription = () => {
                                 Uploaded by Doctor
                             </Text>
                             {instructionData.conclusion_report_files
-                                .filter((file: ConclusionReportFile) => file.type === "other")
                                 .map((file: ConclusionReportFile, index: number) => (
                                     <TouchableOpacity
                                         key={index}
                                         className="flex-row items-center justify-between p-3 mb-2 border border-gray-200 rounded-lg bg-white"
                                         onPress={async () => {
                                             const fileUrl = file.file_url;
-                                            console.log("Opening file:", fileUrl);
+                                            // console.log("Opening file:", fileUrl);
                                             
                                             if (!fileUrl) {
                                                 Alert.alert("Error", "File URL is not available");

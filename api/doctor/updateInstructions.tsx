@@ -9,6 +9,10 @@ export const updateInstructions = async (
     const formData = new FormData();
     formData.append("instructions_by_doctor", data.instructions_by_doctor);
     formData.append("next_visit_date", data.next_visit_date);
+    
+    if (data.report_type) {
+        formData.append("type", data.report_type);
+    }
 
     if (data.files && data.files.length > 0) {
         data.files.forEach((file) => {

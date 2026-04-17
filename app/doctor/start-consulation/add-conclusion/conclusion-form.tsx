@@ -60,7 +60,7 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
             report_type: data.report_type,
             files: data.files,
         };
-        console.log("payload", payload);
+        // console.log("payload", payload);
         updateInstructions(
             {
                 appointmentId: appointment_id,
@@ -107,7 +107,7 @@ const ConclusionForm = ({ onClose, initialData }: Props) => {
                 className="mt-4"
                 options={[
                     { label: "Other", value: "other" },
-                    { label: "Medical Record", value: "medical-record" }
+                    { label: "Medical Report", value: "medical-report" }
                 ]}
                 placeholder="Select report type"
             />

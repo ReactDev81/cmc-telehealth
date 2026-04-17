@@ -77,6 +77,23 @@ const PatientDetails = () => {
         );
     }
 
+    // console.log("reports data : ", patient?.data?.medical_reports);
+
+    const filteredReports = patient?.data?.medical_reports?.filter((report: any) => {
+        return (
+            report.uploader_type === "Patient" ||
+            (report.uploader_type === "Doctor" &&
+                report.report_type !== "other")
+        );
+    });
+    
+    const filteredReportsByDoctor = patient?.data?.medical_reports?.filter((report: any) => {
+        return (
+            report.uploader_type === "Doctor" &&
+                report.report_type === "other"
+        );
+    });
+
     return (
         <ScrollView className="flex-1 bg-white p-5">
             <View className="pb-20">
@@ -127,7 +144,7 @@ const PatientDetails = () => {
                 )}
 
                 {/* mdeical reports */}
-                <View className="mt-5">
+                {/* <View className="mt-5">
                     <Title className="max-w-72" text="Medical Reports" />
                     {patient?.data?.medical_reports &&
                         patient.data.medical_reports.length > 0 ? (
@@ -156,7 +173,100 @@ const PatientDetails = () => {
                             className="mt-5 rounded-2xl border border-gray-100"
                         />
                     )}
+                </View> */}
+
+                <View className="mt-5">
+                    <Title className="max-w-72" text="Medical Reports" />
+
+                    {filteredReports && filteredReports.length > 0 ? (
+                        filteredReports.map((report: any, index: number) => {
+
+                            var margin_top = index === 0 ? 8 : 20;
+
+                            return (
+                                <View
+                                    style={{ marginTop: margin_top }}
+                                    key={report.id ?? index}
+                                >
+                                    <ReportsCard
+                                        report_name={report.report_name}
+                                        report_date_formatted={report.report_date_formatted}
+                                        type_label={report.type_label}
+                                        handleReport={() => openReport(report.file_url)}
+                                    />
+                                </View>
+                            );
+                        })
+                    ) : (
+                        <EmptyState
+                            title="No Medical Reports"
+                            message="This patient has not uploaded any medical reports yet."
+                            className="mt-5 rounded-2xl border border-gray-100"
+                        />
+                    )}
                 </View>
+
+                {/* uploaded by doctor */}
+                <View className="mt-5">
+                    <Title className="max-w-72" text="Medical Reports" />
+
+                    {filteredReportsByDoctor && filteredReportsByDoctor.length > 0 ? (
+                        filteredReportsByDoctor.map((report: any, index: number) => {
+
+                            var margin_top = index === 0 ? 8 : 20;
+
+                            return (
+                                <View
+                                    style={{ marginTop: margin_top }}
+                                    key={report.id ?? index}
+                                >
+                                    <ReportsCard
+                                        report_name={report.report_name}
+                                        report_date_formatted={report.report_date_formatted}
+                                        type_label={report.type_label}
+                                        handleReport={() => openReport(report.file_url)}
+                                    />
+                                </View>
+                            );
+                        })
+                    ) : (
+                        <EmptyState
+                            title="No Medical Reports"
+                            message="This patient has not uploaded any medical reports yet."
+                            className="mt-5 rounded-2xl border border-gray-100"
+                        />
+                    )}
+                </View>
+                {/* <View className="mt-5">
+                    <Title text="Medical Reports Uploaded by Doctor" />
+                    {patient?.data?.medical_reports &&
+                        patient.data.medical_reports?.filter((report: any) => report.report_type === 'other').length > 0 ? (
+                        patient.data.medical_reports.filter((report: any) => report.report_type === 'other').map((report: any, index: number) => {
+
+                            var margin_top = index === 0 ? 8 : 20
+
+                            return (
+                                <View
+                                    style={{ marginTop: margin_top }}
+                                    key={report.id ?? index}
+                                >
+                                    <ReportsCard
+                                        report_name={report.report_name}
+                                        report_date_formatted={report.report_date_formatted}
+                                        type_label={report.type_label}
+                                        handleReport={() => openReport(report.file_url)}
+                                    />
+                                </View>
+                            );
+                        })
+                    ) : (
+                        <EmptyState
+                            title="No Medical Reports"
+                            message="This doctor has not uploaded any medical reports yet."
+                            className="mt-5 rounded-2xl border border-gray-100"
+                        />
+                    )}
+                </View> */}
 
                 {/* currently running medicine */}
                 <View className="mt-5">
