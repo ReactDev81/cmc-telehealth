@@ -1,12 +1,13 @@
 import ReportsCard from '@/components/common/medical-reports/reports-card';
 import Button from '@/components/ui/Button';
+import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import { useAuth } from "@/context/UserContext";
 import { useMedicalReports } from '@/queries/patient/useGetMedicalReports';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
 import * as WebBrowser from "expo-web-browser";
-import { X } from 'lucide-react-native';
+import { ClipboardPlus, X } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -15,7 +16,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const MedicalRecords = () => {
 
-    const { user  } = useAuth();
+    const { user } = useAuth();
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = useMemo(() => ['50%'], []);
     const [isOpen, setIsOpen] = useState(false);
@@ -107,6 +108,16 @@ const MedicalRecords = () => {
                         )}
                         ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
                         showsVerticalScrollIndicator={false}
+                        ListEmptyComponent={
+                            !isLoading ? (
+                                <EmptyState
+                                    title="No Medical Report Uploaded"
+                                    message="You haven't uploaded any medical reports yet."
+                                    icon={<ClipboardPlus size={40} color="#94A3B8" />}
+                                    className="mt-20"
+                                />
+                            ) : null
+                        }
                     />
 
                     {meta && (

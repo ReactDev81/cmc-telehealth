@@ -158,7 +158,7 @@ const Doctors = () => {
 
             <SearchBar
                 variant="secondary"
-                placeholder="Find doctors, symptoms, departments"
+                placeholder="Browse by symptoms and department"
                 value={searchText}
                 onChangeText={setSearchText}
                 onPress={() => setModalVisible(true)}

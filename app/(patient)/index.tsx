@@ -46,7 +46,7 @@ const Home = () => {
                 <Text className="text-danger">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Something went wrong. Please try again.")}
+                        "Something went wrong. Please try again.")}
                 </Text>
             </SafeAreaView>
         );
@@ -70,7 +70,7 @@ const Home = () => {
                                     pathname: "/(patient)/doctors",
                                     params: { consultation_type: "video" },
                                 }}
-                                image={require("../../assets/images/video-consultation.png")}
+                                image={require("../../assets/images/video-consultation.jpg")}
                                 text="Instant Video Consultation"
                             />
                         </View>
@@ -80,7 +80,7 @@ const Home = () => {
                                     pathname: "/(patient)/doctors",
                                     params: { consultation_type: "in-person" },
                                 }}
-                                image={require("../../assets/images/clinic-appointment.png")}
+                                image={require("../../assets/images/in-clinic.jpg")}
                                 text="Book In-Clinic Appointment"
                             />
                         </View>
@@ -138,20 +138,20 @@ const Home = () => {
                         >
                             {availableDoctors.length > 0 ? (
                                 availableDoctors.map((availableDoctors) => {
-                                return (
-                                    <AvailableDoctors
-                                        key={availableDoctors.id}
-                                        id={availableDoctors.id}
-                                        avatar={availableDoctors.avatar}
-                                        name={availableDoctors.name}
-                                        speciality={availableDoctors.speciality}
-                                        rating={availableDoctors.rating}
-                                        consultation_type={availableDoctors.consultation_type}
-                                        consultation_fee={availableDoctors.consultation_fee}
-                                        years_experience={availableDoctors.years_experience}
-                                    />
-                                );
-                            })
+                                    return (
+                                        <AvailableDoctors
+                                            key={availableDoctors.id}
+                                            id={availableDoctors.id}
+                                            avatar={availableDoctors.avatar}
+                                            name={availableDoctors.name}
+                                            speciality={availableDoctors.speciality}
+                                            rating={availableDoctors.rating}
+                                            consultation_type={availableDoctors.consultation_type}
+                                            consultation_fee={availableDoctors.consultation_fee}
+                                            years_experience={availableDoctors.years_experience}
+                                        />
+                                    );
+                                })
                             ) : (
                                 <View className="py-4">
                                     <Text>No doctors available</Text>
@@ -163,7 +163,7 @@ const Home = () => {
 
                 {/* Article */}
                 <View className="px-4 py-5 bg-primary">
-                    <Title text="Safe & Advanced Surgical Care" className="text-white" />
+                    <Title text="Special Highlights" className="text-white" />
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
@@ -175,14 +175,14 @@ const Home = () => {
                                 return (
                                     <View
                                         key={id}
-                                        className="p-4 bg-white rounded-xl w-[300px] flex-row items-center justify-between"
+                                        className="bg-white rounded-xl w-[300px] flex-row items-center justify-between"
                                     >
                                         {/* Left Content */}
-                                        <View className="flex-1 pr-3">
+                                        <View className="flex-1">
                                             <Link href={article.link}>
                                                 <Image
-                                                    className="h-[160px] w-[300px] rounded-xl object-cover"
-                                                    // resizeMode="cover"
+                                                    className="h-[300px] w-full rounded-xl object-cover"
+                                                    resizeMode="cover"
                                                     source={{ uri: article.image }}
                                                 />
                                             </Link>
@@ -198,7 +198,7 @@ const Home = () => {
                     </ScrollView>
                 </View>
 
-                <View className="px-4" 
+                <View className="px-4"
                     style={{
                         paddingBottom: (insets?.bottom ?? 0) + 5,
                     }}

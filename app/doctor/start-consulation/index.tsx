@@ -37,7 +37,7 @@ const MAX_BOTTOM_SHEET_HEIGHT = Dimensions.get("window").height * 0.8;
 const StartConsulationWithDoctor = () => {
 
     const router = useRouter();
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const { mutate: markAsCompleted, isPending: isMarkingComplete } = useMarkAsCompleted();
 
     const { doctor_call_link, appointment_id, patient_name } = useLocalSearchParams<{
@@ -51,17 +51,22 @@ const StartConsulationWithDoctor = () => {
         if (!baseUrl) {
             return "";
         }
+
+        const doctorName = user ? `Dr. ${user.first_name} ${user.last_name}` : "Doctor";
+
         try {
             const url = new URL(baseUrl);
             url.searchParams.set("bottomToolbar", "off");
+            url.searchParams.set("displayName", doctorName);
+            url.searchParams.set("precall", "off");
             const finalUrl = url.toString();
             return finalUrl;
         } catch (error) {
             const separator = baseUrl.includes("?") ? "&" : "?";
-            const finalUrl = `${baseUrl}${separator}bottomToolbar=off`;
+            const finalUrl = `${baseUrl}${separator}bottomToolbar=off&displayName=${encodeURIComponent(doctorName)}&precall=off`;
             return finalUrl;
         }
-    }, [doctor_call_link]);
+    }, [doctor_call_link, user]);
 
     const { height } = useWindowDimensions();
     const calcHeight = height - 180;
@@ -73,6 +78,9 @@ const StartConsulationWithDoctor = () => {
     const addPrescriptionBottomSheetRef = React.useRef<BottomSheet>(null);
 
     // Patient Details Bottom Sheet
+    const [callDuration, setCallDuration] = React.useState(0);
+    const callStartTimeRef = React.useRef<number | null>(null);
+    const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const patientDetailsBottomSheetRef = React.useRef<BottomSheet>(null);
     const [hasPermissionForAndroid, setHasPermissionForAndroid] = React.useState<boolean>(false);
     const [isCameraOn, setIsCameraOn] = React.useState(true);
@@ -85,6 +93,13 @@ const StartConsulationWithDoctor = () => {
     const [isJoined, setIsJoined] = React.useState(false);
 
     const insets = useSafeAreaInsets();
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+
+        return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    };
 
     React.useEffect(() => {
         (async () => {
@@ -276,7 +291,7 @@ const StartConsulationWithDoctor = () => {
                             </View>
                             <View>
                                 <Text className="text-sm text-black font-medium">{patient_name}</Text>
-                                <Text className="text-xs text-black-400 mt-1">25:12 remaining (30 mins visit)</Text>
+                                <Text className="text-xs text-black-400 mt-1">{formatTime(callDuration)}</Text>
                             </View>
                         </View>
                         <TouchableOpacity
@@ -302,7 +317,7 @@ const StartConsulationWithDoctor = () => {
                         {ROOM_URL ? (
                             <WherebyEmbed
                                 ref={wherebyRoomRef}
-                                style={{ marginTop: isJoined ? -31 : 0 }}
+                                style={{ marginTop: isJoined ? -25 : 0 }}
                                 room={ROOM_URL}
                                 skipMediaPermissionPrompt
                                 onWherebyMessage={(event) => {
@@ -313,9 +328,28 @@ const StartConsulationWithDoctor = () => {
                                 }}
                                 onJoin={() => {
                                     setIsJoined(true);
+
+                                    callStartTimeRef.current = Date.now();
+
+                                    timerRef.current = setInterval(() => {
+                                        if (callStartTimeRef.current) {
+                                            const seconds = Math.floor(
+                                                (Date.now() - callStartTimeRef.current) / 1000
+                                            );
+                                            setCallDuration(seconds);
+                                        }
+                                    }, 1000);
                                 }}
                                 onLeave={({ removed }) => {
                                     setIsJoined(false);
+
+                                    if (timerRef.current) {
+                                        clearInterval(timerRef.current);
+                                        timerRef.current = null;
+                                    }
+
+                                    const totalCallTime = callDuration; // seconds
+                                    console.log("Call Duration:", totalCallTime, "seconds");
                                 }}
                                 onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
                                 onCameraToggle={({ enabled }) => setIsCameraOn(enabled)}

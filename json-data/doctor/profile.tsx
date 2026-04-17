@@ -116,7 +116,7 @@ export const DoctorMenuSections: MenuSection[] = [
         icon: <UserStar size={20} color="#374151" />,
         title: "Rate Us",
         description: "Share your experience and rate our app.",
-        route: "/common-screens/profile/rate-us",
+        route: 'https://play.google.com/store/apps/details?id=com.cmctelehealth.app&hl=en_IN'
       },
       {
         id: "term_condition",

@@ -2,6 +2,7 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import { Camera } from "expo-camera";
 import { router, useLocalSearchParams } from "expo-router";
+import { useAuth } from "@/context/UserContext";
 import type { LucideIcon } from "lucide-react-native";
 import { ClosedCaption, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff } from "lucide-react-native";
 import * as React from "react";
@@ -30,6 +31,7 @@ const CONTROLS: ControlConfig[] = [
 ];
 
 const StartConsulationWithDoctor = () => {
+    const { user } = useAuth();
 
     const { patient_call_link, appointment_id, doctor_name, doctor_id } = useLocalSearchParams<{
         patient_call_link?: string;
@@ -41,7 +43,24 @@ const StartConsulationWithDoctor = () => {
     const { height } = useWindowDimensions();
     const calcHeight = height - 180;
 
-    const ROOM_URL = patient_call_link + "&bottomToolbar=off&topToolbar=off";
+    const ROOM_URL = React.useMemo(() => {
+        const baseUrl = patient_call_link?.trim();
+        if (!baseUrl) return "";
+
+        const participantName = user ? `${user.first_name} ${user.last_name}` : "Patient";
+
+        try {
+            const url = new URL(baseUrl);
+            url.searchParams.set("bottomToolbar", "off");
+            url.searchParams.set("topToolbar", "off");
+            url.searchParams.set("displayName", participantName);
+            url.searchParams.set("precall", "off");
+            return url.toString();
+        } catch (error) {
+            const separator = baseUrl.includes("?") ? "&" : "?";
+            return `${baseUrl}${separator}bottomToolbar=off&topToolbar=off&displayName=${encodeURIComponent(participantName)}&precall=off`;
+        }
+    }, [patient_call_link, user]);
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);
 
