@@ -25,7 +25,7 @@ const AppointementDetails = () => {
     // Refetch data when screen first loads
     useEffect(() => {
         if (isFocused) {
-          refetch();
+            refetch();
         }
     }, [isFocused, refetch]);
 
@@ -43,20 +43,20 @@ const AppointementDetails = () => {
                 <Text className="text-danger">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Something went wrong. Please try again.")}
+                        "Something went wrong. Please try again.")}
                 </Text>
             </SafeAreaView>
         );
     }
 
-    
+
     const appointment = data?.data;
     // const medicalReports = data?.data?.medical_reports ?? [];
     const medicalReports = appointment?.medical_reports?.length ? appointment.medical_reports : null;
     const patient = appointment?.patient;
     const schedule = appointment?.schedule;
     const doctor = appointment?.doctor;
-    const doctorReview = doctor?.review && !Array.isArray(doctor.review) ? doctor.review: null;
+    const doctorReview = doctor?.review && !Array.isArray(doctor.review) ? doctor.review : null;
     const payment = appointment?.payment;
     const notes = appointment?.notes;
     const prescriptions = appointment?.prescriptions;
@@ -77,6 +77,21 @@ const AppointementDetails = () => {
     const openReport = async (url: string) => {
         await WebBrowser.openBrowserAsync(url);
     };
+
+    const filteredReports = medicalReports?.filter((report: any) => {
+        return (
+            report.uploader_type === "Patient" ||
+            (report.uploader_type === "Doctor" &&
+                report.report_type !== "other")
+        );
+    });
+
+    const filteredReportsByDoctor = medicalReports?.filter((report: any) => {
+        return (
+            report.uploader_type === "Doctor" &&
+            report.report_type === "other"
+        );
+    });
 
     return (
         <ScrollView className="flex-1 bg-white">
@@ -215,8 +230,8 @@ const AppointementDetails = () => {
                         Medical Reports
                     </Text>
                     <View className="gap-y-5">
-                        {medicalReports ? (
-                            medicalReports.map((report: any) => (
+                        {filteredReports?.length ? (
+                            filteredReports.map((report: any) => (
                                 <ReportsCard
                                     key={report.id}
                                     report_name={report.title}
@@ -233,7 +248,33 @@ const AppointementDetails = () => {
                             />
                         )}
                     </View>
-                    
+
+                </View>
+
+                {/* Medical Reports Uploaded by Doctor */}
+                <View className="mb-7">
+                    <Text className="text-lg text-black font-medium mb-3">
+                        Medical Reports Uploaded by Doctor
+                    </Text>
+                    <View className="gap-y-5">
+                        {filteredReportsByDoctor?.length ? (
+                            filteredReportsByDoctor.map((report: any) => (
+                                <ReportsCard
+                                    key={report.id}
+                                    report_name={report.title}
+                                    report_date_formatted={report.report_date_formatted}
+                                    type_label={report.type_label}
+                                    handleReport={() => openReport(report.file_url)}
+                                />
+                            ))
+                        ) : (
+                            <EmptyState
+                                title="Medical Reports"
+                                message="No medical reports uploaded by doctor"
+                                icon={<ClipboardPlus size={40} color="#344054" />}
+                            />
+                        )}
+                    </View>
                 </View>
 
                 {/* Prescription */}
@@ -251,38 +292,38 @@ const AppointementDetails = () => {
                     </View>
                 )}
 
-                {/* Docotr Review */}
+                {/* Doctor Review */}
                 {appointment?.status === "completed" &&
                     doctorReview ?
-                        <View className="mb-7">
-                            <Text className="text-lg text-black font-medium mb-3">
-                                Review to Doctor
-                            </Text>
-                            <View className="bg-white rounded-xl border border-black-300 w-full justify-between p-5">
-                                <View className="flex-row justify-between items-start mb-2">
-                                    <View className="flex-row gap-x-2">
-                                        <View>
-                                            <Image source={{ uri: doctor?.avatar }} className="w-10 h-10 rounded-full" />
-                                        </View>
-                                        <View>
-                                            <Text className="text-sm text-black font-medium">{doctor?.name}</Text>
-                                            <Text className="text-xs text-black mt-1">
-                                                {doctor?.department} ({doctor?.years_experience} Exp)
-                                            </Text>
-                                        </View>
+                    <View className="mb-7">
+                        <Text className="text-lg text-black font-medium mb-3">
+                            Review to Doctor
+                        </Text>
+                        <View className="bg-white rounded-xl border border-black-300 w-full justify-between p-5">
+                            <View className="flex-row justify-between items-start mb-2">
+                                <View className="flex-row gap-x-2">
+                                    <View>
+                                        <Image source={{ uri: doctor?.avatar }} className="w-10 h-10 rounded-full" />
                                     </View>
-                                    <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1">
-                                        <Star size={12} fill="#013220" />
-                                        <Text className="text-primary text-sm font-medium">{doctorReview?.rating}</Text>
+                                    <View>
+                                        <Text className="text-sm text-black font-medium">{doctor?.name}</Text>
+                                        <Text className="text-xs text-black mt-1">
+                                            {doctor?.department} ({doctor?.years_experience} Exp)
+                                        </Text>
                                     </View>
                                 </View>
-                                <View>
-                                    <Text className="text-xs font-semibold leading-5 text-black">{doctorReview?.title}</Text>
-                                    <Text className="text-xs leading-5 text-black">{doctorReview?.content}</Text>
+                                <View className="py-1 px-2 bg-primary-100 rounded-lg flex-row items-center gap-x-1">
+                                    <Star size={12} fill="#013220" />
+                                    <Text className="text-primary text-sm font-medium">{doctorReview?.rating}</Text>
                                 </View>
                             </View>
+                            <View>
+                                <Text className="text-xs font-semibold leading-5 text-black">{doctorReview?.title}</Text>
+                                <Text className="text-xs leading-5 text-black">{doctorReview?.content}</Text>
                             </View>
-                    : appointment?.can_add_review && 
+                        </View>
+                    </View>
+                    : appointment?.can_add_review &&
                     <EmptyState
                         title="Docotor Review"
                         message="You have not provide any review to doctor"
@@ -291,17 +332,16 @@ const AppointementDetails = () => {
                         onAction={() => setReviewModal(true)}
                     />
                 }
-                
+
             </View>
 
-            <DoctorReviewModal 
-                visible={reviewModal} 
+            <DoctorReviewModal
+                visible={reviewModal}
                 onClose={() => setReviewModal(false)}
                 doctorId={doctor?.user_id}
-                doctorName={doctor?.name} 
+                doctorName={doctor?.name}
                 appointmentID={appointmentId}
             />
-
         </ScrollView>
     );
 };
