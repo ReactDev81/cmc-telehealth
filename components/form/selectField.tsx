@@ -32,14 +32,14 @@ export default function SelectField({
     placeholder = "Select an option",
     className = "",
 }: SelectFieldProps) {
+    const [modalVisible, setModalVisible] = useState(false);
+
     return (
         <Controller
             control={control}
             name={name}
             defaultValue=""
             render={({ field: { value, onChange }, fieldState: { error } }) => {
-                const [modalVisible, setModalVisible] = useState(false);
-
                 const selectedOption =
                     options.find((option) => option.value === value) ?? null;
 

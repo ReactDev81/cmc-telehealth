@@ -33,17 +33,17 @@ const Appointments = () => {
         {
             key: "today",
             label: "Today",
-            content: <AllTodayAppointment data={todayQuery.data || []} />,
+            renderContent: () => <AllTodayAppointment data={todayQuery.data || []} />,
         },
         {
             key: "upcoming",
             label: "Upcoming",
-            content: <AllUpcomingAppointment data={upcomingQuery.data || []} />,
+            renderContent: () => <AllUpcomingAppointment data={upcomingQuery.data || []} />,
         },
         {
             key: "past",
             label: "Past",
-            content: <AllPastAppointment data={pastQuery.data || []} />,
+            renderContent: () => <AllPastAppointment data={pastQuery.data || []} />,
         },
     ];
 

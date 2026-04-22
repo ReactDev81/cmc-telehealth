@@ -8,12 +8,12 @@ const MyMedicines = () => {
         {
             key: "current",
             label: "Current Medicine",
-            content: <CurrentMedicines />,
+            renderContent: () => <CurrentMedicines />,
         },
         {
             key: "past",
             label: "Past Medicine",
-            content: <PastMedicines />,
+            renderContent: () => <PastMedicines />,
         },
     ];
 

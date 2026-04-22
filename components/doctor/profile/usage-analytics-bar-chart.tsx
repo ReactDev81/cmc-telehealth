@@ -1,161 +1,80 @@
-// import { useState } from "react";
-// import { Text, TouchableOpacity, View } from "react-native";
-// import { BarChart } from "react-native-gifted-charts";
-
-// type RangeType = "Week" | "Month" | "Year";
-
-// interface UsageAnalyticsBarChartProps {
-//     chartData: { label: string; value: number }[];
-//     period?: "week" | "month" | "year";
-// }
-
-// const UsageAnalyticsBarChart = ({
-//     chartData,
-//     period = "month",
-// }: UsageAnalyticsBarChartProps) => {
-//     const [selectedRange, setSelectedRange] = useState<RangeType>("Month");
-
-//     const datasets: Record<RangeType, { label: string; value: number }[]> = {
-//         Week: [
-//             { label: "Mon", value: 5 },
-//             { label: "Tue", value: 10 },
-//             { label: "Wed", value: 7 },
-//             { label: "Thu", value: 12 },
-//             { label: "Fri", value: 9 },
-//             { label: "Sat", value: 4 },
-//             { label: "Sun", value: 6 },
-//         ],
-//         Month: [
-//             { label: "Jan", value: 25 },
-//             { label: "Feb", value: 45 },
-//             { label: "Mar", value: 30 },
-//             { label: "Apr", value: 40 },
-//             { label: "May", value: 20 },
-//             { label: "Jun", value: 50 },
-//             { label: "Jul", value: 38 },
-//             { label: "Aug", value: 35 },
-//         ],
-//         Year: [
-//             { label: "2021", value: 380 },
-//             { label: "2022", value: 420 },
-//             { label: "2023", value: 460 },
-//             { label: "2024", value: 510 },
-//         ],
-//     };
-
-//     const formattedData = chartData.map((d) => ({
-//         label: d.label,
-//         value: d.value,
-//     }));
-
-//     return (
-//         <View className="mt-10">
-//             {/* Toggle Tabs */}
-//             <View
-//                 style={{
-//                     flexDirection: "row",
-//                     justifyContent: "center",
-//                     marginBottom: 12,
-//                 }}
-//             >
-//                 {["Week", "Month", "Year"].map((range) => {
-//                     const isActive = selectedRange === range;
-//                     return (
-//                         <TouchableOpacity
-//                             key={range}
-//                             onPress={() => setSelectedRange(range as RangeType)}
-//                             className={`py-1.5 px-4 mx-1 rounded-md ${isActive ? "bg-primary-200" : "transparent"}`}
-//                         >
-//                             <Text
-//                                 className={`text-lg text-black ${isActive ? "font-medium" : "font-normal"}`}
-//                             >
-//                                 {range}
-//                             </Text>
-//                         </TouchableOpacity>
-//                     );
-//                 })}
-//             </View>
-
-//             {/* Bar Chart */}
-//             <BarChart
-//                 data={datasets[selectedRange]}
-//                 barWidth={25}
-//                 yAxisThickness={1}
-//                 xAxisThickness={1}
-//                 yAxisColor="#E5EAE8"
-//                 xAxisColor="#E5EAE8"
-//                 initialSpacing={20}
-//                 spacing={16}
-//                 frontColor="#013220"
-//                 yAxisTextStyle={{ fontSize: 14, fontWeight: 500, color: "#4D4D4D" }}
-//                 xAxisLabelTextStyle={{
-//                     fontSize: 14,
-//                     fontWeight: 500,
-//                     color: "#4D4D4D",
-//                 }}
-//                 dashWidth={0}
-//                 hideRules={false}
-//                 rulesType="solid"
-//                 rulesColor="#E5EAE8"
-//                 noOfSections={5}
-//                 stepHeight={50}
-//                 isAnimated
-//             />
-//         </View>
-//     );
-// };
-
-// export default UsageAnalyticsBarChart;
-
-import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { BarChart } from "react-native-gifted-charts";
-
-type RangeType = "week" | "month" | "year";
+import { Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Bar, CartesianChart } from "victory-native";
+import type {
+    UsageAnalyticsChartItem,
+    UsageAnalyticsRange,
+} from "../../../queries/doctor/useUsageAnalytics";
 
 interface UsageAnalyticsBarChartProps {
-    chartData: {
-        week: { label: string; value: number }[];
-        month: { label: string; value: number }[];
-        year: { label: string; value: number }[];
-    };
+    chartData?: UsageAnalyticsChartItem[];
+    selectedRange: UsageAnalyticsRange;
+    onRangeChange: (range: UsageAnalyticsRange) => void;
 }
 
-const UsageAnalyticsBarChart = ({ chartData }: UsageAnalyticsBarChartProps) => {
-    // console.log("Received chartData:", chartData);
+const RANGE_OPTIONS: UsageAnalyticsRange[] = ["week", "month", "year"];
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const CHART_HEIGHT = 380;
 
-    const [selectedRange, setSelectedRange] = useState<RangeType>("week");
+const formatXAxisLabel = (
+    item: UsageAnalyticsChartItem,
+    selectedRange: UsageAnalyticsRange,
+) => {
+    const parsedDate = item.date ? new Date(item.date) : null;
 
-    const datasets: Record<RangeType, { label: string; value: number }[]> = {
-        week: chartData?.week ?? [],
-        month: chartData?.month ?? [],
-        year: chartData?.year ?? [],
-    };
+    if (!parsedDate || Number.isNaN(parsedDate.getTime())) {
+        return item.label;
+    }
 
-    // console.log("Datasets for selected range:", datasets[selectedRange]);
+    if (selectedRange === "week") {
+        return parsedDate.toLocaleDateString("en-US", { weekday: "short" });
+    }
+
+    if (selectedRange === "month") {
+        return parsedDate.toLocaleDateString("en-US", { month: "short" });
+    }
+
+    return parsedDate.toLocaleDateString("en-US", { year: "numeric" });
+};
+
+const UsageAnalyticsBarChart = ({
+    chartData = [],
+    selectedRange,
+    onRangeChange,
+}: UsageAnalyticsBarChartProps) => {
+    const chartDataPoints = Array.isArray(chartData)
+        ? chartData
+            .map((item) => ({
+                x: formatXAxisLabel(item, selectedRange),
+                y: Number(item.value) || 0,
+            }))
+            .filter((item) => item.x)
+        : [];
+
+    const maxValue = chartDataPoints.reduce(
+        (max, item) => Math.max(max, item.y),
+        0,
+    );
+
+    const chartWidth = Math.max(
+        SCREEN_WIDTH - 40,
+        chartDataPoints.length * (selectedRange === "year" ? 48 : 56),
+    );
 
     return (
         <View className="mt-10">
-            {/* Toggle Tabs */}
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    marginBottom: 12,
-                }}
-            >
-                {["week", "month", "year"].map((range) => {
+            <View className="mb-6 flex-row justify-center">
+                {RANGE_OPTIONS.map((range) => {
                     const isActive = selectedRange === range;
+
                     return (
                         <TouchableOpacity
                             key={range}
-                            onPress={() => setSelectedRange(range as RangeType)}
-                            className={`py-1.5 px-4 mx-1 rounded-md ${isActive ? "bg-primary-200" : "transparent"
-                                }`}
+                            activeOpacity={0.85}
+                            onPress={() => onRangeChange(range)}
+                            className={`mx-2 rounded-2xl px-7 py-3 ${isActive ? "bg-[#E8EDE9]" : "bg-transparent"}`}
                         >
                             <Text
-                                className={`text-lg text-black ${isActive ? "font-medium" : "font-normal"
-                                    }`}
+                                className={`text-[18px] capitalize text-black ${isActive ? "font-semibold" : "font-normal"}`}
                             >
                                 {range}
                             </Text>
@@ -164,31 +83,49 @@ const UsageAnalyticsBarChart = ({ chartData }: UsageAnalyticsBarChartProps) => {
                 })}
             </View>
 
-            {/* Bar Chart */}
-            <BarChart
-                data={datasets[selectedRange]}
-                barWidth={25}
-                yAxisThickness={1}
-                xAxisThickness={1}
-                yAxisColor="#E5EAE8"
-                xAxisColor="#E5EAE8"
-                initialSpacing={20}
-                spacing={16}
-                frontColor="#013220"
-                yAxisTextStyle={{ fontSize: 14, fontWeight: 500, color: "#4D4D4D" }}
-                xAxisLabelTextStyle={{
-                    fontSize: 14,
-                    fontWeight: 500,
-                    color: "#4D4D4D",
-                }}
-                dashWidth={0}
-                hideRules={false}
-                rulesType="solid"
-                rulesColor="#E5EAE8"
-                noOfSections={5}
-                stepHeight={50}
-                isAnimated
-            />
+            {!Array.isArray(chartData) || chartData.length === 0 ? (
+                <View className="items-center justify-center rounded-2xl border border-[#E8ECE9] bg-[#FAFBFA] px-5 py-12">
+                    <Text className="text-base text-[#4D4D4D]">
+                        No analytics data available for this range.
+                    </Text>
+                </View>
+            ) : (
+                <ScrollView
+                    horizontal
+                    bounces={false}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingRight: 12 }}
+                >
+                    <View style={{ width: chartWidth, height: CHART_HEIGHT }}>
+                        <CartesianChart
+                            data={chartDataPoints}
+                            xKey="x"
+                            yKeys={["y"]}
+                            padding={{ left: 50, top: 20, right: 20, bottom: 50 }}
+                            domain={{ y: [0, Math.max(1, Math.ceil(maxValue * 1.2))] }}
+                            axisOptions={{
+                                font: undefined,
+                                tickCount: selectedRange === "year" ? 6 : chartDataPoints.length,
+                            }}
+                        >
+                            {({ points, chartBounds }) => (
+                                <Bar
+                                    points={points.y}
+                                    chartBounds={chartBounds}
+                                    color="#013220"
+                                    barWidth={selectedRange === "year" ? 18 : 24}
+                                    roundedCorners={{
+                                        topLeft: 4,
+                                        topRight: 4,
+                                        bottomLeft: 0,
+                                        bottomRight: 0,
+                                    }}
+                                />
+                            )}
+                        </CartesianChart>
+                    </View>
+                </ScrollView>
+            )}
         </View>
     );
 };

@@ -2,6 +2,7 @@ import { MenuSection } from "@/types/common/profile";
 import {
   Award,
   BriefcaseBusiness,
+  ChartColumn,
   FileText,
   GraduationCap,
   Handshake,
@@ -57,13 +58,13 @@ export const DoctorMenuSections: MenuSection[] = [
         route: "/doctor/profile/certificates",
       },
       // Temporarily hidden - Usage Analytics
-      // {
-      //     id: 'usage-analytics',
-      //     icon: <ChartColumn size={20} color="#374151" />,
-      //     title: 'Usage Analytics',
-      //     description: 'View analytics which based on your appointment',
-      //     route: '/doctor/profile/usage-analytics'
-      // },
+      {
+        id: 'usage-analytics',
+        icon: <ChartColumn size={20} color="#374151" />,
+        title: 'Usage Analytics',
+        description: 'View analytics which based on your appointment',
+        route: '/doctor/profile/usage-analytics'
+      },
       {
         id: "social-media",
         icon: <Handshake size={20} color="#374151" />,

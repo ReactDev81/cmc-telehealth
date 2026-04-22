@@ -104,6 +104,12 @@ export default function TabLayout() {
                         ),
                     }}
                 />
+                <Tabs.Screen
+                    name="usage-analytics"
+                    options={{
+                        href: null,
+                    }}
+                />
             </Tabs>
         </>
     );

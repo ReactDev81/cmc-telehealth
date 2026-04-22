@@ -35,7 +35,7 @@ const PatientDetails = () => {
         if (isFocused && appointmentId && token) {
             refetch();
         }
-    }, [isFocused]);
+    }, [appointmentId, isFocused, refetch, token]);
 
     const upcomingAppointment = patient?.data?.upcoming_appointments;
 

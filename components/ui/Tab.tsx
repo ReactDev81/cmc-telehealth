@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 export interface TabItem {
   key: string;
   label: string;
-  content: ReactNode;
+  renderContent: () => ReactNode;
 }
 
 interface TabProps {
@@ -30,7 +30,9 @@ const Tab = ({ tabs, defaultTab, onTabChange }: TabProps) => {
     onTabChange?.(tabKey);
   };
 
-  const activeTabContent = tabs.find((tab) => tab.key === activeTab)?.content;
+  const activeTabContent = tabs.find(
+    (tab) => tab.key === activeTab,
+  )?.renderContent();
 
   return (
     <View className="w-full flex-1">

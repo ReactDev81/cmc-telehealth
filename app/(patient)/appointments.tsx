@@ -26,7 +26,7 @@ const Appointments = () => {
         {
             key: "upcoming",
             label: "Upcoming",
-            content: isLoading ? (
+            renderContent: () => isLoading ? (
                 <ActivityIndicator />
             ) : (
                 <AllUpcomingAppointment appointments={appointments} isLoading={isLoading} />
@@ -35,7 +35,7 @@ const Appointments = () => {
         {
             key: "past",
             label: "Past",
-            content: isLoading ? (
+            renderContent: () => isLoading ? (
                 <ActivityIndicator />
             ) : (
                 <AllPastAppointment appointments={appointments} isLoading={isLoading} />

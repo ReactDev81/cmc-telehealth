@@ -1,5 +1,8 @@
 import FormLayout from "@/app/formLayout";
 import DateField from "@/components/form/date";
+import Input from "@/components/form/Input";
+import RadioButton from "@/components/form/radio-button";
+import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useUpdatePatientProfile } from "@/queries/patient/useUpdatePatientProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,13 +14,6 @@ import { useForm } from "react-hook-form";
 import { Alert, Image, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as z from "zod";
-import Input from "../../../components/form/Input";
-import RadioButton from "../../../components/form/radio-button";
-import Button from "../../../components/ui/Button";
-
-/* -------------------------------------------------------------------------- */
-/*                               ZOD SCHEMA                                   */
-/* -------------------------------------------------------------------------- */
 
 const personalInfoSchema = z.object({
     first_name: z
@@ -41,10 +37,12 @@ const personalInfoSchema = z.object({
         .refine((date) => {
             const today = new Date();
             let age = today.getFullYear() - date.getFullYear();
-            const m = today.getMonth() - date.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
+            const monthDiff = today.getMonth() - date.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
                 age--;
             }
+
             return age >= 13;
         }, "You must be at least 13 years old"),
     gender: z.enum(["male", "female", "other"], {
@@ -54,89 +52,87 @@ const personalInfoSchema = z.object({
 
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
-/* -------------------------------------------------------------------------- */
-/*                              COMPONENT                                     */
-/* -------------------------------------------------------------------------- */
+const DEFAULT_AVATAR = require("../../../assets/images/user.png");
+
+const isLocalImageUri = (uri?: string) => {
+    if (!uri) {
+        return false;
+    }
+
+    return (
+        uri.startsWith("file://") ||
+        uri.startsWith("content://") ||
+        uri.startsWith("asset-library://") ||
+        uri.startsWith("ph://")
+    );
+};
+
+const getGenderValue = (gender?: string) => {
+    if (gender === "male" || gender === "female" || gender === "other") {
+        return gender;
+    }
+
+    return "other";
+};
 
 const EditPersonalInformation = () => {
-
     const { user, updateUser } = useAuth();
-
-    if (!user) {
-        return null;
-    }
-    
-    const patientId = user.id;
-
     const qc = useQueryClient();
     const insets = useSafeAreaInsets();
+    const patientId = user?.id ?? "";
 
-    useEffect(() => {
-        if (!user) return;
-
-        setValue("first_name", user.first_name);
-        setValue("last_name", user.last_name);
-        setValue("mobile_no", user.phone);
-        const genderValue =
-            user.gender === "male" ||
-            user.gender === "female" ||
-            user.gender === "other"
-                ? user.gender
-                : "other";
-        setValue("gender", genderValue);
-        setValue("email", user.email);
-
-        if (user.date_of_birth) {
-            setValue("date_of_birth", new Date(user.date_of_birth), {
-                shouldValidate: true,
-            });
-        }
-
-        if (user.avatar) {
-            setProfileImage({ uri: user.avatar });
-        }
-    }, []);
-
-    // Sync profile image when user context updates
-    useEffect(() => {
-        if (user.avatar) {
-            setProfileImage({ uri: user.avatar });
-        }
-    }, [user.avatar]);
+    const [profileImage, setProfileImage] = useState<any>(
+        user?.avatar ? { uri: user.avatar } : DEFAULT_AVATAR
+    );
 
     const { mutate: updateProfile, isPending } = useUpdatePatientProfile(patientId);
 
-    const [profileImage, setProfileImage] = useState<any>(
-        user.avatar
-        ? { uri: user.avatar }
-        : require("../../../assets/images/user.png"),
-    );
-
-    const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<PersonalInfoFormData>({
+    const {
+        control,
+        handleSubmit,
+        reset,
+        setValue,
+        watch,
+        formState: { errors },
+    } = useForm<PersonalInfoFormData>({
         resolver: zodResolver(personalInfoSchema),
         defaultValues: {
+            first_name: user?.first_name ?? "",
+            last_name: user?.last_name ?? "",
+            mobile_no: user?.phone ?? "",
+            email: user?.email ?? "",
+            gender: getGenderValue(user?.gender),
+            date_of_birth: user?.date_of_birth ? new Date(user.date_of_birth) : undefined,
+        },
+    });
+
+    useEffect(() => {
+        if (!user) {
+            reset({
+                first_name: "",
+                last_name: "",
+                mobile_no: "",
+                email: "",
+                gender: "other",
+                date_of_birth: undefined,
+            });
+            setProfileImage(DEFAULT_AVATAR);
+            return;
+        }
+
+        reset({
             first_name: user.first_name,
             last_name: user.last_name,
             mobile_no: user.phone,
             email: user.email,
-            gender:
-                user.gender === "male" ||
-                user.gender === "female" ||
-                user.gender === "other"
-                ? user.gender
-                : "other",
-            date_of_birth: user.date_of_birth
-                ? new Date(user.date_of_birth)
-                : (undefined as unknown as Date),
-        },
-    });
+            gender: getGenderValue(user.gender),
+            date_of_birth: user.date_of_birth ? new Date(user.date_of_birth) : undefined,
+        });
+        setProfileImage(user.avatar ? { uri: user.avatar } : DEFAULT_AVATAR);
+    }, [reset, user]);
 
     const dateOfBirth = watch("date_of_birth");
     const gender = watch("gender");
-
-  /* -------------------------------------------------------------------------- */
-  /*                           IMAGE PICKER LOGIC                               */
-  /* -------------------------------------------------------------------------- */
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -144,7 +140,7 @@ const EditPersonalInformation = () => {
         if (status !== "granted") {
             Alert.alert(
                 "Permission Denied",
-                "Sorry, we need gallery permissions to upload images.",
+                "Sorry, we need gallery permissions to upload images."
             );
             return;
         }
@@ -162,13 +158,12 @@ const EditPersonalInformation = () => {
     };
 
     const takePhoto = async () => {
-
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
         if (status !== "granted") {
             Alert.alert(
                 "Permission Denied",
-                "Sorry, we need camera permissions to take photos.",
+                "Sorry, we need camera permissions to take photos."
             );
             return;
         }
@@ -192,11 +187,35 @@ const EditPersonalInformation = () => {
         ]);
     };
 
-    /* -------------------------------------------------------------------------- */
-    /*                               SUBMIT                                       */
-    /* -------------------------------------------------------------------------- */
+    const handleSuccess = async (response: any) => {
+        const updatedData = response?.data;
+
+        await updateUser({
+            first_name: updatedData?.first_name ?? user?.first_name ?? "",
+            last_name: updatedData?.last_name ?? user?.last_name ?? "",
+            avatar: updatedData?.avatar ?? user?.avatar,
+            phone: updatedData?.mobile_no ?? user?.phone ?? "",
+            date_of_birth: updatedData?.date_of_birth ?? user?.date_of_birth ?? "",
+            gender: updatedData?.gender ?? user?.gender ?? "other",
+        });
+
+        if (updatedData?.avatar) {
+            setProfileImage({ uri: updatedData.avatar });
+        }
+
+        try {
+            await qc.invalidateQueries({
+                queryKey: ["patient-profile", patientId, "personal_information"],
+            });
+        } catch {}
+
+        Alert.alert("Success", response?.message || "Profile updated");
+    };
 
     const onSubmit = (formData: PersonalInfoFormData) => {
+        if (!user) {
+            return;
+        }
 
         const common = {
             first_name: formData.first_name,
@@ -207,18 +226,12 @@ const EditPersonalInformation = () => {
             group: "personal_information" as const,
         };
 
-        // Check if image was selected (has uri that's different from default)
-        const isNewImage =
-            profileImage &&
-            typeof profileImage === "object" &&
-            profileImage.uri &&
-            !profileImage.uri.includes("edit-profile.png");
+        const avatarUri =
+            profileImage && typeof profileImage === "object" ? profileImage.uri : undefined;
+        const isNewImage = isLocalImageUri(avatarUri);
 
-        if (isNewImage) {
-
-            // Send FormData with avatar image
-            const uri: string = profileImage.uri;
-            const fileName = uri.split("/").pop() || "avatar.jpg";
+        if (isNewImage && avatarUri) {
+            const fileName = avatarUri.split("/").pop() || "avatar.jpg";
             const match = /\.([0-9a-z]+)(?:\?|$)/i.exec(fileName);
             const fileType = match ? `image/${match[1]}` : "image/jpeg";
 
@@ -229,97 +242,51 @@ const EditPersonalInformation = () => {
             form.append("date_of_birth", common.date_of_birth);
             form.append("gender", common.gender);
             form.append("group", common.group);
-            // @ts-ignore - React Native FormData file object
-            form.append("avatar", { uri, name: fileName, type: fileType });
+            // @ts-ignore React Native FormData file object
+            form.append("avatar", { uri: avatarUri, name: fileName, type: fileType });
 
             updateProfile(form as any, {
-                onSuccess: async (response: any) => {
-
-                    const updatedData = response?.data;
-                    // Update UserContext with name and avatar from response
-                    updateUser({
-                        first_name: updatedData?.first_name,
-                        last_name: updatedData?.last_name,
-                        avatar: updatedData?.avatar,
-                        phone: updatedData?.mobile_no,
-                        date_of_birth: updatedData?.date_of_birth,
-                        gender: updatedData?.gender,
-                    });
-
-                    // Update form with response data
-                    if (updatedData?.avatar) {
-                        setProfileImage({ uri: updatedData.avatar });
-                    }
-
-                    // Invalidate cache for consistency
-                    try {
-                            await qc.invalidateQueries({
-                            queryKey: ["patient-profile", patientId, "personal_information"],
-                        });
-                    } catch (e) {}
-
-                    Alert.alert("Success", response?.message || "Profile updated");
-                },
+                onSuccess: handleSuccess,
                 onError: (error: any) => {
                     Alert.alert(
                         "Error",
                         error?.response?.data?.errors?.message ||
-                        error?.message ||
-                        "Something went wrong",
+                            error?.message ||
+                            "Something went wrong"
                     );
                 },
             });
             return;
         }
 
-        // Send regular JSON payload (no image)
-        const payload = { ...common };
-
-        updateProfile(payload, {
-            onSuccess: async (response: any) => {
-
-                // Backend now returns updated data in response.data
-                const updatedData = response?.data;
-
-                // Update UserContext with name (avatar may not change)
-                updateUser({
-                    name: `${updatedData?.first_name} ${updatedData?.last_name}`,
-                    ...(updatedData?.avatar && { avatar: updatedData.avatar }),
-                });
-
-                // Invalidate cache for consistency
-                try {
-                    await qc.invalidateQueries({
-                        queryKey: ["patient-profile", patientId, "personal_information"],
-                    });
-                } catch (e) {}
-
-                Alert.alert("Success", response?.message || "Profile updated");
-            },
+        updateProfile(common, {
+            onSuccess: handleSuccess,
             onError: (error: any) => {
                 Alert.alert(
-                "Error",
-                error?.response?.data?.errors?.message ||
-                    error?.message ||
-                    "Something went wrong",
+                    "Error",
+                    error?.response?.data?.errors?.message ||
+                        error?.message ||
+                        "Something went wrong"
                 );
             },
         });
     };
 
+    if (!user) {
+        return null;
+    }
+
     return (
         <FormLayout contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}>
-
-            {/* Profile Image */}
-            <View className="w-32 h-32 mx-auto relative">
+            <View className="relative mx-auto h-32 w-32">
                 <Image
                     source={profileImage}
-                    className="w-32 h-32 rounded-full"
+                    className="h-32 w-32 rounded-full"
                     resizeMode="cover"
                 />
 
                 <TouchableOpacity
-                    className="w-8 h-8 rounded-full bg-primary-100 absolute bottom-0 right-0 items-center justify-center"
+                    className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-full bg-primary-100"
                     onPress={handleImageUpload}
                     activeOpacity={0.7}
                 >
@@ -327,9 +294,7 @@ const EditPersonalInformation = () => {
                 </TouchableOpacity>
             </View>
 
-            {/* Form */}
-            <View className="max-w-[350px] w-full mx-auto bg-white p-5 rounded-xl mt-10">
-                
+            <View className="mx-auto mt-10 w-full max-w-[350px] rounded-xl bg-white p-5">
                 <Input
                     name="first_name"
                     control={control}
@@ -405,7 +370,6 @@ const EditPersonalInformation = () => {
                     {isPending ? "Saving..." : "Save"}
                 </Button>
             </View>
-
         </FormLayout>
     );
 };
