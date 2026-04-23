@@ -10,7 +10,7 @@ import { MapPin } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActivityIndicator, Alert, Text, View } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "@/components/ui/Map";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as z from "zod";
 

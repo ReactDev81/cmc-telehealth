@@ -1,8 +1,8 @@
+import { useAuth } from "@/context/UserContext";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import { Camera } from "expo-camera";
 import { router, useLocalSearchParams } from "expo-router";
-import { useAuth } from "@/context/UserContext";
 import type { LucideIcon } from "lucide-react-native";
 import { ClosedCaption, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff } from "lucide-react-native";
 import * as React from "react";
@@ -82,7 +82,7 @@ const StartConsulationWithDoctor = () => {
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
-    
+
         return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
     };
 
@@ -225,11 +225,11 @@ const StartConsulationWithDoctor = () => {
                             </View>
                         </TouchableOpacity>
                     </View>
-                )} 
+                )}
 
                 {/* Video Container - Middle Section */}
                 <View className="bg-primary flex-1">
-                    <View 
+                    <View
                         // className="h-[85%]"
                         style={{
                             height: calcHeight
@@ -267,7 +267,7 @@ const StartConsulationWithDoctor = () => {
                                     clearInterval(timerRef.current);
                                     timerRef.current = null;
                                 }
-                            
+
                                 const totalCallTime = callDuration; // seconds
                                 console.log("Call Duration:", totalCallTime, "seconds");
 

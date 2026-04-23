@@ -20,6 +20,8 @@
       }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 2,
       "useNextNotificationsApi": true,
       "adaptiveIcon": {
         "backgroundColor": "#ffffff",
@@ -31,6 +33,11 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.cmctelehealth.app",
       "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.CAMERA",
@@ -86,6 +93,12 @@
         "projectId": "b2e6fed1-3a6e-43f4-8f42-173de5901ead"
       }
     },
-    "owner": "cmc-telehealth"
+    "owner": "cmc-telehealth",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b2e6fed1-3a6e-43f4-8f42-173de5901ead"
+    }
   }
 }

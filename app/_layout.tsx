@@ -14,9 +14,6 @@ import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 
-export const unstable_settings = {
-    anchor: "(tabs)",
-};
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -339,12 +336,6 @@ export default function RootLayout() {
                                         }}
                                     />
 
-                                    <Stack.Screen
-                                        name="common-screens/profile/rate-us"
-                                        options={{
-                                            headerTitle: "Rate Us",
-                                        }}
-                                    />
 
                                     <Stack.Screen
                                         name="common-screens/profile/term-condition"

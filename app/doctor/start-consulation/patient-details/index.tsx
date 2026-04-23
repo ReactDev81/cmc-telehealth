@@ -112,6 +112,7 @@ const PatientDetails = ({ appointmentId }: PatientDetailsProps) => {
                     <Text className="text-black-400 text-sm italic mt-2">No medical reports available</Text>
                 )}
             </View>
+
             {/* Doctor uploaded reports */}
             <View className="mt-8">
                 <Title text="Medical Reports Uploaded by Doctor" />

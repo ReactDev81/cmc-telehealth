@@ -1,4 +1,6 @@
-import { Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { matchFont } from "@shopify/react-native-skia";
+import { useMemo } from "react";
+import { Dimensions, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Bar, CartesianChart } from "victory-native";
 import type {
     UsageAnalyticsChartItem,
@@ -41,6 +43,15 @@ const UsageAnalyticsBarChart = ({
     selectedRange,
     onRangeChange,
 }: UsageAnalyticsBarChartProps) => {
+    const font = useMemo(() => {
+        const familyName = Platform.select({
+            ios: "Helvetica",
+            android: "Roboto",
+            default: "sans-serif",
+        });
+        return matchFont({ familyName, fontSize: 12, fontWeight: "400" });
+    }, []);
+
     const chartDataPoints = Array.isArray(chartData)
         ? chartData
             .map((item) => ({
@@ -101,11 +112,19 @@ const UsageAnalyticsBarChart = ({
                             data={chartDataPoints}
                             xKey="x"
                             yKeys={["y"]}
-                            padding={{ left: 50, top: 20, right: 20, bottom: 50 }}
+                            padding={{ left: 0, top: 20, right: 0, bottom: 60 }}
+                            domainPadding={{ left: 30, right: 30, top: 30 }}
                             domain={{ y: [0, Math.max(1, Math.ceil(maxValue * 1.2))] }}
                             axisOptions={{
-                                font: undefined,
-                                tickCount: selectedRange === "year" ? 6 : chartDataPoints.length,
+                                font: font,
+                                labelColor: "#4D4D4D",
+                                lineColor: "#E8ECE9",
+                                tickCount: {
+                                    x: selectedRange === "year" ? 6 : chartDataPoints.length,
+                                    y: 5,
+                                },
+                                formatYLabel: (value) => `${value}`,
+                                formatXLabel: (value) => `${value}`,
                             }}
                         >
                             {({ points, chartBounds }) => (
