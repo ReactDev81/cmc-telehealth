@@ -61,6 +61,8 @@ const AppointementDetails = () => {
     const notes = appointment?.notes;
     const prescriptions = appointment?.prescriptions;
 
+
+
     const discountedValue = 0;
 
     const calculateAppointmentFee = () => {
@@ -341,6 +343,7 @@ const AppointementDetails = () => {
                 doctorId={doctor?.user_id}
                 doctorName={doctor?.name}
                 appointmentID={appointmentId}
+                doctorImage={doctor?.avatar || "../../assets/images/female-doctor.png"}
             />
         </ScrollView>
     );

@@ -4,6 +4,7 @@ import { Star } from "lucide-react-native";
 import { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { Image, Modal, Text, TouchableOpacity, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import * as z from "zod";
 import Input from "../form/Input";
 import TextArea from "../form/TextArea";
@@ -12,20 +13,20 @@ import Button from "../ui/Button";
 // Validation schema
 const reviewSchema = z.object({
     rating: z
-      .number()
-      .min(1, "Please select a rating")
-      .max(5, "Rating must be between 1 and 5"),
+        .number()
+        .min(1, "Please select a rating")
+        .max(5, "Rating must be between 1 and 5"),
     title: z
-      .string()
-      .min(1, "Title is required")
-      .max(100, "Title must not exceed 100 characters"),
+        .string()
+        .min(1, "Title is required")
+        .max(100, "Title must not exceed 100 characters"),
     review: z
-      .string()
-      .min(1, "Review is required")
-      .min(10, "Review must be at least 10 characters")
-      .max(500, "Review must not exceed 500 characters"),
+        .string()
+        .min(1, "Review is required")
+        .min(10, "Review must be at least 10 characters")
+        .max(500, "Review must not exceed 500 characters"),
 });
-  
+
 type ReviewFormData = z.infer<typeof reviewSchema>;
 
 interface DoctorReviewModalProps {
@@ -34,17 +35,18 @@ interface DoctorReviewModalProps {
     doctorId?: string;
     doctorName?: string;
     appointmentID?: string;
+    doctorImage?: string;
 }
 
-const DoctorReviewModal = ({ visible, onClose, doctorId, doctorName, appointmentID }: DoctorReviewModalProps) => {
+const DoctorReviewModal = ({ visible, onClose, doctorId, doctorName, appointmentID, doctorImage }: DoctorReviewModalProps) => {
 
     const methods = useForm<ReviewFormData>({
         resolver: zodResolver(reviewSchema),
-            defaultValues: {
-                rating: 0,
-                title: "",
-                review: "",
-            },
+        defaultValues: {
+            rating: 0,
+            title: "",
+            review: "",
+        },
         mode: "onSubmit",
     });
 
@@ -80,10 +82,10 @@ const DoctorReviewModal = ({ visible, onClose, doctorId, doctorName, appointment
                     reset();
                 },
                 onError: (err: any) => {
-                    console.log("Review error message:", 
+                    console.log("Review error message:",
                         ((err as any)?.response?.data?.errors?.message ??
                             (err as any)?.message ??
-                        "Something went wrong")
+                            "Something went wrong")
                     )
                 },
             },
@@ -109,117 +111,126 @@ const DoctorReviewModal = ({ visible, onClose, doctorId, doctorName, appointment
             onRequestClose={onClose}
         >
             <View className="flex-1 items-center justify-center bg-black/50 p-6">
-                <FormProvider {...methods}>
-                    <View className="rounded-xl w-full max-w-md bg-white p-6 pb-10">
-                        <View className="max-w-52 w-full mx-auto">
-                            
-                            <Image
-                                source={require("../../assets/images/female-doctor.png")}
-                                className="w-24 h-24 mx-auto"
-                            />
+                <KeyboardAwareScrollView
+                    bottomOffset={20}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+                    className="px-4"
+                >
+                    <FormProvider {...methods}>
+                        <View className="rounded-xl w-full max-w-md bg-white p-6 pb-10">
+                            <View className="max-w-60 w-full mx-auto">
 
-                            <Text className="text-base font-medium text-center mt-3">
-                                How was your experience with {doctorName || "the doctor"}?
-                            </Text>
+                                <Image
+                                    source={{ uri: doctorImage || "" }}
+                                    className="w-24 h-24 mx-auto rounded-full"
+                                    resizeMode="cover"
+                                />
 
-                            {/* Star Rating */}
-                            <Controller
-                                control={methods.control}
-                                name="rating"
-                                render={({ fieldState: { error } }) => (
-                                    <View>
-                                        <View className="flex-row justify-center gap-x-2 mt-5">
-                                            {[1, 2, 3, 4, 5].map((value) => (
-                                                <TouchableOpacity
-                                                    key={value}
-                                                    onPress={() => handleRating(value)}
-                                                    activeOpacity={1}
-                                                >
-                                                    <Star
-                                                        size={24}
-                                                        color={value <= rating ? "#013220" : "#013220"}
-                                                        fill={value <= rating ? "#013220" : "transparent"}
-                                                        strokeWidth={1}
-                                                        className="mx-1"
-                                                    />
-                                                </TouchableOpacity>
-                                            ))}
+                                <Text className="text-base font-medium text-center mt-3">
+                                    How was your experience with {doctorName || "the doctor"}?
+                                </Text>
+
+                                {/* Star Rating */}
+                                <Controller
+                                    control={methods.control}
+                                    name="rating"
+                                    render={({ fieldState: { error } }) => (
+                                        <View>
+                                            <View className="flex-row justify-center gap-x-2 mt-5">
+                                                {[1, 2, 3, 4, 5].map((value) => (
+                                                    <TouchableOpacity
+                                                        key={value}
+                                                        onPress={() => handleRating(value)}
+                                                        activeOpacity={1}
+                                                    >
+                                                        <Star
+                                                            size={24}
+                                                            color={value <= rating ? "#013220" : "#013220"}
+                                                            fill={value <= rating ? "#013220" : "transparent"}
+                                                            strokeWidth={1}
+                                                            className="mx-1"
+                                                        />
+                                                    </TouchableOpacity>
+                                                ))}
+                                            </View>
+                                            {error && (
+                                                <Text className="text-red-500 text-xs text-center mt-2">
+                                                    {error.message}
+                                                </Text>
+                                            )}
                                         </View>
-                                        {error && (
-                                            <Text className="text-red-500 text-xs text-center mt-2">
-                                                {error.message}
-                                            </Text>
-                                        )}
-                                    </View>
-                                )}
-                            />
-                        </View>
-
-                        <View className="mt-5">
-                            
-                            <Input
-                                name="title"
-                                control={control}
-                                label="Title"
-                                placeholder="Enter review title..."
-                                autoCapitalize="words"
-                                containerClassName="mt-5"
-                            />
-
-                            <TextArea
-                                name="review"
-                                label="Write Your Review"
-                                placeholder="Share your experience with the doctor..."
-                                control={control}
-                                containerClassName="mt-5"
-                            />
-
-                            <View className="flex-row items-center gap-x-4 mt-5">
-                                <Button
-                                    variant="outline"
-                                    className="[&]:px-8"
-                                    onPress={handleCancel}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    className="[&]:px-8"
-                                    onPress={handleSubmit(onSubmit)}
-                                    disabled={isPending}
-                                >
-                                    {isPending ? "Submitting..." : "Submit"}
-                                </Button>
+                                    )}
+                                />
                             </View>
-                        </View>
 
-                        {/* Success Modal */}
-                        <Modal
-                            visible={showSuccessModal}
-                            transparent
-                            animationType="fade"
-                            onRequestClose={closeModal}
-                        >
-                            <View className="flex-1 bg-black/60 justify-center items-center px-5">
-                                <View className="bg-white rounded-xl p-8 w-full max-w-sm items-center">
-                                    <View className="w-14 h-14 items-center justify-center rounded-full bg-primary-100">
-                                        <Star size={24} color="#013220" fill="#013220" />
-                                    </View>
-                                    <Text className="text-lg font-semibold text-black mt-5">
-                                        Review Successful!
-                                    </Text>
-                                    <Text className="text-base text-black-400 text-center mt-2">
-                                        Your review has been successfully submitted. Thank you very
-                                        much!
-                                    </Text>
-                                    <Button className="mt-6 px-6" onPress={closeModal}>
-                                        Done
+                            <View className="mt-5">
+
+                                <Input
+                                    name="title"
+                                    control={control}
+                                    label="Title"
+                                    placeholder="Enter review title..."
+                                    autoCapitalize="words"
+                                    containerClassName="mt-5"
+                                />
+
+                                <TextArea
+                                    name="review"
+                                    label="Write Your Review"
+                                    placeholder="Share your experience with the doctor..."
+                                    control={control}
+                                    containerClassName="mt-5"
+                                />
+
+                                <View className="flex-row items-center gap-x-4 mt-5">
+                                    <Button
+                                        variant="outline"
+                                        className="[&]:px-8"
+                                        onPress={handleCancel}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        className="[&]:px-8"
+                                        onPress={handleSubmit(onSubmit)}
+                                        disabled={isPending}
+                                    >
+                                        {isPending ? "Submitting..." : "Submit"}
                                     </Button>
                                 </View>
                             </View>
-                        </Modal>
 
-                    </View>
-                </FormProvider>
+                            {/* Success Modal */}
+                            <Modal
+                                visible={showSuccessModal}
+                                transparent
+                                animationType="fade"
+                                onRequestClose={closeModal}
+                            >
+                                <View className="flex-1 bg-black/60 justify-center items-center px-5">
+                                    <View className="bg-white rounded-xl p-8 w-full max-w-sm items-center">
+                                        <View className="w-14 h-14 items-center justify-center rounded-full bg-primary-100">
+                                            <Star size={24} color="#013220" fill="#013220" />
+                                        </View>
+                                        <Text className="text-lg font-semibold text-black mt-5">
+                                            Review Successful!
+                                        </Text>
+                                        <Text className="text-base text-black-400 text-center mt-2">
+                                            Your review has been successfully submitted. Thank you very
+                                            much!
+                                        </Text>
+                                        <Button className="mt-6 px-6" onPress={closeModal}>
+                                            Done
+                                        </Button>
+                                    </View>
+                                </View>
+                            </Modal>
+
+                        </View>
+                    </FormProvider>
+                </KeyboardAwareScrollView>
             </View>
         </Modal>
     );

@@ -126,7 +126,7 @@ const UploadYourReport = () => {
                 name="name"
                 label="Name"
                 control={control}
-                placeholder="Enter your name"
+                placeholder="Enter report or document name"
             />
 
             <FileUploadField

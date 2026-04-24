@@ -8,7 +8,7 @@ import { useAuth } from "@/context/UserContext";
 import { useCompleteProfile } from "@/mutations/useCompleteProfile";
 import { User } from "@/types/common/user-context";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
@@ -163,7 +163,7 @@ export default function RegisterCompleteProfile() {
                     label="Phone Number"
                     containerClassName="mt-5"
                     control={control}
-                    placeholder="+234 (999) 000-0000"
+                    placeholder="00-000-0000"
                     keyboardType="tel"
                 />
 
@@ -235,9 +235,9 @@ export default function RegisterCompleteProfile() {
                 <Text className="text-base text-black-400 text-center mt-5 px-4">
                     By providing your mobile number, you give us permission to contact you
                     via text.
-                    <Link href="/auth/login">
+                    {/* <Link href="/auth/login">
                         <Text className="text-primary font-medium">Sign In</Text>
-                    </Link>
+                    </Link> */}
                 </Text>
 
             </View>

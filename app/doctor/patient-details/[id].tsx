@@ -77,7 +77,7 @@ const PatientDetails = () => {
         );
     }
 
-    // console.log("reports data : ", patient?.data?.medical_reports);
+    console.log("reports data : ", patient?.data?.medical_reports);
 
     const filteredReports = patient?.data?.medical_reports?.filter((report: any) => {
         return (
@@ -86,11 +86,11 @@ const PatientDetails = () => {
                 report.report_type !== "other")
         );
     });
-    
+
     const filteredReportsByDoctor = patient?.data?.medical_reports?.filter((report: any) => {
         return (
             report.uploader_type === "Doctor" &&
-                report.report_type === "other"
+            report.report_type === "other"
         );
     });
 
@@ -208,7 +208,7 @@ const PatientDetails = () => {
 
                 {/* uploaded by doctor */}
                 <View className="mt-5">
-                    <Title className="max-w-72" text="Medical Reports" />
+                    <Title text="Medical Reports Uploaded by Doctor" />
 
                     {filteredReportsByDoctor && filteredReportsByDoctor.length > 0 ? (
                         filteredReportsByDoctor.map((report: any, index: number) => {
