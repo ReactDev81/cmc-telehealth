@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import UsageAnalyticsBarChart from "../../../components/doctor/profile/usage-analytics-bar-chart";
-import {
-    UsageAnalyticsChartItem,
-    UsageAnalyticsRange,
-    useUsageAnalytics,
-} from "../../../queries/doctor/useUsageAnalytics";
+import { UsageAnalyticsChartItem, UsageAnalyticsRange, useUsageAnalytics } from "../../../queries/doctor/useUsageAnalytics";
 
 const UsageAnalytics = () => {
+
     const [selectedRange, setSelectedRange] = useState<UsageAnalyticsRange>("month");
-    const { data, isLoading, isError, error, isFetching } =
-        useUsageAnalytics(selectedRange);
+    const { data, isLoading, isError, error, isFetching } = useUsageAnalytics(selectedRange);
 
     if (isLoading) {
         return (
@@ -61,11 +57,10 @@ const UsageAnalytics = () => {
 
                     <View className="mt-2 flex-row items-center justify-end gap-x-1">
                         <Text
-                            className={`text-lg font-medium ${
-                                summary?.compare_to_last_month?.is_positive
-                                    ? "text-success"
-                                    : "text-danger"
-                            }`}
+                            className={`text-lg font-medium ${summary?.compare_to_last_month?.is_positive
+                                ? "text-success"
+                                : "text-danger"
+                                }`}
                         >
                             {summary?.compare_to_last_month?.is_positive ? "+" : "-"}
                             {summary?.compare_to_last_month?.percentage_change ?? 0}%

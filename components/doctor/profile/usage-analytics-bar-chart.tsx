@@ -21,6 +21,9 @@ const formatXAxisLabel = (
     item: UsageAnalyticsChartItem,
     selectedRange: UsageAnalyticsRange,
 ) => {
+
+    if (item.label) return item.label;
+
     const parsedDate = item.date ? new Date(item.date) : null;
 
     if (!parsedDate || Number.isNaN(parsedDate.getTime())) {
@@ -43,23 +46,25 @@ const UsageAnalyticsBarChart = ({
     selectedRange,
     onRangeChange,
 }: UsageAnalyticsBarChartProps) => {
+
+    // Use useMemo with matchFont (Synchronous - No loading state needed)
     const font = useMemo(() => {
-        const familyName = Platform.select({
-            ios: "Helvetica",
-            android: "Roboto",
-            default: "sans-serif",
+        return matchFont({
+            fontFamily: Platform.select({ ios: "Helvetica", android: "serif" }),
+            fontSize: 12,
         });
-        return matchFont({ familyName, fontSize: 12, fontWeight: "400" });
     }, []);
 
-    const chartDataPoints = Array.isArray(chartData)
-        ? chartData
-            .map((item) => ({
-                x: formatXAxisLabel(item, selectedRange),
-                y: Number(item.value) || 0,
-            }))
-            .filter((item) => item.x)
-        : [];
+    const chartDataPoints = useMemo(() => {
+        return Array.isArray(chartData)
+            ? chartData
+                .map((item) => ({
+                    x: formatXAxisLabel(item, selectedRange),
+                    y: Number(item.value) || 0,
+                }))
+                .filter((item) => item.x)
+            : [];
+    }, [chartData, selectedRange]);
 
     const maxValue = chartDataPoints.reduce(
         (max, item) => Math.max(max, item.y),
@@ -112,13 +117,14 @@ const UsageAnalyticsBarChart = ({
                             data={chartDataPoints}
                             xKey="x"
                             yKeys={["y"]}
-                            padding={{ left: 0, top: 20, right: 0, bottom: 60 }}
+                            padding={{ left: 0, top: 20, right: 10, bottom: 0 }}
                             domainPadding={{ left: 30, right: 30, top: 30 }}
                             domain={{ y: [0, Math.max(1, Math.ceil(maxValue * 1.2))] }}
                             axisOptions={{
                                 font: font,
                                 labelColor: "#4D4D4D",
                                 lineColor: "#E8ECE9",
+                                labelOffset: { x: 8, y: 8 }, // Adds a little breathing room between labels and lines
                                 tickCount: {
                                     x: selectedRange === "year" ? 6 : chartDataPoints.length,
                                     y: 5,
