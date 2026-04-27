@@ -164,7 +164,8 @@ export default function RegisterCompleteProfile() {
                     containerClassName="mt-5"
                     control={control}
                     placeholder="00-000-0000"
-                    keyboardType="tel"
+                    keyboardType="number-pad"
+                    numericOnly={true}
                 />
 
                 {/* Gender */}

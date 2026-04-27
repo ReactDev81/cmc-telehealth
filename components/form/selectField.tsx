@@ -18,7 +18,7 @@ interface SelectOption {
 interface SelectFieldProps {
     name: string;
     label?: string;
-    control: Control<any>;
+    control: any;
     options: SelectOption[];
     placeholder?: string;
     className?: string;

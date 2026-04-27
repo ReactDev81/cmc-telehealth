@@ -12,6 +12,7 @@ interface InputProps {
   secureTextEntry?: boolean;
   multiline?: boolean;
   editable?: boolean;
+  numericOnly?: boolean;
 }
 
 const Input = ({
@@ -25,6 +26,7 @@ const Input = ({
   secureTextEntry = false,
   multiline = false,
   editable = true,
+  numericOnly = false,
 }: InputProps) => {
   const {
     field: { onChange, onBlur, value },
@@ -33,6 +35,15 @@ const Input = ({
     name,
     control,
   });
+
+  const handleChangeText = (text: string) => {
+    if (numericOnly) {
+      const filteredText = text.replace(/[^0-9]/g, "");
+      onChange(filteredText);
+    } else {
+      onChange(text);
+    }
+  };
 
   return (
     <View className={containerClassName}>
@@ -43,7 +54,7 @@ const Input = ({
           error ? "border-red-500" : "border-gray"
         } ${!editable ? "bg-gray-100 text-gray-500" : ""}`}
         value={value}
-        onChangeText={onChange}
+        onChangeText={handleChangeText}
         onBlur={onBlur}
         placeholder={placeholder || label}
         keyboardType={keyboardType}

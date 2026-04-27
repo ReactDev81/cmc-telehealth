@@ -5,7 +5,7 @@ import { Pressable, Text, View } from "react-native";
 
 type CheckboxProps = {
   name: string;
-  control: Control<any>;
+  control: any;
   label?: ReactNode;
   labelComponent?: ReactNode;
   className?: string;

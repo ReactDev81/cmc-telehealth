@@ -77,8 +77,6 @@ const PatientDetails = () => {
         );
     }
 
-    console.log("reports data : ", patient?.data?.medical_reports);
-
     const filteredReports = patient?.data?.medical_reports?.filter((report: any) => {
         return (
             report.uploader_type === "Patient" ||

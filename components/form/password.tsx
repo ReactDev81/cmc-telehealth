@@ -5,7 +5,7 @@ import { useController, Control } from "react-hook-form";
 
 type PasswordInputProps = {
     name: string;
-    control: Control<any>;
+    control: any;
     label?: string;
     placeholder?: string;
     containerClassName?: string;
