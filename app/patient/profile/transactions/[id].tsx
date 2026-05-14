@@ -1,13 +1,12 @@
 import { useTransactionDetails } from "@/queries/patient/useTransactionDetails";
-import * as Print from "expo-print";
-import { useLocalSearchParams } from "expo-router";
-import * as Sharing from "expo-sharing";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowDownToLine, Check, Clock, FileText, X } from 'lucide-react-native';
-import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const TransactionDetails = () => {
 
+    const router = useRouter()
     const { id } = useLocalSearchParams<{ id?: string }>();
     const { data, isLoading, isError, error } = useTransactionDetails(id);
 
@@ -62,112 +61,112 @@ const TransactionDetails = () => {
         ),
     };
 
-    const downloadReceipt = async () => {
-        try {
+    // const downloadReceipt = async () => {
+    //     try {
 
-            const paidTo =
-                transaction.payment_type === "UPI Payment"
-                    ? transaction.upi_id
-                    : transaction.payment_type === "Card"
-                        ? `${transaction.bank_name} Bank`
-                        : transaction.payment_type === "Net Banking"
-                            ? `${transaction.bank_name} Bank`
-                            : "";
+    //         const paidTo =
+    //             transaction.payment_type === "UPI Payment"
+    //                 ? transaction.upi_id
+    //                 : transaction.payment_type === "Card"
+    //                     ? `${transaction.bank_name} Bank`
+    //                     : transaction.payment_type === "Net Banking"
+    //                         ? `${transaction.bank_name} Bank`
+    //                         : "";
 
-            const paymentType =
-                transaction.payment_type === "UPI Payment"
-                    ? transaction.payment_type
-                    : transaction.payment_type === "Card"
-                        ? `${transaction.card_type} Card`
-                        : transaction.payment_type === "Net Banking"
-                            ? transaction.payment_type
-                            : "";
+    //         const paymentType =
+    //             transaction.payment_type === "UPI Payment"
+    //                 ? transaction.payment_type
+    //                 : transaction.payment_type === "Card"
+    //                     ? `${transaction.card_type} Card`
+    //                     : transaction.payment_type === "Net Banking"
+    //                         ? transaction.payment_type
+    //                         : "";
 
-            const accountDetails =
-                transaction.payment_type === "Card"
-                    ? `${transaction.bank_name} Bank<br/>${transaction.payment_method}${transaction.payment_type} ****${transaction.card_last4}`
-                    : transaction.payment_type === "UPI Payment"
-                        ? transaction.upi_id
-                        : transaction.payment_type === "Net Banking"
-                            ? `${transaction.bank_name} Bank<br/>${transaction.payment_type}`
-                            : "";
+    //         const accountDetails =
+    //             transaction.payment_type === "Card"
+    //                 ? `${transaction.bank_name} Bank<br/>${transaction.payment_method}${transaction.payment_type} ****${transaction.card_last4}`
+    //                 : transaction.payment_type === "UPI Payment"
+    //                     ? transaction.upi_id
+    //                     : transaction.payment_type === "Net Banking"
+    //                         ? `${transaction.bank_name} Bank<br/>${transaction.payment_type}`
+    //                         : "";
 
-            const html = `
-                <html>
-                    <body style="font-family: Arial; padding: 20px;">
+    //         const html = `
+    //             <html>
+    //                 <body style="font-family: Arial; padding: 20px;">
 
-                        <h2 style="text-align:center;">Transaction Receipt</h2>
-            
-                        <h1 style="text-align:center;">₹${transaction.amount}</h1>
-                
-                        <p style="text-align:center; color:green; font-weight:bold;">
-                            ${statusText[transaction.status]}
-                        </p>
-                
-                        <p style="text-align:center;">${transaction.date}</p>
-            
-                        <hr/>
-            
-                        <table style="width:100%; font-size:14px; border-collapse: collapse;">
-                            <tr>
-                                <td><b>Transaction ID</b></td>
-                                <td>${transaction.transaction_id}</td>
-                            </tr>
-                
-                            <tr>
-                                <td><b>Order ID</b></td>
-                                <td>${transaction.order_id}</td>
-                            </tr>
-                
-                            <tr>
-                                <td><b>Paid To</b></td>
-                                <td>${paidTo}</td>
-                            </tr>
-                
-                            <tr>
-                                <td><b>Payment Type</b></td>
-                                <td>${paymentType}</td>
-                            </tr>
-                
-                            <tr>
-                                <td><b>Payment Method</b></td>
-                                <td>${transaction.payment_method}</td>
-                            </tr>
-                
-                            <tr>
-                                <td><b>Account Details</b></td>
-                                <td>${accountDetails}</td>
-                            </tr>
-                
-                        </table>
-            
-                        <hr/>
-            
-                        <p style="text-align:center; margin-top:30px;">
-                            Thank you for your payment
-                        </p>
-            
-                    </body>
-                </html>
-            `;
+    //                     <h2 style="text-align:center;">Transaction Receipt</h2>
 
-            const { uri } = await Print.printToFileAsync({ html });
+    //                     <h1 style="text-align:center;">₹${transaction.amount}</h1>
 
-            if (await Sharing.isAvailableAsync()) {
-                await Sharing.shareAsync(uri, {
-                    mimeType: "application/pdf",
-                    dialogTitle: "Share Receipt",
-                    UTI: "com.adobe.pdf",
-                });
-            } else {
-                Alert.alert("Success", "Receipt downloaded successfully.");
-            }
+    //                     <p style="text-align:center; color:green; font-weight:bold;">
+    //                         ${statusText[transaction.status]}
+    //                     </p>
 
-        } catch (error) {
-            console.log("Download error:", error);
-            Alert.alert("Error", "Failed to generate receipt.");
-        }
-    };
+    //                     <p style="text-align:center;">${transaction.date}</p>
+
+    //                     <hr/>
+
+    //                     <table style="width:100%; font-size:14px; border-collapse: collapse;">
+    //                         <tr>
+    //                             <td><b>Transaction ID</b></td>
+    //                             <td>${transaction.transaction_id}</td>
+    //                         </tr>
+
+    //                         <tr>
+    //                             <td><b>Order ID</b></td>
+    //                             <td>${transaction.order_id}</td>
+    //                         </tr>
+
+    //                         <tr>
+    //                             <td><b>Paid To</b></td>
+    //                             <td>${paidTo}</td>
+    //                         </tr>
+
+    //                         <tr>
+    //                             <td><b>Payment Type</b></td>
+    //                             <td>${paymentType}</td>
+    //                         </tr>
+
+    //                         <tr>
+    //                             <td><b>Payment Method</b></td>
+    //                             <td>${transaction.payment_method}</td>
+    //                         </tr>
+
+    //                         <tr>
+    //                             <td><b>Account Details</b></td>
+    //                             <td>${accountDetails}</td>
+    //                         </tr>
+
+    //                     </table>
+
+    //                     <hr/>
+
+    //                     <p style="text-align:center; margin-top:30px;">
+    //                         Thank you for your payment
+    //                     </p>
+
+    //                 </body>
+    //             </html>
+    //         `;
+
+    //         const { uri } = await Print.printToFileAsync({ html });
+
+    //         if (await Sharing.isAvailableAsync()) {
+    //             await Sharing.shareAsync(uri, {
+    //                 mimeType: "application/pdf",
+    //                 dialogTitle: "Share Receipt",
+    //                 UTI: "com.adobe.pdf",
+    //             });
+    //         } else {
+    //             Alert.alert("Success", "Receipt downloaded successfully.");
+    //         }
+
+    //     } catch (error) {
+    //         console.log("Download error:", error);
+    //         Alert.alert("Error", "Failed to generate receipt.");
+    //     }
+    // };
 
     return (
         <SafeAreaView className="flex-1 p-5 bg-white" edges={['right', 'bottom', 'left']}>
@@ -278,7 +277,7 @@ const TransactionDetails = () => {
                     <Text className="text-base font-medium text-black">Attachments</Text>
                     <TouchableOpacity
                         className="border border-black-300 rounded-xl p-4 mt-5 flex-row items-center justify-between gap-x-2.5"
-                        onPress={downloadReceipt}
+                        onPress={() => router.push(transaction.receipt_url as any)}
                     >
 
                         <View className="flex-row items-center justify-between gap-x-2.5">
