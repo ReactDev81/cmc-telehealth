@@ -31,30 +31,30 @@ const Home = () => {
         }
     }, [isFocused, token]);
 
-    if (isLoading){
+    if (isLoading) {
         return (
             <SafeAreaView className="flex-1 items-center justify-center">
                 <ActivityIndicator size="large" color="primary" />
             </SafeAreaView>
         );
     }
-        
-    if (isError){
+
+    if (isError) {
         return (
             <SafeAreaView className="flex-1 items-center justify-center">
                 <Text className="text-black">Error loading dashboard</Text>
             </SafeAreaView>
         );
     }
-        
-    if (!data){
+
+    if (!data) {
         return (
             <SafeAreaView className="flex-1 items-center justify-center">
                 <Text className="text-black">No data available</Text>
             </SafeAreaView>
         );
     }
-        
+
     const summary = data.summary;
     const todays = data.todays_appointments;
     const upcoming = data.upcoming_appointments;
@@ -88,24 +88,30 @@ const Home = () => {
             <ScrollView showsVerticalScrollIndicator={false} className="flex-1 p-5">
 
                 {/* appointment status */}
-                <View className="flex-row items-center gap-x-3">
-                    {appointmentStatusData.map((AppointmentStatus) => {
-                        const getTabKey = () => {
-                            if (AppointmentStatus.status === "today") return "today";
-                            if (AppointmentStatus.status === "upcoming") return "upcoming";
-                            if (AppointmentStatus.status === "cancelled") return "upcoming";
-                            return "today";
-                        };
-                        return (
-                            <AppointmentStatusBox
-                                key={AppointmentStatus.id}
-                                status={AppointmentStatus.status}
-                                status_count={AppointmentStatus.status_count}
-                                onPress={() => router.push(`/appointments?tab=${getTabKey()}`)}
-                            />
-                        );
-                    })}
+                <View>
+                    <TitleWithLink
+                        title_text="Appointments Status"
+                    />
+                    <View className="flex-row items-center gap-x-3">
+                        {appointmentStatusData.map((AppointmentStatus) => {
+                            const getTabKey = () => {
+                                if (AppointmentStatus.status === "today") return "today";
+                                if (AppointmentStatus.status === "upcoming") return "upcoming";
+                                if (AppointmentStatus.status === "cancelled") return "upcoming";
+                                return "today";
+                            };
+                            return (
+                                <AppointmentStatusBox
+                                    key={AppointmentStatus.id}
+                                    status={AppointmentStatus.status}
+                                    status_count={AppointmentStatus.status_count}
+                                    onPress={() => router.push(`/appointments?tab=${getTabKey()}`)}
+                                />
+                            );
+                        })}
+                    </View>
                 </View>
+
 
                 {/* today's appointment */}
                 <View className="mt-8">
@@ -122,9 +128,9 @@ const Home = () => {
                         />
                     ) : (
                         todays.slice(0, 2).map((item, index) => (
-                            <View key={item.id} 
+                            <View key={item.id}
                                 className="mt-5"
-                                style={{marginTop : index === 0 ? 5 : 20}}
+                                style={{ marginTop: index === 0 ? 5 : 20 }}
                             >
                                 <TodayAppointmentCard
                                     appointmentId={item.id}
@@ -155,8 +161,8 @@ const Home = () => {
                         />
                     ) : (
                         upcoming.slice(0, 2).map((item, index) => (
-                            <View key={item.id} 
-                                style={{marginTop : index === 0 ? 5 : 20}}
+                            <View key={item.id}
+                                style={{ marginTop: index === 0 ? 5 : 20 }}
                             >
                                 <UpcomingAppointmentCard
                                     image={item.patient_image}
@@ -189,48 +195,48 @@ const Home = () => {
                                 icon={<Star size={44} color="#94A3B8" />}
                                 className="mt-5 rounded-2xl border border-gray-100"
                             />
-                            ) : isLoading ? (
-                                <View className="py-4 px-2">
-                                    <ActivityIndicator />
-                                </View>
-                            ) : (
-                                <>
-                                    <ScrollView
-                                        horizontal
-                                        showsHorizontalScrollIndicator={false}
-                                        className="mt-3 w-full"
-                                        contentContainerStyle={{ paddingRight: 10 }}
-                                    >
-                                        {reviews.map((review: any, index: number) => (
-                                            <View
-                                                key={review.id}
-                                                style={{ marginRight: index === reviews.length - 1 ? 0 : 15 }}
-                                                className="flex-row"
-                                            >
-                                                <Testimonial
-                                                    patient_id={review.id}
-                                                    patient_name={review.patient_name}
-                                                    patient_image={review.patient_image}
-                                                    patient_age={String(review.patient_age ?? "")}
-                                                    patient_location={review.patient_location ?? ""}
-                                                    days_ago={review.created_at}
-                                                    title={review.title}
-                                                    content={review.content}
-                                                    rating={review.rating}
-                                                    total_reviews={String(review.total_reviews)}
-                                                    doctor_name={review.doctor_name}
-                                                    className="min-w-80"
-                                                />
-                                            </View>
-                                        ))}
-                                    </ScrollView>
-                                    <Button className="mt-5" onPress={() => router.push("/feedbacks")}>
-                                        View All Feedbacks
-                                    </Button>
-                                </>
-                            )
+                        ) : isLoading ? (
+                            <View className="py-4 px-2">
+                                <ActivityIndicator />
+                            </View>
+                        ) : (
+                            <>
+                                <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    className="mt-3 w-full"
+                                    contentContainerStyle={{ paddingRight: 10 }}
+                                >
+                                    {reviews.map((review: any, index: number) => (
+                                        <View
+                                            key={review.id}
+                                            style={{ marginRight: index === reviews.length - 1 ? 0 : 15 }}
+                                            className="flex-row"
+                                        >
+                                            <Testimonial
+                                                patient_id={review.id}
+                                                patient_name={review.patient_name}
+                                                patient_image={review.patient_image}
+                                                patient_age={String(review.patient_age ?? "")}
+                                                patient_location={review.patient_location ?? ""}
+                                                days_ago={review.created_at}
+                                                title={review.title}
+                                                content={review.content}
+                                                rating={review.rating}
+                                                total_reviews={String(review.total_reviews)}
+                                                doctor_name={review.doctor_name}
+                                                className="min-w-80"
+                                            />
+                                        </View>
+                                    ))}
+                                </ScrollView>
+                                <Button className="mt-5" onPress={() => router.push("/feedbacks")}>
+                                    View All Feedbacks
+                                </Button>
+                            </>
+                        )
                         }
-                    </View> 
+                    </View>
                 </View>
 
             </ScrollView>

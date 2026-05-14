@@ -2,41 +2,42 @@ import { AppointmentStatusBoxProps } from "@/types/doctor/home";
 import { Text, TouchableOpacity } from "react-native";
 
 const AppointmentStatusBox = ({
-  status,
-  status_count,
-  onPress,
+    status,
+    status_count,
+    onPress,
 }: AppointmentStatusBoxProps) => {
-  const getBackgroundColor = () => {
-    if (status === "today" || status === "completed") return "bg-success-400";
-    if (status === "cancelled") return "bg-danger-400";
-    return "bg-info-400";
-  };
 
-  const getTextColor = () => {
-    if (status === "today" || status === "completed") return "text-success";
-    if (status === "cancelled") return "text-danger";
-    return "text-info";
-  };
+    const getBackgroundColor = () => {
+        if (status === "today" || status === "completed") return "bg-success-400";
+        if (status === "cancelled") return "bg-danger-400";
+        return "bg-info-400";
+    };
 
-  const getLabel = () => {
-    if (status === "today") return "Today's Appointments";
-    return `${status.charAt(0).toUpperCase() + status.slice(1)} Appointments`;
-  };
+    const getTextColor = () => {
+        if (status === "today" || status === "completed") return "text-success";
+        if (status === "cancelled") return "text-danger";
+        return "text-info";
+    };
 
-  return (
-    <TouchableOpacity
-      className={`px-3 py-4 rounded-xl flex-1 items-center ${getBackgroundColor()}`}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
-      <Text className={`text-lg font-medium ${getTextColor()}`}>
-        {status_count}
-      </Text>
-      <Text className="text-xs text-black-400 text-center mt-1">
-        {getLabel()}
-      </Text>
-    </TouchableOpacity>
-  );
+    const getLabel = () => {
+        if (status === "today") return "Today's";
+        return `${status.charAt(0).toUpperCase() + status.slice(1)}`;
+    };
+
+    return (
+        <TouchableOpacity
+            className={`px-3 py-4 rounded-xl flex-1 items-center ${getBackgroundColor()}`}
+            onPress={onPress}
+            activeOpacity={0.7}
+        >
+            <Text className={`text-lg font-medium ${getTextColor()}`}>
+                {status_count}
+            </Text>
+            <Text className="text-xs text-black-400 text-center mt-1">
+                {getLabel()}
+            </Text>
+        </TouchableOpacity>
+    );
 };
 
 export default AppointmentStatusBox;

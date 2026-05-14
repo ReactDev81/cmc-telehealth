@@ -1,5 +1,5 @@
 import DateField from "@/components/form/date";
-import TextArea from "@/components/form/TextArea";
+import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useUpdateDoctorProfile } from "@/queries/doctor/useUpdateDoctorProfile";
@@ -12,16 +12,20 @@ import { Alert, Pressable, Text, View } from "react-native";
 import { z } from "zod";
 
 const WorkingExperienceSchema = z.object({
-    career_start: z.date({ required_error: "Start Date is required" }),
-    past_associations: z.string().min(2, "Past Associations are required"),
+    start_date: z.date({ required_error: "Start Date is required" }),
+    end_date: z.date({ required_error: "End Date is required" }),
+    association: z.string().min(2, "Association is required"),
 });
 
 type WorkingExperienceFormData = z.infer<typeof WorkingExperienceSchema>;
 
-const AddNewWorkingExperience = ({ existingExperiences = [], onClose }: {
+const AddNewWorkingExperience = ({ existingExperiences = [], editingIndex, editingExperience, onClose }: {
     existingExperiences?: WorkingExperience[];
+    editingIndex?: number;
+    editingExperience?: WorkingExperience;
     onClose: () => void;
 }) => {
+
     const { user } = useAuth();
     const doctorID = user?.id || "";
     const { mutate: updateProfile, isPending } = useUpdateDoctorProfile(
@@ -32,21 +36,32 @@ const AddNewWorkingExperience = ({ existingExperiences = [], onClose }: {
     const { control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<WorkingExperienceFormData>({
         resolver: zodResolver(WorkingExperienceSchema),
         defaultValues: {
-            past_associations: "",
+            start_date: editingExperience?.start_date ? new Date(parseInt(editingExperience.start_date), 0, 1) : undefined,
+            end_date: editingExperience?.end_date ? new Date(parseInt(editingExperience.end_date), 0, 1) : undefined,
+            association: editingExperience?.association || "",
         },
     });
 
-    const career_start = watch("career_start");
+    const start_date = watch("start_date");
+    const end_date = watch("end_date");
 
     const onSubmit = (data: WorkingExperienceFormData) => {
 
         const newWorkingExperience = {
             ...data,
-            career_start: format(data.career_start, "yyyy"),
+            start_date: format(data.start_date, "yyyy"),
+            end_date: format(data.end_date, "yyyy"),
         };
 
+        let updatedExperiences = [...existingExperiences];
+        if (editingIndex !== undefined && editingIndex >= 0) {
+            updatedExperiences[editingIndex] = newWorkingExperience;
+        } else {
+            updatedExperiences.push(newWorkingExperience);
+        }
+
         const payload = {
-            professional_experience_info: [...existingExperiences, newWorkingExperience],
+            professional_experience_info: updatedExperiences,
         };
 
         updateProfile(payload, {
@@ -66,13 +81,15 @@ const AddNewWorkingExperience = ({ existingExperiences = [], onClose }: {
         });
     };
 
+    const isEditing = editingIndex !== undefined;
+
     return (
         <View className="p-5 bg-white rounded-xl">
 
             {/* headet */}
             <View className="flex-row items-center justify-between">
                 <Text className="text-black text-lg font-semibold">
-                    Add New Experience
+                    {isEditing ? "Edit Experience" : "Add New Experience"}
                 </Text>
                 <Pressable onPress={onClose}>
                     <X size={18} color="#1F1E1E" strokeWidth={2.5} />
@@ -83,20 +100,32 @@ const AddNewWorkingExperience = ({ existingExperiences = [], onClose }: {
             <View className="mt-5">
 
                 <DateField
-                    label="Career Start Year"
-                    value={career_start}
+                    label="Start Date"
+                    value={start_date}
                     onChange={(date) =>
-                        setValue("career_start", date as Date, { shouldValidate: true })
+                        setValue("start_date", date as Date, { shouldValidate: true })
                     }
-                    placeholder="DD/MM/YYYY"
+                    placeholder="YYYY"
                     maximumDate={new Date()}
-                    error={errors.career_start?.message}
+                    error={errors.start_date?.message}
                     className="mt-5"
                 />
 
-                <TextArea
-                    name="past_associations"
-                    label="Past Associations"
+                <DateField
+                    label="End Date"
+                    value={end_date}
+                    onChange={(date) =>
+                        setValue("end_date", date as Date, { shouldValidate: true })
+                    }
+                    placeholder="YYYY"
+                    maximumDate={new Date()}
+                    error={errors.end_date?.message}
+                    className="mt-5"
+                />
+
+                <Input
+                    name="association"
+                    label="Association Name"
                     placeholder="e.g. CMC, Metro Hospital"
                     control={control}
                     containerClassName="mt-5"
@@ -107,7 +136,7 @@ const AddNewWorkingExperience = ({ existingExperiences = [], onClose }: {
                     className="mt-5"
                     disabled={isPending}
                 >
-                    {isPending ? "Adding..." : "Add Experience"}
+                    {isPending ? (isEditing ? "Saving..." : "Adding...") : (isEditing ? "Save Changes" : "Add Experience")}
                 </Button>
 
             </View>

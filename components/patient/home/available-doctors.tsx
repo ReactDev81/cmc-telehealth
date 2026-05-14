@@ -19,22 +19,22 @@ const AvailableDoctors = ({
     const default_avatar = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
 
     const doctor_speciality = Array.isArray(speciality)
-    ? speciality
-        .map((item) =>
-        typeof item === "string" ? item : item?.name
-        )
-        .filter(Boolean)
-        .join(", ")
-    : "";
+        ? speciality
+            .map((item) =>
+                typeof item === "string" ? item : item?.name
+            )
+            .filter(Boolean)
+            .join(", ")
+        : "";
 
     const imageSource =
         typeof avatar === "string"
-        ? { uri: avatar }
-        : (avatar ?? { uri: default_avatar });
+            ? { uri: avatar }
+            : (avatar ?? { uri: default_avatar });
 
     return (
         <View className="border border-black-300 rounded-xl p-4 mt-4">
-        
+
             <Link
                 href={{
                     pathname: `/patient/doctor/${id}` as any,
@@ -60,10 +60,9 @@ const AvailableDoctors = ({
                                 </View>
                             )
                         }
-                        
                     </View>
-                </View> 
-            </Link> 
+                </View>
+            </Link>
 
             <View className="p-4 bg-primary-100 rounded-lg mt-3">
                 <View className="flex-row items-center justify-between gap-x-5">
@@ -85,17 +84,18 @@ const AvailableDoctors = ({
                                     <>
                                         <Video color="#1ABE17" fill="#1ABE17" size={14} />
                                         <Text className="text-success text-sm">Video</Text>
-                                        <Hospital color="#1ABE17" size={14} />
-                                        <Text className="text-success text-sm">In person</Text>
+                                        <View className="w-[1px] h-full bg-primary-200"></View>
+                                        <Hospital color="#055bd9" size={14} />
+                                        <Text className="text-[#055bd9] text-sm">In Person</Text>
                                     </>
 
                                 )
-                                : (
-                                    <>
-                                        <Hospital color="#1ABE17" size={14} />
-                                        <Text className="text-success text-sm">{consultation_type}</Text>
-                                    </>
-                                )}
+                                    : (
+                                        <>
+                                            <Hospital color="#055bd9" size={14} />
+                                            <Text className="text-[#055bd9] text-sm">In Person</Text>
+                                        </>
+                                    )}
 
                         </View>
                     </View>

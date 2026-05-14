@@ -1,10 +1,9 @@
-import { useAuth } from "@/context/UserContext";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk/embed";
 import { Camera } from "expo-camera";
 import { router, useLocalSearchParams } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
-import { ClosedCaption, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff } from "lucide-react-native";
+import { ClosedCaption, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff, X } from "lucide-react-native";
 import * as React from "react";
 import { Alert, Platform, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -31,7 +30,6 @@ const CONTROLS: ControlConfig[] = [
 ];
 
 const StartConsulationWithDoctor = () => {
-    const { user } = useAuth();
 
     const { patient_call_link, appointment_id, doctor_name, doctor_id } = useLocalSearchParams<{
         patient_call_link?: string;
@@ -43,24 +41,7 @@ const StartConsulationWithDoctor = () => {
     const { height } = useWindowDimensions();
     const calcHeight = height - 180;
 
-    const ROOM_URL = React.useMemo(() => {
-        const baseUrl = patient_call_link?.trim();
-        if (!baseUrl) return "";
-
-        const participantName = user ? `${user.first_name} ${user.last_name}` : "Patient";
-
-        try {
-            const url = new URL(baseUrl);
-            url.searchParams.set("bottomToolbar", "off");
-            url.searchParams.set("topToolbar", "off");
-            url.searchParams.set("displayName", participantName);
-            url.searchParams.set("precall", "off");
-            return url.toString();
-        } catch (error) {
-            const separator = baseUrl.includes("?") ? "&" : "?";
-            return `${baseUrl}${separator}bottomToolbar=off&topToolbar=off&displayName=${encodeURIComponent(participantName)}&precall=off`;
-        }
-    }, [patient_call_link, user]);
+    const ROOM_URL = patient_call_link + "&bottomToolbar=off&topToolbar=off";
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);
 
@@ -332,9 +313,16 @@ const StartConsulationWithDoctor = () => {
                         enablePanDownToClose={true}
                         onChange={handlePrescriptionSheetChange}
                         backgroundStyle={{ backgroundColor: "#fff" }}
-                        handleIndicatorStyle={{ width: 0 }}
+                        handleIndicatorStyle={{ width: 0, height: 0 }}
                     >
                         <BottomSheetView style={{ flex: 1 }}>
+                            {/* Header */}
+                            <View className='flex-row items-center justify-between p-5 pt-0 bg-white border-b border-gray-200'>
+                                <Text className='text-lg font-medium text-black'>Prescription</Text>
+                                <TouchableOpacity onPress={() => setIsPrescriptionOpen(false)}>
+                                    <X color="#1F1E1E" size={18} strokeWidth={2.5} />
+                                </TouchableOpacity>
+                            </View>
                             <DcotorPrescriptions AppointmentID={appointment_id} />
                         </BottomSheetView>
                     </BottomSheet>

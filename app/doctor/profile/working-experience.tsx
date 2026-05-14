@@ -4,18 +4,63 @@ import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import { useAuth } from "@/context/UserContext";
 import { useDoctorProfile } from "@/queries/doctor/useDoctorProfile";
-import { WorkingExperienceGroup } from "@/types/live/doctor/profile";
-import { BriefcaseBusiness } from "lucide-react-native";
+import { useUpdateDoctorProfile } from "@/queries/doctor/useUpdateDoctorProfile";
+import { WorkingExperience, WorkingExperienceGroup } from "@/types/live/doctor/profile";
+import { BriefcaseBusiness, Pencil, Trash2 } from "lucide-react-native";
 import { useState } from "react";
-import { ActivityIndicator, Modal, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
-const WorkingExperience = () => {
+const WorkingExperienceScreen = () => {
 
     const { user } = useAuth();
     const doctorID = user?.id || "";
     const { data: profileResponse, isLoading, error } = useDoctorProfile<WorkingExperienceGroup>(doctorID, "working_experience");
     const workingExperience = profileResponse?.data?.professional_experience_info || [];
     const [modalVisible, setModalVisible] = useState(false);
+    const [editingIndex, setEditingIndex] = useState<number | undefined>(undefined);
+    const [editingExperience, setEditingExperience] = useState<WorkingExperience | undefined>(undefined);
+
+    const { mutate: updateProfile } = useUpdateDoctorProfile(doctorID, "working_experience");
+
+    const handleAddNew = () => {
+        setEditingIndex(undefined);
+        setEditingExperience(undefined);
+        setModalVisible(true);
+    };
+
+    const handleEdit = (index: number, experience: WorkingExperience) => {
+        setEditingIndex(index);
+        setEditingExperience(experience);
+        setModalVisible(true);
+    };
+
+    const handleDelete = (index: number) => {
+        Alert.alert(
+            "Delete Experience",
+            "Are you sure you want to delete this working experience?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => {
+                        const updatedExperiences = workingExperience.filter((_, i) => i !== index);
+                        updateProfile({ professional_experience_info: updatedExperiences }, {
+                            onSuccess: () => {
+                                Alert.alert("Success", "Working experience deleted successfully!");
+                            },
+                            onError: (error: any) => {
+                                Alert.alert(
+                                    "Error",
+                                    error?.response?.data?.errors?.message || "Something went wrong while deleting experience"
+                                );
+                            }
+                        });
+                    }
+                }
+            ]
+        );
+    };
 
     return (
         <View className="flex-1 bg-white">
@@ -32,6 +77,8 @@ const WorkingExperience = () => {
                         <View className="w-11/12 bg-white rounded-2xl">
                             <AddNewWorkingExperience
                                 existingExperiences={workingExperience}
+                                editingIndex={editingIndex}
+                                editingExperience={editingExperience}
                                 onClose={() => setModalVisible(false)}
                             />
                         </View>
@@ -44,7 +91,7 @@ const WorkingExperience = () => {
 
                 <Button
                     className="max-w-52 ml-auto"
-                    onPress={() => setModalVisible(true)}
+                    onPress={handleAddNew}
                 >
                     Add New Experience
                 </Button>
@@ -53,7 +100,7 @@ const WorkingExperience = () => {
                     <View className="mt-10">
                         <ActivityIndicator size="large" color="#013220" />
                     </View>
-                ) : workingExperience.length > 0 ? ( workingExperience.map((experience, index) => {
+                ) : workingExperience.length > 0 ? (workingExperience.map((experience, index) => {
                     return (
                         <View
                             key={index}
@@ -65,17 +112,20 @@ const WorkingExperience = () => {
 
                             <View className="flex-1">
                                 <Text className="text-base text-black font-semibold">
-                                    Association {index + 1}
+                                    {experience.association}
                                 </Text>
-                                <Text className="text-black-400 text-sm mt-0.5">
-                                    {experience.past_associations}
+                                <Text className="text-primary text-sm font-medium mt-0.5">
+                                    {experience.start_date + " - " + experience.end_date}
                                 </Text>
                             </View>
 
-                            <View>
-                                <Text className="text-primary text-sm font-medium">
-                                    {experience.career_start}
-                                </Text>
+                            <View className="flex-row items-center gap-x-1">
+                                <TouchableOpacity onPress={() => handleEdit(index, experience)} className="p-2">
+                                    <Pencil size={16} color="#013220" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleDelete(index)} className="p-2">
+                                    <Trash2 size={16} color="#ef4444" />
+                                </TouchableOpacity>
                             </View>
                         </View>
                     );
@@ -85,7 +135,7 @@ const WorkingExperience = () => {
                         title="No Work Experience"
                         message={((error as any)?.response?.data?.errors?.message ??
                             (error as any)?.message ??
-                        "You haven't added any work experience yet. Add your experience.")}
+                            "You haven't added any work experience yet. Add your experience.")}
                         icon={<BriefcaseBusiness size={48} color="#94A3B8" />}
                         className="mt-10"
                     />
@@ -95,4 +145,4 @@ const WorkingExperience = () => {
     );
 };
 
-export default WorkingExperience;
+export default WorkingExperienceScreen;

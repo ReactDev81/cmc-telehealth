@@ -34,6 +34,7 @@ const DoctorDetail = () => {
         can_reschedule?: string;
         appointment_status?: string;
     }>();
+
     const { data: doctorData, isLoading } = useBrowseDoctorById(id);
     const doctorId = doctorData?.data?.id;
     const { data: reviewsData, isLoading: isReviewsLoading } = useDoctorReviews(
@@ -168,15 +169,14 @@ const DoctorDetail = () => {
     return (
         <ScrollView className="flex-1 bg-white">
 
-            <View className="items-center">
+            <View className="items-center h-[400px]">
                 <Image
                     source={
                         doctor?.profile?.avatar
                             ? { uri: doctor.profile.avatar }
                             : require("../../../assets/images/doctor.jpg")
                     }
-                    className="w-full h-60"
-                    resizeMode="cover"
+                    className="w-full h-full object-cover"
                 />
             </View>
 
@@ -377,15 +377,15 @@ const DoctorDetail = () => {
                                         : 0.7
                                 }
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${appointmentType === "video"
-                                        ? "border-primary bg-primary"
-                                        : "border-gray"
+                                    ? "border-primary bg-primary"
+                                    : "border-gray"
                                     } ${booking_type === "reschedule" && appointmentType !== null && appointmentType !== "video" ? "opacity-50" : ""}`}
                             >
                                 <Video color={appointmentType === "video" ? "#fff" : "#4D4D4D"} />
                                 <Text
                                     className={`text-sm font-medium text-center mt-2 ${appointmentType === "video"
-                                            ? "text-white"
-                                            : "text-black-400"
+                                        ? "text-white"
+                                        : "text-black-400"
                                         }`}
                                 >
                                     Online Video Appointment
@@ -402,15 +402,15 @@ const DoctorDetail = () => {
                                     booking_type === "reschedule" && appointmentType !== null ? 1 : 0.7
                                 }
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${appointmentType === "in_person"
-                                        ? "border-primary bg-primary"
-                                        : "border-gray"
+                                    ? "border-primary bg-primary"
+                                    : "border-gray"
                                     } ${booking_type === "reschedule" && appointmentType !== null && appointmentType !== "in_person" ? "opacity-50" : ""}`}
                             >
                                 <Hospital color={appointmentType === "in_person" ? "#fff" : "#4D4D4D"} />
                                 <Text
                                     className={`text-sm font-medium text-center mt-2 ${appointmentType === "in_person"
-                                            ? "text-white"
-                                            : "text-black-400"
+                                        ? "text-white"
+                                        : "text-black-400"
                                         }`}
                                 >
                                     Book In-Clinic Appointment
@@ -448,8 +448,8 @@ const DoctorDetail = () => {
                                         : 0.7
                                 }
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "general"
-                                        ? "border-primary bg-primary"
-                                        : "border-gray"
+                                    ? "border-primary bg-primary"
+                                    : "border-gray"
                                     } ${booking_type === "reschedule" && opdType !== null && opdType !== "general" ? "opacity-50" : ""}`}
                             >
                                 <Text
@@ -472,8 +472,8 @@ const DoctorDetail = () => {
                                         opdType !== "private" ? 1 : 0.7
                                 }
                                 className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "private"
-                                        ? "border-primary bg-primary"
-                                        : "border-gray"
+                                    ? "border-primary bg-primary"
+                                    : "border-gray"
                                     } ${booking_type === "reschedule" && opdType !== null && opdType !== "private" ? "opacity-50" : ""}`}
                             >
                                 <Text

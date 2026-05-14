@@ -20,10 +20,12 @@ type SocialMediaFormData = z.infer<typeof SocialMediaSchema>;
 
 const EditSocialMedia = ({
     existingLinks = {},
-    onClose
+    onClose,
+    onSuccess
 }: {
     existingLinks?: SocialLinks,
-    onClose: () => void
+    onClose: () => void,
+    onSuccess?: () => void
 }) => {
 
     const { user } = useAuth();
@@ -53,6 +55,7 @@ const EditSocialMedia = ({
                 Alert.alert("Success", "Social media links updated successfully!");
                 reset();
                 onClose();
+                if (onSuccess) onSuccess();
             },
             onError: (error: any) => {
                 console.log(error);

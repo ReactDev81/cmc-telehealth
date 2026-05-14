@@ -16,8 +16,8 @@ const UpcomingAppointmentCard = ({
     appointmentId
 }: appointmentProps) => {
     return (
-        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
-        
+        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4 mb-5">
+
             <Avatar
                 source={image || undefined}
                 name={name}
@@ -27,13 +27,13 @@ const UpcomingAppointmentCard = ({
             />
 
             <View className="flex-1">
-                
+
                 <Badge
                     text={status ?? ""}
                     variant={status === "Cancelled" ? "danger" : status === "confirmed" ? "success" : "info"}
                     className="absolute right-0"
                 />
-                
+
                 <Text className="text-sm font-medium text-black mt-3">{name}</Text>
 
                 <View className="flex-row items-center gap-x-3 mt-1">
@@ -52,7 +52,7 @@ const UpcomingAppointmentCard = ({
                         {mode?.toLowerCase() === "video" ? (
                             <Video size={14} fill="#013220" />
                         ) : (
-                            <Hospital size={14} color="#013220"  />
+                            <Hospital size={14} color="#013220" />
                         )}
                     </View>
                     <Text className="text-sm text-black-400">
@@ -73,9 +73,9 @@ const UpcomingAppointmentCard = ({
                 >
                     View Details
                 </Button>
-                
+
             </View>
-        
+
         </View>
     );
 };

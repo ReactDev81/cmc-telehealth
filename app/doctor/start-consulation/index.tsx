@@ -269,6 +269,8 @@ const StartConsulationWithDoctor = () => {
         return <View />;
     }
 
+    console.log('doctor_call_link', doctor_call_link)
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View

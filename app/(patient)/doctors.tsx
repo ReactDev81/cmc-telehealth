@@ -3,9 +3,9 @@ import AvailableDoctors from "@/components/patient/home/available-doctors";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
 import { useBrowseDoctors } from "@/queries/patient/useBrowseDoctors";
-import { useIsFocused } from "@react-navigation/native";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, ScrollView, Text, View } from "react-native";
 import SearchBar from "../../components/form/search";
 import { AvailableDoctorsProps } from "../../types/patient/home";
@@ -25,6 +25,7 @@ const Doctors = () => {
     const [searchText, setSearchText] = useState("");
     const [selectedType, setSelectedType] = useState<ConsultationType>("both");
     const isFocused = useIsFocused();
+    const navigation = useNavigation();
     const handleSelect = (type: ConsultationType) => {
         setSelectedType(type);
         router.setParams({ consultation_type: type });
@@ -152,6 +153,18 @@ const Doctors = () => {
             refetch();
         }
     }, [isFocused, refetch]);
+
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                setFilters({});
+                setSearchText("");
+                setSelectedType("both");
+                // @ts-ignore
+                navigation.setParams({ consultation_type: undefined, filter_type: undefined, id: undefined });
+            };
+        }, [navigation])
+    );
 
     return (
         <View className="flex-1 bg-white p-5 relative">

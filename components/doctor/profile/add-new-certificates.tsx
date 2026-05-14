@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { Alert, Pressable, Text, View } from "react-native";
 import { z } from "zod";
 
-const CertificatesSchema = z.object({
+const getCertificatesSchema = (isEditing: boolean) => z.object({
   name: z
     .string()
     .min(2, "Certificate Name must be at least 2 characters long"),
@@ -19,20 +19,27 @@ const CertificatesSchema = z.object({
     .min(2, "Organization Name must be at least 2 characters long"),
   certification_image: z
     .any()
-    .refine((file) => !!file, "Certificate image is required"),
+    .refine((file) => {
+        if (isEditing) return true;
+        return !!file;
+    }, "Certificate image is required"),
 });
-
-type CertificatesFormData = z.infer<typeof CertificatesSchema>;
 
 const AddNewCertificates = ({
   existingCertificates = [],
   onClose,
   onSuccess,
+  editIndex,
+  editData,
 }: {
   existingCertificates?: CertificationInfo[];
   onClose: () => void;
   onSuccess?: () => void;
+  editIndex?: number;
+  editData?: CertificationInfo;
 }) => {
+  const isEditing = editIndex !== undefined;
+  type CertificatesFormData = z.infer<ReturnType<typeof getCertificatesSchema>>;
   const { user } = useAuth();
   const doctorID = user?.id || "";
 
@@ -47,56 +54,51 @@ const AddNewCertificates = ({
     reset,
     formState: { errors },
   } = useForm<CertificatesFormData>({
-    resolver: zodResolver(CertificatesSchema),
+    resolver: zodResolver(getCertificatesSchema(isEditing)),
     defaultValues: {
-      name: "",
-      organization: "",
+      name: editData?.name || "",
+      organization: editData?.organization || "",
       certification_image: null,
     },
   });
 
   const onSubmit = (data: CertificatesFormData) => {
     const fd = new FormData();
+    fd.append("group", "certifications_info");
 
-    // Append existing certificates
-    existingCertificates.forEach((cert, index) => {
-      fd.append(`certifications_info[${index}][name]`, cert.name);
-      fd.append(
-        `certifications_info[${index}][organization]`,
-        cert.organization,
-      );
-      fd.append(
-        `certifications_info[${index}][certification_image]`,
-        cert.certification_image,
-      );
-    });
+    const appendFile = (index: number, fileData: any) => {
+        const uri = fileData.uri;
+        const fileName = fileData.name || uri.split("/").pop() || "certificate.jpg";
+        const match = /\.([0-9a-z]+)(?:\?|$)/i.exec(fileName);
+        const fileType = match ? `image/${match[1]}` : "image/jpeg";
+        // @ts-ignore
+        fd.append(`certifications_info[${index}][certification_image]`, { uri, name: fileName, type: fileType });
+    };
 
-    // Append new certificate
-    const nextIndex = existingCertificates.length;
-    fd.append(`certifications_info[${nextIndex}][name]`, data.name);
-    fd.append(
-      `certifications_info[${nextIndex}][organization]`,
-      data.organization,
-    );
+    let finalCertificates = [...existingCertificates];
 
-    if (data.certification_image) {
-      const uri = data.certification_image.uri;
-      const fileName =
-        data.certification_image.name ||
-        uri.split("/").pop() ||
-        "certificate.jpg";
-      const match = /\.([0-9a-z]+)(?:\?|$)/i.exec(fileName);
-      const fileType = match ? `image/${match[1]}` : "image/jpeg";
-
-      // @ts-ignore
-      fd.append(`certifications_info[${nextIndex}][certification_image]`, {
-        uri,
-        name: fileName,
-        type: fileType,
-      });
+    if (isEditing && editIndex !== undefined) {
+        finalCertificates[editIndex] = { 
+            ...finalCertificates[editIndex], 
+            name: data.name, 
+            organization: data.organization 
+        };
+    } else {
+        finalCertificates.push({ name: data.name, organization: data.organization, certification_image: "" });
     }
 
-    fd.append("group", "certifications_info");
+    finalCertificates.forEach((cert, index) => {
+        fd.append(`certifications_info[${index}][name]`, cert.name);
+        fd.append(`certifications_info[${index}][organization]`, cert.organization);
+        
+        if (isEditing && editIndex === index && data.certification_image?.uri) {
+            appendFile(index, data.certification_image);
+        } else if (!isEditing && index === finalCertificates.length - 1 && data.certification_image?.uri) {
+            appendFile(index, data.certification_image);
+        } else if (cert.certification_image) {
+            fd.append(`certifications_info[${index}][certification_image]`, cert.certification_image);
+        }
+    });
 
     updateProfile(fd, {
       onSuccess: () => {
@@ -124,7 +126,7 @@ const AddNewCertificates = ({
       {/* header */}
       <View className="flex-row items-center justify-between">
         <Text className="text-black text-lg font-semibold">
-          Add New Certificates
+          {isEditing ? "Edit Certificate" : "Add New Certificate"}
         </Text>
         <Pressable onPress={onClose}>
           <X size={18} color="#1F1E1E" strokeWidth={2.5} />
@@ -161,7 +163,7 @@ const AddNewCertificates = ({
           className="mt-5"
           disabled={isPending}
         >
-          {isPending ? "Adding..." : "Add Certificate"}
+          {isPending ? "Saving..." : isEditing ? "Save Changes" : "Add Certificate"}
         </Button>
       </View>
     </View>

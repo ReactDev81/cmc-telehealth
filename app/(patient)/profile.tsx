@@ -12,7 +12,7 @@ const Profile = () => {
 
     const { logout, user } = useAuth();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-    
+
     const handleLogout = async () => {
         await logout();
         router.replace("/auth/login");
@@ -53,9 +53,7 @@ const Profile = () => {
 
             {/* app version info and logout button */}
             <View className="mt-7 mb-16">
-                <Text className="text-sm text-black-400 text-center">
-                    CMC - v 1.1 (518)
-                </Text>
+                <Text className='text-sm text-black-400 text-center'>CMCL Telehealth - v 1.0.0</Text>
                 <Button
                     className="mt-7"
                     onPress={() => setShowLogoutModal(true)}

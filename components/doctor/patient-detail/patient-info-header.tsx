@@ -21,14 +21,15 @@ const PatientInfoHeader = ({ image, name, age, gender, problem }: Props) => {
                     <View className="w-1 h-1 rounded-full bg-gray mt-0.5"></View>
                     <Text className="text-sm text-black">{gender}</Text>
                 </View>
-                {problem && (
-                    <View className="mt-1.5">
-                        <Text className="text-sm font-medium text-black">
-                            Problem described by patient :
-                            <Text className="font-normal"> {problem}</Text>
+
+                <View className="mt-1.5">
+                    <Text className="text-sm font-medium text-black">
+                        Problem described by patient :
+                        <Text className="font-normal">
+                            {problem ? problem : "Patient have not described their problem"}
                         </Text>
-                    </View>
-                )}
+                    </Text>
+                </View>
             </View>
         </View>
     );

@@ -25,7 +25,7 @@ const DcotorPrescriptions = ({ AppointmentID }: { AppointmentID: string }) => {
 
     useEffect(() => {
         if (isFocused) {
-          refetch();
+            refetch();
         }
     }, [isFocused, refetch]);
 
@@ -43,14 +43,14 @@ const DcotorPrescriptions = ({ AppointmentID }: { AppointmentID: string }) => {
                 <Text className="text-danger">
                     {((error as any)?.response?.data?.errors?.message ??
                         (error as any)?.message ??
-                    "Something went wrong. Please try again.")}
+                        "Something went wrong. Please try again.")}
                 </Text>
             </SafeAreaView>
         );
     }
 
     return (
-        <ScrollView className="flex-1 bg-white px-5">
+        <ScrollView className="flex-1 bg-white px-5 pt-5">
 
             {formattedMedicines.map((med: MedicineProps, index: number) => (
                 <MedicineAccordian

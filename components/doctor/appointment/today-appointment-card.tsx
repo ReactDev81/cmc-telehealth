@@ -21,7 +21,7 @@ const TodayAppointmentCard = ({
     status,
 }: Props) => {
     return (
-        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
+        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4 mb-5">
             <Avatar
                 source={image || undefined}
                 name={name}
@@ -36,10 +36,10 @@ const TodayAppointmentCard = ({
                         variant="success"
                         className="absolute right-0"
                     />
-                    ) : (
+                ) : (
                     <Badge
                         text={status || "Scheduled"}
-                        variant={status === "Cancelled" ? "danger" : status === "confirmed" ? "success"  : "info"}
+                        variant={status === "Cancelled" ? "danger" : status === "confirmed" ? "success" : "info"}
                         className="absolute right-0"
                     />
                 )}

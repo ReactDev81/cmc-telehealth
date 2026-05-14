@@ -19,8 +19,10 @@ export interface PersonalInformation {
 }
 
 export interface WorkingExperience {
-    career_start: string;
-    past_associations: string;
+    id?: string;
+    association: string;
+    start_date: string;
+    end_date: string;
 }
 
 export interface WorkingExperienceGroup {

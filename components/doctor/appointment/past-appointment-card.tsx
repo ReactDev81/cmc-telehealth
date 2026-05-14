@@ -16,7 +16,7 @@ const PastAppointmentCard = ({
     appointmentId
 }: appointmentProps) => {
     return (
-        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4">
+        <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4 mb-5">
 
             <Avatar
                 source={typeof image === "string" ? image : (image as any)?.uri}
@@ -31,10 +31,10 @@ const PastAppointmentCard = ({
                     text={status ?? ""}
                     variant={
                         status === "Completed"
-                        ? "success"
-                        : status === "Cancelled"
-                            ? "danger"
-                            : "info"
+                            ? "success"
+                            : status === "Cancelled"
+                                ? "danger"
+                                : "info"
                     }
                     className="absolute right-0"
                 />

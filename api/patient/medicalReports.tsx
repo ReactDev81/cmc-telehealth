@@ -17,17 +17,6 @@ export interface UploadMedicalReportPayload {
 
 export const uploadMedicalReport = async (payload: UploadMedicalReportPayload) => {
 
-
-    /*
-    /* console.log("UPLOAD PAYLOAD RECEIVED", {
-        patientId: payload.patientId,
-        name: payload.name,
-        report_type_id: payload.report_type_id,
-        is_public: payload.is_public,
-        file: payload.file,
-    }); */
-    */
-
     const formData = new FormData();
 
     const reportDateString =

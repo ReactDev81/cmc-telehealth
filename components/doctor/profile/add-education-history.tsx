@@ -23,9 +23,16 @@ const EducationHistorySchema = z.object({
 
 type EducationHistoryFormData = z.infer<typeof EducationHistorySchema>;
 
-const AddNewEducationHistory = ({ existingEducation = [], onClose }: {
+const AddNewEducationHistory = ({ 
+    existingEducation = [], 
+    onClose,
+    editIndex,
+    editData
+}: {
     existingEducation?: EducationInfo[];
     onClose: () => void;
+    editIndex?: number;
+    editData?: EducationInfo;
 }) => {
 
     const { user } = useAuth();
@@ -38,8 +45,10 @@ const AddNewEducationHistory = ({ existingEducation = [], onClose }: {
     const { control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<EducationHistoryFormData>({
         resolver: zodResolver(EducationHistorySchema),
         defaultValues: {
-            degree: "",
-            institution: "",
+            degree: editData?.degree || "",
+            institution: editData?.institution || "",
+            start_date: editData?.start_date ? new Date(editData.start_date) : undefined,
+            end_date: editData?.end_date ? new Date(editData.end_date) : undefined,
         },
     });
 
@@ -55,8 +64,15 @@ const AddNewEducationHistory = ({ existingEducation = [], onClose }: {
             end_date: format(data.end_date, "yyyy-MM-dd"),
         };
 
+        let updatedEducation = [...existingEducation];
+        if (editIndex !== undefined && editIndex >= 0) {
+            updatedEducation[editIndex] = newEducation;
+        } else {
+            updatedEducation.push(newEducation);
+        }
+
         const payload = {
-            education_info: [...existingEducation, newEducation],
+            education_info: updatedEducation,
         };
 
         updateProfile(payload, {
@@ -82,7 +98,7 @@ const AddNewEducationHistory = ({ existingEducation = [], onClose }: {
             {/* header */}
             <View className="flex-row items-center justify-between">
                 <Text className="text-black text-lg font-semibold">
-                    Add Education History
+                    {editIndex !== undefined ? "Edit Education History" : "Add Education History"}
                 </Text>
                 <Pressable onPress={onClose}>
                     <X size={18} color="#1F1E1E" strokeWidth={2.5} />
@@ -136,7 +152,7 @@ const AddNewEducationHistory = ({ existingEducation = [], onClose }: {
                     className="mt-5"
                     disabled={isPending}
                 >
-                    {isPending ? "Adding..." : "Add Education"}
+                    {isPending ? "Saving..." : editIndex !== undefined ? "Save Changes" : "Add Education"}
                 </Button>
             </View>
         </View>
