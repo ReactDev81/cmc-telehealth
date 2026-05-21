@@ -26,6 +26,8 @@ const Home = () => {
     const specialities = homeData?.speciality_symptoms || [];
     const availableDoctors = homeData?.available_doctors || [];
 
+    const test = 0;
+
     useEffect(() => {
         if (isFocused) {
             refetch();
@@ -205,7 +207,7 @@ const Home = () => {
                 >
                     {/* Testimonial */}
                     <View className="mt-7">
-                        <Title text="Here's what our satisfied customers are saying..." />
+                        <Title text="Here's what our satisfied patients are saying..." />
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}

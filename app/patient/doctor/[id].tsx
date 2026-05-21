@@ -6,7 +6,7 @@ import { useDoctorReviews } from "@/queries/patient/useTestimonials";
 import { htmlToReadableText } from "@/utils/html";
 import { useLocalSearchParams } from "expo-router";
 import { BriefcaseBusiness, Hospital, Star, Stethoscope, Video } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import DoctorSchedule from "../../../components/patient/doctor-profile/doctor-schedule";
 
@@ -44,6 +44,27 @@ const DoctorDetail = () => {
     );
 
     const doctor = doctorData?.data;
+
+    const hasGeneralOPD = useMemo(() => {
+        return (doctor as any)?.availability?.some((day: any) =>
+            day.slots?.some((slot: any) => {
+                const isClinic = slot.consultation_type === "in-person" || slot.consultation_type === "in_person";
+                const isGeneral = slot.opd_type === "general";
+                return isClinic && isGeneral && slot.available;
+            })
+        ) ?? false;
+    }, [doctor]);
+
+    const hasPrivateOPD = useMemo(() => {
+        return (doctor as any)?.availability?.some((day: any) =>
+            day.slots?.some((slot: any) => {
+                const isClinic = slot.consultation_type === "in-person" || slot.consultation_type === "in_person";
+                const isPrivate = slot.opd_type === "private";
+                return isClinic && isPrivate && slot.available;
+            })
+        ) ?? false;
+    }, [doctor]);
+
     const [appointmentType, setAppointmentType] = useState<"video" | "in_person" | null>("video");
     const [opdType, setOpdType] = useState<"general" | "private" | null>(null);
 
@@ -111,9 +132,13 @@ const DoctorDetail = () => {
         if (appointmentType !== "in_person") {
             setOpdType(null);
         } else if (appointmentType === "in_person" && !opdType) {
-            setOpdType("general");
+            if (hasGeneralOPD) {
+                setOpdType("general");
+            } else if (hasPrivateOPD) {
+                setOpdType("private");
+            }
         }
-    }, [appointmentType]);
+    }, [appointmentType, hasGeneralOPD, hasPrivateOPD, opdType]);
 
     // Prefill from fetched appointment schedule if rescheduling and opd not set
     useEffect(() => {
@@ -420,8 +445,8 @@ const DoctorDetail = () => {
                     </View>
                 </View>
 
-                {/* OPD Type - Only show when in_person is selected */}
-                {appointmentType === "in_person" && (
+                {/* OPD Type - Only show when in_person is selected and there is availability */}
+                {appointmentType === "in_person" && (hasGeneralOPD || hasPrivateOPD) && (
                     <View className="mt-6">
                         <Text className="text-lg font-medium text-black">
                             OPD Type
@@ -433,56 +458,60 @@ const DoctorDetail = () => {
                             )}
                         </Text>
                         <View className="flex-row items-center mt-4 gap-x-4">
-                            <TouchableOpacity
-                                disabled={
-                                    booking_type === "reschedule" &&
-                                    opdType !== null &&
-                                    opdType !== "general"
-                                }
-                                onPress={() => setOpdType("general")}
-                                activeOpacity={
-                                    booking_type === "reschedule" &&
+                            {hasGeneralOPD && (
+                                <TouchableOpacity
+                                    disabled={
+                                        booking_type === "reschedule" &&
                                         opdType !== null &&
                                         opdType !== "general"
-                                        ? 1
-                                        : 0.7
-                                }
-                                className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "general"
-                                    ? "border-primary bg-primary"
-                                    : "border-gray"
-                                    } ${booking_type === "reschedule" && opdType !== null && opdType !== "general" ? "opacity-50" : ""}`}
-                            >
-                                <Text
-                                    className={`text-sm font-medium text-center ${opdType === "general" ? "text-white" : "text-black-400"
-                                        }`}
+                                    }
+                                    onPress={() => setOpdType("general")}
+                                    activeOpacity={
+                                        booking_type === "reschedule" &&
+                                            opdType !== null &&
+                                            opdType !== "general"
+                                            ? 1
+                                            : 0.7
+                                    }
+                                    className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "general"
+                                        ? "border-primary bg-primary"
+                                        : "border-gray"
+                                        } ${booking_type === "reschedule" && opdType !== null && opdType !== "general" ? "opacity-50" : ""}`}
                                 >
-                                    General OPD
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                disabled={
-                                    booking_type === "reschedule" &&
-                                    opdType !== null &&
-                                    opdType !== "private"
-                                }
-                                onPress={() => setOpdType("private")}
-                                activeOpacity={
-                                    booking_type === "reschedule" &&
+                                    <Text
+                                        className={`text-sm font-medium text-center ${opdType === "general" ? "text-white" : "text-black-400"
+                                            }`}
+                                    >
+                                        General OPD
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
+                            {hasPrivateOPD && (
+                                <TouchableOpacity
+                                    disabled={
+                                        booking_type === "reschedule" &&
                                         opdType !== null &&
-                                        opdType !== "private" ? 1 : 0.7
-                                }
-                                className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "private"
-                                    ? "border-primary bg-primary"
-                                    : "border-gray"
-                                    } ${booking_type === "reschedule" && opdType !== null && opdType !== "private" ? "opacity-50" : ""}`}
-                            >
-                                <Text
-                                    className={`text-sm font-medium text-center ${opdType === "private" ? "text-white" : "text-black-400"
-                                        }`}
+                                        opdType !== "private"
+                                    }
+                                    onPress={() => setOpdType("private")}
+                                    activeOpacity={
+                                        booking_type === "reschedule" &&
+                                            opdType !== null &&
+                                            opdType !== "private" ? 1 : 0.7
+                                    }
+                                    className={`flex-1 items-center justify-center border rounded-xl p-4 ${opdType === "private"
+                                        ? "border-primary bg-primary"
+                                        : "border-gray"
+                                        } ${booking_type === "reschedule" && opdType !== null && opdType !== "private" ? "opacity-50" : ""}`}
                                 >
-                                    Private OPD
-                                </Text>
-                            </TouchableOpacity>
+                                    <Text
+                                        className={`text-sm font-medium text-center ${opdType === "private" ? "text-white" : "text-black-400"
+                                            }`}
+                                    >
+                                        Private OPD
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
                     </View>
                 )}
