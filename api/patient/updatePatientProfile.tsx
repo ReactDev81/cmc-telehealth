@@ -7,6 +7,7 @@ export interface UpdatePatientProfilePayload {
   mobile_no: string;
   date_of_birth: string;
   gender: "male" | "female" | "other";
+  existing_patient_id?: string;
   group: "personal_information";
 }
 

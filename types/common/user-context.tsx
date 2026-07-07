@@ -23,4 +23,6 @@ export interface User {
   phone: string;
   address: Address;
   status: string;
+  existing_patient_id?: string;
+  is_existing_patient?: boolean;
 }

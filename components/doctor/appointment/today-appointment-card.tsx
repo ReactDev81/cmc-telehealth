@@ -20,6 +20,7 @@ const TodayAppointmentCard = ({
     date,
     status,
 }: Props) => {
+
     return (
         <View className="border border-black-300 rounded-xl p-4 flex-row items-center gap-x-4 mb-5">
             <Avatar

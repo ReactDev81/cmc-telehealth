@@ -1,4 +1,3 @@
-import DateField from "@/components/form/date";
 import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,15 +9,16 @@ import { z } from "zod";
 import { useAuth } from "@/context/UserContext";
 import { useUpdateDoctorProfile } from "@/queries/doctor/useUpdateDoctorProfile";
 import { EducationInfo } from "@/types/live/doctor/profile";
-import { format } from "date-fns";
 
 const EducationHistorySchema = z.object({
     degree: z.string().min(2, "Degree must be at least 2 characters long"),
     institution: z
         .string()
         .min(2, "Institution Name must be at least 2 characters long"),
-    start_date: z.date({ required_error: "Start Date is required" }),
-    end_date: z.date({ required_error: "End Date is required" }),
+    completion_year: z
+        .string()
+        .min(1, "Completion year is required")
+        .regex(/^\d{4}$/, "Enter a valid 4-digit year"),
 });
 
 type EducationHistoryFormData = z.infer<typeof EducationHistorySchema>;
@@ -42,26 +42,23 @@ const AddNewEducationHistory = ({
         "education_info",
     );
 
-    const { control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<EducationHistoryFormData>({
+    const { control, handleSubmit, reset } = useForm<EducationHistoryFormData>({
         resolver: zodResolver(EducationHistorySchema),
         defaultValues: {
             degree: editData?.degree || "",
             institution: editData?.institution || "",
-            start_date: editData?.start_date ? new Date(editData.start_date) : undefined,
-            end_date: editData?.end_date ? new Date(editData.end_date) : undefined,
+            completion_year:
+                editData?.completion_year ||
+                (editData?.end_date ? editData.end_date.slice(0, 4) : ""),
         },
     });
-
-    const start_date = watch("start_date");
-    const end_date = watch("end_date");
 
     const onSubmit = (data: EducationHistoryFormData) => {
 
         const newEducation = {
             degree: data.degree,
             institution: data.institution,
-            start_date: format(data.start_date, "yyyy-MM-dd"),
-            end_date: format(data.end_date, "yyyy-MM-dd"),
+            completion_year: data.completion_year,
         };
 
         let updatedEducation = [...existingEducation];
@@ -123,28 +120,14 @@ const AddNewEducationHistory = ({
                     containerClassName="mt-5"
                 />
 
-                <DateField
-                    label="Start Date"
-                    value={start_date}
-                    onChange={(date) =>
-                        setValue("start_date", date as Date, { shouldValidate: true })
-                    }
-                    placeholder="DD/MM/YYYY"
-                    maximumDate={new Date()}
-                    error={errors.start_date?.message}
-                    className="mt-5"
-                />
-
-                <DateField
-                    label="End Date"
-                    value={end_date}
-                    onChange={(date) =>
-                        setValue("end_date", date as Date, { shouldValidate: true })
-                    }
-                    placeholder="DD/MM/YYYY"
-                    maximumDate={new Date()}
-                    error={errors.end_date?.message}
-                    className="mt-5"
+                <Input
+                    name="completion_year"
+                    label="Completion Year"
+                    placeholder="e.g. 2020"
+                    control={control}
+                    containerClassName="mt-5"
+                    keyboardType="number-pad"
+                    numericOnly
                 />
 
                 <Button

@@ -21,8 +21,7 @@ export interface PersonalInformation {
 export interface WorkingExperience {
     id?: string;
     association: string;
-    start_date: string;
-    end_date: string;
+    description: string;
 }
 
 export interface WorkingExperienceGroup {
@@ -32,8 +31,9 @@ export interface WorkingExperienceGroup {
 export interface EducationInfo {
     degree: string;
     institution: string;
-    start_date: string;
-    end_date: string;
+    completion_year: string;
+    start_date?: string;
+    end_date?: string;
 }
 
 export interface EducationHistoryGroup {
@@ -43,6 +43,7 @@ export interface EducationHistoryGroup {
 export interface CertificationInfo {
     name: string;
     organization: string;
+    description: string;
     certification_image: string;
 }
 

@@ -57,7 +57,7 @@ const DoctorHomeHeader = ({ insets }: HeaderProps) => {
                     </View>
                     <View>
                         <Text className="text-white text-base font-medium">
-                            {`Dr. ${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim() || ' '}
+                            {`${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim() || ' '}
                         </Text>
                         <TouchableOpacity
                             className="flex-row items-center gap-1 mt-0.5"

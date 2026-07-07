@@ -32,6 +32,8 @@ interface LoginResponse {
     patient_id?: string;
     doctor_id?: string;
     address: Address;
+    existing_patient_id?: string;
+    is_existing_patient?: boolean;
   };
 }
 

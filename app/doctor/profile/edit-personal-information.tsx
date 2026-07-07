@@ -15,28 +15,33 @@ import { Alert, Image, TouchableOpacity, View } from "react-native";
 import { z } from "zod";
 
 const personalInfoSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters long"),
+  first_name: z
+    .string()
+    .min(2, "First name must be at least 2 characters long"),
+  last_name: z.string().optional(),
   email: z.string().email("Please enter a valid email"),
-  // specialty: z.string().min(2, "Specialty is required"),
+  specialty: z.string().optional(),
   bio: z.string().optional(),
 });
 
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
 const EditPersonalInformation = () => {
-  const { user, updateUser } = useAuth();
+  const { user, token, updateUser } = useAuth();
   const doctorID = user?.id || "";
 
   const { data: doctorProfile } = useDoctorProfile<PersonalInformation>(
     doctorID,
     "personal_information",
   );
-  console.log("Doctor data: ", doctorProfile);
+
+  // console.log('doctorProfile', doctorProfile);
 
   const { control, handleSubmit, reset } = useForm<PersonalInfoFormData>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
-      name: "",
+      first_name: "",
+      last_name: "",
       email: "",
       specialty: "",
       bio: "",
@@ -47,14 +52,17 @@ const EditPersonalInformation = () => {
   useEffect(() => {
     if (user) {
       const initialValues = {
-        name:
-          user.name ||
-          `${user.first_name || ""} ${user.last_name || ""}`.trim(),
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
         email: user.email || "",
-        specialty: (user as any).department_id || "",
+        // specialty: (user as any).department_id || "",
+        specialty:
+          (user as any).doctor_departments
+            ?.map((item: any) => item.department_name)
+            .join(", ") || "",
         bio: (user as any).bio || "",
       };
-      console.log("Initial prefill from Auth:", initialValues);
+      // console.log("Initial prefill from Auth:", initialValues);
       reset(initialValues);
       if (user.avatar) {
         setImage(user.avatar);
@@ -69,15 +77,18 @@ const EditPersonalInformation = () => {
 
     if (profileData) {
       const mergedValues = {
-        name:
-          profileData.name ||
-          `${profileData.first_name || ""} ${profileData.last_name || ""}`.trim(),
+        first_name: profileData.first_name || "",
+        last_name: profileData.last_name || "",
         email: profileData.email || "",
-        specialty: profileData.department_id || "",
+        // specialty: profileData.department_id || "",
+        specialty:
+          profileData.doctor_departments
+            ?.map((item: any) => item.department_name)
+            .join(", ") || "",
         bio: profileData.bio || "",
       };
 
-      console.log("Merging profile data from API:", mergedValues);
+      // console.log("Merging profile data from API:", mergedValues);
 
       // Only reset if we actually have new/different data to avoid unnecessary form resets
       reset(mergedValues);
@@ -118,15 +129,11 @@ const EditPersonalInformation = () => {
   };
 
   const onSubmit = (data: PersonalInfoFormData) => {
-    const [first_name, ...lastNames] = data.name.split(" ");
-    const last_name = lastNames.join(" ");
 
-    const payload: any = {
-      first_name,
-      last_name,
-      // email: data.email,
-      department_id: data.specialty,
-      bio: data.bio,
+    const payload: Record<string, string> = {
+      first_name: data.first_name,
+      last_name: data.last_name ?? "",
+      bio: data.bio ?? "",
     };
 
     const isNewImage =
@@ -208,28 +215,19 @@ const EditPersonalInformation = () => {
       <View className="max-w-[350px] w-full mx-auto bg-white p-5 rounded-xl mt-10">
         <View className="mb-5">
           <Input
-            name="name"
-            label="Name"
-            placeholder="Enter Name"
+            name="first_name"
+            label="First Name"
+            placeholder="Enter First Name"
             control={control}
           />
-          {/* <Input
-                        name="email"
-                        label="Email"
-                        placeholder="Enter Your Email"
-                        containerClassName="mt-5"
-                        keyboardType="email"
-                        control={control}
-                    /> */}
-          <View pointerEvents="none">
-            <Input
-              name="email"
-              control={control}
-              label="Email"
-              keyboardType="email"
-              containerClassName="mt-5 opacity-40"
-            />
-          </View>
+
+          <Input
+            name="last_name"
+            label="Last Name"
+            placeholder="Enter Last Name"
+            control={control}
+            containerClassName="mt-5"
+          />
           <Input
             name="specialty"
             label="Speciality"
@@ -237,6 +235,7 @@ const EditPersonalInformation = () => {
             placeholder="clinical-haematology"
             containerClassName="mt-5"
             control={control}
+            editable={false}
           />
           <TextArea
             name="bio"

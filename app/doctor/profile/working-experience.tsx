@@ -114,8 +114,8 @@ const WorkingExperienceScreen = () => {
                                 <Text className="text-base text-black font-semibold">
                                     {experience.association}
                                 </Text>
-                                <Text className="text-primary text-sm font-medium mt-0.5">
-                                    {experience.start_date + " - " + experience.end_date}
+                                <Text className="text-black-500 text-sm mt-0.5">
+                                    {experience.description}
                                 </Text>
                             </View>
 

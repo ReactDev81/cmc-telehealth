@@ -1,7 +1,6 @@
 export interface EducationHistoryProps {
     id?: number,
     education: string,
-    start_date: string,
-    end_date: string,
+    completion_year: string,
     place: string,
 }

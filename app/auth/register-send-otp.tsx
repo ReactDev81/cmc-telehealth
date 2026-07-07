@@ -15,6 +15,29 @@ import PrivacyPolicy from "../common-screens/profile/privacy-policy";
 import TermAndCondition from "../common-screens/profile/term-condition";
 import FormLayout from "../formLayout";
 
+const getErrorMessage = (error: any) => {
+    if (!error) return null;
+    const data = error.response?.data;
+    if (data) {
+        if (data.message) return data.message;
+        if (typeof data.errors === "string") return data.errors;
+        if (data.errors && typeof data.errors === "object") {
+            if (data.errors.message) return data.errors.message;
+            const keys = Object.keys(data.errors);
+            if (keys.length > 0) {
+                const firstError = data.errors[keys[0]];
+                if (Array.isArray(firstError) && firstError.length > 0) {
+                    return firstError[0];
+                }
+                if (typeof firstError === "string") {
+                    return firstError;
+                }
+            }
+        }
+    }
+    return error.message || "Something went wrong";
+};
+
 const schema = z.object({
     email: z.string().email("Enter a valid email"),
 });
@@ -50,8 +73,9 @@ export default function RegisterSendOtp() {
                     });
                 },
                 onError: (error) => {
-                    const err = (error as any)?.response?.data?.errors?.message;
-                    console.log('Register error:', err);
+                    console.log('Register API full error data:', error.response?.data);
+                    const err = getErrorMessage(error);
+                    console.log('Register error message:', err);
                     if (error.response?.data?.errors?.status === "verified") {
                         setEmailverified(true);
                         setEmail(error.response?.data?.errors?.email);
@@ -104,13 +128,7 @@ export default function RegisterSendOtp() {
 
                 {/* api error message */}
                 <ApiError
-                    message={
-                        isError
-                            ? ((error as any)?.response?.data?.errors?.message ??
-                                (error as any)?.message ??
-                                "Registration failed. Please try again.")
-                            : null
-                    }
+                    message={isError ? getErrorMessage(error) : null}
                 />
 
                 {

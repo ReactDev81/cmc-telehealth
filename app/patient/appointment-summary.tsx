@@ -169,11 +169,10 @@ const AppointmentSummary = () => {
 
             <ScrollView className="flex-1">
 
-                <View className="items-center">
+                <View className="items-center h-[400px]">
                     <Image
                         source={{ uri: appointment?.doctor?.avatar }}
-                        className="w-full h-60"
-                        resizeMode="cover"
+                        className="w-full h-full object-cover"
                     />
                 </View>
 

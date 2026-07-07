@@ -12,10 +12,7 @@ import { z } from "zod";
 
 const getAwardSchema = (isEditing: boolean) => z.object({
     title: z.string().min(2, "Award title must be at least 2 characters long"),
-    award_image: z.any().refine((file) => {
-        if (isEditing) return true;
-        return file?.uri;
-    }, "Award image is required"),
+    award_image: z.any().optional(),
 });
 
 const AddNewAward = ({

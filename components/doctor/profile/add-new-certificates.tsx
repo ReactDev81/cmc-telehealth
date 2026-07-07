@@ -17,6 +17,9 @@ const getCertificatesSchema = (isEditing: boolean) => z.object({
   organization: z
     .string()
     .min(2, "Organization Name must be at least 2 characters long"),
+  description: z
+    .string()
+    .min(5, "Description must be at least 5 characters long"),
   certification_image: z
     .any()
     .refine((file) => {
@@ -58,6 +61,7 @@ const AddNewCertificates = ({
     defaultValues: {
       name: editData?.name || "",
       organization: editData?.organization || "",
+      description: editData?.description || "",
       certification_image: null,
     },
   });
@@ -81,15 +85,22 @@ const AddNewCertificates = ({
         finalCertificates[editIndex] = { 
             ...finalCertificates[editIndex], 
             name: data.name, 
-            organization: data.organization 
+            organization: data.organization,
+            description: data.description,
         };
     } else {
-        finalCertificates.push({ name: data.name, organization: data.organization, certification_image: "" });
+        finalCertificates.push({
+            name: data.name,
+            organization: data.organization,
+            description: data.description,
+            certification_image: "",
+        });
     }
 
     finalCertificates.forEach((cert, index) => {
         fd.append(`certifications_info[${index}][name]`, cert.name);
         fd.append(`certifications_info[${index}][organization]`, cert.organization);
+        fd.append(`certifications_info[${index}][description]`, cert.description || "");
         
         if (isEditing && editIndex === index && data.certification_image?.uri) {
             appendFile(index, data.certification_image);
@@ -148,6 +159,15 @@ const AddNewCertificates = ({
           placeholder="e.g. Medical Council"
           control={control}
           containerClassName="mt-5"
+        />
+
+        <Input
+          name="description"
+          label="Description"
+          placeholder="Describe this certificate"
+          control={control}
+          containerClassName="mt-5"
+          multiline
         />
 
         <FileUploadField

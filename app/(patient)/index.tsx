@@ -6,11 +6,12 @@ import Testimonial from "@/components/patient/home/testimonial";
 import { useAuth } from "@/context/UserContext";
 import { usePatientHome } from "@/queries/patient/usePatientHome";
 import { htmlToReadableText } from "@/utils/html";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Title from "../../components/ui/Title";
 import TitleWithLink from "../../components/ui/title-with-link";
@@ -20,11 +21,12 @@ const Home = () => {
 
     const insets = useSafeAreaInsets();
     const isFocused = useIsFocused();
-    const { token, initializing } = useAuth();
+    const { token, initializing, user } = useAuth();
     const { data, isLoading, isError, error, refetch } = usePatientHome(!!initializing && !!token);
     const homeData = data?.data;
     const specialities = homeData?.speciality_symptoms || [];
     const availableDoctors = homeData?.available_doctors || [];
+    const patientReviews = homeData?.patient_reviews || [];
 
     const test = 0;
 
@@ -33,6 +35,39 @@ const Home = () => {
             refetch();
         }
     }, [isFocused, refetch]);
+
+    useEffect(() => {
+        const checkExistingPatientId = async () => {
+            if (isFocused && user?.role === "patient" && !user?.existing_patient_id) {
+                const prompted = await AsyncStorage.getItem("@prompted_existing_patient_id");
+                if (!prompted) {
+                    Alert.alert(
+                        "Link Existing Patient ID",
+                        "Please enter your existing patient ID in profile -> edit personal information to complete your profile.",
+                        [
+                            {
+                                text: "Cancel",
+                                style: "cancel",
+                                onPress: async () => {
+                                    await AsyncStorage.setItem("@prompted_existing_patient_id", "true");
+                                }
+                            },
+                            {
+                                text: "Go to Profile",
+                                onPress: async () => {
+                                    await AsyncStorage.setItem("@prompted_existing_patient_id", "true");
+                                    router.push("/patient/profile/edit-personal-information");
+                                }
+                            }
+                        ],
+                        { cancelable: false }
+                    );
+                }
+            }
+        };
+
+        checkExistingPatientId();
+    }, [isFocused, user]);
 
     if (isLoading) {
         return (
@@ -206,21 +241,21 @@ const Home = () => {
                     }}
                 >
                     {/* Testimonial */}
-                    <View className="mt-7">
-                        <Title text="Here's what our satisfied patients are saying..." />
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            className="mt-3 w-full"
-                            contentContainerStyle={{ gap: 15, paddingRight: 0 }}
-                        >
-                            {homeData?.patient_reviews ? (
-                                homeData.patient_reviews.map((testimonial, index) => (
+                    {patientReviews.length > 0 &&
+                        <View className="mt-7">
+                            <Title text="Here's what our satisfied patients are saying..." />
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                className="mt-3 w-full"
+                                contentContainerStyle={{ gap: 15, paddingRight: 0 }}
+                            >
+                                {patientReviews.map((testimonial, index) => (
                                     <View
                                         key={index}
                                         style={{
                                             marginRight:
-                                                index === ((homeData?.patient_reviews?.length ?? 1) - 1)
+                                                index === (patientReviews.length - 1)
                                                     ? 0
                                                     : 5,
                                         }}
@@ -245,14 +280,10 @@ const Home = () => {
                                             className="min-w-80"
                                         />
                                     </View>
-                                ))
-                            ) : (
-                                <View className="py-4">
-                                    <Text>No testimonials available</Text>
-                                </View>
-                            )}
-                        </ScrollView>
-                    </View>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    }
                 </View>
 
             </ScrollView>

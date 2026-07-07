@@ -24,6 +24,7 @@ const personalInfoSchema = z.object({
         .string()
         .min(1, "Last name is required")
         .min(2, "Last name must be at least 2 characters"),
+    existing_patient_id: z.string().optional(),
     mobile_no: z
         .string()
         .min(1, "Phone number is required")
@@ -99,6 +100,7 @@ const EditPersonalInformation = () => {
         defaultValues: {
             first_name: user?.first_name ?? "",
             last_name: user?.last_name ?? "",
+            existing_patient_id: user?.existing_patient_id ?? "",
             mobile_no: user?.phone ?? "",
             email: user?.email ?? "",
             gender: getGenderValue(user?.gender),
@@ -111,6 +113,7 @@ const EditPersonalInformation = () => {
             reset({
                 first_name: "",
                 last_name: "",
+                existing_patient_id: "",
                 mobile_no: "",
                 email: "",
                 gender: "other",
@@ -123,6 +126,7 @@ const EditPersonalInformation = () => {
         reset({
             first_name: user.first_name,
             last_name: user.last_name,
+            existing_patient_id: user.existing_patient_id ?? "",
             mobile_no: user.phone,
             email: user.email,
             gender: getGenderValue(user.gender),
@@ -193,6 +197,7 @@ const EditPersonalInformation = () => {
         await updateUser({
             first_name: updatedData?.first_name ?? user?.first_name ?? "",
             last_name: updatedData?.last_name ?? user?.last_name ?? "",
+            existing_patient_id: updatedData?.existing_patient_id ?? user?.existing_patient_id ?? "",
             avatar: updatedData?.avatar ?? user?.avatar,
             phone: updatedData?.mobile_no ?? user?.phone ?? "",
             date_of_birth: updatedData?.date_of_birth ?? user?.date_of_birth ?? "",
@@ -207,7 +212,7 @@ const EditPersonalInformation = () => {
             await qc.invalidateQueries({
                 queryKey: ["patient-profile", patientId, "personal_information"],
             });
-        } catch {}
+        } catch { }
 
         Alert.alert("Success", response?.message || "Profile updated");
     };
@@ -220,6 +225,7 @@ const EditPersonalInformation = () => {
         const common = {
             first_name: formData.first_name,
             last_name: formData.last_name,
+            existing_patient_id: formData.existing_patient_id,
             mobile_no: formData.mobile_no,
             date_of_birth: formData.date_of_birth.toISOString().split("T")[0],
             gender: formData.gender,
@@ -238,6 +244,9 @@ const EditPersonalInformation = () => {
             const form = new FormData();
             form.append("first_name", common.first_name);
             form.append("last_name", common.last_name);
+            if (common.existing_patient_id) {
+                form.append("existing_patient_id", common.existing_patient_id);
+            }
             form.append("mobile_no", common.mobile_no);
             form.append("date_of_birth", common.date_of_birth);
             form.append("gender", common.gender);
@@ -251,8 +260,8 @@ const EditPersonalInformation = () => {
                     Alert.alert(
                         "Error",
                         error?.response?.data?.errors?.message ||
-                            error?.message ||
-                            "Something went wrong"
+                        error?.message ||
+                        "Something went wrong"
                     );
                 },
             });
@@ -265,8 +274,8 @@ const EditPersonalInformation = () => {
                 Alert.alert(
                     "Error",
                     error?.response?.data?.errors?.message ||
-                        error?.message ||
-                        "Something went wrong"
+                    error?.message ||
+                    "Something went wrong"
                 );
             },
         });
@@ -307,6 +316,14 @@ const EditPersonalInformation = () => {
                     control={control}
                     label="Last Name"
                     placeholder="Enter Last Name"
+                    containerClassName="mt-5"
+                />
+
+                <Input
+                    name="existing_patient_id"
+                    control={control}
+                    label="Existing Patient ID"
+                    placeholder="Enter Existing Patient ID"
                     containerClassName="mt-5"
                 />
 

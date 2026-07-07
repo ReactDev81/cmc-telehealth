@@ -9,6 +9,8 @@ interface CompleteProfilePayload {
   mobile_no: string;
   email: string;
   password: string;
+  is_existing_patient: boolean;
+  existing_patient_id?: string;
 }
 
 interface CompleteProfileVariables {
@@ -39,6 +41,8 @@ interface CompleteProfileResponse {
     date_of_birth: string;
     status: string;
     address: Address;
+    is_existing_patient?: boolean;
+    existing_patient_id?: string;
   };
   token: string;
 }

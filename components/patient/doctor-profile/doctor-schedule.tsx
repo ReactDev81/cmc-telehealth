@@ -220,8 +220,6 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
       consultation_fee: bookingData.consultation_fee,
     };
 
-    console.log("Booking Data:", payload);
-
     // Handle reschedule vs new booking
     if (bookingType === "reschedule" && appointmentIdToReschedule) {
       // For reschedule: old appointment ID + new availability ID

@@ -135,6 +135,9 @@ const Certificates = () => {
                                     <Text className="text-black-400 text-sm mt-1">
                                         {certificate.organization}
                                     </Text>
+                                    <Text className="text-black-500 text-sm mt-1">
+                                        {certificate.description}
+                                    </Text>
                                 </View>
 
                                 <View className="absolute top-4 right-4 z-10 flex-row items-center gap-x-1 bg-white rounded-md">

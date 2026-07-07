@@ -118,14 +118,10 @@ const EducationHistory = () => {
                                     <Text className="text-black-400 text-sm mt-0.5">
                                         {education.institution}
                                     </Text>
-                                    <View className="flex-row mt-1">
-                                        <Text className="text-primary text-sm">
-                                            {education.start_date} -{" "}
-                                        </Text>
-                                        <Text className="text-primary text-sm">
-                                            {education.end_date}
-                                        </Text>
-                                    </View>
+                                    <Text className="text-primary text-sm mt-1">
+                                        {education.completion_year ||
+                                            (education.end_date ? education.end_date.slice(0, 4) : "")}
+                                    </Text>
                                 </View>
 
                                 <View className="flex-row items-center gap-x-1">

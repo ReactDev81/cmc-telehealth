@@ -12,18 +12,53 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Image, Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const normalizeAwards = (awards: any[] = []) => {
+    if (!Array.isArray(awards)) return [];
+
+    return awards.flatMap((award) => {
+        // Mobile data
+        if (!award.is_free_text) {
+            return [{
+                id: award.id,
+                title: award.title,
+                award_image: award.award_image,
+            }];
+        }
+
+        // Website data
+        if (award.is_free_text && award.html) {
+            const matches = award.html.match(/<li[^>]*>(.*?)<\/li>/gis) || [];
+
+            return matches.map((item: string, index: number) => ({
+                id: `web-${index}`,
+                title: item
+                    .replace(/<[^>]+>/g, "")
+                    .replace(/&quot;/g, '"')
+                    .trim(),
+                award_image: null,
+                is_free_text: true,
+            }));
+        }
+
+        return [];
+    });
+};
+
 const AwardsScreen = () => {
 
     const { user } = useAuth();
     const doctorID = user?.id || "";
     const isFocused = useIsFocused();
     const { data: profileResponse, isLoading, error, refetch } = useDoctorProfile<AwardsGroup>(doctorID, "awards_info");
-    const awards = profileResponse?.data?.awards_info || [];
+    // const awards = profileResponse?.data?.awards_info || [];
+    const awards = normalizeAwards(profileResponse?.data?.awards_info);
     const [modalVisible, setModalVisible] = useState(false);
     const [editIndex, setEditIndex] = useState<number | undefined>();
     const [editData, setEditData] = useState<any | undefined>();
 
     const { mutate: updateProfile } = useUpdateDoctorProfile(doctorID, "awards_info");
+
+    
 
     const handleDelete = (index: number) => {
         Alert.alert(

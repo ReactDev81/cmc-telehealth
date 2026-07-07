@@ -15,6 +15,7 @@ const Appointments = () => {
     const isFocused = useIsFocused();
     const { data: appointments = [], isLoading, isError, error, refetch } = useAppointments(activeTab, token!);
 
+
     // ✅ Refetch appointments only when screen comes into focus (critical data)
     useEffect(() => {
         if (isFocused) {

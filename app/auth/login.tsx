@@ -77,6 +77,8 @@ const LoginScreen = () => {
                         pincode: user.address.pincode,
                         state: user.address.state,
                     },
+                    existing_patient_id: user.existing_patient_id ?? undefined,
+                    is_existing_patient: user.is_existing_patient ?? undefined,
                 };
 
                 // console.log("Render Login Screen", data);

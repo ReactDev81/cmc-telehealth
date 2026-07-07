@@ -16,10 +16,10 @@ import { z } from "zod";
 import FormLayout from "../formLayout";
 
 const schema = z.object({
-    first_name: z.string().min(1),
-    last_name: z.string().min(1),
+    first_name: z.string().min(1, "First name is required"),
+    last_name: z.string().min(1, "Last name is required"),
     date_of_birth: z
-        .date()
+        .date({ required_error: "Date of birth is required" })
         .refine((date) => {
             const today = new Date();
             const age = today.getFullYear() - date.getFullYear();
@@ -30,10 +30,21 @@ const schema = z.object({
     mobile_no: z
         .string()
         .regex(/^\d{10}$/, "Phone number must contain exactly 10 digits"),
-    gender: z.string(),
-    email: z.string().email(),
-    password: z.string().min(8),
+    gender: z.string().min(1, "Gender is required"),
+    email: z.string().email("Invalid email"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    is_existing_patient: z.boolean({ required_error: "Please select an option" }),
+    existing_patient_id: z.string().optional(),
+}).refine((data) => {
+    if (data.is_existing_patient && (!data.existing_patient_id || data.existing_patient_id.trim() === "")) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Existing Patient ID is required",
+    path: ["existing_patient_id"],
 });
+
 
 export default function RegisterCompleteProfile() {
 
@@ -45,29 +56,57 @@ export default function RegisterCompleteProfile() {
     const { mutate: completeProfile, isPending, isError, error } = useCompleteProfile();
     const { deviceInfo } = useNotification();
 
-    const { control, handleSubmit, reset } = useForm({
+    const { control, handleSubmit, reset, watch, setValue } = useForm({
         resolver: zodResolver(schema),
+        defaultValues: {
+            first_name: "",
+            last_name: "",
+            date_of_birth: undefined,
+            mobile_no: "",
+            gender: "",
+            email: "",
+            password: "",
+            is_existing_patient: false,
+            existing_patient_id: "",
+        }
     });
+
+    const isExistingPatient = watch("is_existing_patient");
 
     // Prefill email once the route param is available
     useEffect(() => {
         const finalEmail = typeof email === "string" ? email : user?.email ?? "";
-        reset({ email: finalEmail });
+        reset({
+            first_name: "",
+            last_name: "",
+            date_of_birth: undefined,
+            mobile_no: "",
+            gender: "",
+            email: finalEmail,
+            password: "",
+            is_existing_patient: false,
+            existing_patient_id: "",
+        });
     }, [email, user?.email]);
 
     const onSubmit = (formData: any) => {
+        const payload: any = {
+            ...formData,
+            date_of_birth: formData.date_of_birth.toISOString().split("T")[0],
+            gender: formData.gender.toLowerCase(),
+            expo_push_token: deviceInfo?.expo_push_token ?? "",
+            device_type: deviceInfo?.device_type ?? "",
+            device_name: deviceInfo?.device_name ?? "",
+            app_version: deviceInfo?.app_version ?? "",
+        };
+
+        if (!formData.is_existing_patient) {
+            delete payload.existing_patient_id;
+        }
 
         completeProfile(
             {
-                payload: {
-                    ...formData,
-                    date_of_birth: formData.date_of_birth.toISOString().split("T")[0],
-                    gender: formData.gender.toLowerCase(),
-                    expo_push_token: deviceInfo?.expo_push_token ?? "",
-                    device_type: deviceInfo?.device_type ?? "",
-                    device_name: deviceInfo?.device_name ?? "",
-                    app_version: deviceInfo?.app_version ?? "",
-                },
+                payload,
             },
             {
                 onSuccess: async (data) => {
@@ -95,6 +134,8 @@ export default function RegisterCompleteProfile() {
                             pincode: user.address?.pincode ?? null,
                             state: user.address?.state ?? null,
                         },
+                        existing_patient_id: user.existing_patient_id ?? undefined,
+                        is_existing_patient: user.is_existing_patient ?? undefined,
                     };
 
                     await login(userData, data.token);
@@ -195,6 +236,60 @@ export default function RegisterCompleteProfile() {
                         )}
                     />
                 </View>
+
+                {/* Are you an existing patient? */}
+                <View>
+                    <Text className="text-sm text-black mb-2 mt-5">Are you an existing patient?</Text>
+                    <Controller
+                        control={control}
+                        name="is_existing_patient"
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <View>
+                                <View className="flex-row gap-2">
+                                    {[
+                                        { label: "Yes", val: true },
+                                        { label: "No", val: false },
+                                    ].map((option) => (
+                                        <Pressable
+                                            key={option.label}
+                                            onPress={() => {
+                                                onChange(option.val);
+                                                if (!option.val) {
+                                                    setValue("existing_patient_id", "");
+                                                }
+                                            }}
+                                            className={`flex-1 py-4 px-4 rounded-xl border ${value === option.val
+                                                    ? "bg-primary border-primary"
+                                                    : "border-primary"
+                                                }`}
+                                        >
+                                            <Text
+                                                className={`text-center ${value === option.val ? "text-white" : "text-primary"
+                                                    }`}
+                                            >
+                                                {option.label}
+                                            </Text>
+                                        </Pressable>
+                                    ))}
+                                </View>
+                                {error && (
+                                    <Text className="text-xs text-red-600 mt-1">{error.message}</Text>
+                                )}
+                            </View>
+                        )}
+                    />
+                </View>
+
+                {/* Existing Patient ID */}
+                {isExistingPatient && (
+                    <Input
+                        name="existing_patient_id"
+                        control={control}
+                        label="Existing Patient ID"
+                        placeholder="PAT-001"
+                        containerClassName="mt-5"
+                    />
+                )}
 
                 <Input
                     name="email"

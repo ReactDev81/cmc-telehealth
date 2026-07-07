@@ -199,18 +199,30 @@ const StartConsulationWithDoctor = () => {
     }, [isChatOpen]);
 
 
-    const handleToggleCaption = React.useCallback(async () => {
-        try {
-            const next = !isCaptionOn;
-            if (next) {
-                wherebyRoomRef.current?.startLiveTranscription();
-            } else {
-                wherebyRoomRef.current?.stopLiveTranscription();
-            }
-            setIsCaptionOn(next);
-        } catch (error) {
-            Alert.alert("Captions unavailable", "We could not update live captions for this room.");
+    // const handleToggleCaption = React.useCallback(async () => {
+    //     try {
+    //         const next = !isCaptionOn;
+    //         if (next) {
+    //             wherebyRoomRef.current?.startLiveTranscription();
+    //         } else {
+    //             wherebyRoomRef.current?.stopLiveTranscription();
+    //         }
+    //         setIsCaptionOn(next);
+    //     } catch (error) {
+    //         Alert.alert("Captions unavailable", "We could not update live captions for this room.");
+    //     }
+    // }, [isCaptionOn]);
+
+    const handleToggleCaption = React.useCallback(() => {
+        const next = !isCaptionOn;
+    
+        if (next) {
+            wherebyRoomRef.current?.startLiveCaptions();
+        } else {
+            wherebyRoomRef.current?.stopLiveCaptions();
         }
+    
+        setIsCaptionOn(next);
     }, [isCaptionOn]);
 
     const handleTogglePrescription = React.useCallback(() => {
@@ -269,8 +281,6 @@ const StartConsulationWithDoctor = () => {
         return <View />;
     }
 
-    console.log('doctor_call_link', doctor_call_link)
-
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View
@@ -319,11 +329,14 @@ const StartConsulationWithDoctor = () => {
                         {ROOM_URL ? (
                             <WherebyEmbed
                                 ref={wherebyRoomRef}
-                                style={{ marginTop: isJoined ? -25 : 0 }}
+                                style={{ marginTop: isJoined ? 0 : 0 }}
                                 room={ROOM_URL}
                                 skipMediaPermissionPrompt
                                 onWherebyMessage={(event) => {
-                                    // console.log("Whereby message:", event);
+                                    console.log(
+                                        "Whereby Message:",
+                                        JSON.stringify(event, null, 2)
+                                    );
                                 }}
                                 onReady={() => {
                                     // console.log("Whereby ready with room URL:", ROOM_URL);
@@ -351,12 +364,15 @@ const StartConsulationWithDoctor = () => {
                                     }
 
                                     const totalCallTime = callDuration; // seconds
-                                    console.log("Call Duration:", totalCallTime, "seconds");
                                 }}
                                 onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
                                 onCameraToggle={({ enabled }) => setIsCameraOn(enabled)}
                                 onChatToggle={({ open }) => setIsChatOpen(open)}
-                                onTranscriptionStatusChange={({ status }) => setIsCaptionOn(status === "started")}
+                                // onTranscriptionStatusChange={({ status }) => setIsCaptionOn(status === "started")}
+                                onTranscriptionStatusChange={({ status }) => {
+                                    console.log("Transcription status:", status);
+                                    setIsCaptionOn(status === "started");
+                                }}
                             />
                         ) : (
                             <View className="flex-1 items-center justify-center">

@@ -62,7 +62,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setToken(null);
         setAuthToken(null);
         try {
-            await AsyncStorage.multiRemove([USER_KEY, TOKEN_KEY]);
+            await AsyncStorage.multiRemove([USER_KEY, TOKEN_KEY, "@prompted_existing_patient_id"]);
         } catch (e) {
             console.log("Error clearing auth data", e);
         }
