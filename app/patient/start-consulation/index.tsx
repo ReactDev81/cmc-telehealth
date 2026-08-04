@@ -3,16 +3,16 @@ import { WherebyEmbed, type WherebyWebView } from "@whereby.com/react-native-sdk
 import { Camera } from "expo-camera";
 import { router, useLocalSearchParams } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
-import { ClosedCaption, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff, X } from "lucide-react-native";
+import { ClosedCaption, FileText, MessagesSquare, Mic, MicOff, Phone, Pill, Video, VideoOff, X } from "lucide-react-native";
 import * as React from "react";
-import { Alert, Platform, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ControlsButton from "./controls-button";
 import DcotorPrescriptions from "./prescriptions";
 
 
-type ControlKey = "chat" | "camera" | "microphone" | "caption" | "prescription";
+type ControlKey = "chat" | "camera" | "microphone" | "caption" | "transcription" | "prescription";
 
 type ControlConfig = {
     key: ControlKey;
@@ -26,6 +26,7 @@ const CONTROLS: ControlConfig[] = [
     { key: "microphone", label: "Mic", icon: Mic, inactiveIcon: MicOff },
     { key: "prescription", label: "Prescription", icon: Pill },
     { key: "chat", label: "Chat", icon: MessagesSquare },
+    { key: "transcription", label: "Transcription", icon: FileText },
     { key: "caption", label: "Caption", icon: ClosedCaption },
 ];
 
@@ -38,10 +39,7 @@ const StartConsulationWithDoctor = () => {
         doctor_id?: string;
     }>();
 
-    const { height } = useWindowDimensions();
-    const calcHeight = height - 180;
-
-    const ROOM_URL = patient_call_link + "&bottomToolbar=off&topToolbar=off";
+    const ROOM_URL = patient_call_link + "&bottomToolbar=on&topToolbar=off";
     const wherebyRoomRef = React.useRef<WherebyWebView>(null);
     const bottomSheetRef = React.useRef<BottomSheet>(null);
 
@@ -52,6 +50,7 @@ const StartConsulationWithDoctor = () => {
     const [isMicrophoneOn, setIsMicrophoneOn] = React.useState(true);
     const [isPrescriptionOpen, setIsPrescriptionOpen] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
+    const [isTranscriptionOn, setIsTranscriptionOn] = React.useState(false);
     const [isCaptionOn, setIsCaptionOn] = React.useState(false);
     const [isLeaving, setIsLeaving] = React.useState(false);
     const [isJoined, setIsJoined] = React.useState(false);
@@ -114,18 +113,80 @@ const StartConsulationWithDoctor = () => {
         setIsChatOpen(next);
     }, [isChatOpen]);
 
-    const handleToggleCaption = React.useCallback(async () => {
+    const handleToggleTranscription = React.useCallback(async () => {
         try {
-            const next = !isCaptionOn;
+            const next = !isTranscriptionOn;
             if (next) {
                 wherebyRoomRef.current?.startLiveTranscription();
             } else {
                 wherebyRoomRef.current?.stopLiveTranscription();
             }
-            setIsCaptionOn(next);
+            setIsTranscriptionOn(next);
         } catch (error) {
-            Alert.alert("Captions unavailable", "We could not update live captions for this room.");
+            Alert.alert("Transcription unavailable", "We could not update live transcription for this room.");
         }
+    }, [isTranscriptionOn]);
+
+    const handleToggleCaptionDisplay = React.useCallback(() => {
+        const script = `
+          (function() {
+            function findClickableByText(regex) {
+              const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+              let node;
+              while (node = walker.nextNode()) {
+                if (regex.test(node.textContent)) {
+                  let el = node.parentElement;
+                  while (el && el !== document.body) {
+                    const style = window.getComputedStyle(el);
+                    if (
+                      el.tagName === 'BUTTON' ||
+                      el.getAttribute('role') === 'button' ||
+                      el.getAttribute('role') === 'menuitem' ||
+                      style.cursor === 'pointer'
+                    ) {
+                      return el;
+                    }
+                    el = el.parentElement;
+                  }
+                }
+              }
+              return null;
+            }
+    
+            function clickCaptionMenuItem() {
+              const item = findClickableByText(/start live captions|stop live captions/i);
+              if (item) {
+                item.click();
+                return true;
+              }
+              return false;
+            }
+    
+            // If the menu is already open from a prior tap, just click the option directly.
+            if (clickCaptionMenuItem()) {
+              // done
+            } else {
+              const captionBtn = document.querySelector(
+                '[data-testid*="caption" i], [aria-label*="caption" i], [aria-label*="subtitle" i]'
+              );
+              if (captionBtn) {
+                captionBtn.click();
+    
+                let attempts = 0;
+                const interval = setInterval(function () {
+                  attempts++;
+                  if (clickCaptionMenuItem() || attempts > 20) {
+                    clearInterval(interval);
+                  }
+                }, 100); // polls for up to ~2s
+              }
+            }
+          })();
+          true;
+        `;
+        wherebyRoomRef.current?.injectJavaScript(script);
+    
+        setIsCaptionOn(!isCaptionOn ? true : false);
     }, [isCaptionOn]);
 
     const handleTogglePrescription = React.useCallback(() => {
@@ -144,26 +205,77 @@ const StartConsulationWithDoctor = () => {
         () => ({
             camera: handleToggleCamera,
             microphone: handleToggleMicrophone,
-            caption: handleToggleCaption,
             chat: handleToggleChat,
             prescription: handleTogglePrescription,
+            transcription: handleToggleTranscription,
+            caption: handleToggleCaptionDisplay,
         }),
         [
-            handleToggleCaption,
             handleToggleCamera,
             handleToggleMicrophone,
             handleToggleChat,
             handleTogglePrescription,
+            handleToggleTranscription,
+            handleToggleCaptionDisplay,
         ],
     );
 
     const activeMap: Record<ControlKey, boolean> = {
         camera: isCameraOn,
         microphone: isMicrophoneOn,
-        caption: isCaptionOn,
         chat: isChatOpen,
         prescription: isPrescriptionOpen,
+        transcription: isTranscriptionOn,
+        caption: isCaptionOn,
     };
+
+    const HIDE_TOOLBAR_CSS = `
+        (function() {
+
+            function findToolbarContainer() {
+                const captionBtn = document.querySelector(
+                '[data-testid*="caption" i], [aria-label*="caption" i], [aria-label*="subtitle" i]'
+                );
+                if (!captionBtn) return null;
+        
+                let el = captionBtn.parentElement;
+                while (el && el !== document.body) {
+                const rect = el.getBoundingClientRect();
+                // Heuristic: the toolbar spans most of the viewport width and sits near the bottom.
+                if (rect.width > window.innerWidth * 0.6 && rect.bottom > window.innerHeight * 0.7) {
+                    return el;
+                }
+                el = el.parentElement;
+                }
+                return null;
+            }
+    
+            function hideToolbar() {
+                const toolbar = findToolbarContainer();
+                if (toolbar) {
+                    toolbar.style.setProperty('visibility', 'hidden', 'important');
+                    toolbar.style.setProperty('pointer-events', 'none', 'important');
+                    toolbar.style.setProperty('height', '0px', 'important');
+                    return true;
+                }
+                return false;
+            }
+    
+            if (!hideToolbar()) {
+                const observer = new MutationObserver(function () {
+                    if (hideToolbar()) {
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+        
+                // Safety valve: stop watching after 15s so this doesn't run forever
+                // if the toolbar never appears (e.g. layout changes upstream).
+                setTimeout(function () { observer.disconnect(); }, 15000);
+            }
+        })();
+        true;
+    `;
 
     if (Platform.OS === "android" && !hasPermissionForAndroid) {
         return <View />;
@@ -211,15 +323,13 @@ const StartConsulationWithDoctor = () => {
                 {/* Video Container - Middle Section */}
                 <View className="bg-primary flex-1">
                     <View
-                        // className="h-[85%]"
-                        style={{
-                            height: calcHeight
-                        }}
+                         style={{ flex: 1 }}
                     >
                         <WherebyEmbed
                             ref={wherebyRoomRef}
                             room={ROOM_URL ?? ""}
-                            style={{ marginTop: isJoined ? -35 : 0 }}
+                            style={{ flex: 1 }}
+                            injectedJavaScript={HIDE_TOOLBAR_CSS}
                             skipMediaPermissionPrompt
                             onWherebyMessage={(event) => {
                                 // console.log(event);
@@ -266,7 +376,7 @@ const StartConsulationWithDoctor = () => {
                             onMicrophoneToggle={({ enabled }) => setIsMicrophoneOn(enabled)}
                             onCameraToggle={({ enabled }) => setIsCameraOn(enabled)}
                             onChatToggle={({ open }) => setIsChatOpen(open)}
-                            onTranscriptionStatusChange={({ status }) => setIsCaptionOn(status === "started")}
+                            onTranscriptionStatusChange={({ status }) => setIsTranscriptionOn(status === "started")}
                         />
                     </View>
                 </View>
