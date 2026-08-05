@@ -4,7 +4,9 @@ import AllUpcomingAppointment from "@/components/doctor/appointment/all-upcoming
 import Tab, { TabItem } from "@/components/ui/Tab";
 import { useAuth } from "@/context/UserContext";
 import { useAppointments } from "@/queries/doctor/useAppointments";
+import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
+import { useCallback } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,7 +19,16 @@ const Appointments = () => {
     const pastQuery = useAppointments("past", token!);
     const isLoading = todayQuery.isLoading || upcomingQuery.isLoading || pastQuery.isLoading;
     const isError = todayQuery.isError || upcomingQuery.isError || pastQuery.isError;
-    
+
+    // Refetch all appointment queries every time this screen gains focus
+    useFocusEffect(
+        useCallback(() => {
+            if (!token) return;
+            todayQuery.refetch();
+            upcomingQuery.refetch();
+            pastQuery.refetch();
+        }, [token])
+    );
 
     if (isLoading) return <ActivityIndicator className="flex-1" />;
 

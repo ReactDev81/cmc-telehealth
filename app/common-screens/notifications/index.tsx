@@ -5,13 +5,14 @@ import { useIsFocused } from "@react-navigation/native";
 import { router } from 'expo-router';
 import { useEffect, useState } from "react";
 import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 const tabs = ["All", "Appointment", "Availability", "Review"];
 
 const Notifications = () =>  {
 
+    const insets = useSafeAreaInsets();
     const { data, fetchNextPage, isError, error, refetch, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteNotifications(10);
     const [activeTab, setActiveTab] = useState("All");
     const notifications = data?.pages.flatMap((page) => page.data) ?? [];
@@ -54,8 +55,8 @@ const Notifications = () =>  {
     }
     
     return (
-        <SafeAreaView edges={["left", "right", "bottom"]}>
-
+        <SafeAreaView edges={["left", "right", "bottom"]} style={{ flex: 1 }}>
+    
             {/* Tabs */}
             <View className="p-5">
                 <ScrollView
@@ -76,10 +77,12 @@ const Notifications = () =>  {
                     ))}
                 </ScrollView>
             </View>
-
+    
             <FlatList
                 data={filteredData}
                 keyExtractor={(item) => item.id}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: insets?.bottom }}
                 renderItem={({ item }) => (
                     <NotificationCard
                         title={item.title}
@@ -90,9 +93,16 @@ const Notifications = () =>  {
                     />
                 )}
                 onEndReached={() => {
-                    if (hasNextPage) fetchNextPage();
+                    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
                 onEndReachedThreshold={0.5}
+                ListFooterComponent={
+                    isFetchingNextPage ? (
+                        <View className="py-4 items-center">
+                            <Text className="text-black-400 text-sm">Loading more...</Text>
+                        </View>
+                    ) : null
+                }
                 ListEmptyComponent={
                     !isLoading ? (
                         <View className="flex-1 items-center justify-center max-w-80 w-full mx-auto px-5 py-8 mt-20">
