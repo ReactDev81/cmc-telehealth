@@ -1,7 +1,8 @@
 import Button from "@/components/ui/Button";
 import { AvailableDoctorsProps } from "@/types/patient/home";
 import { Link, router } from "expo-router";
-import { ChevronRight, Hospital, Star, Video } from "lucide-react-native";
+import { ChevronRight, Star } from "lucide-react-native";
+import React from "react";
 import { Image, Text, View } from "react-native";
 
 const AvailableDoctors = ({
@@ -13,6 +14,7 @@ const AvailableDoctors = ({
     consultation_type,
     consultation_fee,
     years_experience,
+    fees_breakdown
 }: AvailableDoctorsProps) => {
 
     const experience = years_experience ? `(${years_experience} Years Exp)` : "";
@@ -32,8 +34,28 @@ const AvailableDoctors = ({
             ? { uri: avatar }
             : (avatar ?? { uri: default_avatar });
 
+    const feeItems = [
+        fees_breakdown?.video_consultation && {
+            label: "Video Consultation",
+            shortLabel: "Video\nConsultation",
+            value: fees_breakdown.video_consultation,
+        },
+        fees_breakdown?.clinic_visit?.private && {
+            label: "Private OPD",
+            shortLabel: "Private\nOPD",
+            value: fees_breakdown.clinic_visit.private,
+        },
+        fees_breakdown?.clinic_visit?.general && {
+            label: "General OPD",
+            shortLabel: "General\nOPD",
+            value: fees_breakdown.clinic_visit.general,
+        },
+        ].filter(Boolean);
+              
+    const shouldBreakLine = feeItems.length === 3;
+
     return (
-        <View className="border border-black-300 rounded-xl p-4 mt-4">
+        <View className="border border-black-300 rounded-xl p-4 mt-4 min-w-[300px]">
 
             <Link
                 href={{
@@ -65,7 +87,7 @@ const AvailableDoctors = ({
             </Link>
 
             <View className="p-4 bg-primary-100 rounded-lg mt-3">
-                <View className="flex-row items-center justify-between gap-x-5">
+                {/* <View className="flex-row items-center justify-between gap-x-5">
 
                     <View>
                         <Text className="text-sm text-black font-medium">
@@ -109,6 +131,27 @@ const AvailableDoctors = ({
                             ₹{consultation_fee}
                         </Text>
                     </View>
+                </View> */}
+                
+
+                <View className="flex-row items-center">
+                    {feeItems.map((item: any, index) => (
+                        <React.Fragment key={index}>
+                            <View className="flex-1 items-center">
+                                <Text className="text-sm font-medium text-black text-center">
+                                    {shouldBreakLine ? item.shortLabel : item.label}
+                                </Text>
+
+                                <Text className="text-sm text-black-400 mt-1 text-center">
+                                    ₹{item.value}
+                                </Text>
+                            </View>
+
+                            {index !== feeItems.length - 1 && (
+                                <View className="w-px h-14 bg-primary-200" />
+                            )}
+                        </React.Fragment>
+                    ))}
                 </View>
 
                 <Button

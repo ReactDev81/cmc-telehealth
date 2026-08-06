@@ -25,6 +25,7 @@ type Slot = {
   booking_start_time?: string;
   consultation_type: "video" | "in-person";
   opd_type?: "general" | "private";
+  consultation_type_label: string;
   available: boolean;
   booked_count: number;
   consultation_fee: string;
@@ -73,23 +74,7 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
   const [resultModalSuccess, setResultModalSuccess] = useState<boolean | null>(null);
   const [resultRouteParams, setResultRouteParams] = useState<any>(null);
 
-  // console.log('appointmentIdToReschedule', appointmentIdToReschedule)
 
-  /** Auto-select first available date */
-  useEffect(() => {
-    if (availability.length > 0) {
-      // if initialSelectedDate provided and exists in availability, select it
-      if (initialSelectedDate) {
-        const exists = availability.some((d) => d.date === initialSelectedDate);
-        if (exists) {
-          setSelectedDate(initialSelectedDate);
-          return;
-        }
-      }
-
-      if (!selectedDate) setSelectedDate(availability[0].date);
-    }
-  }, [availability]);
 
   // If initialSelectedTime is provided, try to select the matching slot on the selected date
   useEffect(() => {
@@ -125,6 +110,29 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
       month: "long",
       year: "numeric",
     });
+
+    const filteredAvailability = useMemo(() => {
+      return availability.filter((day) =>
+        day.slots.some((slot) => {
+          if (appointmentType === "video") {
+            return slot.consultation_type === "video";
+          }
+    
+          if (appointmentType === "in_person") {
+            if (opdType) {
+              return (
+                slot.consultation_type === "in-person" &&
+                slot.opd_type === opdType
+              );
+            }
+    
+            return slot.consultation_type === "in-person";
+          }
+    
+          return true;
+        })
+      );
+    }, [availability, appointmentType, opdType]);
 
   /** Slots for selected date */
   const slots = useMemo(() => {
@@ -177,23 +185,25 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
     setBookingData(booking);
   };
 
-  /** Loading */
-  // if (loading) {
-  //     return (
-  //         <View className="mt-10 items-center">
-  //             <ActivityIndicator size="large" />
-  //         </View>
-  //     );
-  // }
-
-  /** Error */
-  // if (error) {
-  //     return (
-  //         <Text className="text-red-500 mt-5">
-  //             Failed to load schedule
-  //         </Text>
-  //     );
-  // }
+    /** Auto-select first available date */
+    useEffect(() => {
+      if (filteredAvailability.length > 0) {
+        if (initialSelectedDate) {
+          const exists = filteredAvailability.some(
+            (d) => d.date === initialSelectedDate
+          );
+    
+          if (exists) {
+            setSelectedDate(initialSelectedDate);
+            return;
+          }
+        }
+    
+        if (!selectedDate) {
+          setSelectedDate(filteredAvailability[0].date);
+        }
+      }
+    }, [filteredAvailability, initialSelectedDate]);
 
   const handleBooking = () => {
     if (!bookingData) return;
@@ -308,6 +318,23 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
     }
   };
 
+  useEffect(() => {
+    if (filteredAvailability.length === 0) {
+      setSelectedDate(null);
+      setSelectedSlotId(null);
+      return;
+    }
+  
+    const exists = filteredAvailability.some(
+      (d) => d.date === selectedDate
+    );
+  
+    if (!exists) {
+      setSelectedDate(filteredAvailability[0].date);
+      setSelectedSlotId(null);
+    }
+  }, [filteredAvailability]);
+
   return (
     <View className="mt-7">
       {/* Header */}
@@ -327,7 +354,7 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
         contentContainerStyle={{ gap: 10 }}
         className="mt-5"
       >
-        {availability.map((day) => {
+        {filteredAvailability.map((day) => {
           const isActive = day.date === selectedDate;
 
           return (
@@ -390,12 +417,8 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
                   {slot.start_time} – {slot.end_time}
                 </Text>
 
-                <Text
-                  className={`text-[10px] text-center mt-0.5 ${isSelected ? "text-white" : "text-black"
-                    }`}
-                >
-                  {slot.consultation_type}
-                  {slot.opd_type && ` (${slot.opd_type})`}
+                <Text className={`text-[10px] text-center mt-0.5 ${isSelected ? "text-white" : "text-black"}`}>
+                  {slot.consultation_type_label}
                 </Text>
               </TouchableOpacity>
             );

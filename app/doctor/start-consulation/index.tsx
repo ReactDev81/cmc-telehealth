@@ -47,6 +47,8 @@ const StartConsulationWithDoctor = () => {
         patient_name?: string;
     }>();
 
+    console.log('doctor_call_link', doctor_call_link)
+
     const ROOM_URL = React.useMemo(() => {
         const baseUrl = doctor_call_link?.trim();
         if (!baseUrl) {

@@ -18,6 +18,13 @@ export interface AvailableDoctorsProps {
   name: string;
   speciality?: { name: string; role?: string; order?: number }[];
   departments?: { name: string; role?: string; order?: number }[];
+  fees_breakdown?:{
+    video_consultation: number,
+    clinic_visit: {
+        general: number,
+        private: number
+    }
+  }
   rating: number;
   years_experience: number;
 }

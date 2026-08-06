@@ -186,6 +186,7 @@ const Home = () => {
                                             consultation_type={availableDoctors.consultation_type}
                                             consultation_fee={availableDoctors.consultation_fee}
                                             years_experience={availableDoctors.years_experience}
+                                            fees_breakdown={availableDoctors.fees_breakdown}
                                         />
                                     );
                                 })

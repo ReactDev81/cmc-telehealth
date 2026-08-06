@@ -7,7 +7,8 @@ import { htmlToReadableText } from "@/utils/html";
 import { useLocalSearchParams } from "expo-router";
 import { BriefcaseBusiness, Hospital, Star, Stethoscope, Video } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import RenderHtml from "react-native-render-html";
 import DoctorSchedule from "../../../components/patient/doctor-profile/doctor-schedule";
 
 const DoctorDetail = () => {
@@ -44,6 +45,7 @@ const DoctorDetail = () => {
     );
 
     const doctor = doctorData?.data;
+    const { width } = useWindowDimensions();
 
     const hasGeneralOPD = useMemo(() => {
         return (doctor as any)?.availability?.some((day: any) =>
@@ -249,17 +251,30 @@ const DoctorDetail = () => {
                         </View>
                     </View>
                 </View>
-
-                {/* about doctor */}
-                {doctor?.about?.bio &&
+                
+                {/* About doctor */}
+                {doctor?.about?.bio && (
                     <View className="mt-6">
-                        <Text className="text-lg font-medium text-black">About Doctor</Text>
-                        <Text className="text-sm leading-6 text-black-400 mt-2">
-                            {doctor?.about?.bio}
+                        <Text className="text-lg font-medium text-black">
+                            About Doctor
                         </Text>
-                    </View>
-                }
 
+                        <View className="mt-2">
+                            <RenderHtml
+                                contentWidth={width}
+                                source={{ html: doctor.about.bio }}
+                                tagsStyles={{
+                                    p: {
+                                        fontSize: 14,
+                                        lineHeight: 24,
+                                        color: "#6B7280",
+                                        margin: 0,
+                                    },
+                                }}
+                            />
+                        </View>
+                    </View>
+                )}
 
                 {/* education */}
                 {(doctor?.education?.length ?? 0) > 0 &&

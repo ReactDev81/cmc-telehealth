@@ -63,7 +63,13 @@ const TodayAppointmentCard = ({
                             <Hospital size={14} color="#013220" />
                         )}
                     </View>
-                    <Text className="text-sm text-black-400">{mode}</Text>
+                    <Text className="text-sm text-black-400">
+                        {mode?.toLowerCase() === "video" ? (
+                            "Video consultation"
+                        ) : (
+                            "In Clinic"
+                        )}
+                    </Text>
                 </View>
                 <Button
                     onPress={() =>

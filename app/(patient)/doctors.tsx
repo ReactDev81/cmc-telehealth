@@ -110,6 +110,7 @@ const Doctors = () => {
                 consultation_type={item.consultation_type}
                 consultation_fee={item.consultation_fee}
                 years_experience={item.years_experience}
+                fees_breakdown={item.fees_breakdown}
             />
         );
     };

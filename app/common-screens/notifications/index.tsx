@@ -1,6 +1,5 @@
 import { NotificationCard } from '@/components/common/notification/notificationCard';
 import { useInfiniteNotifications } from '@/queries/common/useNotifications';
-import { formatTimeAgo } from "@/utils/timeAgo";
 import { useIsFocused } from "@react-navigation/native";
 import { router } from 'expo-router';
 import { useEffect, useState } from "react";
@@ -87,7 +86,8 @@ const Notifications = () =>  {
                     <NotificationCard
                         title={item.title}
                         description={item.desc}
-                        time={formatTimeAgo(item.created_at)}
+                        // time={formatTimeAgo(item.created_at)}
+                        time={item.created_at}
                         read={item.is_read}
                         onPress={() => router.push(`/common-screens/notifications/${item.id}`)}
                     />
