@@ -193,6 +193,7 @@ export default function RegisterCompleteProfile() {
                             onChange={onChange}
                             error={error?.message}
                             className="mt-5"
+                            minimumDate={new Date(1900, 0, 1)}
                             maximumDate={new Date()}
                         />
                     )}

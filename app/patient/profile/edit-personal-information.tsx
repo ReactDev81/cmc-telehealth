@@ -355,6 +355,7 @@ const EditPersonalInformation = () => {
                             shouldValidate: true,
                         })
                     }
+                    minimumDate={new Date(1900, 0, 1)}
                     maximumDate={new Date()}
                     placeholder="DD/MM/YYYY"
                     error={errors.date_of_birth?.message}
