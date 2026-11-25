@@ -4,6 +4,7 @@ import Button from "@/components/ui/Button";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { useAuth } from "@/context/UserContext";
 import { DoctorMenuSections } from "@/json-data/doctor/profile";
+import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -11,10 +12,15 @@ import { ScrollView, Text, View } from "react-native";
 
 const Profile = () => {
     const { logout, user } = useAuth();
+    const queryClient = useQueryClient();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     const handleLogout = async () => {
         await logout();
+        queryClient.clear();
+        if (typeof router.canDismiss === "function" && router.canDismiss()) {
+            router.dismissAll();
+        }
         router.replace("/auth/login");
     };
 

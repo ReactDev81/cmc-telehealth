@@ -14,8 +14,8 @@ type ConsultationType = "video" | "in-person" | "both";
 
 const Doctors = () => {
 
-    const { token, initializing } = useAuth();
-    const { data, isLoading, isError, error, refetch } = useBrowseDoctors(!!token && !initializing);
+    const { initializing } = useAuth();
+    const { data, isLoading, isError, error, refetch } = useBrowseDoctors(!initializing);
     const [modalVisible, setModalVisible] = useState(false);
     const params = useLocalSearchParams();
     const [filters, setFilters] = useState<{

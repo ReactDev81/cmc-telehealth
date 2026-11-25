@@ -81,9 +81,9 @@ export default function Splash() {
                 <Button
                     className="mt-3"
                     variant="outline"
-                    onPress={() => router.push("/auth/register-send-otp")}
+                    onPress={() => router.push("/(patient)/doctors")}
                 >
-                    Create an account
+                    Find Doctors
                 </Button>
             </View>
 

@@ -8,7 +8,7 @@ import { usePatientHome } from "@/queries/patient/usePatientHome";
 import { htmlToReadableText } from "@/utils/html";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
-import { Link, router } from "expo-router";
+import { Link, Redirect, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
@@ -22,7 +22,7 @@ const Home = () => {
     const insets = useSafeAreaInsets();
     const isFocused = useIsFocused();
     const { token, initializing, user } = useAuth();
-    const { data, isLoading, isError, error, refetch } = usePatientHome(!!initializing && !!token);
+    const { data, isLoading, isError, error, refetch } = usePatientHome(!!token && !initializing);
     const homeData = data?.data;
     const specialities = homeData?.speciality_symptoms || [];
     const availableDoctors = homeData?.available_doctors || [];
@@ -31,10 +31,10 @@ const Home = () => {
     const test = 0;
 
     useEffect(() => {
-        if (isFocused) {
+        if (isFocused && !!token) {
             refetch();
         }
-    }, [isFocused, refetch]);
+    }, [isFocused, refetch, token]);
 
     useEffect(() => {
         const checkExistingPatientId = async () => {
@@ -68,6 +68,10 @@ const Home = () => {
 
         checkExistingPatientId();
     }, [isFocused, user]);
+
+    if (!initializing && (!user || user.role !== "patient")) {
+        return <Redirect href="/splash" />;
+    }
 
     if (isLoading) {
         return (

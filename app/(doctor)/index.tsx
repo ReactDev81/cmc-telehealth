@@ -10,7 +10,7 @@ import TitleWithLink from "@/components/ui/title-with-link";
 import { useAuth } from "@/context/UserContext";
 import { useDoctorDashboard } from "@/queries/doctor/useDashboard";
 import { useIsFocused } from "@react-navigation/native";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { CalendarClock, CalendarOff, Star } from "lucide-react-native";
 import { useEffect } from "react";
@@ -21,7 +21,7 @@ const Home = () => {
 
     const insets = useSafeAreaInsets();
     const isFocused = useIsFocused();
-    const { token } = useAuth();
+    const { token, user, initializing } = useAuth();
     const { data, isLoading, isError, refetch } = useDoctorDashboard(token!);
 
     // Refetch dashboard data when screen comes into focus
@@ -30,6 +30,10 @@ const Home = () => {
             refetch();
         }
     }, [isFocused, token]);
+
+    if (!initializing && (!user || user.role !== "doctor")) {
+        return <Redirect href="/splash" />;
+    }
 
     if (isLoading) {
         return (

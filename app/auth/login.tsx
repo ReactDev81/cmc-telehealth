@@ -8,10 +8,11 @@ import { useAuth } from "@/context/UserContext";
 import { useLogin } from "@/mutations/useLogin";
 import { User, UserRole } from "@/types/common/user-context";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useFocusEffect } from "@react-navigation/native";
 import { Link, router } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Image, Text, View } from "react-native";
+import { BackHandler, Image, Text, View } from "react-native";
 import { z } from "zod";
 import FormLayout from "../formLayout";
 
@@ -39,6 +40,25 @@ const LoginScreen = () => {
             remember: false,
         },
     });
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                if (typeof router.canDismiss === "function" && router.canDismiss()) {
+                    router.dismissAll();
+                }
+                router.replace("/splash");
+                return true;
+            };
+
+            const subscription = BackHandler.addEventListener(
+                "hardwareBackPress",
+                onBackPress
+            );
+
+            return () => subscription.remove();
+        }, [])
+    );
 
     const handleSignIn = (formData: LoginFormValues) => {
 
@@ -84,6 +104,10 @@ const LoginScreen = () => {
                 // console.log("Render Login Screen", data);
 
                 await login(userData, data.token);
+
+                if (typeof router.canDismiss === "function" && router.canDismiss()) {
+                    router.dismissAll();
+                }
 
                 if (role === "patient") {
                     router.replace("/(patient)");

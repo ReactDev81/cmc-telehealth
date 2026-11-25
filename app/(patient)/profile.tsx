@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/UserContext";
 import { useDeleteAccount } from "@/mutations/patient/useDeleteAccount";
 import { MenuItemData } from "@/types/common/profile";
+import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Linking, ScrollView, Text, View } from "react-native";
@@ -12,6 +13,7 @@ import { menuSections } from "../../json-data/patient/profile";
 
 const Profile = () => {
     const { logout, user } = useAuth();
+    const queryClient = useQueryClient();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -19,6 +21,10 @@ const Profile = () => {
 
     const handleLogout = async () => {
         await logout();
+        queryClient.clear();
+        if (typeof router.canDismiss === "function" && router.canDismiss()) {
+            router.dismissAll();
+        }
         router.replace("/auth/login");
     };
 
@@ -44,6 +50,10 @@ const Profile = () => {
             onSuccess: async (res) => {
                 setShowDeleteModal(false);
                 await logout();
+                queryClient.clear();
+                if (typeof router.canDismiss === "function" && router.canDismiss()) {
+                    router.dismissAll();
+                }
                 Alert.alert(
                     "Account Deleted",
                     res?.message || "Your account has been deleted successfully."

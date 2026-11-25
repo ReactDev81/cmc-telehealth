@@ -4,7 +4,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import ConfirmationModal from "../../ui/ConfirmationModal";
 import Button from "../../ui/Button";
+import { useAuth } from "@/context/UserContext";
 
 type BookingData = {
   id: string;
@@ -62,6 +64,7 @@ type DoctorScheduleProps = {
 const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, appointmentIdToReschedule, initialSelectedDate, initialSelectedTime, canReschedule, appointmentStatus }: DoctorScheduleProps) => {
 
   const queryClient = useQueryClient();
+  const { user, token } = useAuth();
   const availability = doctorData?.availability ?? [];
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
@@ -73,6 +76,7 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
   const [resultModalMessage, setResultModalMessage] = useState<string | null>(null);
   const [resultModalSuccess, setResultModalSuccess] = useState<boolean | null>(null);
   const [resultRouteParams, setResultRouteParams] = useState<any>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
 
 
@@ -207,6 +211,11 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
 
   const handleBooking = () => {
     if (!bookingData) return;
+
+    if (!user || !token) {
+      setShowAuthModal(true);
+      return;
+    }
 
     // Check if reschedule is allowed
     if (bookingType === "reschedule") {
@@ -470,6 +479,20 @@ const DoctorSchedule = ({ doctorData, appointmentType, opdType, bookingType, app
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* Auth required modal */}
+      <ConfirmationModal
+        visible={showAuthModal}
+        title="Login Required"
+        message="You need to login before booking an appointment."
+        confirmText="Login"
+        cancelText="Cancel"
+        onConfirm={() => {
+          setShowAuthModal(false);
+          router.push("/auth/login");
+        }}
+        onCancel={() => setShowAuthModal(false)}
+      />
 
       {/* CTA */}
       <Button
