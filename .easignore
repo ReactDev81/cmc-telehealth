@@ -4,9 +4,6 @@
 !android/gradle/wrapper/gradle-wrapper.properties
 
 
-@@ -0,0 +1,43 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
 # dependencies
 node_modules/
 
