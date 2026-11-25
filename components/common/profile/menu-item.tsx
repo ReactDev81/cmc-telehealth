@@ -8,9 +8,18 @@ interface MenuItemProps {
     onPress: () => void
     showBorder?: boolean
     iconBgColor?: string
+    danger?: boolean
 }
 
-const MenuItem = ({ icon, title, description, onPress, showBorder = true, iconBgColor = 'bg-primary-100' }: MenuItemProps) => {
+const MenuItem = ({
+    icon,
+    title,
+    description,
+    onPress,
+    showBorder = true,
+    iconBgColor = 'bg-primary-100',
+    danger = false
+}: MenuItemProps) => {
     return (
         <TouchableOpacity
             onPress={onPress}
@@ -24,7 +33,7 @@ const MenuItem = ({ icon, title, description, onPress, showBorder = true, iconBg
             
             {/* Text Content */}
             <View className="flex-1 ml-4">
-                <Text className="text-sm font-medium text-black">
+                <Text className={`text-sm font-medium ${danger ? 'text-danger' : 'text-black'}`}>
                     {title}
                 </Text>
                 <Text className="text-sm text-black-400 mt-1">

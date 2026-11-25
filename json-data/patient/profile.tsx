@@ -11,6 +11,7 @@ import {
     MapPin,
     ShieldCheck,
     Star,
+    Trash2,
     UserStar
 } from 'lucide-react-native'
 import { MenuSection } from "../../types/common/profile"
@@ -118,6 +119,15 @@ export const menuSections: MenuSection[] = [
                 title: 'Change Password',
                 description: 'Update your account password to keep it secure.',
                 route: '/auth/reset-password'
+            },
+            {
+                id: 'delete-account',
+                icon: <Trash2 size={20} color="#FF0000" />,
+                title: 'Delete Account',
+                description: 'Permanently remove your account and all data.',
+                action: 'delete-account',
+                danger: true,
+                iconBgColor: 'bg-danger-400'
             },
         ]
     }

@@ -10,6 +10,7 @@ interface ConfirmationModalProps {
     onConfirm: () => void;
     onCancel: () => void;
     variant?: 'danger' | 'primary';
+    isLoading?: boolean;
 }
 
 const ConfirmationModal = ({
@@ -20,14 +21,15 @@ const ConfirmationModal = ({
     cancelText = "Cancel",
     onConfirm,
     onCancel,
-    variant = 'primary'
+    variant = 'primary',
+    isLoading = false
 }: ConfirmationModalProps) => {
     return (
         <Modal
             transparent
             animationType="fade"
             visible={visible}
-            onRequestClose={onCancel}
+            onRequestClose={isLoading ? undefined : onCancel}
         >
             <View className="flex-1 items-center justify-center bg-black/50 p-6">
                 <View className="bg-white w-full max-w-sm rounded-2xl p-6 shadow-xl">
@@ -42,16 +44,20 @@ const ConfirmationModal = ({
                     <View className="flex-row gap-x-3">
                         <TouchableOpacity
                             onPress={onCancel}
-                            className="flex-1 py-3 items-center justify-center rounded-xl bg-gray-100"
+                            disabled={isLoading}
+                            className={`flex-1 py-3 items-center justify-center rounded-xl bg-gray-100 ${isLoading ? 'opacity-50' : ''}`}
                         >
                             <Text className="text-black-400 font-medium">{cancelText}</Text>
                         </TouchableOpacity>
 
                         <Button
                             onPress={onConfirm}
+                            disabled={isLoading}
                             className={`flex-1 ${variant === 'danger' ? 'bg-danger' : 'bg-primary'}`}
                         >
-                            <Text className="text-white font-medium">{confirmText}</Text>
+                            <Text className="text-white font-medium">
+                                {isLoading ? "Please wait..." : confirmText}
+                            </Text>
                         </Button>
                     </View>
                 </View>

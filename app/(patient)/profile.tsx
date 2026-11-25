@@ -1,7 +1,9 @@
 import { useAuth } from "@/context/UserContext";
+import { useDeleteAccount } from "@/mutations/patient/useDeleteAccount";
+import { MenuItemData } from "@/types/common/profile";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Alert, Linking, ScrollView, Text, View } from "react-native";
 import MenuItem from "../../components/common/profile/menu-item";
 import ProfileEdit from "../../components/common/profile/profile-edit";
 import Button from "../../components/ui/Button";
@@ -9,13 +11,54 @@ import ConfirmationModal from "../../components/ui/ConfirmationModal";
 import { menuSections } from "../../json-data/patient/profile";
 
 const Profile = () => {
-
     const { logout, user } = useAuth();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const deleteAccountMutation = useDeleteAccount();
 
     const handleLogout = async () => {
         await logout();
         router.replace("/auth/login");
+    };
+
+    const handleMenuItemPress = (item: MenuItemData) => {
+        if (item.id === "delete-account" || item.action === "delete-account") {
+            setShowDeleteModal(true);
+            return;
+        }
+
+        if (item.route) {
+            if (item.route.startsWith("http")) {
+                Linking.openURL(item.route).catch((err) =>
+                    console.log("Failed to open URL:", err)
+                );
+            } else {
+                router.push(item.route as any);
+            }
+        }
+    };
+
+    const handleDeleteAccount = () => {
+        deleteAccountMutation.mutate(undefined, {
+            onSuccess: async (res) => {
+                setShowDeleteModal(false);
+                await logout();
+                Alert.alert(
+                    "Account Deleted",
+                    res?.message || "Your account has been deleted successfully."
+                );
+                router.replace("/auth/login");
+            },
+            onError: (error: any) => {
+                const message =
+                    error?.response?.data?.message ||
+                    error?.response?.data?.error ||
+                    error?.message ||
+                    "Failed to delete account. Please try again.";
+                Alert.alert("Error", message);
+            },
+        });
     };
 
     return (
@@ -42,8 +85,10 @@ const Profile = () => {
                                     icon={item.icon}
                                     title={item.title}
                                     description={item.description}
-                                    onPress={() => router.push(item.route as any)}
+                                    onPress={() => handleMenuItemPress(item)}
                                     showBorder={itemIndex !== section.items.length - 1}
+                                    iconBgColor={item.iconBgColor}
+                                    danger={item.danger}
                                 />
                             ))}
                         </View>
@@ -62,6 +107,7 @@ const Profile = () => {
                 </Button>
             </View>
 
+            {/* Logout confirmation modal */}
             <ConfirmationModal
                 visible={showLogoutModal}
                 title="Logout"
@@ -70,6 +116,23 @@ const Profile = () => {
                 onConfirm={handleLogout}
                 onCancel={() => setShowLogoutModal(false)}
                 variant="danger"
+            />
+
+            {/* Delete Account confirmation modal */}
+            <ConfirmationModal
+                visible={showDeleteModal}
+                title="Delete Account"
+                message="Are you sure you want to delete your account? This action is permanent and cannot be undone."
+                confirmText={deleteAccountMutation.isPending ? "Deleting..." : "Delete Account"}
+                cancelText="Cancel"
+                onConfirm={handleDeleteAccount}
+                onCancel={() => {
+                    if (!deleteAccountMutation.isPending) {
+                        setShowDeleteModal(false);
+                    }
+                }}
+                variant="danger"
+                isLoading={deleteAccountMutation.isPending}
             />
 
         </ScrollView>
