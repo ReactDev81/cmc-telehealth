@@ -1,16 +1,27 @@
 import api from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-interface RegisterPayload {
-  email: string;
+export interface RegisterPayload {
+  country_code: string;
+  login: string;
+  email?: string;
   password?: string;
   agreedToTerms?: boolean;
 }
 
-interface RegisterResponse {
+export interface RegisterResponse {
   success: boolean;
   message: string;
-  user_id: string;
+  code?: string;
+  path?: string;
+  timestamp?: string;
+  data?: {
+    email?: string;
+    login?: string;
+    channel?: string;
+    sent_to?: string;
+  };
+  user_id?: string;
 }
 
 export function useRegister() {

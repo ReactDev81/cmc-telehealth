@@ -1,19 +1,28 @@
 import api from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-interface CompleteProfilePayload {
-  date_of_birth: string; // YYYY-MM-DD
+export interface CompleteProfilePayload {
   first_name: string;
   last_name: string;
-  gender: "male" | "female" | "other";
+  date_of_birth: string; // YYYY-MM-DD
+  gender: "male" | "female" | "other" | string;
+  blood_group: string;
   mobile_no: string;
+  login: string;
+  country_code: string;
   email: string;
   password: string;
   is_existing_patient: boolean;
   existing_patient_id?: string;
+  treatment_consent_accepted?: boolean;
+  book_appointment?: boolean;
+  expo_push_token?: string;
+  device_type?: string;
+  device_name?: string;
+  app_version?: string;
 }
 
-interface CompleteProfileVariables {
+export interface CompleteProfileVariables {
   payload: CompleteProfilePayload;
 }
 
@@ -26,7 +35,7 @@ interface Address {
   state: string | null;
 }
 
-interface CompleteProfileResponse {
+export interface CompleteProfileResponse {
   success: boolean;
   message: string;
   data: {

@@ -11,7 +11,7 @@ import FormLayout from "../formLayout";
 
 const RegisterVerifyOtp = () => {
 
-    const { login } = useAuth();
+    const { login: setAuthUser } = useAuth();
     const { mutate: verifyOtp, isPending } = useRegisterVerifyOtp();
     const { mutate: resendOtp, isPending: resendIsPending } = useResendOtp();
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -19,9 +19,14 @@ const RegisterVerifyOtp = () => {
     const [resendTimer, setResendTimer] = useState(60);
     const inputRefs = useRef<TextInput[]>([]);
 
-    const { email } = useLocalSearchParams<{
+    const { login, country_code = "+91", email } = useLocalSearchParams<{
+        login?: string;
+        country_code?: string;
         email?: string;
     }>();
+
+    const targetLogin = typeof login === "string" && login ? login : (typeof email === "string" ? email : "");
+    const targetCountryCode = typeof country_code === "string" ? country_code : "+91";
 
     // Countdown timer
     useEffect(() => {
@@ -60,38 +65,36 @@ const RegisterVerifyOtp = () => {
 
         setError("");
 
-        const emailStr = typeof email === "string" ? email : "";
-
-        if (!emailStr) {
-            setError("Missing email.");
+        if (!targetLogin) {
+            setError("Missing WhatsApp number.");
             return;
         }
 
         verifyOtp(
             {
-                email: emailStr,
                 otp: otpString,
+                login: targetLogin,
+                country_code: targetCountryCode,
+                email: typeof email === "string" ? email : undefined,
                 context: "register",
             },
             {
                 onSuccess: async (data) => {
-                    
                     const user = data.data;
 
-                    // API returns a single "name" field — split it
                     const userData: User = {
-                        id: "",
-                        first_name: "",
-                        last_name: "",
-                        avatar: "",
-                        email: emailStr,
+                        id: user?.id ?? "",
+                        first_name: user?.first_name ?? "",
+                        last_name: user?.last_name ?? "",
+                        avatar: user?.avatar ?? "",
+                        email: user?.email ?? "",
                         gender: "",
                         date_of_birth: "",
-                        role: "patient", 
-                        phone: "",
+                        role: "patient",
+                        phone: targetLogin,
                         patient_id: "",
                         doctor_id: "",
-                        status: user.status ?? "",
+                        status: user?.status ?? "verified",
                         address: {
                             address: null,
                             area: null,
@@ -102,17 +105,23 @@ const RegisterVerifyOtp = () => {
                         },
                     };
 
-                    await login(userData, data.token ?? "");
+                    await setAuthUser(userData, data.token ?? "");
 
                     router.replace({
                         pathname: "/auth/register-complete-profile",
                         params: {
-                            email: emailStr,
+                            login: targetLogin,
+                            country_code: targetCountryCode,
+                            mobile_no: targetLogin,
+                            email: user?.email && user.email.includes("@") ? user.email : "",
                         },
                     });
                 },
                 onError: (error) => {
-                    const message = error.response?.data?.errors?.message ?? error.message ??
+                    const message =
+                        error.response?.data?.errors?.message ??
+                        error.response?.data?.message ??
+                        error.message ??
                         "Invalid OTP. Please try again.";
                     setError(message);
                 },
@@ -122,24 +131,28 @@ const RegisterVerifyOtp = () => {
 
     const handleResendOTP = async () => {
         setError("");
-        const emailStr = typeof email === "string" ? email : "";
 
-        if (!emailStr) {
-            setError("Email is missing");
+        if (!targetLogin) {
+            setError("WhatsApp number is missing");
             return;
         }
 
         resendOtp(
             {
-                email: emailStr,
+                login: targetLogin,
+                country_code: targetCountryCode,
+                email: typeof email === "string" ? email : undefined,
                 context: "registration",
             },
             {
                 onSuccess: (data) => {
-                    console.log(data); // OTP resent
+                    console.log("OTP resent:", data);
                 },
                 onError: (error) => {
-                    const message = error.response?.data?.errors?.message ?? error.message ??
+                    const message =
+                        error.response?.data?.errors?.message ??
+                        error.response?.data?.message ??
+                        error.message ??
                         "Something went wrong. Please try again.";
                     setError(message);
                 },
@@ -169,7 +182,8 @@ const RegisterVerifyOtp = () => {
                     Verify OTP
                 </Text>
                 <Text className="text-gray-500 text-base mt-2 text-center">
-                    Fill the OTP that we sent on your email.
+                    Fill the OTP that we sent on your WhatsApp number{" "}
+                    {targetLogin ? `(${targetCountryCode} ${targetLogin})` : ""}.
                 </Text>
             </View>
 
@@ -212,14 +226,15 @@ const RegisterVerifyOtp = () => {
             <View className="mt-6 items-center">
                 
                 <Text className="text-gray-500 text-sm">
-                    Resend OTP in{" "}
-                    {resendTimer > 0 && (
-                            <Text className="text-gray-500 text-sm">
-                                Resend OTP in {' '}
+                    {resendTimer > 0 ? (
+                        <>
+                            Resend OTP in{" "}
                             <Text className="text-primary font-medium">
                                 00:{resendTimer.toString().padStart(2, "0")}
                             </Text>
-                        </Text>
+                        </>
+                    ) : (
+                        "Didn't receive the OTP?"
                     )}
                 </Text>
 

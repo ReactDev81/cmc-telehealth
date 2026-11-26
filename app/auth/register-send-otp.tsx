@@ -1,4 +1,4 @@
-import Input from "@/components/form/Input";
+import CountryPicker from "@/components/form/country-picker";
 import ApiError from "@/components/ui/ApiError";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/UserContext";
@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 import { X } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Image, Modal, Pressable, Text, View } from "react-native";
+import { Controller, useForm } from "react-hook-form";
+import { Image, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 import PrivacyPolicy from "../common-screens/profile/privacy-policy";
@@ -39,58 +39,72 @@ const getErrorMessage = (error: any) => {
 };
 
 const schema = z.object({
-    email: z.string().email("Enter a valid email"),
+    login: z
+        .string()
+        .min(6, "Please enter a valid phone number")
+        .max(15, "Phone number is too long"),
 });
+
+type FormValues = z.infer<typeof schema>;
 
 export default function RegisterSendOtp() {
 
     const { user } = useAuth();
     const { mutate: register, isPending, isError, error } = useRegister();
+    const [countryCode, setCountryCode] = useState("+91");
     const [openPrivacy, setOpenPrivacy] = useState(false);
     const [openTerm, setOpenTerm] = useState(false);
-    const [emailverified, setEmailverified] = useState(false);
-    const [email, setEmail] = useState("");
+    const [isVerified, setIsVerified] = useState(false);
+    const [verifiedLogin, setVerifiedLogin] = useState("");
 
-    const { control, handleSubmit } = useForm({
+    const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({
         resolver: zodResolver(schema),
         defaultValues: {
-            email: "",
+            login: "",
         },
     });
 
-    const onSubmit = async (formData: any) => {
+    const onSubmit = async (formData: FormValues) => {
         register(
             {
-                email: formData.email,
+                country_code: countryCode,
+                login: formData.login,
             },
             {
                 onSuccess: () => {
                     router.push({
                         pathname: "/auth/register-verify-otp",
                         params: {
-                            email: formData.email,
+                            login: formData.login,
+                            country_code: countryCode,
                         },
                     });
                 },
                 onError: (error) => {
-                    console.log('Register API full error data:', error.response?.data);
+                    console.log("Register API full error data:", error.response?.data);
                     const err = getErrorMessage(error);
-                    console.log('Register error message:', err);
+                    console.log("Register error message:", err);
                     if (error.response?.data?.errors?.status === "verified") {
-                        setEmailverified(true);
-                        setEmail(error.response?.data?.errors?.email);
+                        setIsVerified(true);
+                        setVerifiedLogin(error.response?.data?.errors?.login || formData.login);
                     }
                 },
             },
         );
     };
 
-
     useEffect(() => {
         if (user?.role === "patient" && user?.status === "verified") {
-            router.replace("/auth/register-complete-profile");
+            router.replace({
+                pathname: "/auth/register-complete-profile",
+                params: {
+                    login: user?.phone || "",
+                    mobile_no: user?.phone || "",
+                    country_code: countryCode,
+                },
+            });
         }
-    }, [user]);
+    }, [user, countryCode]);
 
     return (
         <FormLayout>
@@ -106,43 +120,80 @@ export default function RegisterSendOtp() {
                     </Text>
                 </View>
 
-                <View className="mt-4">
+                <View className="mt-2">
                     <Text className="text-black text-2xl font-bold text-center">
-                        Create an account
+                        Create new account
                     </Text>
-                    <Text className="text-gray-500 mt-2 text-center">
-                        Let's get you started. Please enter your details
+                    <Text className="text-gray-500 mt-2 text-center text-sm leading-5 px-2">
+                        Enter your WhatsApp number. We will send you a verification code on WhatsApp.
                     </Text>
                 </View>
 
-                {/* Email */}
-                <Input
-                    name="email"
-                    control={control}
-                    label="Email"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    placeholder="example@email.com"
-                    containerClassName="mt-8"
-                />
+                {/* Country Code & WhatsApp Number side by side */}
+                <View className="flex-row gap-x-3 items-start mt-8">
+                    {/* Country Selector */}
+                    <View className="w-28">
+                        <CountryPicker
+                            label="Country"
+                            value={countryCode}
+                            onChange={(country) => setCountryCode(country.dial_code)}
+                        />
+                    </View>
+
+                    {/* WhatsApp Number Input */}
+                    <View className="flex-1">
+                        <Text className="text-sm text-black mb-1.5 font-medium">
+                            WhatsApp Number <Text className="text-red-500">*</Text>
+                        </Text>
+                        <Controller
+                            control={control}
+                            name="login"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <View>
+                                    <TextInput
+                                        className={`border rounded-xl px-4 py-3.5 text-sm leading-4 text-black bg-white ${
+                                            errors.login ? "border-red-500" : "border-gray"
+                                        }`}
+                                        value={value}
+                                        onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ""))}
+                                        onBlur={onBlur}
+                                        placeholder="98765 43210"
+                                        placeholderTextColor="#9CA3AF"
+                                        keyboardType="number-pad"
+                                        maxLength={15}
+                                        underlineColorAndroid="transparent"
+                                    />
+                                    {errors.login && (
+                                        <Text className="text-xs text-red-600 mt-1">
+                                            {errors.login.message}
+                                        </Text>
+                                    )}
+                                </View>
+                            )}
+                        />
+                    </View>
+                </View>
 
                 {/* api error message */}
                 <ApiError
                     message={isError ? getErrorMessage(error) : null}
                 />
 
+                {/* Submit / Get OTP Button */}
                 {
-                    emailverified ? (
+                    isVerified ? (
                         <Button
                             onPress={() =>
                                 router.replace({
                                     pathname: "/auth/register-complete-profile",
                                     params: {
-                                        email: email,
+                                        login: verifiedLogin,
+                                        mobile_no: verifiedLogin,
+                                        country_code: countryCode,
                                     },
                                 })
                             }
-                            className="mt-4"
+                            className="mt-6"
                             disabled={isPending}
                         >
                             Complete Your Profile
@@ -150,21 +201,23 @@ export default function RegisterSendOtp() {
                     ) : (
                         <Button
                             onPress={handleSubmit(onSubmit)}
-                            className="mt-4"
+                            className="mt-6"
                             disabled={isPending}
                         >
-                            {isPending ? "loading..." : "Continue"}
+                            {isPending ? "Sending OTP..." : "Get OTP"}
                         </Button>
                     )
                 }
 
-                <View className="mt-10 items-center">
-                    <Text className="text-gray-500">
-                        Already have an account?{" "}
-                        <Link href="/auth/login">
-                            <Text className="text-primary font-medium">Sign In</Text>
-                        </Link>
-                    </Text>
+                {/* Footer links: Back to Home · Sign in instead */}
+                <View className="mt-8 flex-row items-center justify-center gap-x-2">
+                    <Link href="/splash">
+                        <Text className="text-gray-500 text-sm font-medium">Back to Home</Text>
+                    </Link>
+                    <Text className="text-gray-400 text-sm">·</Text>
+                    <Link href="/auth/login">
+                        <Text className="text-primary text-sm font-semibold">Sign in instead</Text>
+                    </Link>
                 </View>
 
                 {/* Privacy Modal */}

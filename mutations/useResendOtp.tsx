@@ -1,12 +1,14 @@
 import api from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-interface ResendOtpPayload {
-  email: string;
+export interface ResendOtpPayload {
   context: "registration" | "forgot_password";
+  login?: string;
+  country_code?: string;
+  email?: string;
 }
 
-interface ResendOtpResponse {
+export interface ResendOtpResponse {
   success: boolean;
   message: string;
 }

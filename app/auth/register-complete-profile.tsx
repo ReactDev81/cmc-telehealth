@@ -1,6 +1,7 @@
 import DateField from "@/components/form/date";
 import Input from "@/components/form/Input";
 import PasswordInput from "@/components/form/password";
+import SelectField from "@/components/form/selectField";
 import ApiError from "@/components/ui/ApiError";
 import Button from "@/components/ui/Button";
 import { useNotification } from "@/context/NotificationContext";
@@ -14,6 +15,17 @@ import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 import { z } from "zod";
 import FormLayout from "../formLayout";
+
+const bloodGroupOptions = [
+    { label: "A+", value: "A+" },
+    { label: "A-", value: "A-" },
+    { label: "B+", value: "B+" },
+    { label: "B-", value: "B-" },
+    { label: "AB+", value: "AB+" },
+    { label: "AB-", value: "AB-" },
+    { label: "O+", value: "O+" },
+    { label: "O-", value: "O-" },
+];
 
 const schema = z.object({
     first_name: z.string().min(1, "First name is required"),
@@ -31,7 +43,8 @@ const schema = z.object({
         .string()
         .regex(/^\d{10}$/, "Phone number must contain exactly 10 digits"),
     gender: z.string().min(1, "Gender is required"),
-    email: z.string().email("Invalid email"),
+    blood_group: z.string().min(1, "Blood group is required"),
+    email: z.string().email("Enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     is_existing_patient: z.boolean({ required_error: "Please select an option" }),
     existing_patient_id: z.string().optional(),
@@ -45,25 +58,35 @@ const schema = z.object({
     path: ["existing_patient_id"],
 });
 
+type FormValues = z.infer<typeof schema>;
 
 export default function RegisterCompleteProfile() {
 
-    const { email } = useLocalSearchParams<{
+    const { login: paramLogin, mobile_no, country_code = "+91", email } = useLocalSearchParams<{
+        login?: string;
+        mobile_no?: string;
+        country_code?: string;
         email?: string;
     }>();
 
-    const { login, user } = useAuth();
+    const { login: setAuthUser, user } = useAuth();
     const { mutate: completeProfile, isPending, isError, error } = useCompleteProfile();
     const { deviceInfo } = useNotification();
 
-    const { control, handleSubmit, reset, watch, setValue } = useForm({
+    const finalLogin = typeof paramLogin === "string" && paramLogin
+        ? paramLogin
+        : (typeof mobile_no === "string" && mobile_no ? mobile_no : user?.phone ?? "");
+    const finalCountryCode = typeof country_code === "string" && country_code ? country_code : "+91";
+
+    const { control, handleSubmit, reset, watch, setValue } = useForm<FormValues>({
         resolver: zodResolver(schema),
         defaultValues: {
             first_name: "",
             last_name: "",
             date_of_birth: undefined,
-            mobile_no: "",
+            mobile_no: finalLogin,
             gender: "",
+            blood_group: "",
             email: "",
             password: "",
             is_existing_patient: false,
@@ -73,35 +96,51 @@ export default function RegisterCompleteProfile() {
 
     const isExistingPatient = watch("is_existing_patient");
 
-    // Prefill email once the route param is available
+    // Prefill mobile number and clean initial email once available
     useEffect(() => {
-        const finalEmail = typeof email === "string" ? email : user?.email ?? "";
+        const initialEmail = typeof email === "string" && email.includes("@")
+            ? email
+            : (user?.email && user.email.includes("@") ? user.email : "");
+
         reset({
             first_name: "",
             last_name: "",
             date_of_birth: undefined,
-            mobile_no: "",
+            mobile_no: finalLogin,
             gender: "",
-            email: finalEmail,
+            blood_group: "",
+            email: initialEmail,
             password: "",
             is_existing_patient: false,
             existing_patient_id: "",
         });
-    }, [email, user?.email]);
+    }, [finalLogin, email, user?.email]);
 
-    const onSubmit = (formData: any) => {
+    const onSubmit = (formData: FormValues) => {
         const payload: any = {
-            ...formData,
-            date_of_birth: formData.date_of_birth.toISOString().split("T")[0],
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            date_of_birth: formData.date_of_birth instanceof Date
+                ? formData.date_of_birth.toISOString().split("T")[0]
+                : String(formData.date_of_birth),
             gender: formData.gender.toLowerCase(),
+            blood_group: formData.blood_group,
+            mobile_no: formData.mobile_no,
+            login: finalLogin || formData.mobile_no,
+            country_code: finalCountryCode,
+            email: formData.email,
+            password: formData.password,
+            is_existing_patient: formData.is_existing_patient,
+            treatment_consent_accepted: true,
+            book_appointment: false,
             expo_push_token: deviceInfo?.expo_push_token ?? "",
             device_type: deviceInfo?.device_type ?? "",
             device_name: deviceInfo?.device_name ?? "",
             app_version: deviceInfo?.app_version ?? "",
         };
 
-        if (!formData.is_existing_patient) {
-            delete payload.existing_patient_id;
+        if (formData.is_existing_patient) {
+            payload.existing_patient_id = formData.existing_patient_id;
         }
 
         completeProfile(
@@ -110,41 +149,42 @@ export default function RegisterCompleteProfile() {
             },
             {
                 onSuccess: async (data) => {
-
-                    const user = data.data;
+                    const profileData = data.data;
 
                     const userData: User = {
-                        id: user.id,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        avatar: user.avatar,
-                        email: user.email,
-                        gender: user.gender,
-                        date_of_birth: user.date_of_birth,
+                        id: profileData.id,
+                        first_name: profileData.first_name,
+                        last_name: profileData.last_name,
+                        avatar: profileData.avatar,
+                        email: profileData.email,
+                        gender: profileData.gender,
+                        date_of_birth: profileData.date_of_birth,
                         role: "patient",
-                        phone: user.phone,
-                        patient_id: user.patient_id ?? undefined,
+                        phone: profileData.phone,
+                        patient_id: profileData.patient_id ?? undefined,
                         doctor_id: undefined,
-                        status: user.status,
+                        status: profileData.status,
                         address: {
-                            address: user.address?.address ?? null,
-                            area: user.address?.area ?? null,
-                            city: user.address?.city ?? null,
-                            landmark: user.address?.landmark ?? null,
-                            pincode: user.address?.pincode ?? null,
-                            state: user.address?.state ?? null,
+                            address: profileData.address?.address ?? null,
+                            area: profileData.address?.area ?? null,
+                            city: profileData.address?.city ?? null,
+                            landmark: profileData.address?.landmark ?? null,
+                            pincode: profileData.address?.pincode ?? null,
+                            state: profileData.address?.state ?? null,
                         },
-                        existing_patient_id: user.existing_patient_id ?? undefined,
-                        is_existing_patient: user.is_existing_patient ?? undefined,
+                        existing_patient_id: profileData.existing_patient_id ?? undefined,
+                        is_existing_patient: profileData.is_existing_patient ?? undefined,
                     };
 
-                    await login(userData, data.token);
-                    router.replace("/(patient)");
+                    await setAuthUser(userData, data.token);
 
+                    if (typeof router.canDismiss === "function" && router.canDismiss()) {
+                        router.dismissAll();
+                    }
+                    router.replace("/(patient)");
                 },
-                onError: (error) => {
-                    const err = (error as any)?.response?.data?.errors?.message;
-                    console.log('err', err);
+                onError: (err) => {
+                    console.log("complete profile error:", err?.response?.data || err);
                 },
             },
         );
@@ -199,13 +239,13 @@ export default function RegisterCompleteProfile() {
                     )}
                 />
 
-                {/* Phone Number */}
+                {/* Phone / WhatsApp Number */}
                 <Input
                     name="mobile_no"
-                    label="Phone Number"
+                    label="WhatsApp / Phone Number"
                     containerClassName="mt-5"
                     control={control}
-                    placeholder="00-000-0000"
+                    placeholder="10-digit mobile number"
                     keyboardType="number-pad"
                     numericOnly={true}
                 />
@@ -216,27 +256,66 @@ export default function RegisterCompleteProfile() {
                     <Controller
                         control={control}
                         name="gender"
-                        render={({ field: { onChange, value } }) => (
-                            <View className="flex-row gap-2">
-                                {["Male", "Female"].map((g) => (
-                                    <Pressable
-                                        key={g}
-                                        onPress={() => onChange(g)}
-                                        className={`flex-1 py-4 px-4 rounded-xl border ${value === g ? "bg-primary border-primary" : "border-primary"
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <View>
+                                <View className="flex-row gap-2">
+                                    {["Male", "Female"].map((g) => (
+                                        <Pressable
+                                            key={g}
+                                            onPress={() => onChange(g)}
+                                            className={`flex-1 py-4 px-4 rounded-xl border ${
+                                                value === g
+                                                    ? "bg-primary border-primary"
+                                                    : "border-primary"
                                             }`}
-                                    >
-                                        <Text
-                                            className={`text-center ${value === g ? "text-white" : "text-primary"
-                                                }`}
                                         >
-                                            {g}
-                                        </Text>
-                                    </Pressable>
-                                ))}
+                                            <Text
+                                                className={`text-center ${
+                                                    value === g ? "text-white" : "text-primary"
+                                                }`}
+                                            >
+                                                {g}
+                                            </Text>
+                                        </Pressable>
+                                    ))}
+                                </View>
+                                {error && (
+                                    <Text className="text-xs text-red-600 mt-1">{error.message}</Text>
+                                )}
                             </View>
                         )}
                     />
                 </View>
+
+                {/* Blood Group */}
+                <SelectField
+                    name="blood_group"
+                    label="Blood Group"
+                    control={control}
+                    options={bloodGroupOptions}
+                    placeholder="Select Blood Group"
+                    className="mt-5"
+                />
+
+                {/* Email Address */}
+                <Input
+                    name="email"
+                    control={control}
+                    label="Email Address"
+                    placeholder="example@email.com"
+                    containerClassName="mt-5"
+                    editable={true}
+                    keyboardType="email-address"
+                />
+
+                {/* Password */}
+                <PasswordInput
+                    name="password"
+                    control={control}
+                    label="Password"
+                    placeholder="Password"
+                    containerClassName="mt-5"
+                />
 
                 {/* Are you an existing patient? */}
                 <View>
@@ -259,14 +338,16 @@ export default function RegisterCompleteProfile() {
                                                     setValue("existing_patient_id", "");
                                                 }
                                             }}
-                                            className={`flex-1 py-4 px-4 rounded-xl border ${value === option.val
+                                            className={`flex-1 py-4 px-4 rounded-xl border ${
+                                                value === option.val
                                                     ? "bg-primary border-primary"
                                                     : "border-primary"
-                                                }`}
+                                            }`}
                                         >
                                             <Text
-                                                className={`text-center ${value === option.val ? "text-white" : "text-primary"
-                                                    }`}
+                                                className={`text-center ${
+                                                    value === option.val ? "text-white" : "text-primary"
+                                                }`}
                                             >
                                                 {option.label}
                                             </Text>
@@ -292,29 +373,12 @@ export default function RegisterCompleteProfile() {
                     />
                 )}
 
-                <Input
-                    name="email"
-                    control={control}
-                    label="Email"
-                    placeholder="Email"
-                    containerClassName="mt-5"
-                    editable={false}
-                    keyboardType="email-address"
-                />
-
-                <PasswordInput
-                    name="password"
-                    control={control}
-                    label="Password"
-                    placeholder="Password"
-                    containerClassName="mt-5"
-                />
-
                 {/* api error message */}
                 <ApiError
                     message={
                         isError
                             ? ((error as any)?.response?.data?.errors?.message ??
+                                (error as any)?.response?.data?.message ??
                                 (error as any)?.message ??
                                 "Something went wrong. Please try again.")
                             : null
@@ -326,15 +390,12 @@ export default function RegisterCompleteProfile() {
                     disabled={isPending}
                     className="mt-6"
                 >
-                    {isPending ? "loading" : "Continue"}
+                    {isPending ? "loading..." : "Continue"}
                 </Button>
 
                 <Text className="text-base text-black-400 text-center mt-5 px-4">
                     By providing your mobile number, you give us permission to contact you
                     via text.
-                    {/* <Link href="/auth/login">
-                        <Text className="text-primary font-medium">Sign In</Text>
-                    </Link> */}
                 </Text>
 
             </View>

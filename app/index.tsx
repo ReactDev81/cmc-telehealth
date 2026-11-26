@@ -24,7 +24,12 @@ export default function Index() {
             <Redirect
                 href={{
                     pathname: "/auth/register-complete-profile",
-                    params: { email: user.email },
+                    params: {
+                        login: user.phone || user.email,
+                        mobile_no: user.phone || "",
+                        country_code: "+91",
+                        email: user.email && user.email.includes("@") ? user.email : "",
+                    },
                 }}
             />
         )

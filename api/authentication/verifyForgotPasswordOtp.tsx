@@ -1,16 +1,18 @@
 import api from "@/lib/axios";
 
 export interface VerifyForgotPasswordOtpPayload {
-    email: string;
+    login: string;
+    country_code?: string;
     otp: string;
-    context: "forgot_password";
 }
 
 export interface VerifyForgotPasswordOtpResponse {
+    success?: boolean;
+    message?: string;
     data: {
-        email: string;
+        login: string;
         reset_token: string;
-    }
+    };
 }
 
 export const verifyForgotPasswordOtp = async (

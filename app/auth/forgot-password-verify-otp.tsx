@@ -8,8 +8,7 @@ import { Image, Pressable, Text, TextInput, View } from "react-native";
 import FormLayout from "../formLayout";
 
 const ForgotPasswordVerifyOtp = () => {
-
-    const { mutate, isPending, error: apiError } = useVerifyForgotPasswordOtp();
+    const { mutate, isPending } = useVerifyForgotPasswordOtp();
     const { mutate: resendOtp, isPending: resendIsPending } = useResendOtp();
 
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -17,9 +16,15 @@ const ForgotPasswordVerifyOtp = () => {
     const [resendTimer, setResendTimer] = useState(60);
     const inputRefs = useRef<TextInput[]>([]);
 
-    const { email } = useLocalSearchParams<{
-        email?: string;
+    const { login, country_code, method } = useLocalSearchParams<{
+        login?: string;
+        country_code?: string;
+        method?: string;
     }>();
+
+    const loginStr = typeof login === "string" ? login : "";
+    const countryCodeStr = typeof country_code === "string" ? country_code : "";
+    const isWhatsApp = method !== "email" && Boolean(countryCodeStr);
 
     // Countdown timer
     useEffect(() => {
@@ -48,7 +53,6 @@ const ForgotPasswordVerifyOtp = () => {
     };
 
     const handleVerify = async () => {
-
         const otpString = otp.join("");
 
         if (otpString.length < 6) {
@@ -56,29 +60,40 @@ const ForgotPasswordVerifyOtp = () => {
             return;
         }
 
-        setError("");
-        const emailStr = typeof email === "string" ? email : "";
-
-        if (!emailStr) {
-            setError("Email is missing");
+        if (!loginStr) {
+            setError("Login identifier is missing. Please go back.");
             return;
         }
 
+        setError("");
+
         mutate(
             {
-                email: emailStr,
+                login: loginStr,
+                ...(countryCodeStr ? { country_code: countryCodeStr } : {}),
                 otp: otpString,
-                context: "forgot_password",
             },
             {
                 onSuccess: (res) => {
+                    const resetToken = res.data?.reset_token;
+                    if (!resetToken) {
+                        setError("Reset token missing from response.");
+                        return;
+                    }
                     router.push({
                         pathname: "/auth/forgot-password-change-password",
-                        params: { email: emailStr, reset_token: res.data?.reset_token },
+                        params: {
+                            login: loginStr,
+                            country_code: countryCodeStr,
+                            reset_token: resetToken,
+                        },
                     });
                 },
-                onError: (error: any) => {
-                    const message = error.response?.data?.errors?.message ?? error.message ??
+                onError: (err: any) => {
+                    const message =
+                        err.response?.data?.errors?.message ??
+                        err.response?.data?.message ??
+                        err.message ??
                         "Invalid OTP. Please try again.";
                     setError(message);
                 },
@@ -87,40 +102,36 @@ const ForgotPasswordVerifyOtp = () => {
     };
 
     const handleResendOTP = async () => {
-
-        setError("");
-        const emailStr = typeof email === "string" ? email : "";
-
-        if (!emailStr) {
-            setError("Email is missing");
+        if (!loginStr) {
+            setError("Login identifier is missing.");
             return;
         }
 
+        setError("");
+
         resendOtp(
             {
-                email: emailStr,
+                login: loginStr,
+                country_code: countryCodeStr || undefined,
                 context: "forgot_password",
             },
             {
-                onSuccess: (data) => {
-                    console.log(data);
+                onSuccess: () => {
+                    setResendTimer(60);
                 },
-                onError: (error) => {
-                    console.log(error.response?.data);
+                onError: (err: any) => {
                     setError(
-                        (apiError as any)?.response?.data?.message ||
-                        "Something was wrong. Please try again.",
+                        err?.response?.data?.message ??
+                        err?.response?.data?.errors?.message ??
+                        "Failed to resend OTP. Please try again."
                     );
                 },
             },
         );
-
-        setResendTimer(60);
     };
 
     return (
         <FormLayout>
-
             {/* Logo and title */}
             <View className="mb-6">
                 <Image
@@ -135,10 +146,16 @@ const ForgotPasswordVerifyOtp = () => {
             {/* Heading */}
             <View className="mt-4">
                 <Text className="text-black text-2xl font-semibold text-center">
-                    Verify OTP
+                    Verify Reset Code
                 </Text>
-                <Text className="text-gray-500 text-base mt-2 text-center">
-                    Fill the OTP that we sent on your email.
+                <Text className="text-gray-500 text-sm mt-2 text-center px-4">
+                    Enter the 6-digit code sent to{" "}
+                    <Text className="font-semibold text-black">
+                        {isWhatsApp
+                            ? `${countryCodeStr} ${loginStr}`
+                            : loginStr}
+                    </Text>
+                    {isWhatsApp ? " on WhatsApp" : ""}
                 </Text>
             </View>
 
@@ -165,7 +182,6 @@ const ForgotPasswordVerifyOtp = () => {
                         />
                     ))}
                 </View>
-
             </View>
 
             {/* Error message */}
@@ -174,13 +190,12 @@ const ForgotPasswordVerifyOtp = () => {
             {/* Verify Button */}
             <Button onPress={handleVerify} className="mt-8" disabled={isPending}>
                 <Text className="text-white text-center text-base font-semibold">
-                    {isPending ? "loading..." : "Continue"}
+                    {isPending ? "Verifying..." : "Verify & Continue"}
                 </Text>
             </Button>
 
             {/* Resend Timer + Back to Login */}
             <View className="mt-6 items-center">
-
                 <Text className="text-gray-500 text-sm">
                     Resend OTP in{" "}
                     <Text className="text-primary font-medium">
@@ -191,22 +206,21 @@ const ForgotPasswordVerifyOtp = () => {
                 <Pressable
                     onPress={handleResendOTP}
                     className="mt-2"
-                    disabled={resendTimer > 0}
+                    disabled={resendTimer > 0 || resendIsPending}
                 >
                     <Text
                         className={`font-medium ${
                             resendTimer > 0 ? "text-gray-400" : "text-primary"
                         }`}
                     >
-                        {resendIsPending ? "loading" : "Resend OTP"}
+                        {resendIsPending ? "Resending..." : "Resend OTP"}
                     </Text>
                 </Pressable>
 
-                <Pressable onPress={() => router.push("/auth/login")} className="mt-3">
+                <Pressable onPress={() => router.push("/auth/login")} className="mt-4">
                     <Text className="text-primary font-medium">Back to login</Text>
                 </Pressable>
             </View>
-
         </FormLayout>
     );
 };

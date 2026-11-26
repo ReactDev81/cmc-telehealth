@@ -1,13 +1,15 @@
 import api from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-interface RegisterVerifyOtpPayload {
-  email: string;
+export interface RegisterVerifyOtpPayload {
   otp: string;
-  context: "register" | "login";
+  login?: string;
+  country_code?: string;
+  email?: string;
+  context?: "register" | "login";
 }
 
-interface RegisterVerifyOtpResponse {
+export interface RegisterVerifyOtpResponse {
   success: boolean;
   message: string;
   token: string;
@@ -31,7 +33,6 @@ interface RegisterVerifyOtpResponse {
 export function useRegisterVerifyOtp() {
   return useMutation<RegisterVerifyOtpResponse, any, RegisterVerifyOtpPayload>({
     mutationFn: async (payload) => {
-      // const { data } = await api.post("/verify-otp", payload);
       const { data } = await api.post("/auth/verify-email", payload);
       return data;
     },

@@ -1,10 +1,17 @@
 import api from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-interface LoginPayload {
-  email: string;
+export interface LoginPayload {
+  login: string;
   password: string;
+  country_code?: string;
+  email?: string;
+  phone?: string;
   remember?: boolean;
+  expo_push_token?: string | null;
+  device_type?: string | null;
+  device_name?: string | null;
+  app_version?: string | null;
 }
 
 interface Address {
