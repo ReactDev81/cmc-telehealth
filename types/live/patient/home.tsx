@@ -26,6 +26,7 @@ export interface AvailableDoctorsProps {
         private: number
     }
   }
+  currency_symbol?: string;
   rating: number;
   years_experience: number;
 }

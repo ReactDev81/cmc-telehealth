@@ -14,7 +14,8 @@ const AvailableDoctors = ({
     consultation_type,
     consultation_fee,
     years_experience,
-    fees_breakdown
+    fees_breakdown,
+    currency_symbol
 }: AvailableDoctorsProps) => {
 
     const experience = years_experience ? `(${years_experience} Years Exp)` : "";
@@ -50,8 +51,8 @@ const AvailableDoctors = ({
             shortLabel: "General\nOPD",
             value: fees_breakdown.clinic_visit.general,
         },
-        ].filter(Boolean);
-              
+    ].filter(Boolean);
+
     const shouldBreakLine = feeItems.length === 3;
 
     return (
@@ -87,52 +88,6 @@ const AvailableDoctors = ({
             </Link>
 
             <View className="p-4 bg-primary-100 rounded-lg mt-3">
-                {/* <View className="flex-row items-center justify-between gap-x-5">
-
-                    <View>
-                        <Text className="text-sm text-black font-medium">
-                            Consultation Type
-                        </Text>
-
-                        <View className="flex-row items-center gap-x-1.5 mt-1">
-                            {consultation_type === "video" ? (
-                                <>
-                                    <Video color="#1ABE17" fill="#1ABE17" size={14} />
-                                    <Text className="text-success text-sm">{consultation_type}</Text>
-                                </>
-
-                            ) :
-                                consultation_type === "both" ? (
-                                    <>
-                                        <Video color="#1ABE17" fill="#1ABE17" size={14} />
-                                        <Text className="text-success text-sm">Video</Text>
-                                        <View className="w-[1px] h-full bg-primary-200"></View>
-                                        <Hospital color="#055bd9" size={14} />
-                                        <Text className="text-[#055bd9] text-sm">In Person</Text>
-                                    </>
-
-                                )
-                                    : (
-                                        <>
-                                            <Hospital color="#055bd9" size={14} />
-                                            <Text className="text-[#055bd9] text-sm">In Person</Text>
-                                        </>
-                                    )}
-
-                        </View>
-                    </View>
-
-                    <View className="w-px h-full bg-primary-200"></View>
-                    <View>
-                        <Text className="text-right text-sm text-black font-medium">
-                            Consultation Fee
-                        </Text>
-                        <Text className="text-right text-sm text-black-400 mt-1">
-                            ₹{consultation_fee}
-                        </Text>
-                    </View>
-                </View> */}
-                
 
                 <View className="flex-row items-center">
                     {feeItems.map((item: any, index) => (
@@ -143,7 +98,7 @@ const AvailableDoctors = ({
                                 </Text>
 
                                 <Text className="text-sm text-black-400 mt-1 text-center">
-                                    ₹{item.value}
+                                    {currency_symbol}{item.value}
                                 </Text>
                             </View>
 

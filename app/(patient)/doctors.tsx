@@ -8,7 +8,7 @@ import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, ScrollView, Text, View } from "react-native";
 import SearchBar from "../../components/form/search";
-import { AvailableDoctorsProps } from "../../types/patient/home";
+import { AvailableDoctorsProps } from "@/types/live/patient/home";
 
 type ConsultationType = "video" | "in-person" | "both";
 
@@ -111,6 +111,7 @@ const Doctors = () => {
                 consultation_fee={item.consultation_fee}
                 years_experience={item.years_experience}
                 fees_breakdown={item.fees_breakdown}
+                currency_symbol={item.currency_symbol}
             />
         );
     };
